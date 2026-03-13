@@ -1,0 +1,522 @@
+{
+  "risk_levels": {
+    "title": {
+      "en": "Understanding Risk Levels",
+      "th": "การเข้าใจระดับความเสี่ยง"
+    },
+    "description": {
+      "en": "Risk levels indicate potential system impact, not safety issues. All optimizations are evidence-based and reversible.",
+      "th": "ระดับความเสี่ยงระบุผลกระทบที่อาจเกิดขึ้นกับระบบ ไม่ใช่ปัญหาด้านความปลอดภัย การปรับปรุงทั้งหมดอิงตามหลักฐานและย้อนกลับได้"
+    },
+    "levels": {
+      "low": {
+        "title": {
+          "en": "Low Risk",
+          "th": "ความเสี่ยงต่ำ"
+        },
+        "icon": "🛡️",
+        "color": "#00FF88",
+        "description": {
+          "en": "Safe for daily use. Minimal system impact. Recommended for beginners.",
+          "th": "ปลอดภัยสำหรับการใช้งานทั่วไป ผลกระทบต่อระบบน้อยมาก แนะนำสำหรับผู้เริ่มต้น"
+        },
+        "examples": {
+          "en": "Backup creation, system restore points, storage cleanup, safe diagnostic tools",
+          "th": "การสร้างแบ็กอัพ, จุดคืนค่าระบบ, การทำความสะอาดพื้นที่จัดเก็บ, เครื่องมือวินิจฉัยที่ปลอดภัย"
+        },
+        "rollback": {
+          "en": "Easy rollback via Windows System Restore",
+          "th": "ย้อนกลับได้ง่ายผ่าน Windows System Restore"
+        }
+      },
+      "medium": {
+        "title": {
+          "en": "Medium Risk",
+          "th": "ความเสี่ยงปานกลาง"
+        },
+        "icon": "⚠️",
+        "color": "#FFB800",
+        "description": {
+          "en": "Reversible tweaks with measurable performance gains. May affect some Windows features.",
+          "th": "การปรับแต่งที่ย้อนกลับได้ พร้อมประสิทธิภาพที่วัดได้ อาจส่งผลต่อคุณสมบัติ Windows บางอย่าง"
+        },
+        "examples": {
+          "en": "Power plan optimization, network tweaks, GPU scheduling, service optimization",
+          "th": "การปรับแต่งแผนพลังงาน, การปรับแต่งเครือข่าย, การจัดตาราง GPU, การปรับปรุงบริการ"
+        },
+        "rollback": {
+          "en": "Rollback via backup manager or manual registry restore",
+          "th": "ย้อนกลับผ่านตัวจัดการแบ็กอัพ หรือการคืนค่ารีจิสทรีด้วยตนเอง"
+        },
+        "tradeoffs": {
+          "en": "Some features may behave differently. Test after applying.",
+          "th": "บางคุณสมบัติอาจทำงานแตกต่างออกไป ควรทดสอบหลังจากใช้งาน"
+        }
+      },
+      "high": {
+        "title": {
+          "en": "High Risk",
+          "th": "ความเสี่ยงสูง"
+        },
+        "icon": "🔥",
+        "color": "#FF4444",
+        "description": {
+          "en": "Aggressive optimizations for advanced users. Can cause system instability. Requires troubleshooting knowledge.",
+          "th": "การปรับปรุงที่ก้าวร้าวสำหรับผู้ใช้ขั้นสูง อาจทำให้ระบบไม่เสถียร ต้องการความรู้ด้านการแก้ปัญหา"
+        },
+        "examples": {
+          "en": "BCDEdit boot tweaks, aggressive service disabling, advanced registry modifications",
+          "th": "การปรับแต่งการบูต BCDEdit, การปิดใช้งานบริการอย่างก้าวร้าว, การแก้ไขรีจิสทรีขั้นสูง"
+        },
+        "rollback": {
+          "en": "Requires manual recovery. Always create full backup before applying.",
+          "th": "ต้องการการกู้คืนด้วยตนเอง ควรสร้างแบ็กอัพแบบเต็มก่อนใช้งานเสมอ"
+        },
+        "warnings": {
+          "en": "May break Windows features. Requires Windows knowledge. Not recommended for daily drivers.",
+          "th": "อาจทำให้คุณสมบัติ Windows ใช้งานไม่ได้ ต้องมีความรู้เกี่ยวกับ Windows ไม่แนะนำสำหรับการใช้งานทั่วไป"
+        }
+      }
+    }
+  },
+
+  "script_categories": {
+    "title": {
+      "en": "Script Categories",
+      "th": "หมวดหมู่สคริปต์"
+    },
+    "categories": {
+      "power": {
+        "title": {
+          "en": "Power Management",
+          "th": "การจัดการพลังงาน"
+        },
+        "risk": "MEDIUM",
+        "description": {
+          "en": "Optimize power plans and CPU performance settings",
+          "th": "ปรับแต่งแผนพลังงานและการตั้งค่าประสิทธิภาพ CPU"
+        },
+        "impact": {
+          "en": "2-5% performance improvement on balanced/ultimate performance plans",
+          "th": "ปรับปรุงประสิทธิภาพ 2-5% บนแผนพลังงาน balanced/ultimate"
+        }
+      },
+      "services": {
+        "title": {
+          "en": "Service Optimization",
+          "th": "การปรับปรุงบริการ"
+        },
+        "risk": "HIGH",
+        "description": {
+          "en": "Disable unnecessary Windows services (with safety whitelist)",
+          "th": "ปิดใช้งานบริการ Windows ที่ไม่จำเป็น (พร้อมรายการที่ปลอดภัย)"
+        },
+        "impact": {
+          "en": "Reduces background CPU usage. 700MB RAM savings typical.",
+          "th": "ลดการใช้งาน CPU ในเบื้องหลัง ประหยัด RAM 700MB โดยทั่วไป"
+        },
+        "safety_note": {
+          "en": "Never disables security services (Defender, firewall, etc.)",
+          "th": "ไม่ปิดใช้งานบริการด้านความปลอดภัย (Defender, firewall ฯลฯ)"
+        }
+      },
+      "network": {
+        "title": {
+          "en": "Network Optimization",
+          "th": "การปรับปรุงเครือข่าย"
+        },
+        "risk": "MEDIUM",
+        "description": {
+          "en": "Gaming network tweaks to reduce latency and ping spikes",
+          "th": "การปรับแต่งเครือข่ายสำหรับเกมเพื่อลดความหน่วงและ ping spikes"
+        },
+        "impact": {
+          "en": "10-50% ping reduction in specific games (TF2, CoD, etc.)",
+          "th": "ลด ping 10-50% ในเกมบางเกม (TF2, CoD ฯลฯ)"
+        }
+      },
+      "registry": {
+        "title": {
+          "en": "Registry Tweaks",
+          "th": "การปรับแต่งรีจิสทรี"
+        },
+        "risk": "MEDIUM",
+        "description": {
+          "en": "Safe registry modifications for performance and UX",
+          "th": "การแก้ไขรีจิสทรีที่ปลอดภัยสำหรับประสิทธิภาพและประสบการณ์การใช้งาน"
+        },
+        "impact": {
+          "en": "Visual effects optimization, MMCSS tuning, privacy settings",
+          "th": "การปรับแต่งเอฟเฟ็กต์ภาพ, การจูน MMCSS, การตั้งค่าความเป็นส่วนตัว"
+        }
+      },
+      "bcdedit": {
+        "title": {
+          "en": "Boot Configuration (BCDEdit)",
+          "th": "การกำหนดค่าการบูต (BCDEdit)"
+        },
+        "risk": "HIGH",
+        "description": {
+          "en": "Advanced boot parameter optimization",
+          "th": "การปรับแต่งพารามิเตอร์การบูตขั้นสูง"
+        },
+        "impact": {
+          "en": "1-4% improvement. Requires restart. Can affect boot if misconfigured.",
+          "th": "ปรับปรุง 1-4% ต้องรีสตาร์ท อาจส่งผลต่อการบูตหากกำหนดค่าผิด"
+        },
+        "warning": {
+          "en": "Keep Windows recovery media handy when applying BCDEdit tweaks",
+          "th": "เตรียมสื่อกู้คืน Windows ไว้เมื่อใช้การปรับแต่ง BCDEdit"
+        }
+      },
+      "backup": {
+        "title": {
+          "en": "Backup & Safety",
+          "th": "แบ็กอัพและความปลอดภัย"
+        },
+        "risk": "LOW",
+        "description": {
+          "en": "System restore points, registry backups, rollback tools",
+          "th": "จุดคืนค่าระบบ, แบ็กอัพรีจิสทรี, เครื่องมือย้อนกลับ"
+        },
+        "impact": {
+          "en": "No performance impact. Purely safety features.",
+          "th": "ไม่มีผลต่อประสิทธิภาพ เป็นเครื่องมือด้านความปลอดภัยโดยเฉพาะ"
+        }
+      },
+      "safety": {
+        "title": {
+          "en": "Safety & Validation",
+          "th": "ความปลอดภัยและการตรวจสอบ"
+        },
+        "risk": "LOW",
+        "description": {
+          "en": "System validation, admin checks, diagnostic tools",
+          "th": "การตรวจสอบระบบ, การตรวจสอบสิทธิ์ admin, เครื่องมือวินิจฉัย"
+        },
+        "impact": {
+          "en": "No system changes. Read-only validation.",
+          "th": "ไม่มีการเปลี่ยนแปลงระบบ การตรวจสอบแบบอ่านอย่างเดียว"
+        }
+      },
+      "storage": {
+        "title": {
+          "en": "Storage Optimization",
+          "th": "การปรับปรุงพื้นที่จัดเก็บ"
+        },
+        "risk": "LOW",
+        "description": {
+          "en": "Storage Sense, temp file cleanup, disk management",
+          "th": "Storage Sense, การล้างไฟล์ชั่วคราว, การจัดการดิสก์"
+        },
+        "impact": {
+          "en": "Frees disk space. Indirect performance improvement.",
+          "th": "ปล่อยพื้นที่ดิสก์ ปรับปรุงประสิทธิภาพโดยทางอ้อม"
+        }
+      }
+    }
+  },
+
+  "profiles": {
+    "title": {
+      "en": "Optimization Profiles",
+      "th": "โปรไฟล์การปรับปรุง"
+    },
+    "safe": {
+      "name": {
+        "en": "SAFE Profile",
+        "th": "โปรไฟล์ปลอดภัย"
+      },
+      "risk": "LOW",
+      "description": {
+        "en": "For everyday use and stability. Recommended for beginners.",
+        "th": "สำหรับการใช้งานทั่วไปและความเสถียร แนะนำสำหรับผู้เริ่มต้น"
+      },
+      "expected_gain": {
+        "en": "2-5% FPS improvement",
+        "th": "ปรับปรุง FPS 2-5%"
+      },
+      "includes": {
+        "en": ["Ultimate Performance power plan", "HAGS (GPU scheduling)", "Storage Sense", "Safe network tweaks"],
+        "th": ["แผนพลังงาน Ultimate Performance", "HAGS (การจัดตาราง GPU)", "Storage Sense", "การปรับแต่งเครือข่ายที่ปลอดภัย"]
+      },
+      "excludes": {
+        "en": ["No service disabling", "No TCP Nagle algorithm changes", "No BCDEdit tweaks"],
+        "th": ["ไม่มีการปิดใช้งานบริการ", "ไม่มีการเปลี่ยนแปลงอัลกอริทึม Nagle TCP", "ไม่มีการปรับแต่ง BCDEdit"]
+      },
+      "recommended_for": {
+        "en": "Daily drivers, work computers, users who prioritize stability",
+        "th": "การใช้งานทั่วไป, คอมพิวเตอร์ที่ทำงาน, ผู้ใช้ที่ให้ความสำคัญกับความเสถียร"
+      }
+    },
+    "competitive": {
+      "name": {
+        "en": "COMPETITIVE Profile",
+        "th": "โปรไฟล์การแข่งขัน"
+      },
+      "risk": "MEDIUM",
+      "description": {
+        "en": "Balanced for performance and responsiveness. Recommended for most gamers.",
+        "th": "สมดุลระหว่างประสิทธิภาพและความรวดเร็ว แนะนำสำหรับเกมเมอร์ส่วนใหญ่"
+      },
+      "expected_gain": {
+        "en": "5-10% FPS improvement",
+        "th": "ปรับปรุง FPS 5-10%"
+      },
+      "includes": {
+        "en": ["All SAFE optimizations", "Service optimization (with whitelist)", "Full network tweaks (TCP)", "GPU power management"],
+        "th": ["การปรับปรุง SAFE ทั้งหมด", "การปรับปรุงบริการ (พร้อมรายการที่ปลอดภัย)", "การปรับแต่งเครือข่ายแบบเต็ม (TCP)", "การจัดการพลังงาน GPU"]
+      },
+      "tradeoffs": {
+        "en": "TCP tweaks may reduce large file transfer speeds by 5-10%",
+        "th": "การปรับแต่ง TCP อาจลดความเร็วในการถ่ายโอนไฟล์ขนาดใหญ่ 5-10%"
+      },
+      "recommended_for": {
+        "en": "Gamers, performance enthusiasts, users comfortable with minor trade-offs",
+        "th": "เกมเมอร์, ผู้ที่ชอบประสิทธิภาพ, ผู้ใช้ที่สบายกับการแลกเปลี่ยนเล็กน้อย"
+      }
+    },
+    "extreme": {
+      "name": {
+        "en": "EXTREME Profile",
+        "th": "โปรไฟล์ขั้นสูง"
+      },
+      "risk": "HIGH",
+      "description": {
+        "en": "Maximum power for top-tier gaming. Advanced users only.",
+        "th": "พลังสูงสุดสำหรับเกมระดับบนสุด ผู้ใช้ขั้นสูงเท่านั้น"
+      },
+      "expected_gain": {
+        "en": "10-15% FPS improvement",
+        "th": "ปรับปรุง FPS 10-15%"
+      },
+      "includes": {
+        "en": ["All COMPETITIVE optimizations", "Advanced BCDEdit tweaks", "Aggressive service disabling"],
+        "th": ["การปรับปรุง COMPETITIVE ทั้งหมด", "การปรับแต่ง BCDEdit ขั้นสูง", "การปิดใช้งานบริการอย่างก้าวร้าว"]
+      },
+      "warnings": {
+        "en": ["May break some Windows features", "Can cause system instability", "Requires troubleshooting knowledge", "Requires manual recovery if issues occur"],
+        "th": ["อาจทำให้คุณสมบัติ Windows บางอย่างใช้งานไม่ได้", "อาจทำให้ระบบไม่เสถียร", "ต้องการความรู้ด้านการแก้ปัญหา", "ต้องการการกู้คืนด้วยตนเองหากเกิดปัญหา"]
+      },
+      "requirements": {
+        "en": ["Full backup before applying", "Windows recovery media", "Advanced Windows knowledge", "Accept responsibility for issues"],
+        "th": ["แบ็กอัพแบบเต็มก่อนใช้งาน", "สื่อกู้คืน Windows", "ความรู้เกี่ยวกับ Windows ขั้นสูง", "ยอมรับความรับผิดชอบในปัญหา"]
+      },
+      "recommended_for": {
+        "en": "Advanced users, benchmark enthusiasts, users who can troubleshoot Windows issues",
+        "th": "ผู้ใช้ขั้นสูง, ผู้ที่ชอบวัดประสิทธิภาพ, ผู้ใช้ที่สามารถแก้ปัญหา Windows ได้"
+      }
+    }
+  },
+
+  "faq": {
+    "title": {
+      "en": "Frequently Asked Questions",
+      "th": "คำถามที่พบบ่อย"
+    },
+    "questions": [
+      {
+        "q": {
+          "en": "Which profile should I choose?",
+          "th": "ฉันควรเลือกโปรไฟล์ไหน?"
+        },
+        "a": {
+          "en": "Start with SAFE. If you want more performance and understand the trade-offs, try COMPETITIVE. Only use EXTREME if you're an advanced user who can troubleshoot Windows issues.",
+          "th": "เริ่มต้นด้วย SAFE หากต้องการประสิทธิภาพมากขึ้นและเข้าใจการแลกเปลี่ยน ลอง COMPETITIVE ใช้ EXTREME เฉพาะผู้ใช้ขั้นสูงที่สามารถแก้ปัญหา Windows ได้เท่านั้น"
+        }
+      },
+      {
+        "q": {
+          "en": "Can these optimizations damage my computer?",
+          "th": "การปรับปรุงเหล่านี้สามารถทำความเสียหายให้คอมพิวเตอร์ของฉันได้หรือไม่?"
+        },
+        "a": {
+          "en": "No. All optimizations are reversible and backed by research. SAFE and COMPETITIVE profiles are very low risk. EXTREME requires advanced knowledge but won't damage hardware.",
+          "th": "ไม่ การปรับปรุงทั้งหมดย้อนกลับได้และได้รับการสนับสนุนโดยการวิจัย โปรไฟล์ SAFE และ COMPETITIVE มีความเสี่ยงต่ำมาก EXTREME ต้องการความรู้ขั้นสูง แต่จะไม่ทำความเสียหายฮาร์ดแวร์"
+        }
+      },
+      {
+        "q": {
+          "en": "Do I need to restart after applying?",
+          "th": "ฉันต้องรีสตาร์ทหลังจากใช้หรือไม่?"
+        },
+        "a": {
+          "en": "Some tweaks require restart (BCDEdit, GPU scheduling). The app will notify you. You can continue using your computer and restart when convenient.",
+          "th": "การปรับแต่งบางอย่างต้องการรีสตาร์ท (BCDEdit, การจัดตาราง GPU) แอปจะแจ้งให้คุณทราบ คุณสามารถใช้งานคอมพิวเตอร์ต่อและรีสตาร์ทเมื่อสะดวก"
+        }
+      },
+      {
+        "q": {
+          "en": "How do I undo optimizations?",
+          "th": "ฉันจะยกเลิกการปรับปรุงได้อย่างไร?"
+        },
+        "a": {
+          "en": "Use the Restore Center to revert individual tweaks or entire profiles. Every optimization creates automatic backups before applying changes.",
+          "th": "ใช้ Restore Center เพื่อย้อนกลับการปรับแต่งแต่ละรายการหรือโปรไฟล์ทั้งหมด การปรับปรุงทุกรายการสร้างแบ็กอัพอัตโนมัติก่อนใช้การเปลี่ยนแปลง"
+        }
+      },
+      {
+        "q": {
+          "en": "Why are the performance gains so low (5-15%)?",
+          "th": "ทำไมประสิทธิภาพที่เพิ่มขึ้นต่ำมาก (5-15%)?"
+        },
+        "a": {
+          "en": "Unlike snake-oil tools that claim 200% gains, we provide realistic expectations based on actual benchmarks. 5-15% is significant for gaming and backed by evidence.",
+          "th": "ไม่เหมือนเครื่องมือหลอกลวงที่อ้าง 200% เราให้ความคาดหวังที่เป็นจริงตามเบนช์มาร์กจริง 5-15% ถือว่ามีนัยสำคัญสำหรับเกมและได้รับการสนับสนุนโดยหลักฐาน"
+        }
+      }
+    ]
+  },
+
+  "myths": {
+    "title": {
+      "en": "Common Myths Debunked",
+      "th": "ความเข้าใจผิดทั่วไปที่ถูกพิสูจน์แล้ว"
+    },
+    "myths": [
+      {
+        "myth": {
+          "en": "\"Disable SysMain (Superfetch) for better performance\"",
+          "th": "\"ปิด SysMain (Superfetch) เพื่อประสิทธิภาพที่ดีกว่า\""
+        },
+        "reality": {
+          "en": "SysMain helps launch apps faster on systems with 8GB+ RAM. Disabling it is a long-standing myth with no credible performance gains.",
+          "th": "SysMain ช่วยเปิดแอปเร็วขึ้นในระบบที่มี RAM 8GB+ การปิดมันเป็นตำนานเก่าแก่ที่ไม่มีประสิทธิภาพที่เชื่อถือได้"
+        }
+      },
+      {
+        "myth": {
+          "en": "\"Disable Windows Defender for FPS\"",
+          "th": "\"ปิด Windows Defender เพื่อ FPS\""
+        },
+        "reality": {
+          "en": "Defender has minimal performance impact on modern systems. Disabling it leaves you vulnerable to malware. Use game folder exclusions instead.",
+          "th": "Defender มีผลกระทบต่อประสิทธิภาพน้อยมากในระบบสมัยใหม่ การปิดมันทำให้คุณเปราะบางต่อมัลแวร์ ใช้การยกเว้นโฟลเดอร์เกมแทน"
+        }
+      },
+      {
+        "myth": {
+          "en": "\"Network registry tweaks reduce ping by 100ms\"",
+          "th": "\"การปรับแต่งรีจิสทรีเครือข่ายลด ping 100ms\""
+        },
+        "reality": {
+          "en": "Placebo. Real impact is 10-50% ping reduction in specific games only, not a flat 100ms reduction.",
+          "th": "เป็นพลาเซโบ ผลกระทบจริงคือการลด ping 10-50% ในเกมเฉพาะเท่านั้น ไม่ใช่การลด 100ms ตรง"
+        }
+      },
+      {
+        "myth": {
+          "en": "\"Disable 100+ services for faster Windows\"",
+          "th": "\"ปิดใช้งานบริการ 100+ บริการเพื่อ Windows ที่เร็วขึ้น\""
+        },
+        "reality": {
+          "en": "Dangerous. Many services are critical for Windows functionality. We use a whitelist approach, never disabling security services.",
+          "th": "อันตราย บริการหลายบริการจำเป็นสำหรับฟังก์ชัน Windows เราใช้แนวทางรายการที่อนุญาต ไม่เคยปิดบริการความปลอดภัย"
+        }
+      }
+    ]
+  },
+
+  "help_topics": {
+    "choosing_profile": {
+      "title": {
+        "en": "Choosing the Right Profile",
+        "th": "การเลือกโปรไฟล์ที่เหมาะสม"
+      },
+      "content": {
+        "en": "Select SAFE for stability and minimal changes. COMPETITIVE balances performance with safety for most gamers. EXTREME is for advanced users who can troubleshoot Windows issues.\n\nRisk levels indicate potential system impact, not safety issues. All optimizations are reversible.",
+        "th": "เลือก SAFE สำหรับความเสถียรและการเปลี่ยนแปลงน้อยที่สุด COMPETITIVE สมดุลระหว่างประสิทธิภาพและความปลอดภัยสำหรับเกมเมอร์ส่วนใหญ่ EXTREME สำหรับผู้ใช้ขั้นสูงที่สามารถแก้ปัญหา Windows ได้\n\nระดับความเสี่ยงระบุผลกระทบที่อาจเกิดขึ้นกับระบบ ไม่ใช่ปัญหาด้านความปลอดภัย การปรับปรุงทั้งหมดย้อนกลับได้"
+      }
+    },
+    "scripts_overview": {
+      "title": {
+        "en": "Understanding Scripts",
+        "th": "การเข้าใจสคริปต์"
+      },
+      "content": {
+        "en": "Scripts are individual optimization modules organized by category. Each script has a risk level indicating its potential system impact.\n\nYou can run scripts individually for granular control, or apply entire profiles for comprehensive optimization.\n\nAll scripts create automatic backups before making changes.",
+        "th": "สคริปต์คือโมดูลการปรับปรุงแต่ละรายการที่จัดเป็นหมวดหมู่ แต่ละสคริปต์มีระดับความเสี่ยงที่ระบุผลกระทบที่อาจเกิดขึ้นกับระบบ\n\nคุณสามารถเรียกใช้สคริปต์แต่ละรายการสำหรับการควบคุมละเอียด หรือใช้โปรไฟล์ทั้งหมดสำหรับการปรับปรุงแบบครบวงจร\n\nสคริปต์ทั้งหมดสร้างแบ็กอัพอัตโนมัติก่อนทำการเปลี่ยนแปลง"
+      }
+    },
+    "safe_profile_details": {
+      "title": {
+        "en": "SAFE Profile Details",
+        "th": "รายละเอียดโปรไฟล์ SAFE"
+      },
+      "content": {
+        "en": "The SAFE profile applies conservative, proven optimizations with minimal risk:\n\n• Ultimate Performance power plan (2-3% gain)\n• Hardware-Accelerated GPU Scheduling (3-5% FPS gain)\n• Storage Sense automation\n• Safe network optimizations (no TCP changes)\n\nExpected improvement: 2-5% FPS\nRecommended for: Daily use, beginners, stability-focused users",
+        "th": "โปรไฟล์ SAFE ใช้การปรับปรุงที่อนุรักษ์และพิสูจน์แล้วด้วยความเสี่ยงต่ำ:\n\n• แผนพลังงาน Ultimate Performance (เพิ่ม 2-3%)\n• Hardware-Accelerated GPU Scheduling (เพิ่ม FPS 3-5%)\n• ระบบอัตโนมัติ Storage Sense\n• การปรับปรุงเครือข่ายที่ปลอดภัย (ไม่เปลี่ยน TCP)\n\nการปรับปรุงที่คาดหวัง: 2-5% FPS\nแนะนำสำหรับ: การใช้งานทั่วไป, ผู้เริ่มต้น, ผู้ใช้ที่ให้ความสำคัญกับความเสถียร"
+      }
+    },
+    "competitive_profile_details": {
+      "title": {
+        "en": "COMPETITIVE Profile Details",
+        "th": "รายละเอียดโปรไฟล์ COMPETITIVE"
+      },
+      "content": {
+        "en": "The COMPETITIVE profile balances performance with safety for gaming:\n\n• All SAFE optimizations\n• Service optimization (with safety whitelist)\n• Full network tweaks (TCP Nagle disabled)\n• GPU power management\n• NetworkThrottlingIndex disabled\n\nExpected improvement: 5-10% FPS\nTrade-off: TCP tweaks may reduce file transfer speeds by 5-10%\nRecommended for: Gamers, performance enthusiasts",
+        "th": "โปรไฟล์ COMPETITIVE สมดุลระหว่างประสิทธิภาพและความปลอดภัยสำหรับเกม:\n\n• การปรับปรุง SAFE ทั้งหมด\n• การปรับปรุงบริการ (พร้อมรายการที่ปลอดภัย)\n• การปรับแต่งเครือข่ายแบบเต็ม (ปิด TCP Nagle)\n• การจัดการพลังงาน GPU\n• ปิดใช้งาน NetworkThrottlingIndex\n\nการปรับปรุงที่คาดหวัง: 5-10% FPS\nการแลกเปลี่ยน: การปรับแต่ง TCP อาจลดความเร็วการถ่ายโอนไฟล์ 5-10%\nแนะนำสำหรับ: เกมเมอร์, ผู้ที่ชอบประสิทธิภาพ"
+      }
+    },
+    "extreme_profile_details": {
+      "title": {
+        "en": "EXTREME Profile Details",
+        "th": "รายละเอียดโปรไฟล์ EXTREME"
+      },
+      "content": {
+        "en": "The EXTREME profile applies aggressive optimizations for maximum performance:\n\n• All COMPETITIVE optimizations\n• Advanced BCDEdit tweaks (timer, tick settings)\n• Aggressive service disabling\n• Advanced registry modifications\n\n⚠️ WARNINGS:\n• May break some Windows features\n• Can cause system instability\n• Requires Windows troubleshooting knowledge\n• Must create full backup before applying\n\nExpected improvement: 10-15% FPS\nRecommended for: Advanced users ONLY who understand the risks",
+        "th": "โปรไฟล์ EXTREME ใช้การปรับปรุงที่ก้าวร้าวสำหรับประสิทธิภาพสูงสุด:\n\n• การปรับปรุง COMPETITIVE ทั้งหมด\n• การปรับแต่ง BCDEdit ขั้นสูง (การตั้งค่า timer, tick)\n• การปิดใช้งานบริการอย่างก้าวร้าว\n• การแก้ไขรีจิสทรีขั้นสูง\n\n⚠️ คำเตือน:\n• อาจทำให้คุณสมบัติ Windows บางอย่างใช้งานไม่ได้\n• อาจทำให้ระบบไม่เสถียร\n• ต้องการความรู้ด้านการแก้ปัญหา Windows\n• ต้องสร้างแบ็กอัพแบบเต็มก่อนใช้งาน\n\nการปรับปรุงที่คาดหวัง: 10-15% FPS\nแนะนำสำหรับ: ผู้ใช้ขั้นสูงเท่านั้นที่เข้าใจความเสี่ยง"
+      }
+    },
+    "power_tweaks": {
+      "title": {
+        "en": "Power Management Tweaks",
+        "th": "การปรับแต่งการจัดการพลังงาน"
+      },
+      "content": {
+        "en": "Power management optimizations improve CPU performance and responsiveness:\n\n• Ultimate Performance power plan (2-3% gain)\n• Disable CPU throttling\n• USB power savings disabled\n• PCI Express power management optimized\n\nRisk: MEDIUM (reversible)\nImpact: Reduces latency, improves frame time consistency\nRequires restart: No",
+        "th": "การปรับปรุงการจัดการพลังงานปรับปรุงประสิทธิภาพ CPU และความรวดเร็ว:\n\n• แผนพลังงาน Ultimate Performance (เพิ่ม 2-3%)\n• ปิดการควบคุม CPU\n• ปิดการประหยัดพลังงาน USB\n• ปรับปรุงการจัดการพลังงาน PCI Express\n\nความเสี่ยง: MEDIUM (ย้อนกลับได้)\nผลกระทบ: ลดความหน่วง ปรับปรุงความสม่ำเสมอของเฟรมติม\nต้องรีสตาร์ท: ไม่"
+      }
+    },
+    "service_optimization": {
+      "title": {
+        "en": "Service Optimization",
+        "th": "การปรับปรุงบริการ"
+      },
+      "content": {
+        "en": "Service optimization reduces background CPU usage:\n\n• Disables unnecessary telemetry services\n• Disables unnecessary diagnostic services\n• Keeps security services active (Defender, firewall, etc.)\n• Whitelist-based approach (never disables critical services)\n\nRisk: HIGH (aggressive)\nImpact: 700MB RAM savings typical, reduced background CPU usage\nSafety: Security services NEVER disabled",
+        "th": "การปรับปรุงบริการลดการใช้งาน CPU ในเบื้องหลัง:\n\n• ปิดบริการ telemetry ที่ไม่จำเป็น\n• ปิดบริการวินิจฉัยที่ไม่จำเป็น\n• รักษาบริการความปลอดภัยให้ทำงาน (Defender, firewall ฯลฯ)\n• แนวทางแบบรายการที่อนุญาต (ไม่เคยปิดบริการสำคัญ)\n\nความเสี่ยง: HIGH (ก้าวร้าว)\nผลกระทบ: ประหยัด RAM 700MB โดยทั่วไป, ลดการใช้งาน CPU ในเบื้องหลัง\nความปลอดภัย: บริการความปลอดภัยไม่เคยถูกปิด"
+      }
+    },
+    "network_optimization": {
+      "title": {
+        "en": "Network Optimization",
+        "th": "การปรับปรุงเครือข่าย"
+      },
+      "content": {
+        "en": "Network optimizations reduce latency and ping spikes:\n\n• Disable NetworkThrottlingIndex (10-50% ping reduction)\n• Set SystemResponsiveness to 0\n• TCP tweaks (COMPETITIVE only):\n  - Disable Nagle's algorithm\n  - Reduce TCP ACK frequency\n\nRisk: MEDIUM (reversible)\nImpact: Lower ping in games (TF2, CoD, etc.)\nTrade-off: TCP tweaks may reduce large file transfer speeds by 5-10%",
+        "th": "การปรับปรุงเครือข่ายลดความหน่วงและ ping spikes:\n\n• ปิด NetworkThrottlingIndex (ลด ping 10-50%)\n• ตั้งค่า SystemResponsiveness เป็น 0\n• การปรับแต่ง TCP (COMPETITIVE เท่านั้น):\n  - ปิดอัลกอริทึม Nagle\n  - ลดความถี่ TCP ACK\n\nความเสี่ยง: MEDIUM (ย้อนกลับได้)\nผลกระทบ: ลด ping ในเกม (TF2, CoD ฯลฯ)\nการแลกเปลี่ยน: การปรับแต่ง TCP อาจลดความเร็วการถ่ายโอนไฟล์ขนาดใหญ่ 5-10%"
+      }
+    },
+    "registry_tweaks": {
+      "title": {
+        "en": "Registry Tweaks",
+        "th": "การปรับแต่งรีจิสทรี"
+      },
+      "content": {
+        "en": "Registry tweaks optimize Windows behavior:\n\n• Visual effects optimization\n• MMCSS (Multimedia Class Scheduler) tuning\n• Privacy settings adjustment\n• GameDVR disabled\n\nRisk: MEDIUM (reversible)\nImpact: 1-3% FPS improvement, reduced input latency\nSafety: All changes logged and reversible",
+        "th": "การปรับแต่งรีจิสทรีปรับปรุงพฤติกรรมของ Windows:\n\n• การปรับแต่งเอฟเฟ็กต์ภาพ\n• การจูน MMCSS (Multimedia Class Scheduler)\n• การปรับตั้งค่าความเป็นส่วนตัว\n• ปิดใช้งาน GameDVR\n\nความเสี่ยง: MEDIUM (ย้อนกลับได้)\nผลกระทบ: ปรับปรุง FPS 1-3%, ลดความหน่วงของอินพุต\nความปลอดภัย: บันทึกและย้อนกลับการเปลี่ยนแปลงทั้งหมดได้"
+      }
+    },
+    "bcdedit_tweaks": {
+      "title": {
+        "en": "BCDEdit Boot Tweaks",
+        "th": "การปรับแต่งการบูต BCDEdit"
+      },
+      "content": {
+        "en": "BCDEdit tweaks optimize Windows boot parameters:\n\n• Disable dynamic ticks\n• Use platform clock\n• TSC sync policy\n• Hypervisor launch type\n\nRisk: HIGH (can affect boot if misconfigured)\nImpact: 1-4% improvement\nRequires: Restart AND Windows recovery media recommended\nEXTREME profile only",
+        "th": "การปรับแต่ง BCDEdit ปรับปรุงพารามิเตอร์การบูต Windows:\n\n• ปิดใช้งาน dynamic ticks\n• ใช้นาฬิกาแพลตฟอร์ม\n• นโยบายการซิงค์ TSC\n• ประเภทการเริ่มต้น hypervisor\n\nความเสี่ยง: HIGH (อาจส่งผลต่อการบูตหากกำหนดค่าผิด)\nผลกระทบ: ปรับปรุง 1-4%\nต้องการ: รีสตาร์ทและแนะนำสื่อกู้คืน Windows\nโปรไฟล์ EXTREME เท่านั้น"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "theme": "dark",
+    "auto_backup": true,
+    "confirm_actions": true,
+    "log_level": "INFO",
+    "batch_scripts_dir": "../src",
+    "backup_dir": "./data/backups",
+    "max_backups": 10,
+    "default_profile": "SAFE",
+    "window_size": {
+        "width": 1000,
+        "height": 700
+    },
+    "startup_checks": {
+        "check_admin": true,
+        "detect_system": true,
+        "verify_scripts": true
+    }
+}

@@ -1,0 +1,323 @@
+"""
+Settings View - Windows 11 Dark UI
+"""
+
+import customtkinter as ctk
+from typing import TYPE_CHECKING
+
+from gui.theme import theme_manager, COLORS, SIZES, ACCENT_PRESETS, SPACING, RADIUS
+from gui.style import font
+from gui.components.glass_card import GlassCard
+from gui.components.enhanced_button import EnhancedButton
+
+if TYPE_CHECKING:
+    from app_minimal import ClutchGApp
+
+
+class SettingsView(ctk.CTkFrame):
+    """Settings view with theme customization"""
+
+    UI_STRINGS = {
+        "en": {
+            "title": "Settings",
+            "appearance": "Appearance",
+            "safety": "Safety",
+            "about": "About",
+            "theme": "Theme",
+            "language": "Language",
+            "accent_color": "Accent Color",
+            "auto_backup": "Auto-create backup before applying profiles",
+            "confirm_actions": "Show confirmation dialogs",
+            "app_name": "ClutchG v1.0.0",
+            "app_description": "Windows PC Optimizer",
+        },
+        "th": {
+            "title": "Settings",
+            "appearance": "Appearance",
+            "safety": "Safety",
+            "about": "About",
+            "theme": "Theme",
+            "language": "Language",
+            "accent_color": "Accent Color",
+            "auto_backup": "Auto-Backup (สำรองข้อมูลอัตโนมัติ)",
+            "confirm_actions": "Confirmation Dialogs (แสดงกล่องยืนยัน)",
+            "app_name": "ClutchG v1.0.0",
+            "app_description": "Windows PC Optimizer",
+        },
+    }
+
+    def __init__(self, parent, app: 'ClutchGApp'):
+        super().__init__(parent, fg_color="transparent")
+        self.app = app
+
+        # Load config
+        self.config = self.app.config_manager.load_config()
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+
+        # Header
+        ctk.CTkLabel(
+            self,
+            text=self._ui("title"),
+            font=self._font(24, "bold"),
+            text_color=COLORS["text_primary"]
+        ).grid(row=0, column=0, sticky="w", pady=(0, 30))
+        
+        # Settings content
+        content = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        content.grid(row=1, column=0, sticky="nsew")
+        content.grid_columnconfigure(0, weight=1)
+
+        # Appearance (Disabled per user request)
+        # self.create_section(content, self._ui("appearance"), [
+        #     self.create_theme_setting,
+        #     self.create_accent_color_setting,
+        #     self.create_language_setting
+        # ])
+
+        # Safety
+        self.create_section(content, self._ui("safety"), [
+            self.create_safety_settings
+        ])
+
+        # About
+        self.create_section(content, self._ui("about"), [
+            self.create_about
+        ])
+
+    def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
+        """Choose a Thai-friendly font when needed."""
+        if self.app.config.get("language") == "th":
+            return ctk.CTkFont(family="Tahoma", size=size, weight=weight)
+        return font("body", size=size, weight=weight)
+
+    def _ui(self, key: str) -> str:
+        """Get UI string in current language."""
+        lang = self.app.config.get("language", "en")
+        return self.UI_STRINGS.get(lang, self.UI_STRINGS["en"]).get(key, key)
+
+    def create_section(self, parent, title, creators):
+        """Create settings section with GlassCard"""
+        section = GlassCard(parent, corner_radius=RADIUS["lg"])
+        section.pack(fill="x", pady=SPACING["md"])
+        section.grid_columnconfigure(0, weight=1)
+        
+        ctk.CTkLabel(
+            section,
+            text=title.upper(),
+            font=self._font(10, "bold"),
+            text_color=COLORS["text_muted"]
+        ).pack(anchor="w", padx=SPACING["lg"], pady=(SPACING["md"], SPACING["sm"]))
+        
+        for creator in creators:
+            creator(section)
+        
+        ctk.CTkLabel(section, text="", height=SPACING["sm"]).pack()
+    
+    def create_theme_setting(self, parent):
+        """Theme setting with dark/light toggle"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+        frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("theme"),
+            font=self._font(13),
+            text_color=COLORS["text_primary"]
+        ).grid(row=0, column=0, sticky="w")
+
+        # Get current theme
+        current_theme = theme_manager.current_theme
+        theme_display = "Dark" if current_theme == "dark" else "Light"
+
+        self.theme_var = ctk.StringVar(value=theme_display)
+        ctk.CTkSegmentedButton(
+            frame,
+            values=["Dark", "Light"],
+            variable=self.theme_var,
+            command=self.change_theme,
+            fg_color=COLORS["bg_elevated"],
+            selected_color=COLORS["accent"],
+            selected_hover_color=COLORS["accent_hover"]
+        ).grid(row=0, column=1, sticky="e")
+
+    def create_accent_color_setting(self, parent):
+        """Accent color picker with preset colors"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+
+        # Label
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("accent_color"),
+            font=self._font(13),
+            text_color=COLORS["text_primary"]
+        ).pack(anchor="w", pady=(0, SPACING["sm"]))
+
+        # Accent color buttons container
+        accent_container = ctk.CTkFrame(frame, fg_color="transparent")
+        accent_container.pack(fill="x")
+
+        # Get current accent
+        current_accent = theme_manager.current_accent
+
+        # Create color buttons
+        self.accent_buttons = {}
+        for i, (accent_name, accent_data) in enumerate(ACCENT_PRESETS.items()):
+            color = accent_data["primary"]
+
+            # Color button
+            btn = ctk.CTkButton(
+                accent_container,
+                text="",
+                width=32,
+                height=32,
+                fg_color=color,
+                hover_color=accent_data["hover"],
+                corner_radius=RADIUS["full"],
+                command=lambda a=accent_name: self.change_accent_color(a)
+            )
+            btn.grid(row=0, column=i, padx=SPACING["xs"])
+
+            self.accent_buttons[accent_name] = btn
+
+            # Add checkmark indicator for current accent
+            if accent_name == current_accent:
+                self._mark_accent_selected(btn)
+
+    def _mark_accent_selected(self, btn: ctk.CTkButton):
+        """Mark accent button as selected with a border"""
+        colors = theme_manager.get_colors()
+        btn.configure(border_width=2, border_color=colors["text_primary"])
+
+    def _unmark_accent_selected(self, btn: ctk.CTkButton):
+        """Remove selection mark from accent button"""
+        btn.configure(border_width=0)
+
+    def change_theme(self, value):
+        """Change theme and update UI"""
+        theme = "dark" if value == "Dark" else "light"
+        # Use app's switch_theme method (preserves accent color)
+        self.app.switch_theme(theme)
+
+    def change_accent_color(self, accent: str):
+        """Change accent color and update UI"""
+        # Unmark all buttons
+        for accent_name, btn in self.accent_buttons.items():
+            self._unmark_accent_selected(btn)
+
+        # Mark selected button
+        self._mark_accent_selected(self.accent_buttons[accent])
+
+        # Use app's switch_theme method (preserves theme, changes accent)
+        current_theme = theme_manager.current_theme
+        self.app.switch_theme(current_theme, accent)
+
+    def create_language_setting(self, parent):
+        """Language setting"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+        frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("language"),
+            font=self._font(13),
+            text_color=COLORS["text_primary"]
+        ).grid(row=0, column=0, sticky="w")
+
+        current_lang = self.config.get("language", "en")
+        lang_display = "English" if current_lang == "en" else "ไทย"
+
+        self.lang_var = ctk.StringVar(value=lang_display)
+        ctk.CTkOptionMenu(
+            frame,
+            values=["English", "ไทย"],
+            variable=self.lang_var,
+            command=self.change_language,
+            width=120,
+            fg_color=COLORS["bg_elevated"],
+            button_color=COLORS["accent"],
+            button_hover_color=COLORS["accent_hover"]
+        ).grid(row=0, column=1, sticky="e")
+
+    def create_safety_settings(self, parent):
+        """Safety settings"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+
+        # Load values from config
+        self.auto_backup_var = ctk.BooleanVar(value=self.config.get("auto_backup", True))
+        ctk.CTkCheckBox(
+            frame,
+            text=self._ui("auto_backup"),
+            font=self._font(12),
+            variable=self.auto_backup_var,
+            text_color=COLORS["text_primary"],
+            fg_color=COLORS["accent"],
+            hover_color=COLORS["accent_hover"],
+            command=self.save_config
+        ).pack(anchor="w", pady=SPACING["xs"])
+
+        self.confirm_var = ctk.BooleanVar(value=self.config.get("confirm_actions", True))
+        ctk.CTkCheckBox(
+            frame,
+            text=self._ui("confirm_actions"),
+            font=self._font(12),
+            variable=self.confirm_var,
+            text_color=COLORS["text_primary"],
+            fg_color=COLORS["accent"],
+            hover_color=COLORS["accent_hover"],
+            command=self.save_config
+        ).pack(anchor="w", pady=SPACING["xs"])
+
+    def create_about(self, parent):
+        """About section"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("app_name"),
+            font=self._font(13, "bold"),
+            text_color=COLORS["text_primary"]
+        ).pack(anchor="w")
+
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("app_description"),
+            font=self._font(11),
+            text_color=COLORS["text_muted"]
+        ).pack(anchor="w", pady=(0, SPACING["sm"]))
+    
+    def change_language(self, value):
+        """Change language"""
+        lang = "en" if value == "English" else "th"
+        self.config["language"] = lang
+        # IMPORTANT: Update app-wide config so _ui() picks it up immediately
+        self.app.config["language"] = lang
+        
+        self.save_config()
+
+        # Reload help manager with new language
+        from core.help_manager import HelpManager
+        self.app.help_manager = HelpManager(language=lang)
+
+        # Refresh the current view to apply new language
+        self.app.refresh_current_view()
+
+        # Show toast notification
+        if hasattr(self.app, 'toast'):
+            message = f"Language changed to Hybrid (TH)" if lang == "th" else f"Language changed to {value}"
+            self.app.toast.info(message)
+
+    def save_config(self):
+        """Save configuration when settings change"""
+        # Update config from current widget values
+        self.config["auto_backup"] = self.auto_backup_var.get()
+        self.config["confirm_actions"] = self.confirm_var.get()
+
+        # Save to file
+        self.app.config_manager.save_config(self.config)

@@ -1,0 +1,130 @@
+# ============================================================
+# ClutchG PC Optimizer — Root .gitignore
+# ============================================================
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.spec
+*.manifest
+
+# ---------- Virtual Environment ----------
+venv/
+.venv/
+env/
+
+# ---------- pytest / coverage ----------
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ---------- IDE / Editor ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ---------- OS ----------
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ---------- Binary Documents (catch-all) ----------
+*.pdf
+*.docx
+*.xlsx
+*.pptx
+*.zip
+*.exe
+*.dll
+
+# ============================================================
+# Privacy — Thesis / Academic / Personal Content
+# ============================================================
+
+# Thesis chapters (student name, advisor, university info)
+thesis-chapters/
+
+# Thesis documentation hub (academic scaffolding)
+THESIS_DOCS/
+
+# Notion import scripts (CONTAINS HARDCODED NOTION TOKEN)
+scripts/
+
+# ISO 29110 templates/forms (university forms, other students' info)
+docs/iso29110/
+
+# Notion-imported course materials (entire dir)
+docs/notion-imports/
+
+# University proposal extracts (student ID, name, advisor, signatures)
+docs/proposal-vs-current-state.md
+docs/_proposal_extract_*.txt
+
+# ISO work products with academic-only content
+docs/iso29110-clutchg/01-Project-Plan.md
+docs/iso29110-clutchg/08-Progress-Status-Record.md
+docs/iso29110-clutchg/README.md
+
+# ============================================================
+# Reference / Research Material (not product code)
+# ============================================================
+
+# Research repos (~1 GB third-party clones)
+windows-optimizer-research/repos/
+
+# Cloned third-party repo
+awesome-ai-research-writing-main/
+
+# Raw Notion export (binary Office docs)
+notion/
+
+# Research notes (PDFs + duplicates)
+Ideas and research/
+
+# Reference screenshots
+UI-research-idea/
+img/
+
+# ============================================================
+# AI Tool Configs (auto-generated, machine-specific)
+# ============================================================
+.agents/
+.claude/skills/
+.opencode/
+.codex/
+.kilocode/
+.kilocodemodes
+
+# ============================================================
+# ClutchG App Runtime
+# ============================================================
+
+# Runtime data
+clutchg/data/
+clutchg/config/*.json
+!clutchg/config/default_config.json
+
+# Build artifacts
+clutchg/dist/
+clutchg/build/
+
+# ============================================================
+# Misc
+# ============================================================
+*.log
+nul

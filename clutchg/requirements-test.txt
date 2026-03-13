@@ -1,0 +1,22 @@
+# Test Dependencies for ClutchG UI Automation
+# Install with: pip install -r requirements-test.txt
+
+# Core testing framework
+pytest>=8.0.0
+pytest-cov>=4.1.0
+pytest-html>=4.1.0
+pytest-xdist>=3.5.0
+pytest-timeout>=2.2.0
+
+# UI automation for Windows
+pywinauto>=0.6.9
+
+# Utilities (already in main requirements, listed for completeness)
+# Pillow>=10.0.0
+# psutil>=5.9.0
+
+# Optional: Enhanced reporting
+# allure-pytest>=2.13.0
+
+# Optional: Watch mode for development
+# pytest-watch>=4.2.0
