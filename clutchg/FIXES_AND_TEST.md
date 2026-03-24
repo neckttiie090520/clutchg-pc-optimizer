@@ -1,6 +1,72 @@
 # การแก้ไขและทดสอบ ClutchG App
 
-## ปัญหาที่แก้ไขแล้ว ✅
+## ปัญหาที่แก้ไขล่าสุด (Session 2026-03-23) ✅
+
+### BUG-1: validate_script() trailing space patterns
+**ไฟล์:** `src/core/batch_parser.py`
+**ปัญหา:** `shutdown /p` และ `shutdown /h` ไม่ถูก block เพราะ pattern มี trailing space
+**แก้ไข:** ลบ trailing space ออกจาก `always_dangerous_patterns` (shutdown /s, /r, /p, /h)
+
+### BUG-1b: bcdedit /deletevalue ถูก mark ผิดว่า dangerous
+**ไฟล์:** `tests/unit/test_tweak_registry_integrity.py`
+**แก้ไข:** ลบ test case `bcdedit /deletevalue` ออก — เป็น safe rollback operation ไม่ใช่ dangerous
+
+### BUG-3: Integration tests return bool แทน assert
+**ไฟล์:** `tests/integration/test_clutchg_integration.py`
+**ปัญหา:** 6 tests คืน `True`/`False` แทนใช้ `assert` → pytest ไม่ detect failure
+**แก้ไข:** เปลี่ยนทุก `return True/False` เป็น `assert` statements
+
+### BUG-3b: Forbidden emojis ใน scripts_minimal.py
+**ไฟล์:** `src/gui/views/scripts_minimal.py`
+**ปัญหา:** section labels ใน `_show_tweak_detail()` ใช้ emoji (⚠️ 📊 🚀)
+**แก้ไข:** เปลี่ยนเป็น plain text
+
+### BUG-4: Material Symbols font warning block UI
+**ไฟล์:** `src/app_minimal.py`
+**ปัญหา:** `messagebox.showwarning()` block main thread ก่อน app แสดงผล
+**แก้ไข:** เปลี่ยนเป็น non-blocking `self.toast.warning()` + logger
+
+### BUG-5: _show_loading() stub ใน backup page
+**ไฟล์:** `src/gui/views/backup_restore_center.py`
+**ปัญหา:** `self.app.cursor("watch")` ไม่ valid — `app` ไม่มี method `cursor()`
+**แก้ไข:** เปลี่ยนเป็น `self.app.window.config(cursor="watch")` + `update_idletasks()`
+
+### BUG-2: E2E fixture infrastructure
+**ไฟล์:** `tests/e2e/conftest.py` (สร้างใหม่)
+**ปัญหา:** ไม่มี `conftest.py` ใน e2e directory → fixtures `app_window`/`app_instance` ไม่ถูก discover
+**แก้ไข:** สร้าง `conftest.py` ที่ skip tests อัตโนมัติเมื่อไม่มี `--app-path`
+
+## Phase 2: MVP Strip-Down ✅
+
+### ลบ unused components
+ลบ 5 ไฟล์ที่ไม่ได้ใช้:
+- `src/gui/components/glassmorphism.py`
+- `src/gui/components/stat_card.py`
+- `src/gui/components/risk_badge.py`
+- `src/gui/components/context_help_button.py`
+- `src/gui/components/enhanced_toggle.py`
+
+### Clean settings_minimal.py
+- ลบ import `ACCENT_PRESETS`, `SIZES` ที่ไม่ได้ใช้
+- ลบ dead methods: `create_theme_setting`, `create_accent_color_setting`, `change_theme`, `change_accent_color`
+- เปิดใช้ Language section ที่ถูก comment ออก
+- ลบ stale UI_STRINGS keys
+
+## Phase 3: Test Coverage ✅
+
+เพิ่ม 74 tests ใหม่ใน `tests/unit/test_coverage_expansion.py`:
+- **ConfigManager** (8 tests): load/save/reset/defaults/corrupt/missing dir
+- **BatchParser validate_script** (12 tests): edge cases, end-of-line, bcdedit allowed
+- **ThemeManager** (15 tests): colors, score colors, risk colors, ICON/ICON_FONT
+- **TweakRegistry** (8 tests): presets, field integrity, risk levels, forbidden patterns
+- **Localization** (6 tests): EN/TH key parity for all views
+- **Security** (25 tests): parametrized blocked/allowed patterns + case-insensitive
+
+**ผลรวม: 381 tests, 0 failed**
+
+---
+
+## ปัญหาที่แก้ไขแล้ว ✅ (Session เก่า)
 
 ### 1. Missing Dependencies
 **ไฟล์:** `requirements.txt`

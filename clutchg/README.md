@@ -69,38 +69,49 @@ python src\app_minimal.py
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 clutchg/
 ├── src/
-│   ├── app_minimal.py          # Main app controller
-│   ├── core/                    # Business logic
-│   │   ├── config.py            # Configuration
-│   │   ├── system_info.py       # Hardware detection
-│   │   ├── profile_manager.py   # Profile management
-│   │   ├── profile_recommender.py # Smart recommendations
-│   │   ├── flight_recorder.py   # Change tracking
-│   │   └── batch_parser.py      # Script parser
-│   ├── gui/                     # UI layer
-│   │   ├── theme.py             # Theme configuration
-│   │   ├── views/               # Views
+│   ├── app_minimal.py              # Main app controller
+│   ├── core/                       # Business logic
+│   │   ├── config.py               # Configuration manager
+│   │   ├── system_info.py          # Hardware detection
+│   │   ├── profile_manager.py      # Profile management
+│   │   ├── profile_recommender.py  # Smart recommendations
+│   │   ├── flight_recorder.py      # Change tracking
+│   │   ├── batch_parser.py         # Script parser + safety validator
+│   │   ├── tweak_registry.py       # Tweak database
+│   │   ├── action_catalog.py       # Quick Actions catalog
+│   │   └── backup_manager.py       # Backup / restore
+│   ├── gui/                        # UI layer
+│   │   ├── theme.py                # Theme + icon provider
+│   │   ├── views/                  # Page views
 │   │   │   ├── dashboard_minimal.py
 │   │   │   ├── profiles_minimal.py
 │   │   │   ├── scripts_minimal.py
-│   │   │   ├── restore_center_minimal.py
-│   │   │   └── ...
-│   │   └── components/          # Reusable UI
-│   │       ├── risk_badge.py    # Risk indicator
-│   │       ├── context_help_button.py
-│   │       ├── timeline.py      # Timeline visualization
-│   │       └── ...
-│   └── data/                    # Runtime data
-│       ├── help_content.json    # Bilingual help
-│       └── risk_explanations.json
-├── requirements.txt             # Dependencies
-├── setup_and_test.bat          # Setup script
-└── QUICKSTART.md               # Usage guide
+│   │   │   ├── backup_restore_center.py
+│   │   │   ├── help_minimal.py
+│   │   │   └── settings_minimal.py
+│   │   └── components/             # Reusable UI
+│   │       ├── enhanced_button.py
+│   │       ├── enhanced_sidebar.py
+│   │       ├── glass_card.py
+│   │       ├── timeline.py
+│   │       ├── toast.py
+│   │       └── view_transition.py
+│   └── utils/                      # Shared helpers
+│       ├── logger.py
+│       └── admin.py
+├── tests/
+│   ├── unit/                       # Unit tests (307+ cases)
+│   ├── integration/                # Integration tests
+│   └── e2e/                        # E2E tests (pywinauto)
+├── requirements.txt                # Runtime dependencies
+├── requirements-test.txt           # Test dependencies
+├── setup_and_test.bat              # Setup script
+└── QUICKSTART.md                   # Usage guide
 ```
 
 ---
@@ -193,16 +204,33 @@ python src/app_minimal.py
 ```
 
 ### Running Tests
-```bash
-cd src
-python test_imports.py      # Test imports
-python test_app_init.py      # Test app init
+```powershell
+cd clutchg
+
+# Full unit + integration suite (381 tests)
+pytest tests/unit tests/integration
+
+# Unit tests only
+pytest tests/unit -m unit
+
+# Integration tests only
+pytest tests/integration -m integration
+
+# E2E tests (requires pywinauto + --app-path)
+pytest tests/e2e --app-path src/main.py
+
+# Skip slow tests
+pytest --skip-slow
+
+# With coverage report
+pytest tests/unit tests/integration --cov=src --cov-report=html
 ```
 
 ### Project Status
-- ✅ **Phase 10** - Quick Wins & Core Safety (COMPLETE)
-- 🔜 **Phase 11** - Advanced Features (Planning)
-- 🔜 **Phase 12** - Strategic Expansion (Future)
+- ✅ **Phase 1** - Bug Fixes (validate_script patterns, E2E fixtures, integration assertions, font warning, backup stub)
+- ✅ **Phase 2** - MVP Strip-Down (removed 5 unused components, locked theme, cleaned settings)
+- ✅ **Phase 3** - Test Coverage (381 tests: config, theme, security, localization, tweak_registry)
+- ✅ **Phase 4** - Documentation Sync
 
 ---
 
@@ -251,5 +279,5 @@ This software modifies Windows settings. Always:
 
 **Made with ❤️ for evidence-based Windows optimization**
 
-**Version:** 2.0.0
-**Last Updated:** 2025-02-02
+**Version:** 1.0.0
+**Last Updated:** 2026-03-23

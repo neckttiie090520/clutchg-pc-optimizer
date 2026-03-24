@@ -87,8 +87,8 @@ View and run individual optimization scripts:
 
 ## ⚙️ Settings
 
-### Appearance
-- **Theme:** Dark / Light / System
+### Language
+- **Language:** English / Thai (ไทย)
 
 ### Safety Options
 - **Auto-backup:** Create backup before applying profiles

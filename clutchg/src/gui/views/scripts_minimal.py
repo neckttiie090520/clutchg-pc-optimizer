@@ -1265,11 +1265,11 @@ class ScriptsView(ctk.CTkFrame):
 
         # Sections
         sections = [
-            ("📝 Description", tweak.description),
-            ("⚙️ What It Does", tweak.what_it_does),
-            ("🚀 Why It Helps", tweak.why_it_helps),
-            ("⚠️ Limitations", tweak.limitations),
-            ("📊 Expected Gain", tweak.expected_gain),
+            ("Description", tweak.description),
+            ("What It Does", tweak.what_it_does),
+            ("Why It Helps", tweak.why_it_helps),
+            ("Limitations", tweak.limitations),
+            ("Expected Gain", tweak.expected_gain),
         ]
 
         for title, content in sections:
@@ -1284,7 +1284,7 @@ class ScriptsView(ctk.CTkFrame):
 
         # Warnings
         if tweak.warnings:
-            ctk.CTkLabel(scroll, text="🔴 Warnings", font=font("body_bold"),
+            ctk.CTkLabel(scroll, text="Warnings", font=font("body_bold"),
                           text_color="#F87171").grid(row=r, column=0, sticky="w",
                           pady=(SPACING["sm"], 2))
             r += 1
@@ -1296,7 +1296,7 @@ class ScriptsView(ctk.CTkFrame):
 
         # Registry keys
         if tweak.registry_keys:
-            ctk.CTkLabel(scroll, text="🔑 Registry Keys Modified", font=font("body_bold"),
+            ctk.CTkLabel(scroll, text="Registry Keys Modified", font=font("body_bold"),
                           text_color=COLORS["text_tertiary"]).grid(row=r, column=0,
                           sticky="w", pady=(SPACING["sm"], 2))
             r += 1

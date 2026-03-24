@@ -843,17 +843,20 @@ class BackupRestoreCenter(ctk.CTkFrame):
         ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
 
     def _show_loading(self, message: str = None):
-        """Show loading overlay"""
-        if message is None:
-            message = self._ui("loading")
-        # This is a simplified version - in production you'd want a proper loading overlay
-        if hasattr(self.app, 'cursor'):
-            self.app.cursor("watch")
+        """Show loading state via busy cursor"""
+        try:
+            self.app.window.config(cursor="watch")
+            self.app.window.update_idletasks()
+        except Exception:
+            pass
 
     def _hide_loading(self):
-        """Hide loading overlay"""
-        if hasattr(self.app, 'cursor'):
-            self.app.cursor("")
+        """Restore normal cursor"""
+        try:
+            self.app.window.config(cursor="")
+            self.app.window.update_idletasks()
+        except Exception:
+            pass
 
     def _check_icon_font(self) -> bool:
         """Check if icon font is available"""

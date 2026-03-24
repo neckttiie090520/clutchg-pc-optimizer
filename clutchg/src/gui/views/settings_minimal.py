@@ -5,10 +5,9 @@ Settings View - Windows 11 Dark UI
 import customtkinter as ctk
 from typing import TYPE_CHECKING
 
-from gui.theme import theme_manager, COLORS, SIZES, ACCENT_PRESETS, SPACING, RADIUS
+from gui.theme import theme_manager, COLORS, SPACING, RADIUS
 from gui.style import font
 from gui.components.glass_card import GlassCard
-from gui.components.enhanced_button import EnhancedButton
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -20,12 +19,9 @@ class SettingsView(ctk.CTkFrame):
     UI_STRINGS = {
         "en": {
             "title": "Settings",
-            "appearance": "Appearance",
+            "language": "Language",
             "safety": "Safety",
             "about": "About",
-            "theme": "Theme",
-            "language": "Language",
-            "accent_color": "Accent Color",
             "auto_backup": "Auto-create backup before applying profiles",
             "confirm_actions": "Show confirmation dialogs",
             "app_name": "ClutchG v1.0.0",
@@ -33,12 +29,9 @@ class SettingsView(ctk.CTkFrame):
         },
         "th": {
             "title": "Settings",
-            "appearance": "Appearance",
+            "language": "Language",
             "safety": "Safety",
             "about": "About",
-            "theme": "Theme",
-            "language": "Language",
-            "accent_color": "Accent Color",
             "auto_backup": "Auto-Backup (สำรองข้อมูลอัตโนมัติ)",
             "confirm_actions": "Confirmation Dialogs (แสดงกล่องยืนยัน)",
             "app_name": "ClutchG v1.0.0",
@@ -69,12 +62,10 @@ class SettingsView(ctk.CTkFrame):
         content.grid(row=1, column=0, sticky="nsew")
         content.grid_columnconfigure(0, weight=1)
 
-        # Appearance (Disabled per user request)
-        # self.create_section(content, self._ui("appearance"), [
-        #     self.create_theme_setting,
-        #     self.create_accent_color_setting,
-        #     self.create_language_setting
-        # ])
+        # Language
+        self.create_section(content, self._ui("language"), [
+            self.create_language_setting
+        ])
 
         # Safety
         self.create_section(content, self._ui("safety"), [
@@ -115,106 +106,6 @@ class SettingsView(ctk.CTkFrame):
         
         ctk.CTkLabel(section, text="", height=SPACING["sm"]).pack()
     
-    def create_theme_setting(self, parent):
-        """Theme setting with dark/light toggle"""
-        frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
-        frame.grid_columnconfigure(1, weight=1)
-
-        ctk.CTkLabel(
-            frame,
-            text=self._ui("theme"),
-            font=self._font(13),
-            text_color=COLORS["text_primary"]
-        ).grid(row=0, column=0, sticky="w")
-
-        # Get current theme
-        current_theme = theme_manager.current_theme
-        theme_display = "Dark" if current_theme == "dark" else "Light"
-
-        self.theme_var = ctk.StringVar(value=theme_display)
-        ctk.CTkSegmentedButton(
-            frame,
-            values=["Dark", "Light"],
-            variable=self.theme_var,
-            command=self.change_theme,
-            fg_color=COLORS["bg_elevated"],
-            selected_color=COLORS["accent"],
-            selected_hover_color=COLORS["accent_hover"]
-        ).grid(row=0, column=1, sticky="e")
-
-    def create_accent_color_setting(self, parent):
-        """Accent color picker with preset colors"""
-        frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
-
-        # Label
-        ctk.CTkLabel(
-            frame,
-            text=self._ui("accent_color"),
-            font=self._font(13),
-            text_color=COLORS["text_primary"]
-        ).pack(anchor="w", pady=(0, SPACING["sm"]))
-
-        # Accent color buttons container
-        accent_container = ctk.CTkFrame(frame, fg_color="transparent")
-        accent_container.pack(fill="x")
-
-        # Get current accent
-        current_accent = theme_manager.current_accent
-
-        # Create color buttons
-        self.accent_buttons = {}
-        for i, (accent_name, accent_data) in enumerate(ACCENT_PRESETS.items()):
-            color = accent_data["primary"]
-
-            # Color button
-            btn = ctk.CTkButton(
-                accent_container,
-                text="",
-                width=32,
-                height=32,
-                fg_color=color,
-                hover_color=accent_data["hover"],
-                corner_radius=RADIUS["full"],
-                command=lambda a=accent_name: self.change_accent_color(a)
-            )
-            btn.grid(row=0, column=i, padx=SPACING["xs"])
-
-            self.accent_buttons[accent_name] = btn
-
-            # Add checkmark indicator for current accent
-            if accent_name == current_accent:
-                self._mark_accent_selected(btn)
-
-    def _mark_accent_selected(self, btn: ctk.CTkButton):
-        """Mark accent button as selected with a border"""
-        colors = theme_manager.get_colors()
-        btn.configure(border_width=2, border_color=colors["text_primary"])
-
-    def _unmark_accent_selected(self, btn: ctk.CTkButton):
-        """Remove selection mark from accent button"""
-        btn.configure(border_width=0)
-
-    def change_theme(self, value):
-        """Change theme and update UI"""
-        theme = "dark" if value == "Dark" else "light"
-        # Use app's switch_theme method (preserves accent color)
-        self.app.switch_theme(theme)
-
-    def change_accent_color(self, accent: str):
-        """Change accent color and update UI"""
-        # Unmark all buttons
-        for accent_name, btn in self.accent_buttons.items():
-            self._unmark_accent_selected(btn)
-
-        # Mark selected button
-        self._mark_accent_selected(self.accent_buttons[accent])
-
-        # Use app's switch_theme method (preserves theme, changes accent)
-        current_theme = theme_manager.current_theme
-        self.app.switch_theme(current_theme, accent)
-
     def create_language_setting(self, parent):
         """Language setting"""
         frame = ctk.CTkFrame(parent, fg_color="transparent")

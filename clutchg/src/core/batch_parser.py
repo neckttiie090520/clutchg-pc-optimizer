@@ -343,6 +343,8 @@ class BatchParser:
         Returns:
             True if the script passes all safety checks, False otherwise
         """
+        import re
+
         # Check file exists
         if not script.path.exists():
             logger.error(f"Script not found: {script.path}")
@@ -353,9 +355,12 @@ class BatchParser:
             with open(script.path, 'r', encoding='utf-8', errors='replace') as f:
                 content = f.read()
 
-            # Patterns are matched case-insensitively (content is lowered below).
-            # Include both cmd.exe and PowerShell destructive commands.
-            dangerous_patterns = [
+            content_lower = content.lower()
+
+            # =====================================================================
+            # TIER 1: Always block - destructive operations
+            # =====================================================================
+            always_dangerous_patterns = [
                 # Disk / filesystem destruction
                 'format c:',
                 'format d:',
@@ -369,17 +374,36 @@ class BatchParser:
                 'rmdir /s /q c:\\windows',
                 # Partitioning tool (interactive; also scriptable destructively)
                 'diskpart',
-                # Boot store modification
-                'bcdedit /deletevalue',
-                'bcdedit /delete',
+                # Boot store DESTRUCTION (not modification)
+                # /delete removes boot entries - VERY DANGEROUS
+                # /deletevalue only removes a single value - SAFE (used for rollback)
+                'bcdedit /delete ',
+                'bcdedit /delete{',
                 # Secure wipe of drive free space
                 'cipher /w:',
-                # Registry mass-deletion
-                'reg delete',
+                # Service permanent deletion
+                'sc delete ',
+                'sc delete"',
+                # Driver deletion
+                'pnputil /delete-driver',
+                'pnputil -d ',
+                # Shadow copy / backup deletion
+                'vssadmin delete shadows',
+                'wbadmin delete',
+                # Boot sector modification
+                'bootsect /force',
+                'bootsect /mbr',
+                'bootrec /fixmbr',
+                'bootrec /rebuildbcd',
+                # Registry hive unload (can cause instability)
+                'reg unload ',
+                # Windows feature removal
+                'dism /remove-package',
+                'dism /disable-feature',
                 # PowerShell destructive equivalents
                 'remove-item -recurse',
                 'remove-item -force',
-                # System shutdown / power-off
+                # System shutdown / power-off (unattended)
                 'shutdown /s',
                 'shutdown /r',
                 'shutdown /p',
@@ -394,13 +418,53 @@ class BatchParser:
                 'icacls c:\\windows /grant',
             ]
 
-            content_lower = content.lower()
-            for pattern in dangerous_patterns:
+            for pattern in always_dangerous_patterns:
                 if pattern in content_lower:
                     logger.error(
                         f"Dangerous pattern detected in {script.path}: '{pattern}'"
                     )
                     return False
+
+            # =====================================================================
+            # TIER 2: Context-aware checks for reg delete
+            # =====================================================================
+            # Block reg delete that deletes ENTIRE KEYS (no /v flag)
+            # Pattern: reg delete "path" /f  (no /v before /f)
+            # Allow: reg delete "path" /v "value" /f  (specific value only)
+
+            # Find all reg delete commands
+            reg_delete_pattern = r'reg\s+delete\s+["\']?([^"\'>\s]+)["\']?([^>\n]*)'
+            for match in re.finditer(reg_delete_pattern, content_lower):
+                registry_path = match.group(1)
+                flags = match.group(2)
+
+                # Check if this is deleting an entire key (no /v flag)
+                has_value_flag = '/v' in flags
+
+                if not has_value_flag:
+                    # Deleting entire key - check if it's a critical path
+                    logger.error(
+                        f"Registry key deletion (no /v flag) in {script.path}: "
+                        f"'reg delete {registry_path}'"
+                    )
+                    return False
+
+                # Even with /v, block certain critical paths
+                critical_paths = [
+                    'hklm\\software\\microsoft\\windows\\currentversion\\run',
+                    'hklm\\software\\microsoft\\windows\\currentversion\\runonce',
+                    'hklm\\system\\setup',
+                    'hklm\\software\\microsoft\\windows nt\\currentversion\\winlogon',
+                    'hklm\\software\\microsoft\\windows nt\\currentversion\\image file execution options',
+                ]
+
+                for critical in critical_paths:
+                    if critical in registry_path:
+                        logger.error(
+                            f"Critical registry path modification in {script.path}: "
+                            f"'{registry_path}'"
+                        )
+                        return False
 
         except Exception as e:
             logger.error(f"Failed to read script: {script.path}: {e}")

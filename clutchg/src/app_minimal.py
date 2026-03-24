@@ -88,23 +88,10 @@ class ClutchGApp:
             return False
 
     def _show_font_warning(self):
-        """Show warning about missing Material Symbols font"""
-        try:
-            from tkinter import messagebox
-
-            messagebox.showwarning(
-                "Material Symbols Font Not Found",
-                "Google Material Symbols font is not installed.\n\n"
-                "Icons may not display correctly.\n\n"
-                "To fix this:\n"
-                "1. Run: python install_material_icons.py\n"
-                "   (in the clutchg directory)\n"
-                "2. Or visit: https://fonts.google.com/icons\n\n"
-                "After installation, restart ClutchG."
-            )
-        except Exception:
-            # If messagebox fails, log to console
-            logger.warning("Material Symbols font not installed — run: python install_material_icons.py")
+        """Show non-blocking warning about missing Material Symbols font"""
+        logger.warning("Material Symbols font not installed — run: python install_material_icons.py")
+        if hasattr(self, 'toast'):
+            self.toast.warning("Material Symbols font not found — icons may show as boxes. Run: python install_material_icons.py")
 
     def _refresh_window_colors(self):
         """Refresh window colors from current theme"""
@@ -246,40 +233,6 @@ class ClutchGApp:
             return SettingsView(self.main_frame, self)
 
         return None
-
-    def switch_theme(self, theme: str, accent: str = None):
-        """
-        Switch theme and refresh UI
-
-        Args:
-            theme: Theme name ("dark" or "light")
-            accent: Accent color name (optional)
-        """
-        # Update theme
-        new_colors = theme_manager.set_theme(theme, accent)
-
-        # Update global COLORS reference
-        import gui.theme
-        gui.theme.COLORS = new_colors
-
-        # Save to config
-        self.config["theme"] = theme
-        if accent:
-            self.config["accent"] = accent
-        self.config_manager.save_config(self.config)
-
-        # Refresh UI
-        self.refresh_current_view()
-
-        # Refresh sidebar colors
-        if hasattr(self.sidebar, 'refresh_colors'):
-            self.sidebar.refresh_colors()
-
-        # Refresh window colors
-        self._refresh_window_colors()
-
-        # Refresh main frame colors
-        self.main_frame.configure(fg_color=new_colors["bg_primary"])
 
     def refresh_current_view(self):
         """Rebuild current view with new theme/colors"""

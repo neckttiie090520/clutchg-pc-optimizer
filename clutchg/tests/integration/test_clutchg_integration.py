@@ -62,8 +62,6 @@ def test_icon_provider():
     print(f"  [INFO] Backup icon length: {len(backup_icon)}")
     print(f"  [INFO] Font: {font}")
 
-    return True
-
 def test_theme_integration():
     """Test theme.py ICON integration"""
     print("\n[2/6] Testing theme.py ICON integration...")
@@ -83,19 +81,13 @@ def test_theme_integration():
     assert font is not None, "ICON_FONT() should return a tuple"
     print(f"  [OK] Font tuple: {font}")
 
-    return True
-
 def test_backup_restore_center_imports():
     """Test BackupRestoreCenter imports"""
     print("\n[3/6] Testing BackupRestoreCenter imports...")
 
-    try:
-        from gui.views.backup_restore_center import BackupRestoreCenter
-        print("  [OK] BackupRestoreCenter imported successfully")
-        return True
-    except ImportError as e:
-        print(f"  [FAIL] Import failed: {e}")
-        return False
+    from gui.views.backup_restore_center import BackupRestoreCenter
+    assert BackupRestoreCenter is not None, "BackupRestoreCenter should be importable"
+    print("  [OK] BackupRestoreCenter imported successfully")
 
 def test_views_imports():
     """Test all modified views imports"""
@@ -109,35 +101,29 @@ def test_views_imports():
         'gui.components.enhanced_sidebar'
     ]
 
-    all_success = True
+    failed = []
     for view_name in views_to_test:
         try:
             module = __import__(view_name, fromlist=[''])
             print(f"  [OK] {view_name}")
         except ImportError as e:
             print(f"  [FAIL] {view_name}: {e}")
-            all_success = False
+            failed.append(view_name)
 
-    return all_success
+    assert not failed, f"Failed to import: {failed}"
 
 def test_navigation_integration():
     """Test navigation integration in app_minimal"""
     print("\n[5/6] Testing navigation integration...")
 
-    try:
-        # We can't fully instantiate the app without a GUI,
-        # but we can check imports
-        import app_minimal
-        print("  [OK] app_minimal imported successfully")
+    # We can't fully instantiate the app without a GUI,
+    # but we can check imports
+    import app_minimal
+    print("  [OK] app_minimal imported successfully")
 
-        # Check that it has the necessary components
-        assert hasattr(app_minimal, 'ClutchGApp'), "ClutchGApp class should exist"
-        print("  [OK] ClutchGApp class exists")
-
-        return True
-    except Exception as e:
-        print(f"  [FAIL] Navigation test failed: {e}")
-        return False
+    # Check that it has the necessary components
+    assert hasattr(app_minimal, 'ClutchGApp'), "ClutchGApp class should exist"
+    print("  [OK] ClutchGApp class exists")
 
 def test_no_emojis_in_views():
     """Test that emojis have been replaced with ICON() calls"""
@@ -178,7 +164,7 @@ def test_no_emojis_in_views():
         else:
             print(f"  [OK] {view_path}: No emojis found")
 
-    return all_clean
+    assert all_clean, "Some views still contain forbidden emojis"
 
 def main():
     """Run all integration tests"""

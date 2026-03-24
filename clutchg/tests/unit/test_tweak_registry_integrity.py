@@ -121,7 +121,8 @@ class TestValidateScriptDangerousPatterns:
         ("rmdir windows", "@echo off\nrmdir /s /q c:\\windows\n"),
         ("rmdir root", "@echo off\nrmdir /s /q c:\\\n"),
         ("diskpart", "@echo off\ndiskpart\n"),
-        ("bcdedit /deletevalue", "@echo off\nbcdedit /deletevalue {current} nx\n"),
+        # bcdedit /deletevalue is intentionally ALLOWED (safe rollback operation)
+        # Only bcdedit /delete (full entry removal) is blocked
         ("bcdedit /delete", "@echo off\nbcdedit /delete {badmemory}\n"),
         ("cipher /w:", "@echo off\ncipher /w:c:\\\n"),
         ("reg delete", "@echo off\nreg delete HKLM\\SOFTWARE\\Test /f\n"),

@@ -1,7 +1,17 @@
-# ClutchG Handoff Document
+# ClutchG Handoff Document [ARCHIVED]
+
+> **⚠️ ARCHIVED:** This document reflects status as of 2026-02-10.  
+> **Current Status (2026-03-24):** All issues listed below have been resolved.
+> - Backup & Restore: Fixed (error handling, layout)
+> - Scripts: Fixed (path resolution - finds 27 scripts)
+> - Profiles: Fixed (text wrapping, button visibility)
+> - Theme: Locked to Dark only (multi-theme removed)
+> - Tests: 381+ passing, coverage expanded
+
+---
 
 **วันที่:** 2026-02-10  
-**สถานะ:** ⚠️ UI ใช้งานได้บางส่วน — มีหลายหน้าที่ยังไม่ทำงานจริง  
+**สถานะ ณ วันนั้น:** ⚠️ UI ใช้งานได้บางส่วน — มีหลายหน้าที่ยังไม่ทำงานจริง  
 **Python:** 3.14 (GPUtil ใช้ไม่ได้ → ใช้ nvidia-smi แทน)
 
 ---

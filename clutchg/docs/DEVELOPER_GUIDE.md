@@ -5,26 +5,36 @@
 ```
 clutchg/
 ├── src/                    # Source code
-│   ├── main.py            # Launcher (admin check + startup args)
-│   ├── app_minimal.py     # Active main application class
-│   ├── app.py             # Legacy app path (kept for compatibility)
+│   ├── main.py            # Launcher entry point
+│   ├── app_minimal.py     # Main application class
 │   │
 │   ├── gui/               # UI components
-│   │   ├── dashboard.py   # Dashboard view
-│   │   ├── profiles.py    # Profile selection
-│   │   ├── scripts.py     # Scripts browser
-│   │   ├── backup.py      # Backup/restore view
-│   │   ├── settings.py    # Settings panel
-│   │   └── components/    # Reusable widgets
-│   │       └── toast.py   # Toast notifications
+│   │   ├── views/         # View modules
+│   │   │   ├── dashboard_minimal.py
+│   │   │   ├── profiles_minimal.py
+│   │   │   ├── scripts_minimal.py
+│   │   │   ├── backup_restore_center.py
+│   │   │   ├── settings_minimal.py
+│   │   │   └── help_minimal.py
+│   │   ├── components/    # Reusable widgets
+│   │   │   ├── glass_card.py
+│   │   │   ├── enhanced_button.py
+│   │   │   ├── enhanced_sidebar.py
+│   │   │   ├── execution_dialog.py
+│   │   │   ├── toast.py
+│   │   │   └── timeline.py
+│   │   ├── theme.py       # Theme constants
+│   │   └── style.py       # Font styling
 │   │
 │   ├── core/              # Business logic
-│   │   ├── config.py      # Configuration manager
-│   │   ├── system_info.py # Hardware detection
-│   │   ├── batch_executor.py  # Script execution
-│   │   ├── batch_parser.py    # Script discovery
-│   │   ├── profile_manager.py # Profile management
-│   │   └── backup_manager.py  # Backup system
+│   │   ├── batch_parser.py      # Script discovery
+│   │   ├── batch_executor.py    # Script execution
+│   │   ├── profile_manager.py   # Profile management
+│   │   ├── tweak_registry.py    # Tweak database
+│   │   ├── backup_manager.py    # Backup system
+│   │   ├── system_info.py       # Hardware detection
+│   │   ├── action_catalog.py    # Quick actions
+│   │   └── help_manager.py      # Contextual help
 │   │
 │   ├── models/            # Data models
 │   └── utils/             # Utilities
@@ -33,9 +43,12 @@ clutchg/
 │
 ├── assets/                # Icons, images
 ├── config/                # Configuration files
-├── data/                  # Runtime data
+├── data/                  # Runtime data (backups, logs)
 ├── docs/                  # Documentation
-├── tests/                 # Unit tests
+├── tests/                 # Test suite
+│   ├── unit/             # Unit tests
+│   ├── integration/      # Integration tests
+│   └── conftest.py       # Shared fixtures
 ├── build.py               # PyInstaller build script
 └── requirements.txt       # Dependencies
 ```

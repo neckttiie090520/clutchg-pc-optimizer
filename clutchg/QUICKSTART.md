@@ -40,13 +40,7 @@ python src\app_minimal.py
 ```powershell
 cd C:\Users\nextzus\Documents\thesis\bat\clutchg\src
 
-# ทดสอบ imports
-python test_imports.py
-
-# ทดสอบ app initialization (ไม่เปิด window)
-python test_app_init.py
-
-# ถ้าผ่านทั้งหมด ค่อยรัน app จริง
+# รัน app จริง
 python app_minimal.py
 ```
 
@@ -85,9 +79,11 @@ pip install -r requirements.txt
 
 ### Error: AttributeError
 ```powershell
-# รัน test scripts เพื่อดู error ละเอียด
-python src\test_imports.py
-python src\test_app_init.py
+# ตรวจสอบว่า dependencies ครบถ้วน
+pip install -r requirements.txt
+
+# รัน tests เพื่อดู error ละเอียด
+pytest tests/unit -v
 ```
 
 ### Error: UnicodeDecodeError
@@ -123,7 +119,7 @@ python src\app_minimal.py
 **App ไม่เปิด:**
 1. ตรวจสอบ Python version: `python --version`
 2. ติดตั้ง dependencies ใหม่: `pip install -r requirements.txt`
-3. รัน test scripts: `python src\test_imports.py`
+3. รัน pytest: `pytest tests/unit -v`
 
 **Fonts ไม่แสดง:**
 - ติดตั้งฟอนต์ Inter: https://fonts.google.com/specimen/Inter
