@@ -54,7 +54,7 @@ class HelpView(ctk.CTkFrame):
         },
     }
 
-    def __init__(self, parent, app: 'ClutchGApp'):
+    def __init__(self, parent, app: "ClutchGApp"):
         super().__init__(parent, fg_color="transparent")
         self.app = app
 
@@ -73,7 +73,7 @@ class HelpView(ctk.CTkFrame):
             self,
             text=self._ui("help_header"),
             font=self._font(24, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         )
         self.header_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 30))
 
@@ -81,16 +81,15 @@ class HelpView(ctk.CTkFrame):
         self.create_sidebar()
 
         # Content area
-        self.content_frame = ctk.CTkScrollableFrame(
-            self,
-            fg_color="transparent"
-        )
+        self.content_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.content_frame.grid(row=1, column=1, sticky="nsew")
 
         # Show first topic
         self.show_topic("getting_started")
 
-    def _font(self, size: int, weight: str = "normal", slant: str = "roman") -> ctk.CTkFont:
+    def _font(
+        self, size: int, weight: str = "normal", slant: str = "roman"
+    ) -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed.
 
         Args:
@@ -121,7 +120,7 @@ class HelpView(ctk.CTkFrame):
             self.sidebar,
             text=self._ui("topics"),
             font=self._font(14, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(pady=(SPACING["md"], SPACING["sm"]), padx=SPACING["md"], anchor="w")
 
         # Search bar (modernized pill shape)
@@ -133,20 +132,17 @@ class HelpView(ctk.CTkFrame):
             fg_color=COLORS["bg_secondary"],
             border_color=COLORS["border"],
             corner_radius=RADIUS["full"],
-            height=36
+            height=36,
         )
         self.search_entry.pack(fill="x", padx=SPACING["sm"], pady=(0, SPACING["sm"]))
 
         EnhancedButton.outline(
-            self.sidebar,
-            text=self._ui("clear"),
-            height=36,
-            command=self._clear_search
+            self.sidebar, text=self._ui("clear"), height=36, command=self._clear_search
         ).pack(fill="x", padx=SPACING["sm"], pady=(0, SPACING["sm"]))
 
         # Get all topics
         topics = self.help_manager.get_all_topics()
-        
+
         # Store button references for highlighting
         self.topic_buttons = {}
 
@@ -155,7 +151,7 @@ class HelpView(ctk.CTkFrame):
                 self.sidebar,
                 text=f"{topic.icon} {topic.title}",
                 height=36,
-                command=lambda t=topic: self.show_topic(t.id)
+                command=lambda t=topic: self.show_topic(t.id),
             )
             btn.configure(anchor="w")
             btn.pack(fill="x", padx=SPACING["sm"], pady=2)
@@ -175,7 +171,9 @@ class HelpView(ctk.CTkFrame):
         """Refresh sidebar and content after language change."""
         self.help_manager = self.app.help_manager
         if hasattr(self, "header_label") and self.header_label:
-            self.header_label.configure(text=self._ui("help_header"), font=self._font(24, "bold"))
+            self.header_label.configure(
+                text=self._ui("help_header"), font=self._font(24, "bold")
+            )
         if hasattr(self, "sidebar") and self.sidebar:
             self.sidebar.destroy()
         self.create_sidebar()
@@ -192,8 +190,10 @@ class HelpView(ctk.CTkFrame):
             if tid == topic_id:
                 btn.configure(fg_color=COLORS["bg_hover"], text_color=COLORS["accent"])
             else:
-                btn.configure(fg_color="transparent", text_color=COLORS["text_secondary"])
-        
+                btn.configure(
+                    fg_color="transparent", text_color=COLORS["text_secondary"]
+                )
+
         # Clear content
         for widget in self.content_frame.winfo_children():
             widget.destroy()
@@ -207,7 +207,7 @@ class HelpView(ctk.CTkFrame):
             self.content_frame,
             text=f"{topic.icon} {topic.title}",
             font=self._font(20, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w", pady=(0, 20))
 
         # Quick links removed as per user request
@@ -235,10 +235,7 @@ class HelpView(ctk.CTkFrame):
 
         for profile_name, profile in profiles.items():
             # Profile card with GlassCard
-            card = GlassCard(
-                self.content_frame,
-                corner_radius=RADIUS["lg"]
-            )
+            card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             card.pack(fill="x", pady=SPACING["sm"])
 
             # Header
@@ -249,7 +246,7 @@ class HelpView(ctk.CTkFrame):
                 header,
                 text=profile["name"],
                 font=self._font(16, "bold"),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(side="left")
 
             # Risk badge
@@ -258,7 +255,7 @@ class HelpView(ctk.CTkFrame):
                 header,
                 text=f"● {profile['risk_level']}",
                 font=self._font(10),
-                text_color=risk_color
+                text_color=risk_color,
             ).pack(side="right")
 
             # Details
@@ -267,7 +264,9 @@ class HelpView(ctk.CTkFrame):
 
             for key in ["description", "best_for", "fps_gain"]:
                 if key in profile:
-                    self._add_detail_row(details_frame, key.replace("_", " ").title(), profile[key])
+                    self._add_detail_row(
+                        details_frame, key.replace("_", " ").title(), profile[key]
+                    )
 
             # What it does
             if "what_it_does" in profile:
@@ -275,7 +274,7 @@ class HelpView(ctk.CTkFrame):
                     details_frame,
                     text=self._ui("what_it_does"),
                     font=self._font(11, "bold"),
-                    text_color=COLORS["text_secondary"]
+                    text_color=COLORS["text_secondary"],
                 ).pack(anchor="w", pady=(10, 5))
 
                 for item in profile["what_it_does"]:
@@ -283,7 +282,7 @@ class HelpView(ctk.CTkFrame):
                         details_frame,
                         text=f"  • {item}",
                         font=self._font(11),
-                        text_color=COLORS["text_primary"]
+                        text_color=COLORS["text_primary"],
                     ).pack(anchor="w")
 
             # Who should use
@@ -293,7 +292,7 @@ class HelpView(ctk.CTkFrame):
                     text=f"💡 {profile['who_should_use']}",
                     font=self._font(10, "italic"),
                     text_color=COLORS["accent"],
-                    wraplength=600
+                    wraplength=600,
                 ).pack(anchor="w", pady=(10, 0))
 
             if profile.get("warnings"):
@@ -301,7 +300,7 @@ class HelpView(ctk.CTkFrame):
                     details_frame,
                     text=self._ui("warnings"),
                     font=self._font(11, "bold"),
-                    text_color=COLORS["warning"]
+                    text_color=COLORS["warning"],
                 ).pack(anchor="w", pady=(10, 5))
 
                 for item in profile["warnings"]:
@@ -311,7 +310,7 @@ class HelpView(ctk.CTkFrame):
                         font=self._font(11),
                         text_color=COLORS["text_secondary"],
                         wraplength=620,
-                        justify="left"
+                        justify="left",
                     ).pack(anchor="w", pady=1)
 
     def _add_detail_row(self, parent, label: str, value: str):
@@ -325,7 +324,7 @@ class HelpView(ctk.CTkFrame):
             font=self._font(10, "bold"),
             text_color=COLORS["text_muted"],
             width=100,
-            anchor="w"
+            anchor="w",
         ).pack(side="left")
 
         ctk.CTkLabel(
@@ -333,7 +332,7 @@ class HelpView(ctk.CTkFrame):
             text=value,
             font=self._font(11),
             text_color=COLORS["text_primary"],
-            anchor="w"
+            anchor="w",
         ).pack(side="left")
 
     def _render_scripts(self, scripts_data: dict):
@@ -346,14 +345,14 @@ class HelpView(ctk.CTkFrame):
                 self.content_frame,
                 text=f"{category['icon']} {category['name']}",
                 font=self._font(16, "bold"),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(anchor="w", pady=(20, 10))
 
             ctk.CTkLabel(
                 self.content_frame,
                 text=category["description"],
                 font=self._font(11),
-                text_color=COLORS["text_secondary"]
+                text_color=COLORS["text_secondary"],
             ).pack(anchor="w", pady=(0, 15))
 
             if "risk" in category:
@@ -361,7 +360,7 @@ class HelpView(ctk.CTkFrame):
                     self.content_frame,
                     text=f"{self._ui('category_risk')} {category['risk']}",
                     font=self._font(10, "bold"),
-                    text_color=COLORS["warning"]
+                    text_color=COLORS["warning"],
                 ).pack(anchor="w", pady=(0, 12))
 
             # Scripts
@@ -370,17 +369,14 @@ class HelpView(ctk.CTkFrame):
 
     def _render_script_card(self, script: dict):
         """Render a single script card with GlassCard"""
-        card = GlassCard(
-            self.content_frame,
-            corner_radius=RADIUS["lg"]
-        )
+        card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
         card.pack(fill="x", pady=SPACING["xs"], padx=(0, SPACING["lg"]))
 
         ctk.CTkLabel(
             card,
             text=script["name"],
             font=self._font(13, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w", padx=15, pady=(12, 5))
 
         ctk.CTkLabel(
@@ -388,16 +384,13 @@ class HelpView(ctk.CTkFrame):
             text=script["description"],
             font=self._font(11),
             text_color=COLORS["text_secondary"],
-            wraplength=600
+            wraplength=600,
         ).pack(anchor="w", padx=15, pady=(0, 10))
 
         if "effects" in script:
             for effect in script["effects"]:
                 ctk.CTkLabel(
-                    card,
-                    text=effect,
-                    font=self._font(10),
-                    text_color=COLORS["accent"]
+                    card, text=effect, font=self._font(10), text_color=COLORS["accent"]
                 ).pack(anchor="w", padx=15, pady=2)
 
         if "reversibility" in script:
@@ -407,8 +400,24 @@ class HelpView(ctk.CTkFrame):
                 font=self._font(10),
                 text_color=COLORS["text_tertiary"],
                 wraplength=620,
-                justify="left"
+                justify="left",
             ).pack(anchor="w", padx=15, pady=(8, 12))
+
+    def _resolve_view_link(self, text: str) -> str | None:
+        """Return a view key if a key_point text references a navigable app area."""
+        VIEW_KEYWORDS = {
+            "dashboard": "dashboard",
+            "optimization center": "scripts",
+            "backup & restore": "backup",
+            "backup and restore": "backup",
+            "help & documentation": "help",
+            "help and documentation": "help",
+        }
+        lower = text.lower()
+        for keyword, view in VIEW_KEYWORDS.items():
+            if lower.startswith(keyword):
+                return view
+        return None
 
     def _render_sections(self, sections: list):
         """Render generic sections"""
@@ -417,7 +426,7 @@ class HelpView(ctk.CTkFrame):
                 self.content_frame,
                 text=section.get("heading", ""),
                 font=self._font(16, "bold"),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(anchor="w", pady=(20, 10), padx=20)
 
             if "content" in section:
@@ -427,7 +436,7 @@ class HelpView(ctk.CTkFrame):
                     font=self._font(12),
                     text_color=COLORS["text_secondary"],
                     wraplength=500,
-                    justify="left"
+                    justify="left",
                 ).pack(anchor="w", pady=(0, 10), padx=20)
 
             if "steps" in section:
@@ -436,17 +445,26 @@ class HelpView(ctk.CTkFrame):
                         self.content_frame,
                         text=step,
                         font=self._font(11),
-                        text_color=COLORS["text_primary"]
+                        text_color=COLORS["text_primary"],
                     ).pack(anchor="w", pady=5, padx=20)
 
             if "key_points" in section:
                 for point in section["key_points"]:
-                    ctk.CTkLabel(
-                        self.content_frame,
-                        text=point,
-                        font=self._font(11),
-                        text_color=COLORS["accent"]
-                    ).pack(anchor="w", pady=3, padx=20)
+                    view_key = self._resolve_view_link(point)
+                    if view_key:
+                        EnhancedButton.outline(
+                            self.content_frame,
+                            text=f"  {point}",
+                            height=32,
+                            command=lambda v=view_key: self.app.switch_view(v),
+                        ).pack(anchor="w", pady=2, padx=20)
+                    else:
+                        ctk.CTkLabel(
+                            self.content_frame,
+                            text=point,
+                            font=self._font(11),
+                            text_color=COLORS["accent"],
+                        ).pack(anchor="w", pady=3, padx=20)
 
     def _render_safety(self, safety_data: dict):
         """Render safety information"""
@@ -457,7 +475,7 @@ class HelpView(ctk.CTkFrame):
                 self.content_frame,
                 title=warning["title"],
                 content=warning["content"],
-                help_type=warning["level"]
+                help_type=warning["level"],
             )
             box.pack(fill="x", pady=10)
 
@@ -466,28 +484,25 @@ class HelpView(ctk.CTkFrame):
             self.content_frame,
             text=self._ui("common_myths"),
             font=self._font(16, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w", pady=(30, 15))
 
         for myth in safety_data.get("myths", []):
-            myth_frame = GlassCard(
-                self.content_frame,
-                corner_radius=RADIUS["lg"]
-            )
+            myth_frame = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             myth_frame.pack(fill="x", pady=SPACING["xs"], padx=(0, SPACING["lg"]))
 
             ctk.CTkLabel(
                 myth_frame,
                 text=f"{ICON('error')} {myth['myth']}",
                 font=self._font(11),
-                text_color=COLORS["danger"]
+                text_color=COLORS["danger"],
             ).pack(anchor="w", padx=15, pady=(10, 5))
 
             ctk.CTkLabel(
                 myth_frame,
                 text=f"{ICON('success')} {myth['fact']}",
                 font=self._font(11),
-                text_color=COLORS["success"]
+                text_color=COLORS["success"],
             ).pack(anchor="w", padx=15, pady=(0, 10))
 
     def _render_troubleshooting(self, trouble_data: dict):
@@ -495,17 +510,14 @@ class HelpView(ctk.CTkFrame):
         issues = trouble_data.get("issues", [])
 
         for issue in issues:
-            card = GlassCard(
-                self.content_frame,
-                corner_radius=RADIUS["lg"]
-            )
+            card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             card.pack(fill="x", pady=SPACING["sm"])
 
             ctk.CTkLabel(
                 card,
                 text=f"🔧 {issue['problem']}",
                 font=self._font(13, "bold"),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(anchor="w", padx=15, pady=(12, 10))
 
             for solution in issue["solutions"]:
@@ -513,7 +525,7 @@ class HelpView(ctk.CTkFrame):
                     card,
                     text=f"• {solution}",
                     font=self._font(11),
-                    text_color=COLORS["text_secondary"]
+                    text_color=COLORS["text_secondary"],
                 ).pack(anchor="w", padx=15, pady=2)
 
     def _render_about(self, about_data: dict):
@@ -525,7 +537,7 @@ class HelpView(ctk.CTkFrame):
             self.content_frame,
             text=f"Version {payload.get('version', '1.0.0')}",
             font=self._font(14, "bold"),
-            text_color=COLORS["accent"]
+            text_color=COLORS["accent"],
         ).pack(anchor="w", pady=(0, 15))
 
         # Description
@@ -535,7 +547,7 @@ class HelpView(ctk.CTkFrame):
             font=self._font(12),
             text_color=COLORS["text_secondary"],
             wraplength=500,
-            justify="left"
+            justify="left",
         ).pack(anchor="w", pady=(0, 20), padx=20)
 
         # Features
@@ -543,7 +555,7 @@ class HelpView(ctk.CTkFrame):
             self.content_frame,
             text=self._ui("features"),
             font=self._font(14, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w", pady=(10, 10), padx=20)
 
         for feature in payload.get("features", []):
@@ -551,7 +563,7 @@ class HelpView(ctk.CTkFrame):
                 self.content_frame,
                 text=f"• {feature}",
                 font=self._font(11),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(anchor="w", padx=20, pady=3)
 
         # Disclaimer
@@ -560,7 +572,7 @@ class HelpView(ctk.CTkFrame):
             text=payload.get("disclaimer", ""),
             font=self._font(10, "italic"),
             text_color=COLORS["text_muted"],
-            wraplength=700
+            wraplength=700,
         ).pack(anchor="w", pady=(30, 0))
 
     def on_search_change(self):
@@ -583,9 +595,9 @@ class HelpView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             self.content_frame,
-            text=f"{self._ui('search_results')}: \"{query}\"",
+            text=f'{self._ui("search_results")}: "{query}"',
             font=self._font(18, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w", pady=(0, 15))
 
         q = query.lower()
@@ -600,7 +612,7 @@ class HelpView(ctk.CTkFrame):
                 self.content_frame,
                 text=self._ui("no_matches"),
                 font=self._font(12),
-                text_color=COLORS["text_secondary"]
+                text_color=COLORS["text_secondary"],
             ).pack(anchor="w")
             return
 
@@ -612,7 +624,7 @@ class HelpView(ctk.CTkFrame):
                 card,
                 text=f"{topic.icon} {topic.title}",
                 font=self._font(13, "bold"),
-                text_color=COLORS["text_primary"]
+                text_color=COLORS["text_primary"],
             ).pack(anchor="w", padx=15, pady=(10, 5))
 
             snippet = self._make_snippet(topic.content, q)
@@ -621,14 +633,14 @@ class HelpView(ctk.CTkFrame):
                 text=snippet,
                 font=self._font(11),
                 text_color=COLORS["text_secondary"],
-                wraplength=600
+                wraplength=600,
             ).pack(anchor="w", padx=15, pady=(0, 10))
 
             EnhancedButton.outline(
                 card,
                 text=self._ui("open"),
                 height=28,
-                command=lambda t=topic: self.show_topic(t.id)
+                command=lambda t=topic: self.show_topic(t.id),
             ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["sm"]))
 
     def _collect_text(self, data):
@@ -665,7 +677,7 @@ class HelpView(ctk.CTkFrame):
         for sep in ["。", "！", "?", "!", ".", " "]:
             cut = text.rfind(sep)
             if cut >= min_len:
-                return text[:cut + 1]
+                return text[: cut + 1]
         return text
 
     def _highlight_query(self, text: str, query: str) -> str:
@@ -674,5 +686,3 @@ class HelpView(ctk.CTkFrame):
             return text
         pattern = re.compile(re.escape(query), re.IGNORECASE)
         return pattern.sub(lambda m: f"[{m.group(0)}]", text)
-
-

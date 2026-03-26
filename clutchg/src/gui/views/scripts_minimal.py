@@ -736,7 +736,7 @@ class ScriptsView(ctk.CTkFrame):
             text_color=COLORS.get("text_on_accent", "#FFFFFF"),
             hover_color=COLORS["accent_hover"],
             corner_radius=RADIUS["md"],
-            height=32,
+            height=38,
             command=lambda a=action: self._run_quick_action(a),
         ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
 
@@ -1032,7 +1032,7 @@ class ScriptsView(ctk.CTkFrame):
             border_width=1,
             border_color=COLORS["border"],
             corner_radius=RADIUS["md"],
-            height=32,
+            height=38,
             width=120,
             command=lambda k=preset_key: self._show_preset_tweaks(k),
         ).pack(side="left", padx=(0, SPACING["sm"]))
@@ -1045,7 +1045,7 @@ class ScriptsView(ctk.CTkFrame):
             text_color="#FFFFFF",
             hover_color=info["dim"],
             corner_radius=RADIUS["md"],
-            height=32,
+            height=38,
             width=160,
             command=lambda k=preset_key: self._apply_preset(k),
         ).pack(side="left")
@@ -1181,7 +1181,7 @@ class ScriptsView(ctk.CTkFrame):
             text_color=COLORS["text_secondary"],
             hover_color=COLORS["bg_card_hover"],
             corner_radius=RADIUS["md"],
-            height=28,
+            height=36,
             width=80,
             command=self._clear_selection,
         ).pack(side="left", padx=(0, SPACING["sm"]))
@@ -1194,7 +1194,7 @@ class ScriptsView(ctk.CTkFrame):
             text_color="#FFFFFF" if count > 0 else COLORS["text_tertiary"],
             hover_color=COLORS["accent_hover"],
             corner_radius=RADIUS["md"],
-            height=32,
+            height=38,
             width=140,
             state="normal" if count > 0 else "disabled",
             command=self._apply_selected_tweaks,
@@ -1294,7 +1294,9 @@ class ScriptsView(ctk.CTkFrame):
     def _create_tweak_row(self, parent, tweak: Tweak, row_idx: int):
         """Single tweak row with toggle, name, risk badge, and expandable info"""
         is_selected = tweak.id in self.selected_tweaks
-        risk_c = self._get_risk_colors().get(tweak.risk_level, self._get_risk_colors()["LOW"])
+        risk_c = self._get_risk_colors().get(
+            tweak.risk_level, self._get_risk_colors()["LOW"]
+        )
 
         row = ctk.CTkFrame(
             parent,
@@ -1525,7 +1527,10 @@ class ScriptsView(ctk.CTkFrame):
 
         for title, content in sections:
             ctk.CTkLabel(
-                scroll, text=title, font=font("body_bold"), text_color=COLORS["text_primary"]
+                scroll,
+                text=title,
+                font=font("body_bold"),
+                text_color=COLORS["text_primary"],
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
             r += 1
             ctk.CTkLabel(
@@ -1542,8 +1547,10 @@ class ScriptsView(ctk.CTkFrame):
         # Warnings — use theme tokens instead of hard-coded hex
         if tweak.warnings:
             ctk.CTkLabel(
-                scroll, text="Warnings", font=font("body_bold"),
-                text_color=COLORS.get("risk_high", COLORS.get("danger", "#F87171"))
+                scroll,
+                text="Warnings",
+                font=font("body_bold"),
+                text_color=COLORS.get("risk_high", COLORS.get("danger", "#F87171")),
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
             r += 1
             for w in tweak.warnings:
@@ -1551,7 +1558,9 @@ class ScriptsView(ctk.CTkFrame):
                     scroll,
                     text=f"  • {w}",
                     font=font("body"),
-                    text_color=COLORS.get("risk_medium", COLORS.get("warning", "#FBBF24")),
+                    text_color=COLORS.get(
+                        "risk_medium", COLORS.get("warning", "#FBBF24")
+                    ),
                     wraplength=520,
                     anchor="w",
                 ).grid(row=r, column=0, sticky="ew")
@@ -1641,13 +1650,15 @@ class ScriptsView(ctk.CTkFrame):
         pill_frame.grid(row=0, column=0, sticky="ew")
 
         # Right-side scroll indicator (arrow icon)
-        scroll_indicator = ctk.CTkFrame(pill_container, fg_color="transparent", width=24)
+        scroll_indicator = ctk.CTkFrame(
+            pill_container, fg_color="transparent", width=24
+        )
         scroll_indicator.grid(row=0, column=1, sticky="ns")
         ctk.CTkLabel(
             scroll_indicator,
-            text="\uE76C",  # ChevronRight
+            text="\ue76c",  # ChevronRight
             font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
-            text_color=COLORS["text_muted"]
+            text_color=COLORS["text_muted"],
         ).pack(expand=True)
 
         self.edu_cat_buttons = {}
@@ -1749,7 +1760,9 @@ class ScriptsView(ctk.CTkFrame):
 
     def _create_edu_card(self, parent, tweak: Tweak):
         """Education card — read-only tweak info with expandable details"""
-        risk_c = self._get_risk_colors().get(tweak.risk_level, self._get_risk_colors()["LOW"])
+        risk_c = self._get_risk_colors().get(
+            tweak.risk_level, self._get_risk_colors()["LOW"]
+        )
         cat_info = TWEAK_CATEGORIES.get(tweak.category, {})
 
         card = ctk.CTkFrame(
