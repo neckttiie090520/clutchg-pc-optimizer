@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "bug-hunter": {
+      "source": "codexstar69/bug-hunter",
+      "sourceType": "github",
+      "computedHash": "a254be9646a39c95286d811d69d5a5492a9873f68310285f0ceaefe5ffe19fce"
+    }
+  }
+}

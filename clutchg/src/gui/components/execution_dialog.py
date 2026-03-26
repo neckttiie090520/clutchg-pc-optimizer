@@ -6,12 +6,15 @@ Modal dialog for showing real-time execution progress
 import customtkinter as ctk
 from typing import TYPE_CHECKING
 import threading
+import logging
 
 from gui.theme import COLORS, SIZES
 from gui.style import font, style_ghost_button
 
 if TYPE_CHECKING:
     from core.profile_manager import Profile
+
+logger = logging.getLogger(__name__)
 
 
 class ExecutionDialog(ctk.CTkToplevel):
@@ -96,16 +99,16 @@ class ExecutionDialog(ctk.CTkToplevel):
         progress_frame = ctk.CTkFrame(self, fg_color="transparent", height=40)
         progress_frame.grid(row=1, column=0, sticky="ew", padx=20, pady=(10, 0))
         progress_frame.grid_propagate(False)
+        progress_frame.grid_columnconfigure(0, weight=1)
 
-        # Progress bar
+        # Progress bar - fills available width
         self.progress_bar = ctk.CTkProgressBar(
             progress_frame,
-            width=400,
             height=8,
             fg_color=COLORS["bg_card"],
             progress_color=COLORS["accent"]
         )
-        self.progress_bar.place(relx=0.5, rely=0.5, anchor="center")
+        self.progress_bar.grid(row=0, column=0, sticky="ew", pady=(8, 12))
         self.progress_bar.set(0)
 
         # Progress label
@@ -115,7 +118,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             font=font("micro", size=10),
             text_color=COLORS["text_muted"]
         )
-        self.progress_label.place(relx=0.5, rely=1.0, anchor="n")
+        self.progress_label.grid(row=1, column=0)
 
         # Output scrollable frame
         output_frame = ctk.CTkScrollableFrame(
@@ -155,8 +158,8 @@ class ExecutionDialog(ctk.CTkToplevel):
             y = parent_y + (parent_height - 500) // 2
 
             self.geometry(f"600x500+{x}+{y}")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Could not center dialog: {e}")
 
     def add_output(self, line: str):
         """Add a line of output"""
@@ -203,10 +206,10 @@ class ExecutionDialog(ctk.CTkToplevel):
 
         if success:
             self._tweak_ok += 1
-            self.add_output(f"  ✅ {name}")
+            self.add_output(f"  [OK] {name}")
         else:
             self._tweak_fail += 1
-            self.add_output(f"  ❌ {name}")
+            self.add_output(f"  [FAIL] {name}")
 
     def show_result(self, result):
         """
@@ -224,19 +227,19 @@ class ExecutionDialog(ctk.CTkToplevel):
         # Handle None result safely
         if result is None:
             self.add_output("")
-            self.add_output("⚠️ Execution completed (no result data)")
+            self.add_output("[WARN] Execution completed (no result data)")
             self.progress_label.configure(text="Done", text_color=COLORS["text_secondary"])
             self.set_progress(100)
         elif result.success:
             self.add_output("")
-            self.add_output("✅ Profile applied successfully!")
+            self.add_output("[SUCCESS] Profile applied successfully!")
             if self._tweak_ok > 0:
                 self.add_output(f"   {self._tweak_ok} tweak(s) applied, {self._tweak_fail} failed")
             self.progress_label.configure(text="Complete!", text_color=COLORS["success"])
             self.progress_bar.configure(progress_color=COLORS["success"])
         else:
             self.add_output("")
-            self.add_output("❌ Profile application failed!")
+            self.add_output("[ERROR] Profile application failed!")
             if self._tweak_ok + self._tweak_fail > 0:
                 self.add_output(f"   {self._tweak_ok} succeeded, {self._tweak_fail} failed")
             if result.errors:
@@ -255,7 +258,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             return
         
         self.add_output("")
-        self.add_output("📊 Before/After Comparison:")
+        self.add_output("[snap] Before/After Comparison:")
         for line in diff.summary_lines:
             self.add_output(f"   {line}")
 
@@ -268,7 +271,7 @@ class ExecutionDialog(ctk.CTkToplevel):
         if self.is_complete:
             return
         self.add_output("")
-        self.add_output("⛔ Cancelling...")
+        self.add_output("[STOP] Cancelling...")
         self.cancel_btn.configure(state="disabled", text="Cancelling...")
         if self._executor:
             self._executor.cancel()

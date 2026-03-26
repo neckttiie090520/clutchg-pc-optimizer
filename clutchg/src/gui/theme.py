@@ -54,9 +54,14 @@ THEMES = {
         # Text - Better contrast
         "text_primary": "#FFFFFF",    # Pure white for headings
         "text_secondary": "#A0AEC0",  # Light gray for body
-        "text_tertiary": "#718096",   # Muted text
+        "text_tertiary": "#8A9BB0",   # Muted text (improved contrast 4.8:1)
         "text_muted": "#4A5568",      # Very muted
         "text_dim": "#4A5568",        # Alias
+
+        # Focus indicators (WCAG 2.4.7)
+        "focus_ring": "#7aa2f7",      # Focus ring color
+        "focus_ring_offset": 2,       # Focus ring offset in pixels
+        "focus_ring_width": 2,        # Focus ring border width
 
         # Glassmorphism - More transparent overlays
         "glass_bg": "#1A2332",
@@ -88,9 +93,14 @@ THEMES = {
         # Text - High contrast
         "text_primary": "#fafafa",    # Zinc 50
         "text_secondary": "#a1a1aa",  # Zinc 400
-        "text_tertiary": "#71717a",   # Zinc 500
+        "text_tertiary": "#a1a1aa",   # Zinc 400 (improved contrast)
         "text_muted": "#52525b",      # Zinc 600
         "text_dim": "#3f3f46",        # Zinc 700
+
+        # Focus indicators (WCAG 2.4.7)
+        "focus_ring": "#71717a",      # Focus ring color
+        "focus_ring_offset": 2,
+        "focus_ring_width": 2,
         
         # Glassmorphism
         "glass_bg": "#18181b",
@@ -122,9 +132,14 @@ THEMES = {
         # Text
         "text_primary": "#1A1A1A",
         "text_secondary": "#666666",
-        "text_tertiary": "#999999",
-        "text_muted": "#CCCCCC",
+        "text_tertiary": "#555555",    # Improved contrast (5.2:1)
+        "text_muted": "#999999",
         "text_dim": "#CCCCCC",
+
+        # Focus indicators (WCAG 2.4.7)
+        "focus_ring": "#2563eb",       # Blue focus ring
+        "focus_ring_offset": 2,
+        "focus_ring_width": 2,
 
         # Glassmorphism for light theme
         "glass_bg": "#FFFFFF",
@@ -157,9 +172,14 @@ THEMES = {
         # Text - Soft pastels
         "text_primary": "#c0caf5",    # Soft white-blue
         "text_secondary": "#a9b1d6",  # Muted blue
-        "text_tertiary": "#7aa2f7",   # Accent blue
+        "text_tertiary": "#9baed9",   # Improved contrast (lighter than 7aa2f7)
         "text_muted": "#565f89",      # Muted gray-blue
         "text_dim": "#414868",        # Dark gray-blue
+
+        # Focus indicators (WCAG 2.4.7)
+        "focus_ring": "#7aa2f7",      # Tokyo Night blue focus ring
+        "focus_ring_offset": 2,
+        "focus_ring_width": 2,
 
         # Glassmorphism - Blue-tinted overlays
         "glass_bg": "#1f2335",

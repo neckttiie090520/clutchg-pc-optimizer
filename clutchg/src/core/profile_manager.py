@@ -9,6 +9,7 @@ from typing import Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+import threading
 
 from core.batch_executor import BatchExecutor, ExecutionResult
 from core.batch_parser import BatchParser, BatchScript
@@ -42,11 +43,11 @@ class Profile:
 
 class ProfileManager:
     """Manages optimization profiles"""
-    
+
     def __init__(self, batch_scripts_dir: Path):
         """
         Initialize profile manager
-        
+
         Args:
             batch_scripts_dir: Directory containing batch scripts
         """
@@ -55,7 +56,12 @@ class ProfileManager:
         self.executor = BatchExecutor()
         self.profiles = self._load_profiles()
         self.active_profile: Optional[str] = None
-        
+
+        # BUG-014 FIX: Add execution lock to prevent concurrent profile application
+        # Prevents race conditions when multiple threads try to apply profiles
+        self._execution_lock = threading.Lock()
+        self._is_executing = False
+
         logger.info("Profile manager initialized")
     
     def _load_profiles(self) -> Dict[str, Profile]:
@@ -143,23 +149,47 @@ class ProfileManager:
         """Get all available profiles"""
         return list(self.profiles.values())
     
-    def apply_profile(self, 
+    def apply_profile(self,
                      profile: Profile,
                      on_output: Optional[Callable] = None,
                      on_progress: Optional[Callable] = None,
                      auto_backup: bool = True) -> ExecutionResult:
         """
         Apply an optimization profile
-        
+
         Args:
             profile: Profile to apply
             on_output: Callback for output lines
             on_progress: Callback for progress updates
             auto_backup: Create backup before applying
-            
+
         Returns:
             ExecutionResult with overall result
         """
+        # BUG-014 FIX: Prevent concurrent profile application
+        if self._is_executing:
+            logger.warning("Profile application already in progress")
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors="Profile application already in progress",
+                return_code=-1,
+                duration=0
+            )
+
+        with self._execution_lock:
+            self._is_executing = True
+            try:
+                return self._do_apply_profile(profile, on_output, on_progress, auto_backup)
+            finally:
+                self._is_executing = False
+
+    def _do_apply_profile(self,
+                          profile: Profile,
+                          on_output: Optional[Callable] = None,
+                          on_progress: Optional[Callable] = None,
+                          auto_backup: bool = True) -> ExecutionResult:
+        """Internal method to apply profile (called with lock held)"""
         logger.info(f"Applying profile: {profile.name}")
         import time
         profile_start = time.time()
@@ -494,33 +524,59 @@ class ProfileManager:
     def import_preset_from_file(self, filepath: Path) -> Optional[Dict]:
         """
         Import a preset from a JSON file.
-        
+
+        BUG-003 FIX: Validates filepath is within allowed directories
+        to prevent directory traversal attacks.
+
         Returns:
             Dict with 'name', 'tweak_ids', 'valid_ids', 'unknown_ids' or None on error
         """
         try:
-            filepath = Path(filepath)
+            filepath = Path(filepath).resolve()
+
+            # BUG-003 FIX: Validate filepath is within allowed directories
+            # Prevents reading arbitrary files via directory traversal
+            allowed_roots = [
+                Path(__file__).parent.parent / "config",  # App config dir
+                Path.home() / "Downloads",  # User downloads
+                Path.home() / "Desktop",  # User desktop
+            ]
+
+            # Check if filepath is within any allowed root
+            is_allowed = False
+            for root in allowed_roots:
+                try:
+                    if filepath.is_relative_to(root):
+                        is_allowed = True
+                        break
+                except (OSError, ValueError):
+                    continue
+
+            if not is_allowed:
+                logger.error(f"Path traversal blocked: {filepath} is outside allowed directories")
+                return None
+
             data = json.loads(filepath.read_text(encoding="utf-8"))
         except Exception as e:
             logger.error(f"Failed to read preset file: {e}")
             return None
-        
+
         # Validate structure
         if "tweak_ids" not in data:
             logger.error("Invalid preset file: missing tweak_ids")
             return None
-        
+
         tweak_ids = data["tweak_ids"]
         meta = data.get("clutchg_preset", {})
         name = meta.get("name", filepath.stem)
-        
+
         # Validate tweak IDs against registry
         registry = get_tweak_registry()
         valid_ids = [tid for tid in tweak_ids if registry.get_tweak(tid)]
         unknown_ids = [tid for tid in tweak_ids if not registry.get_tweak(tid)]
-        
+
         logger.info(f"Imported preset '{name}': {len(valid_ids)} valid, {len(unknown_ids)} unknown")
-        
+
         return {
             "name": name,
             "tweak_ids": tweak_ids,

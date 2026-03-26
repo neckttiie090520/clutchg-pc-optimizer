@@ -1,0 +1,331 @@
+{
+  "scan_metadata": {
+    "timestamp": "2026-03-24T00:00:00Z",
+    "scan_version": "1.0.0",
+    "codebase": "clutchg/src",
+    "files_scanned": 49,
+    "risk_tiers_scanned": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+    "total_lines_analyzed": 15000,
+    "scan_duration_seconds": 0
+  },
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "title": "Race Condition: Non-Atomic Backup Index Write",
+      "severity": "HIGH",
+      "category": "race_condition",
+      "file": "clutchg/src/core/backup_manager.py",
+      "lines": "71-78",
+      "claim": "Concurrent backup operations can corrupt backup_index.json due to lack of file locking",
+      "evidence": {
+        "code_snippet": "def _save_index(self):\n    try:\n        data = [asdict(b) for b in self.backups]\n        with open(self.index_file, 'w', encoding='utf-8') as f:\n            json.dump(data, f, indent=2, ensure_ascii=False)",
+        "issue": "Multiple threads creating backups simultaneously can interleave writes",
+        "impact": "Backup index corruption, lost backup records"
+      },
+      "runtime_trigger": "Two simultaneous profile applications or manual backups",
+      "cross_references": [
+        "clutchg/src/core/profile_manager.py:146-194 (calls create_backup)",
+        "clutchg/src/core/profile_manager.py:286-326 (apply_tweaks with auto_backup)"
+      ],
+      "referee_confidence": "HIGH",
+      "fix_status": "MANUAL_REVIEW",
+      "fix_description": "Implement file locking using fcntl.flock() (Unix) or msvcrt.locking() (Windows), or use a mutex around _save_index() calls"
+    },
+    {
+      "id": "BUG-002",
+      "title": "Resource Leak: Unclosed subprocess.Popen in Timeout Scenario",
+      "severity": "HIGH",
+      "category": "resource_leak",
+      "file": "clutchg/src/core/batch_executor.py",
+      "lines": "165-174",
+      "claim": "When subprocess.TimeoutExpired occurs, process is terminated but stdout/stderr pipes may not be fully drained",
+      "evidence": {
+        "code_snippet": "except subprocess.TimeoutExpired:\n    logger.error(f\"Script timed out after {timeout}s: {script_path}\")\n    self.cancel()\n    return ExecutionResult(...)",
+        "issue": "cancel() calls terminate() and kill(), but reader threads may still be blocked on readline()",
+        "impact": "Thread leak, potential deadlocks, resource exhaustion"
+      },
+      "runtime_trigger": "Any batch script that exceeds timeout (default 300s)",
+      "cross_references": [
+        "clutchg/src/core/batch_executor.py:117-130 (read_stream function)",
+        "clutchg/src/core/batch_executor.py:205-218 (cancel() method)"
+      ],
+      "referee_confidence": "HIGH",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Before terminating process, close stdout/stderr pipes to unblock reader threads. Set self.process.stdout/stderr to None after close."
+    },
+    {
+      "id": "BUG-003",
+      "title": "Security: Directory Traversal via Preset Import Filepath",
+      "severity": "MEDIUM",
+      "category": "security",
+      "file": "clutchg/src/core/profile_manager.py",
+      "lines": "494-506",
+      "claim": "import_preset_from_file() doesn't validate that filepath is within allowed directory",
+      "evidence": {
+        "code_snippet": "def import_preset_from_file(self, filepath: Path) -> Optional[Dict]:\n    try:\n        filepath = Path(filepath)\n        data = json.loads(filepath.read_text(encoding=\"utf-8\"))",
+        "issue": "No validation that filepath resolves to a safe location before reading",
+        "impact": "Could read arbitrary JSON files from filesystem (information disclosure)"
+      },
+      "runtime_trigger": "User imports a preset with path like '../../../../sensitive.json'",
+      "cross_references": [
+        "clutchg/src/core/action_catalog.py:78-83 (has allowed_file_roots pattern to follow)"
+      ],
+      "referee_confidence": "MEDIUM",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Implement path validation: if not any(filepath.resolve().is_relative_to(root) for root in allowed_roots): raise ValueError"
+    },
+    {
+      "id": "BUG-004",
+      "title": "Runtime Error: FileNotFoundError Not Handled in Registry Export",
+      "severity": "MEDIUM",
+      "category": "runtime_exception",
+      "file": "clutchg/src/core/backup_manager.py",
+      "lines": "240-247",
+      "claim": "If 'reg.exe' is missing or path is invalid, subprocess.run() fails but error is only logged",
+      "evidence": {
+        "code_snippet": "result = subprocess.run(\n    [\"reg\", \"export\", key_path, str(output_file), \"/y\"],\n    capture_output=True, text=True, timeout=30\n)\nif result.returncode == 0:\n    success_count += 1",
+        "issue": "FileNotFoundError from subprocess.run() is caught by outer try/except but only logs warning",
+        "impact": "Partial backups created without user notification, false sense of security"
+      },
+      "runtime_trigger": "Windows environment with corrupted system32, PATH issues, or antivirus blocking reg.exe",
+      "cross_references": [
+        "clutchg/src/core/backup_manager.py:255-256 (generic exception handler)"
+      ],
+      "referee_confidence": "MEDIUM",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Check for FileNotFoundError explicitly and mark backup as failed if reg.exe is not available"
+    },
+    {
+      "id": "BUG-005",
+      "title": "Logic Error: Flight Recorder State Not Reset on Partial Failure",
+      "severity": "MEDIUM",
+      "category": "state_management",
+      "file": "clutchg/src/core/flight_recorder.py",
+      "lines": "304-341",
+      "claim": "If start_recording() succeeds but finish_recording() is never called, current_snapshot remains stale",
+      "evidence": {
+        "code_snippet": "def start_recording(self, ...) -> SystemSnapshot:\n    snapshot = SystemSnapshot(...)\n    self.current_snapshot = snapshot\n    return snapshot\n\ndef finish_recording(self, ...) -> Optional[SystemSnapshot]:\n    if not self.current_snapshot:\n        logger.warning(\"Cannot finish recording: no active snapshot\")\n        return None",
+        "issue": "If exception occurs between start/finish, subsequent record_change() calls go to stale snapshot",
+        "impact": "Changes recorded in wrong snapshot, corrupted audit trail"
+      },
+      "runtime_trigger": "Exception during profile application after start_recording() but before finish_recording()",
+      "cross_references": [
+        "clutchg/src/core/flight_recorder.py:196-257 (record_change checks for current_snapshot)"
+      ],
+      "referee_confidence": "HIGH",
+      "fix_status": "MANUAL_REVIEW",
+      "fix_description": "Use try/finally pattern to ensure current_snapshot is cleared, or add context manager protocol"
+    },
+    {
+      "id": "BUG-006",
+      "title": "Race Condition: Mutable Singleton Without Synchronization",
+      "severity": "MEDIUM",
+      "category": "race_condition",
+      "file": "clutchg/src/core/flight_recorder.py",
+      "lines": "604-616",
+      "claim": "Global _flight_recorder_instance accessed without locks in get_flight_recorder()",
+      "evidence": {
+        "code_snippet": "_flight_recorder_instance: Optional[FlightRecorder] = None\n\ndef get_flight_recorder(...) -> FlightRecorder:\n    global _flight_recorder_instance\n    if _flight_recorder_instance is None:\n        _flight_recorder_instance = FlightRecorder(storage_dir)\n    return _flight_recorder_instance",
+        "issue": "Two threads could both see None and create two instances",
+        "impact": "Multiple FlightRecorder instances writing to same storage_dir, data corruption"
+      },
+      "runtime_trigger": "Multiple threads accessing flight recorder during initialization",
+      "cross_references": [
+        "clutchg/src/app_minimal.py:17-24 (no threading during init, but views may call later)"
+      ],
+      "referee_confidence": "LOW",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Use threading.Lock() around singleton check, or use module-level __init__ pattern"
+    },
+    {
+      "id": "BUG-007",
+      "title": "Runtime Error: Integer Overflow Risk in CPU Score Calculation",
+      "severity": "LOW",
+      "category": "runtime_exception",
+      "file": "clutchg/src/core/system_info.py",
+      "lines": "207-209",
+      "claim": "benchmark_db.get_cpu_score() may return None that's not handled before arithmetic",
+      "evidence": {
+        "code_snippet": "cpu_score, raw_score, matched_name = self.benchmark_db.get_cpu_score(name)\nscore = cpu_score\nreturn CPUInfo(..., score=score)",
+        "issue": "If cpu_score is None (no match), assigning to score dataclass field may fail type check or cause issues",
+        "impact": "TypeError or incorrect score display, potential crash in tier calculation"
+      },
+      "runtime_trigger": "CPU model name not found in benchmark database",
+      "cross_references": [
+        "clutchg/src/core/system_info.py:266-271 (similar pattern for GPU)"
+      ],
+      "referee_confidence": "MEDIUM",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Add fallback: score = cpu_score if cpu_score is not None else 10"
+    },
+    {
+      "id": "BUG-008",
+      "title": "Security: PowerShell Injection via Restore Point Name",
+      "severity": "CRITICAL",
+      "category": "security",
+      "file": "clutchg/src/core/backup_manager.py",
+      "lines": "149-160",
+      "claim": "Sanitization in _sanitize_restore_point_name() may miss edge cases in command interpolation",
+      "evidence": {
+        "code_snippet": "dangerous = set(\"'\\\"`;$(){}|\\n\\r\")\nsanitized = \"\".join(ch for ch in name if ch not in dangerous)\nps_command = (\n    f'Checkpoint-Computer -Description \"ClutchG: {safe_name}\"'\n    f' -RestorePointType \"MODIFY_SETTINGS\" -ErrorAction Stop'\n)",
+        "issue": "While basic dangerous chars are stripped, the string is still interpolated via f-string into PS command",
+        "impact": "If new dangerous patterns emerge, bypass could allow arbitrary PS execution"
+      },
+      "runtime_trigger": "User creates backup with crafted name exploiting bypass",
+      "cross_references": [
+        "clutchg/src/core/backup_manager.py:193-198 (CIM fallback has same pattern)"
+      ],
+      "referee_confidence": "LOW",
+      "fix_status": "MANUAL_REVIEW",
+      "fix_description": "Use PowerShell parameterized commands: -Description $desc with arguments passed as variables, not string interpolation"
+    },
+    {
+      "id": "BUG-009",
+      "title": "Logic Error: Snapshot Cleanup Not Atomic",
+      "severity": "MEDIUM",
+      "category": "race_condition",
+      "file": "clutchg/src/core/flight_recorder.py",
+      "lines": "569-598",
+      "claim": "cleanup_old_snapshots() deletes files individually without transaction",
+      "evidence": {
+        "code_snippet": "for snapshot in self.list_snapshots(limit=1000):\n    if snapshot.timestamp < cutoff_date:\n        json_path.unlink()\n        removed += 1\n        for phase in (\"before\", \"after\"):\n            reg_path = self.snapshots_dir / f\"{snapshot.snapshot_id}_{phase}_HKLM.reg\"\n            if reg_path.exists():\n                reg_path.unlink()",
+        "issue": "If process is killed mid-cleanup, orphaned .reg files may remain",
+        "impact": "Disk space leak, inconsistent state"
+      },
+      "runtime_trigger": "Process terminated during snapshot cleanup",
+      "cross_references": [
+        "clutchg/src/core/flight_recorder.py:367-386 (list_snapshots reads filesystem)"
+      ],
+      "referee_confidence": "MEDIUM",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Use temporary directory rename pattern: move files to temp dir, then delete. If interrupted, temp dir can be cleaned on next run."
+    },
+    {
+      "id": "BUG-010",
+      "title": "Resource Leak: WMI Connection Not Closed",
+      "severity": "LOW",
+      "category": "resource_leak",
+      "file": "clutchg/src/core/system_info.py",
+      "lines": "99-106",
+      "claim": "WMI connection created but never explicitly closed",
+      "evidence": {
+        "code_snippet": "def __init__(self):\n    self.wmi_conn = None\n    if HAS_WMI:\n        try:\n            self.wmi_conn = wmi.WMI()\n        except Exception:\n            pass",
+        "issue": "No __del__ or close() method to release WMI resources",
+        "impact": "WMI COM object leak, potential RPC handles exhaustion"
+      },
+      "runtime_trigger": "Long-running application with multiple SystemDetector instances",
+      "cross_references": [
+        "clutchg/src/app_minimal.py:23 (creates single SystemDetector instance, mitigating impact)"
+      ],
+      "referee_confidence": "LOW",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Add close() method and call wmi_conn.Delete() if available, or use context manager pattern"
+    },
+    {
+      "id": "BUG-011",
+      "title": "Runtime Error: UI Thread Blocking on Synchronous Detection",
+      "severity": "MEDIUM",
+      "category": "ui_freeze",
+      "file": "clutchg/src/core/system_info.py",
+      "lines": "220-279",
+      "claim": "detect_gpu() calls subprocess.run() with timeout=5, but if called from UI thread can freeze",
+      "evidence": {
+        "code_snippet": "result = subprocess.run(\n    ['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader,nounits'],\n    capture_output=True, text=True, timeout=5\n)",
+        "issue": "Multiple sequential subprocess calls can take 15+ seconds total",
+        "impact": "UI freeze during system detection if not run in background thread"
+      },
+      "runtime_trigger": "System detection triggered from UI without proper threading",
+      "cross_references": [
+        "clutchg/src/app_minimal.py:102-107 (does use threading.Thread for detect_all, mitigating this)"
+      ],
+      "referee_confidence": "LOW",
+      "fix_status": "INFO_ONLY",
+      "fix_description": "Already mitigated by app_minimal.py threading. Document requirement in docstring."
+    },
+    {
+      "id": "BUG-012",
+      "title": "Security: Batch Script Validation Pattern Too Permissive",
+      "severity": "MEDIUM",
+      "category": "security",
+      "file": "clutchg/src/core/batch_parser.py",
+      "lines": "333-473",
+      "claim": "validate_script() blocks exact patterns but could miss bypass variants",
+      "evidence": {
+        "code_snippet": "always_dangerous_patterns = [\n    'format c:',\n    'del /s /q c:\\\\windows',\n    ...\n    'bcdedit /delete ',\n    ...\n]",
+        "issue": "Case-insensitive search (content_lower) but patterns like 'bcdedit/delete' (no space) may bypass",
+        "impact": "Malicious scripts could bypass validation if pattern matching has gaps",
+        "mitigation": "Scripts are from trusted src/ directory, reducing risk"
+      },
+      "runtime_trigger": "Malicious actor modifies batch scripts in src/ directory",
+      "cross_references": [
+        "clutchg/src/core/batch_executor.py:81-97 (calls validate_script before execution)"
+      ],
+      "referee_confidence": "MEDIUM",
+      "fix_status": "MANUAL_REVIEW",
+      "fix_description": "Use regex with word boundaries, or token-based parsing instead of substring matching. Add unit tests for known bypass patterns."
+    },
+    {
+      "id": "BUG-013",
+      "title": "Logic Error: Config Load No Schema Validation",
+      "severity": "MEDIUM",
+      "category": "configuration",
+      "file": "clutchg/src/core/config.py",
+      "lines": "32-60",
+      "claim": "load_config() merges user config without validating keys or values",
+      "evidence": {
+        "code_snippet": "config.update(file_config)\n...\nconfig.update(user_config)\nreturn config",
+        "issue": "Malicious user_config.json could inject arbitrary keys",
+        "impact": "Application may crash or behave unpredictably with invalid config values"
+      },
+      "runtime_trigger": "User manually edits user_config.json with invalid keys or types",
+      "cross_references": [
+        "clutchg/src/core/config.py:93-125 (get_default_config defines expected schema)"
+      ],
+      "referee_confidence": "HIGH",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Implement schema validation: reject unknown keys, validate value types against defaults schema"
+    },
+    {
+      "id": "BUG-014",
+      "title": "State Corruption: Profile Manager Concurrent Execution",
+      "severity": "MEDIUM",
+      "category": "race_condition",
+      "file": "clutchg/src/core/profile_manager.py",
+      "lines": "146-259",
+      "claim": "apply_profile() creates new BatchExecutor per call, but active_profile state has no synchronization",
+      "evidence": {
+        "code_snippet": "executor = BatchExecutor(on_output=on_output, on_progress=on_progress)\n...\nif overall_success:\n    self.active_profile = profile.name",
+        "issue": "Two concurrent profile applications could race on active_profile assignment",
+        "impact": "Incorrect active_profile displayed, no crash but wrong state shown to user"
+      },
+      "runtime_trigger": "User triggers profile application while another is in progress",
+      "cross_references": [
+        "clutchg/src/gui/views/profiles_minimal.py (should disable button during execution)"
+      },
+      "referee_confidence": "MEDIUM",
+      "fix_status": "MANUAL_REVIEW",
+      "fix_description": "Add execution lock or flag to prevent concurrent profile applications. Disable UI controls during execution."
+    },
+    {
+      "id": "BUG-015",
+      "title": "Runtime Error: Missing Error Handling in JSON Parse",
+      "severity": "MEDIUM",
+      "category": "runtime_exception",
+      "file": "clutchg/src/core/system_snapshot.py",
+      "lines": "89-103",
+      "claim": "Subprocess result parsed as int without checking if output is numeric",
+      "evidence": {
+        "code_snippet": "snap.services_running = int(result.stdout.strip() or \"0\")",
+        "issue": "If PowerShell returns error text instead of count, int() raises ValueError",
+        "impact": "Snapshot capture fails partially, missing data points"
+      },
+      "runtime_trigger": "PowerShell execution fails or returns unexpected format",
+      "cross_references": [
+        "clutchg/src/core/system_snapshot.py:104-105 (exception caught but only logs warning)"
+      ],
+      "referee_confidence": "HIGH",
+      "fix_status": "ELIGIBLE",
+      "fix_description": "Add try/except around int() conversion with fallback to 0. Log actual output for debugging."
+    }
+  ]
+}

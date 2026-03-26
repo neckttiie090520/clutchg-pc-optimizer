@@ -5,6 +5,7 @@ Tracks all system modifications for granular rollback capability
 
 import json
 import subprocess
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Dict, Any
@@ -339,6 +340,57 @@ class FlightRecorder:
 
         self.current_snapshot = None
         return snapshot
+
+    def cancel_recording(self) -> None:
+        """
+        Cancel the current recording session and reset state.
+
+        BUG-005 FIX: Provides a way to reset state when exceptions occur
+        between start_recording() and finish_recording().
+
+        This prevents stale current_snapshot from affecting subsequent recordings.
+        """
+        if self.current_snapshot:
+            logger.warning(
+                f"Cancelling recording session: {self.current_snapshot.snapshot_id} "
+                f"({len(self.current_snapshot.tweaks)} uncommitted changes)"
+            )
+            self.current_snapshot = None
+        else:
+            logger.debug("cancel_recording() called with no active session")
+
+    @contextmanager
+    def recording_context(
+        self,
+        operation_type: str,
+        profile: str,
+        create_registry_snapshot: bool = True,
+    ):
+        """
+        Context manager for safe recording with automatic state cleanup.
+
+        BUG-005 FIX: Ensures current_snapshot is always reset, even if
+        an exception occurs during recording.
+
+        Usage:
+            with flight_recorder.recording_context("profile_applied", "SAFE") as snapshot:
+                # ... make changes ...
+                flight_recorder.record_change(...)
+            # State is automatically cleaned up on exit
+
+        Yields:
+            SystemSnapshot for recording
+        """
+        snapshot = self.start_recording(operation_type, profile, create_registry_snapshot)
+        try:
+            yield snapshot
+        except Exception as e:
+            # Cancel on exception to prevent stale state
+            logger.error(f"Recording failed with exception: {e}")
+            self.cancel_recording()
+            raise
+        # Note: Caller should call finish_recording() explicitly if they want
+        # to save the snapshot. This context manager just ensures cleanup on error.
 
     def get_snapshot(self, snapshot_id: str) -> Optional[SystemSnapshot]:
         """

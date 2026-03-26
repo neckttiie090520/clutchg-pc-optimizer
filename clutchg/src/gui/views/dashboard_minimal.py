@@ -6,6 +6,7 @@ Updated: 2026-02-10 (Bug fixes: duplicate labels, missing create_content, duplic
 
 import customtkinter as ctk
 from typing import TYPE_CHECKING, List, Tuple
+import logging
 from gui.theme import theme_manager, COLORS, SIZES, SPACING, RADIUS, get_score_color, NAV_ICONS
 from gui.style import font
 from gui.components.glass_card import GlassCard, HardwareCard
@@ -16,6 +17,7 @@ from core.tweak_registry import get_tweak_registry
 import threading
 import time
 
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -79,25 +81,21 @@ class DashboardView(ctk.CTkFrame):
     }
 
     UI_STRINGS["en"].update({
-        "action_hub_title": "Action Hub",
-        "action_hub_subtitle": "Open Quick Actions in Optimization Center for one-click packs.",
-        "open_quick_actions": "Open Quick Actions",
         "health_snapshot": "System Snapshot",
         "tile_storage": "Storage",
         "tile_tweaks": "Optimizations",
         "tile_profile": "Active Profile",
         "tile_status": "Status",
+        "score_context": "Score out of 100 — higher is better",
     })
 
     UI_STRINGS["th"].update({
-        "action_hub_title": "Action Hub",
-        "action_hub_subtitle": "เปิด Quick Actions ใน Optimization Center เพื่อใช้งานชุดคำสั่ง",
-        "open_quick_actions": "เปิด Quick Actions",
         "health_snapshot": "ข้อมูลระบบ",
         "tile_storage": "Storage",
         "tile_tweaks": "การปรับแต่ง",
         "tile_profile": "โปรไฟล์",
         "tile_status": "สถานะ",
+        "score_context": "คะแนนจาก 100 — ยิ่งสูงยิ่งดี",
     })
 
     def __init__(self, parent, app: 'ClutchGApp'):
@@ -241,6 +239,14 @@ class DashboardView(ctk.CTkFrame):
             text_color=COLORS["text_secondary"]
         ).pack(pady=(SPACING["sm"], 0))
 
+        # Score context (LOW-01)
+        ctk.CTkLabel(
+            center_container,
+            text=self._ui("score_context"),
+            font=self._font(10),
+            text_color=COLORS.get("text_tertiary", COLORS["text_muted"])
+        ).pack(pady=(2, 0))
+
         # 3. Current Mode Badge — show actual active/recommended profile
         active_profile = self._get_active_profile_name()
         mode_badge = ctk.CTkFrame(
@@ -256,8 +262,9 @@ class DashboardView(ctk.CTkFrame):
             mode_badge,
             text=active_profile,
             font=self._font(12),
-            text_color=COLORS["text_secondary"]
-        ).pack(padx=SPACING["md"], pady=SPACING["xs"])
+            text_color=COLORS["text_secondary"],
+            wraplength=160,
+        ).pack(padx=SPACING["md"], pady=SPACING["xs"], expand=True)
 
         # 4. Component Score Breakdown (NEW)
         if self.app.system_profile:
@@ -316,29 +323,19 @@ class DashboardView(ctk.CTkFrame):
                 text_color=COLORS["text_secondary"]
             ).grid(row=i, column=1, sticky="w", padx=(0, SPACING["md"]), pady=SPACING["xs"])
 
-            # 3. Progress Bar Container
-            progress_frame = ctk.CTkFrame(scores_container, fg_color="transparent", height=6)
-            progress_frame.grid(row=i, column=2, sticky="ew", padx=(0, SPACING["md"]), pady=SPACING["xs"])
-            
-            # Background track
-            ctk.CTkFrame(
-                progress_frame,
-                fg_color=COLORS["bg_tertiary"],
-                height=6,
-                corner_radius=3
-            ).pack(fill="x", expand=True) # expand=True is important here to fill height if needed, though usually fill=x is enough
-
-            # Progress fill
+            # 3. Progress Bar
             percentage = (score / max_score) * 100
             bar_color = self._get_progress_color(percentage)
 
-            progress_fill = ctk.CTkFrame(
-                progress_frame,
-                fg_color=bar_color,
+            progress_bar = ctk.CTkProgressBar(
+                scores_container,
                 height=6,
-                corner_radius=3
+                corner_radius=3,
+                progress_color=bar_color,
+                fg_color=COLORS["bg_tertiary"],
             )
-            progress_fill.place(relx=0, rely=0, relwidth=percentage / 100, anchor="nw")
+            progress_bar.set(percentage / 100)
+            progress_bar.grid(row=i, column=2, sticky="ew", padx=(0, SPACING["md"]), pady=SPACING["xs"])
 
             # 4. Score Text
             ctk.CTkLabel(
@@ -364,17 +361,14 @@ class DashboardView(ctk.CTkFrame):
         panel = ctk.CTkFrame(parent, fg_color="transparent")
         panel.grid(row=0, column=1, sticky="nsew")
         panel.grid_columnconfigure(0, weight=1)
-        
+
         # 1. Quick Actions Card
         self.create_quick_actions(panel)
 
-        # 2. Action Hub shortcut
-        self.create_action_hub(panel)
-
-        # 3. Health tiles (System Info)
+        # 2. Health tiles (System Info)
         self.create_health_tiles(panel)
 
-        # 4. Recent Activity (Timeline)
+        # 3. Recent Activity (Timeline)
         self.create_recent_activity(panel)
 
     def create_quick_actions(self, parent):
@@ -423,39 +417,6 @@ class DashboardView(ctk.CTkFrame):
             text=self._ui("scan_system"),
             command=self.scan_system
         ).pack(side="left")
-
-    def create_action_hub(self, parent):
-        """Compact action hub card linking to Optimization Center quick actions."""
-        hub_card = GlassCard(parent, padding=SPACING["md"])
-        hub_card.pack(fill="x", pady=(0, SPACING["md"]))
-
-        ctk.CTkLabel(
-            hub_card,
-            text=self._ui("action_hub_title"),
-            font=self._font(14, "bold"),
-            text_color=COLORS["text_primary"],
-        ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["sm"], SPACING["xs"]))
-
-        ctk.CTkLabel(
-            hub_card,
-            text=self._ui("action_hub_subtitle"),
-            font=self._font(12),
-            text_color=COLORS["text_secondary"],
-            wraplength=520,
-            justify="left",
-        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["sm"]))
-
-        ctk.CTkButton(
-            hub_card,
-            text=self._ui("open_quick_actions"),
-            font=self._font(12, "bold"),
-            fg_color=COLORS["accent"],
-            text_color=COLORS.get("text_on_accent", "#FFFFFF"),
-            hover_color=COLORS["accent_hover"],
-            corner_radius=RADIUS["md"],
-            height=32,
-            command=lambda: self.app.switch_view("scripts"),
-        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["sm"]))
 
     def create_health_tiles(self, parent):
         """Hardware info tiles (CPU/RAM/VGA)."""
@@ -525,47 +486,6 @@ class DashboardView(ctk.CTkFrame):
                 justify="left",
             ).pack(anchor="w", padx=SPACING["sm"], pady=(0, SPACING["xs"]))
 
-    def create_hardware_section(self, parent):
-        """Hardware Information Cards"""
-        ctk.CTkLabel(parent, text=self._ui("system_hardware"), font=self._font(16, "bold"), text_color=COLORS["text_primary"]).pack(anchor="w", pady=(0, SPACING["md"]))
-
-        system = self.app.system_profile
-
-        # Helper to safely get data
-        cpu_name = system.cpu.name if system else self._ui("scanning_cpu")
-        gpu_name = system.gpu.name if system else self._ui("scanning_gpu")
-        ram_info = f"{system.ram.total_gb}GB {system.ram.type.upper()}" if system else self._ui("scanning_ram")
-
-        # 1. CPU Card
-        self.cpu_card = HardwareCard(
-            parent,
-            icon=NAV_ICONS["cpu"],
-            title=self._ui("cpu"),
-            subtitle=cpu_name,
-            show_usage=False
-        )
-        self.cpu_card.pack(fill="x", pady=(0, SPACING["md"]))
-
-        # 2. GPU Card
-        self.gpu_card = HardwareCard(
-            parent,
-            icon=NAV_ICONS["gpu"],
-            title=self._ui("gpu"),
-            subtitle=gpu_name,
-            show_usage=False
-        )
-        self.gpu_card.pack(fill="x", pady=(0, SPACING["md"]))
-
-        # 3. RAM Card
-        self.ram_card = HardwareCard(
-            parent,
-            icon=NAV_ICONS["ram"],
-            title=self._ui("ram"),
-            subtitle=ram_info,
-            show_usage=False
-        )
-        self.ram_card.pack(fill="x", pady=(0, SPACING["md"]))
-
     def create_recent_activity(self, parent):
         """Recent Activity Section (Timeline Preview)"""
         # Just a simple list for now, full timeline in Restore Center
@@ -602,8 +522,8 @@ class DashboardView(ctk.CTkFrame):
                 time_str = snapshot.timestamp.strftime("%Y-%m-%d %H:%M")
                 color = COLORS["success"] if snapshot.success else COLORS["danger"]
                 activities.append((text, time_str, color))
-        except Exception:
-            pass  # FlightRecorder not available or no data
+        except Exception as e:
+            logger.debug(f"Could not load recent activities: {e}")
 
         return activities
 

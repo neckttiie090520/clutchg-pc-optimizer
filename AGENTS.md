@@ -1,38 +1,29 @@
 # Repository Guidelines
 
 ## Purpose
-- This repository contains two active codebases:
-  - `src/`: Windows batch optimizer scripts.
-  - `clutchg/`: Python GUI app that discovers, validates, and runs those scripts.
-- `windows-optimizer-research/` is reference material only. Do not treat it as editable product code unless the task explicitly targets research artifacts.
-- `docs/` contains design, architecture, and implementation notes that agents should consult before changing risky behavior.
-
-## Instruction Files
-- Root guidance for agents lives in this file: `AGENTS.md`.
-- No `.cursorrules` file was found.
-- No `.cursor/rules/` directory was found.
-- No `.github/copilot-instructions.md` file was found.
-- If any of those files are added later, treat the closest one in scope as higher priority than this file.
+- `src/`: Windows batch optimizer scripts.
+- `clutchg/`: Python GUI app that discovers, validates, and runs those scripts.
+- `windows-optimizer-research/`: Reference material only (not editable product code).
+- `docs/`: Design, architecture, and implementation notes for risky behavior changes.
 
 ## Project Structure
-- `src/optimizer.bat` is the batch entry point.
-- `src/core/` contains batch modules such as power, services, registry, network, GPU, storage, and maintenance.
-- `src/profiles/` contains profile presets such as `safe-profile.bat`, `competitive-profile.bat`, and `extreme-profile.bat`.
-- `src/safety/` contains admin validation, rollback, and flight-recorder behavior.
-- `src/backup/` contains restore point and registry backup helpers.
-- `src/logging/logger.bat` handles batch-side logging.
-- `clutchg/src/main.py` is the Python launcher.
-- `clutchg/src/core/` contains non-UI business logic.
-- `clutchg/src/gui/` contains views, widgets, theme, and UI composition.
-- `clutchg/src/utils/` contains shared helpers such as logging and admin checks.
-- `clutchg/tests/` is split into `unit/`, `integration/`, and `e2e/`.
-- `scripts/` contains standalone Python tooling for Notion/document import workflows.
+**Batch (`src/`):**
+- `optimizer.bat` - entry point
+- `core/` - power, services, registry, network, GPU, storage, maintenance modules
+- `profiles/` - `safe-profile.bat`, `competitive-profile.bat`, `extreme-profile.bat`
+- `safety/` - admin validation, rollback, flight-recorder
+- `backup/` - restore point and registry backup helpers
+- `logging/logger.bat` - batch-side logging
 
-## Environment Notes
-- This repo targets Windows behavior first.
-- Many batch and integration flows require Administrator privileges.
-- GUI tests may depend on a desktop session and Windows UI automation.
-- Prefer path-safe code using `pathlib.Path` in Python and quoted variables in batch.
+**Python GUI (`clutchg/`):**
+- `src/main.py` - launcher
+- `src/core/` - non-UI business logic (batch_parser, action_catalog, profile_manager, etc.)
+- `src/gui/` - views, widgets, theme, UI composition
+- `src/utils/` - shared helpers (logger, admin checks)
+- `tests/` - `unit/`, `integration/`, `e2e/` with page objects in `tests/e2e/pages/`
+
+**Other:**
+- `scripts/` - standalone Python tooling for Notion/document import
 
 ## Setup Commands
 - Create a virtual environment from the repo root:
@@ -102,6 +93,7 @@
 - Follow PEP 8 with 4-space indentation.
 - Keep module and public class/function docstrings; the codebase uses triple-quoted docstrings heavily.
 - Use type hints on public functions, methods, fixtures, and dataclass fields.
+- Use `from __future__ import annotations` at the top of modules with complex type hints.
 - Prefer `Path` over raw string path concatenation.
 - Prefer dataclasses and enums for structured data already modeled that way.
 - Keep functions focused and named after one responsibility.
@@ -168,6 +160,5 @@
 - For batch changes, provide manual verification steps if you cannot safely execute them in the current environment.
 
 ## Commit Guidance
-- This snapshot does not include a `.git` directory, so infer no historical commit convention from the workspace.
-- Use concise imperative commit messages when asked to prepare one, for example `Add backup validation before profile apply`.
+- Use concise imperative commit messages, for example `Add backup validation before profile apply`.
 - Include risk level, affected modules, and manual verification notes in PR descriptions when relevant.

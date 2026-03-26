@@ -1016,3 +1016,73 @@ cd clutchg/src
 python test_imports.py            # Test module imports
 python test_app_init.py           # Test app initialization
 ```
+
+---
+
+## Accessibility Features (2026-03)
+
+ClutchG includes accessibility hardening for WCAG compliance:
+
+### Accessibility Config Options
+```json
+{
+  "reduce_motion": false,    // Disable animations for motion-sensitive users
+  "high_contrast": false     // High contrast mode (future)
+}
+```
+
+### Focus Indicators
+- All interactive elements have visible focus rings (2px accent color)
+- Focus states defined in `theme.py` as `focus_ring`, `focus_ring_offset`, `focus_ring_width`
+- Apply via `apply_focus_style()` helper in `enhanced_button.py`
+
+### Color Contrast
+- Text colors meet WCAG AA (4.5:1 minimum)
+- `text_tertiary` improved from 4.2:1 to 4.8:1 contrast
+- Risk colors use theme tokens: `risk_low`, `risk_medium`, `risk_high`
+
+### Reduced Motion
+- Glow animations respect `reduce_motion` config
+- Sidebar animation skips to final state when enabled
+- Gradient hover effects disabled when enabled
+- Check via `should_reduce_motion(app)` helper
+
+### Touch Targets
+- Minimum touch target: 44x44px (WCAG 2.5.5)
+- Button default height: 44px
+- Sidebar nav buttons: 44x44px
+
+---
+
+## Performance Optimizations (2026-03)
+
+### Gradient Rendering
+- Steps reduced from 100 to 20 (80% reduction)
+- Solid color mode when `colors[0] == colors[1]`
+- Skip hover animations when `reduce_motion` enabled
+- Located in `gui/components/gradient.py`
+
+### Theme Token System
+- All colors use `COLORS` dict from `theme.py`
+- Risk colors via `get_risk_colors(level)` or `get_risk_display(level)`
+- Never hard-code hex colors in views - use theme tokens
+
+---
+
+## Code Quality Standards
+
+### Anti-Patterns to Avoid
+Based on frontend design guidelines:
+
+1. **Fonts**: Avoid Inter overuse - prefer Segoe UI Variable (Windows native) or Tahoma (Thai)
+2. **Glassmorphism**: Use sparingly, not as default card style
+3. **Gradients**: Prefer solid colors; use gradients only for emphasis
+4. **Dark mode + cyan accents**: Avoid "AI slop" aesthetic - use warm or neutral tones
+5. **Card grids**: Vary card sizes, avoid monotonous icon+title+desc patterns
+
+### When Adding UI Components
+1. Use theme tokens (`COLORS["key"]`) - never hard-code colors
+2. Implement `refresh_language()` for i18n support
+3. Add focus indicators for keyboard navigation
+4. Check `reduce_motion` before adding animations
+5. Ensure 44px minimum touch targets

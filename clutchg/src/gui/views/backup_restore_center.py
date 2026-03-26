@@ -40,8 +40,10 @@ class BackupRestoreCenter(ctk.CTkFrame):
             "no_backups": "No backups yet",
             "no_backups_desc": "Create a backup before applying profiles to ensure\nyou can restore your system if needed.",
             "create_first": "Create Your First Backup",
+            "backup_safety_hint": "Create backups before applying tweaks for safety.",
             "no_timeline": "No timeline history yet",
             "no_timeline_desc": "Apply profiles to see history here",
+            "go_to_optimization": "Go to Optimization Center",
             "changes": "{count} changes",
             "system_snapshot": "System snapshot",
             "snapshot_details": "Snapshot Details",
@@ -83,8 +85,10 @@ class BackupRestoreCenter(ctk.CTkFrame):
             "no_backups": "ยังไม่มี Backup",
             "no_backups_desc": "สร้าง Backup ก่อนใช้ Profile เพื่อให้แน่ใจว่า\nคุณจะสามารถคืนค่าระบบได้หากจำเป็น",
             "create_first": "สร้าง Backup ครั้งแรก",
+            "backup_safety_hint": "สร้าง Backup ก่อนใช้งาน Tweaks เพื่อความปลอดภัย",
             "no_timeline": "ยังไม่มีประวัติ Timeline",
             "no_timeline_desc": "ใช้ Profile เพื่อดูประวัติที่นี่",
+            "go_to_optimization": "ไปที่ Optimization Center",
             "changes": "{count} การเปลี่ยนแปลง",
             "system_snapshot": "สแนปชอตระบบ",
             "snapshot_details": "รายละเอียดสแนปชอต",
@@ -388,6 +392,15 @@ class BackupRestoreCenter(ctk.CTkFrame):
         for backup in backups:
             self.create_backup_card(scroll_frame, backup)
 
+        # Hint text below list (LOW-04)
+        ctk.CTkLabel(
+            scroll_frame,
+            text=self._ui("backup_safety_hint"),
+            font=self._font(11),
+            text_color=COLORS["text_muted"],
+            justify="center"
+        ).pack(pady=(SPACING["md"], SPACING["xs"]))
+
     def create_backup_card(self, parent, backup):
         """Create a backup card (from backup_minimal.py)"""
         from gui.theme import get_score_color
@@ -398,8 +411,6 @@ class BackupRestoreCenter(ctk.CTkFrame):
             glow_color=COLORS["success"] if backup.has_restore_point else COLORS["warning"]
         )
         card.pack(fill="x", pady=SPACING["xs"])
-        card.configure(height=80)
-        card.pack_propagate(False)
         card.grid_columnconfigure(2, weight=1)
 
         # Left indicator
@@ -446,7 +457,8 @@ class BackupRestoreCenter(ctk.CTkFrame):
             name_row,
             text=backup.name,
             font=self._font(14, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
+            wraplength=300
         ).pack(side="left")
 
         # Status badges
@@ -697,6 +709,14 @@ class BackupRestoreCenter(ctk.CTkFrame):
             font=self._font(13),
             text_color=COLORS["text_secondary"]
         ).pack()
+
+        EnhancedButton.primary(
+            empty_frame,
+            text=self._ui("go_to_optimization"),
+            height=40,
+            width=220,
+            command=lambda: self.app.switch_view("scripts")
+        ).pack(pady=(16, 0))
 
         ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
 

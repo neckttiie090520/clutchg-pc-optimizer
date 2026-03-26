@@ -164,6 +164,19 @@ class BatchExecutor:
 
         except subprocess.TimeoutExpired:
             logger.error(f"Script timed out after {timeout}s: {script_path}")
+            # BUG-002 FIX: Close pipes first to unblock reader threads before terminate
+            # This prevents thread deadlocks caused by reader threads blocked on readline()
+            if self.process:
+                if self.process.stdout:
+                    try:
+                        self.process.stdout.close()
+                    except Exception as e:
+                        logger.debug(f"Error closing stdout pipe: {e}")
+                if self.process.stderr:
+                    try:
+                        self.process.stderr.close()
+                    except Exception as e:
+                        logger.debug(f"Error closing stderr pipe: {e}")
             self.cancel()
             return ExecutionResult(
                 success=False,

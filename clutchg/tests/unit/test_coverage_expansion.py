@@ -243,7 +243,10 @@ class TestThemeManager:
         from gui.theme import theme_manager
         colors = theme_manager.get_colors()
         for k, v in colors.items():
-            if not k.startswith("glass"):
+            # Allow integer values for focus_ring_offset and focus_ring_width
+            if k in ("focus_ring_offset", "focus_ring_width"):
+                assert isinstance(v, int), f"Color '{k}' value is not an int: {v!r}"
+            else:
                 assert isinstance(v, str), f"Color '{k}' value is not a string: {v!r}"
 
     def test_current_theme_is_set(self):

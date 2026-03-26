@@ -7,6 +7,7 @@ import os
 import subprocess
 import json
 import shutil
+import threading
 from pathlib import Path
 from datetime import datetime
 from typing import List, Optional, Union
@@ -38,23 +39,27 @@ class BackupInfo:
 
 class BackupManager:
     """Manages system backups and restore points"""
-    
+
     def __init__(self, backup_dir: Optional[Path] = None):
         """
         Initialize backup manager
-        
+
         Args:
             backup_dir: Directory for storing backups
         """
         if backup_dir is None:
             backup_dir = Path(__file__).parent.parent.parent / "data" / "backups"
-        
+
         self.backup_dir = Path(backup_dir)
         self.backup_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.index_file = self.backup_dir / "backup_index.json"
         self.backups: List[BackupInfo] = self._load_index()
-        
+
+        # BUG-001 FIX: Add lock for thread-safe index writes
+        # Prevents race conditions when multiple threads create backups simultaneously
+        self._index_lock = threading.Lock()
+
         logger.info(f"Backup manager initialized: {self.backup_dir}")
     
     def _load_index(self) -> List[BackupInfo]:
@@ -69,13 +74,16 @@ class BackupManager:
         return []
     
     def _save_index(self):
-        """Save backup index to file"""
-        try:
-            data = [asdict(b) for b in self.backups]
-            with open(self.index_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            logger.error(f"Failed to save backup index: {e}")
+        """Save backup index to file (thread-safe)"""
+        # BUG-001 FIX: Use lock to ensure atomic writes
+        # Prevents corruption when multiple threads call _save_index simultaneously
+        with self._index_lock:
+            try:
+                data = [asdict(b) for b in self.backups]
+                with open(self.index_file, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+            except Exception as e:
+                logger.error(f"Failed to save backup index: {e}")
     
     def create_backup(self, 
                      name: str,

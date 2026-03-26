@@ -90,7 +90,7 @@ class RefinedDialog(ctk.CTkToplevel):
         self._create_message(message)
 
         # Button row
-        self._create_buttons(confirm_text, cancel_text)
+        self._create_buttons(confirm_text, cancel_text, risk_level)
 
         # Set dialog size and center
         self.update_idletasks()
@@ -156,8 +156,8 @@ class RefinedDialog(ctk.CTkToplevel):
         )
         message_label.pack(expand=True, fill="both")
 
-    def _create_buttons(self, confirm_text: str, cancel_text: str):
-        """Create button row"""
+    def _create_buttons(self, confirm_text: str, cancel_text: str, risk_level: str = "LOW"):
+        """Create button row — confirm button color reflects risk_level"""
         colors = theme_manager.get_colors()
 
         button_frame = ctk.CTkFrame(self.dialog_frame, fg_color="transparent")
@@ -171,8 +171,8 @@ class RefinedDialog(ctk.CTkToplevel):
                 button_frame,
                 text=cancel_text,
                 font=ctk.CTkFont(family="Inter", size=13, weight="bold"),
-                fg_color=colors.get("bg_tertiary", colors["bg_active"]),
-                hover_color=colors.get("bg_hover", colors["bg_active"]),
+                fg_color=colors.get("bg_tertiary", colors.get("bg_active", colors["bg_secondary"])),
+                hover_color=colors.get("bg_hover", colors.get("bg_active", colors["bg_secondary"])),
                 text_color=colors["text_secondary"],
                 corner_radius=RADIUS["md"],
                 height=36,
@@ -181,13 +181,25 @@ class RefinedDialog(ctk.CTkToplevel):
             )
             cancel_btn.grid(row=0, column=0, padx=(0, SPACING["sm"]))
 
-        # Confirm button
+        # Confirm button color depends on risk level
+        # HIGH → danger (red), MEDIUM → warning (amber), LOW → accent (teal)
+        level = risk_level.upper()
+        if level == "HIGH":
+            btn_color = colors.get("danger", "#EF4444")
+            btn_hover = colors.get("danger_hover", "#DC2626")
+        elif level == "MEDIUM":
+            btn_color = colors.get("warning", "#F59E0B")
+            btn_hover = colors.get("warning_hover", "#D97706")
+        else:
+            btn_color = colors.get("accent", colors.get("success", "#10B981"))
+            btn_hover = colors.get("accent_hover", colors.get("success", "#10B981"))
+
         confirm_btn = ctk.CTkButton(
             button_frame,
             text=confirm_text,
             font=ctk.CTkFont(family="Inter", size=13, weight="bold"),
-            fg_color=colors.get("accent", colors["success"]),
-            hover_color=colors.get("accent_hover", colors["success"]),
+            fg_color=btn_color,
+            hover_color=btn_hover,
             text_color=colors.get("text_on_accent", "#ffffff"),
             corner_radius=RADIUS["md"],
             height=36,
@@ -273,7 +285,7 @@ class InputDialog(RefinedDialog):
         # Input field
         self.entry = ctk.CTkEntry(
             content_frame,
-            placeholder_text=self.placeholder,
+            placeholder_text="",
             height=36,
             font=ctk.CTkFont(family="Inter", size=13),
             fg_color=colors["bg_tertiary"],
@@ -281,6 +293,9 @@ class InputDialog(RefinedDialog):
             text_color=colors["text_primary"]
         )
         self.entry.pack(fill="x")
+        if self.placeholder:
+            self.entry.insert(0, self.placeholder)
+            self.entry.select_range(0, "end")
         self.entry.bind("<Return>", lambda e: self._on_confirm())
         self.entry.focus_set()
 

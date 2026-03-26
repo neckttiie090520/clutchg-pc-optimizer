@@ -1,17 +1,49 @@
 """
 Enhanced Button Components for ClutchG
-Multiple button variants with gradient support
+Windows 11 / Linux Minimal Style - Solid Colors (No Gradients)
+Updated: 2026-03-25 (Button audit - removed "AI look")
+- Focus indicators (WCAG 2.4.7)
+- Reduced motion support
+- Improved touch targets (44px min)
+- Solid color buttons (no gradients)
 """
 
 import customtkinter as ctk
 from gui.theme import theme_manager, RADIUS, SPACING
-from gui.components.gradient import GradientButton
 from gui.components.icon_provider import get_icon_provider
 from typing import Optional, Callable
 
 
 # Get icon provider instance
 icon_provider = get_icon_provider()
+
+
+def should_reduce_motion(app) -> bool:
+    """Check if reduced motion is enabled in app config"""
+    if hasattr(app, 'config') and isinstance(app.config, dict):
+        return app.config.get('reduce_motion', False)
+    return False
+
+
+def apply_focus_style(widget, colors: dict):
+    """Apply focus ring styling to a widget"""
+    focus_color = colors.get('focus_ring', colors.get('accent', '#7aa2f7'))
+    focus_width = colors.get('focus_ring_width', 2)
+
+    def on_focus(event):
+        try:
+            widget.configure(border_width=focus_width, border_color=focus_color)
+        except Exception:
+            pass
+
+    def on_unfocus(event):
+        try:
+            widget.configure(border_width=0, border_color=colors.get('border_subtle', 'transparent'))
+        except Exception:
+            pass
+
+    widget.bind('<FocusIn>', on_focus)
+    widget.bind('<FocusOut>', on_unfocus)
 
 
 class EnhancedButton:
@@ -27,8 +59,8 @@ class EnhancedButton:
         **kwargs
     ):
         """
-        Primary button with cyan-to-purple gradient
-        
+        Primary button with solid accent color (Windows 11 minimal style)
+
         Args:
             master: Parent widget
             text: Button text
@@ -37,17 +69,17 @@ class EnhancedButton:
             height: Button height
         """
         colors = theme_manager.get_colors()
-        
+
         # Pop conflicting kwargs
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
 
-        return GradientButton(
+        return ctk.CTkButton(
             master,
             text=text,
             command=command,
-            # Use theme accent colors (solid/flat if accent==accent_secondary)
-            colors=[colors["accent"], colors["accent_secondary"]], 
+            fg_color=colors["accent"],
+            hover_color=colors["accent_hover"],
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
@@ -66,8 +98,8 @@ class EnhancedButton:
         **kwargs
     ):
         """
-        Success button with green gradient
-        
+        Success button with solid green color (Windows 11 minimal style)
+
         Args:
             master: Parent widget
             text: Button text
@@ -81,12 +113,12 @@ class EnhancedButton:
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
 
-        return GradientButton(
+        return ctk.CTkButton(
             master,
             text=text,
             command=command,
-            # Use theme success color (solid)
-            colors=[colors["success"], colors["success"]],
+            fg_color=colors["success"],
+            hover_color=colors["success_hover"],
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
@@ -105,8 +137,8 @@ class EnhancedButton:
         **kwargs
     ):
         """
-        Warning button with red/pink gradient
-        
+        Warning button with solid orange color (Windows 11 minimal style)
+
         Args:
             master: Parent widget
             text: Button text
@@ -120,12 +152,12 @@ class EnhancedButton:
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
 
-        return GradientButton(
+        return ctk.CTkButton(
             master,
             text=text,
             command=command,
-            # Use theme warning color (solid)
-            colors=[colors["warning"], colors["warning"]],
+            fg_color=colors["warning"],
+            hover_color=colors["warning_hover"],
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
@@ -144,16 +176,20 @@ class EnhancedButton:
         **kwargs
     ):
         """
-        Danger button with red gradient (alias for warning)
+        Danger button with solid red color (Windows 11 minimal style)
         """
         colors = theme_manager.get_colors()
-        
-        return GradientButton(
+
+        # Pop conflicting kwargs
+        kwargs.pop("font", None)
+        kwargs.pop("text_color", None)
+
+        return ctk.CTkButton(
             master,
             text=text,
             command=command,
-            # Use theme danger color (solid)
-            colors=[colors["danger"], colors["danger"]], 
+            fg_color=colors["danger"],
+            hover_color=colors.get("danger_hover", colors["danger"]),
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
@@ -174,8 +210,8 @@ class EnhancedButton:
         **kwargs
     ):
         """
-        Info button with blue gradient
-        
+        Info button with solid blue color (Windows 11 minimal style)
+
         Args:
             master: Parent widget
             text: Button text
@@ -189,12 +225,12 @@ class EnhancedButton:
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
 
-        return GradientButton(
+        return ctk.CTkButton(
             master,
             text=text,
             command=command,
-            # Use theme info color (solid)
-            colors=[colors["info"], colors["info"]],
+            fg_color=colors["info"],
+            hover_color=colors.get("info_hover", colors["info"]),
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,

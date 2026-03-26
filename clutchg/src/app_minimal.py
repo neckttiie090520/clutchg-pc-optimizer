@@ -47,6 +47,7 @@ class ClutchGApp:
         self.window = ctk.CTk()
         self.window.title("ClutchG")
         self.window.geometry("1000x700")
+        self.window.minsize(900, 600)  # Minimum window size to prevent layout breaks
         self._refresh_window_colors()
 
         # Check Material Symbols font availability (after window exists)

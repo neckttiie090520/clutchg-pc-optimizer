@@ -4,8 +4,12 @@ Collapsible sidebar with animated transitions and hover effects
 """
 
 import customtkinter as ctk
+import logging
 from gui.theme import theme_manager, SIZES, NAV_ICONS, ANIMATION
 from gui.style import font
+from gui.components.tooltip import ToolTipBinder
+
+logger = logging.getLogger(__name__)
 
 
 class EnhancedSidebar(ctk.CTkFrame):
@@ -47,8 +51,8 @@ class EnhancedSidebar(ctk.CTkFrame):
         self.glow_animations = {}  # Track active glow animations
 
         self.setup_layout()
-        self.create_navigation()
         self.create_toggle_button()
+        self.create_navigation()
 
     def setup_layout(self):
         """Configure grid layout"""
@@ -153,6 +157,9 @@ class EnhancedSidebar(ctk.CTkFrame):
         btn.bind("<Enter>", lambda e, k=key: self.on_hover_enter(k))
         btn.bind("<Leave>", lambda e, k=key: self.on_hover_leave(k))
 
+        # Add tooltip for collapsed sidebar accessibility
+        self.nav_buttons[key]["tooltip"] = ToolTipBinder(btn, label)
+
     def on_hover_enter(self, key: str):
         """Highlight non-active nav button on hover."""
         if key != self.app.active_nav:
@@ -205,8 +212,21 @@ class EnhancedSidebar(ctk.CTkFrame):
         Creates a smooth breathing effect by interpolating between transparent
         and the accent_dim colour across 20 steps per half-cycle.
         Guarded against TclError when the widget is destroyed.
+
+        RESPECTS reduce_motion: Skip animation if user has enabled reduce motion.
         """
-        if key not in self.nav_buttons:
+        # Check for reduce_motion setting (accessibility)
+        if hasattr(self.app, 'config') and self.app.config.get('reduce_motion', False):
+            # User prefers reduced motion - just show static active state
+            if key not in self.nav_buttons:
+                return
+            colors = theme_manager.get_colors()
+            btn_data = self.nav_buttons[key]
+            button = btn_data["button"]
+            try:
+                button.configure(fg_color=colors.get("accent_dim", "transparent"))
+            except Exception as e:
+                logger.debug(f"Could not apply static glow state: {e}")
             return
 
         self.glow_animations[key] = True  # Mark animation as active
@@ -216,7 +236,14 @@ class EnhancedSidebar(ctk.CTkFrame):
         button = btn_data["button"]
 
         # Parse accent_dim into RGB for smooth interpolation
-        accent_dim = colors.get("accent_dim", "#1e3a5f")
+        # Derive fallback from accent color (50% darkened) instead of hard-coded Tokyo Night hex
+        def _darken_hex(h: str, factor: float = 0.5) -> str:
+            h = h.lstrip("#")
+            r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+            return f"#{int(r * factor):02x}{int(g * factor):02x}{int(b * factor):02x}"
+
+        _accent = colors.get("accent", "#00bcd4")
+        accent_dim = colors.get("accent_dim", _darken_hex(_accent))
 
         def _hex_to_rgb(h: str):
             h = h.lstrip("#")
@@ -254,8 +281,9 @@ class EnhancedSidebar(ctk.CTkFrame):
 
             try:
                 button.configure(fg_color=interp_color)
-            except Exception:
+            except Exception as e:
                 # Widget destroyed — stop animation
+                logger.debug(f"Glow animation stopped: {e}")
                 if key in self.glow_animations:
                     del self.glow_animations[key]
                 return
@@ -299,7 +327,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         start_width = self.width_expanded if self.is_expanded else self.width_collapsed
         end_width = self.width_expanded if target_expanded else self.width_collapsed
         steps = 8
-        step_delay = ANIMATION.get("duration_fast", 150) // steps
+        step_delay = ANIMATION["fast"] // steps
         
         def animate_step(step):
             try:
@@ -315,8 +343,8 @@ class EnhancedSidebar(ctk.CTkFrame):
                                 data["label"].grid()
                             else:
                                 data["label"].grid_remove()
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            logger.debug(f"Could not update label visibility: {e}")
                     return
                 
                 # Ease-out interpolation
@@ -325,7 +353,8 @@ class EnhancedSidebar(ctk.CTkFrame):
                 current_width = int(start_width + (end_width - start_width) * t)
                 self.configure(width=current_width)
                 self.after(step_delay, lambda: animate_step(step + 1))
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Sidebar animation error: {e}")
                 self.animating = False  # Reset on error
         
         animate_step(0)

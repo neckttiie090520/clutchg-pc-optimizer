@@ -19,6 +19,8 @@ class SettingsView(ctk.CTkFrame):
     UI_STRINGS = {
         "en": {
             "title": "Settings",
+            "appearance": "Appearance",
+            "theme": "Theme",
             "language": "Language",
             "safety": "Safety",
             "about": "About",
@@ -29,6 +31,8 @@ class SettingsView(ctk.CTkFrame):
         },
         "th": {
             "title": "Settings",
+            "appearance": "Appearance",
+            "theme": "Theme",
             "language": "Language",
             "safety": "Safety",
             "about": "About",
@@ -61,6 +65,11 @@ class SettingsView(ctk.CTkFrame):
         content = ctk.CTkScrollableFrame(self, fg_color="transparent")
         content.grid(row=1, column=0, sticky="nsew")
         content.grid_columnconfigure(0, weight=1)
+
+        # Appearance (Theme)
+        self.create_section(content, self._ui("appearance"), [
+            self.create_appearance_setting
+        ])
 
         # Language
         self.create_section(content, self._ui("language"), [
@@ -98,7 +107,7 @@ class SettingsView(ctk.CTkFrame):
             section,
             text=title.upper(),
             font=self._font(10, "bold"),
-            text_color=COLORS["text_muted"]
+            text_color=COLORS["text_primary"]
         ).pack(anchor="w", padx=SPACING["lg"], pady=(SPACING["md"], SPACING["sm"]))
         
         for creator in creators:
@@ -106,6 +115,49 @@ class SettingsView(ctk.CTkFrame):
         
         ctk.CTkLabel(section, text="", height=SPACING["sm"]).pack()
     
+    def create_appearance_setting(self, parent):
+        """Theme setting"""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+        frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            frame,
+            text=self._ui("theme"),
+            font=self._font(13),
+            text_color=COLORS["text_primary"]
+        ).grid(row=0, column=0, sticky="w")
+
+        available_themes = theme_manager.get_available_themes()
+        current_theme = self.config.get("theme", "modern")
+        # Capitalize for display
+        theme_display = {t: t.capitalize() for t in available_themes}
+        display_values = [theme_display[t] for t in available_themes]
+        current_display = theme_display.get(current_theme, current_theme.capitalize())
+
+        self.theme_var = ctk.StringVar(value=current_display)
+        ctk.CTkOptionMenu(
+            frame,
+            values=display_values,
+            variable=self.theme_var,
+            command=self.change_theme,
+            width=120,
+            fg_color=COLORS["bg_elevated"],
+            button_color=COLORS["accent"],
+            button_hover_color=COLORS["accent_hover"]
+        ).grid(row=0, column=1, sticky="e")
+
+    def change_theme(self, value: str):
+        """Apply selected theme"""
+        theme_key = value.lower()
+        theme_manager.set_theme(theme_key)
+        self.config["theme"] = theme_key
+        self.app.config["theme"] = theme_key
+        self.app.config_manager.save_config(self.config)
+        self.app.refresh_current_view()
+        if hasattr(self.app, "toast"):
+            self.app.toast.info(f"Theme changed to {value}")
+
     def create_language_setting(self, parent):
         """Language setting"""
         frame = ctk.CTkFrame(parent, fg_color="transparent")

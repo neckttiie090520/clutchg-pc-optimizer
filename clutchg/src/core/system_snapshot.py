@@ -92,18 +92,27 @@ class SystemSnapshotManager:
                 capture_output=True, text=True, timeout=15,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            snap.services_running = int(result.stdout.strip() or "0")
-            
+            # BUG-015 FIX: Handle non-numeric PowerShell output safely
+            try:
+                snap.services_running = int(result.stdout.strip())
+            except (ValueError, AttributeError):
+                snap.services_running = 0
+                logger.warning(f"Unexpected PowerShell output for running services: {result.stdout}")
+
             result2 = subprocess.run(
                 ["powershell", "-Command",
                  "(Get-Service | Where-Object {$_.Status -eq 'Stopped'}).Count"],
                 capture_output=True, text=True, timeout=15,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            snap.services_stopped = int(result2.stdout.strip() or "0")
+            try:
+                snap.services_stopped = int(result2.stdout.strip())
+            except (ValueError, AttributeError):
+                snap.services_stopped = 0
+                logger.warning(f"Unexpected PowerShell output for stopped services: {result2.stdout}")
         except Exception as e:
             logger.warning(f"Failed to count services: {e}")
-        
+
         # Count startup items
         try:
             result = subprocess.run(
@@ -112,10 +121,15 @@ class SystemSnapshotManager:
                 capture_output=True, text=True, timeout=15,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            snap.startup_items = int(result.stdout.strip() or "0")
+            # BUG-015 FIX: Handle non-numeric PowerShell output safely
+            try:
+                snap.startup_items = int(result.stdout.strip())
+            except (ValueError, AttributeError):
+                snap.startup_items = 0
+                logger.warning(f"Unexpected PowerShell output for startup items: {result.stdout}")
         except Exception as e:
             logger.warning(f"Failed to count startup items: {e}")
-        
+
         # Count enabled scheduled tasks
         try:
             result = subprocess.run(
@@ -124,7 +138,12 @@ class SystemSnapshotManager:
                 capture_output=True, text=True, timeout=15,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            snap.scheduled_tasks_enabled = int(result.stdout.strip() or "0")
+            # BUG-015 FIX: Handle non-numeric PowerShell output safely
+            try:
+                snap.scheduled_tasks_enabled = int(result.stdout.strip())
+            except (ValueError, AttributeError):
+                snap.scheduled_tasks_enabled = 0
+                logger.warning(f"Unexpected PowerShell output for scheduled tasks: {result.stdout}")
         except Exception as e:
             logger.warning(f"Failed to count scheduled tasks: {e}")
         
