@@ -111,7 +111,7 @@ class ProfilesView(ctk.CTkFrame):
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
         if self.app.config.get("language") == "th":
-            return ctk.CTkFont(family="Tahoma", size=size, weight=weight)
+            return ctk.CTkFont(family="Figtree", size=size, weight=weight)
         return font("body", size=size, weight=weight)
 
     def create_header(self):

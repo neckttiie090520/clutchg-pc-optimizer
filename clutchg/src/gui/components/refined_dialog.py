@@ -133,7 +133,7 @@ class RefinedDialog(ctk.CTkToplevel):
         title_label = ctk.CTkLabel(
             title_frame,
             text=title,
-            font=ctk.CTkFont(family="Inter", size=16, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=16, weight="bold"),
             text_color=colors["text_primary"]
         )
         title_label.grid(row=0, column=1, sticky="w")
@@ -148,7 +148,7 @@ class RefinedDialog(ctk.CTkToplevel):
         message_label = ctk.CTkLabel(
             message_frame,
             text=message,
-            font=ctk.CTkFont(family="Inter", size=13),
+            font=ctk.CTkFont(family="Figtree", size=13),
             text_color=colors["text_secondary"],
             wraplength=400,
             justify="left",
@@ -170,7 +170,7 @@ class RefinedDialog(ctk.CTkToplevel):
             cancel_btn = ctk.CTkButton(
                 button_frame,
                 text=cancel_text,
-                font=ctk.CTkFont(family="Inter", size=13, weight="bold"),
+                font=ctk.CTkFont(family="Figtree", size=13, weight="bold"),
                 fg_color=colors.get("bg_tertiary", colors.get("bg_active", colors["bg_secondary"])),
                 hover_color=colors.get("bg_hover", colors.get("bg_active", colors["bg_secondary"])),
                 text_color=colors["text_secondary"],
@@ -197,7 +197,7 @@ class RefinedDialog(ctk.CTkToplevel):
         confirm_btn = ctk.CTkButton(
             button_frame,
             text=confirm_text,
-            font=ctk.CTkFont(family="Inter", size=13, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=13, weight="bold"),
             fg_color=btn_color,
             hover_color=btn_hover,
             text_color=colors.get("text_on_accent", "#ffffff"),
@@ -275,7 +275,7 @@ class InputDialog(RefinedDialog):
         ctk.CTkLabel(
             content_frame,
             text=message,
-            font=ctk.CTkFont(family="Inter", size=13),
+            font=ctk.CTkFont(family="Figtree", size=13),
             text_color=colors["text_secondary"],
             wraplength=400,
             justify="left",
@@ -287,7 +287,7 @@ class InputDialog(RefinedDialog):
             content_frame,
             placeholder_text="",
             height=36,
-            font=ctk.CTkFont(family="Inter", size=13),
+            font=ctk.CTkFont(family="Figtree", size=13),
             fg_color=colors["bg_tertiary"],
             border_color=colors["border"],
             text_color=colors["text_primary"]

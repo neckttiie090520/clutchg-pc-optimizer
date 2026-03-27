@@ -176,7 +176,7 @@ class ProfileCard(GlassCard):
         name_label = ctk.CTkLabel(
             inner,
             text=profile_name,
-            font=ctk.CTkFont(family="Inter", size=20, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=20, weight="bold"),
             text_color=colors["text_primary"]
         )
         name_label.grid(row=1, column=0, pady=(0, SPACING["xs"]))
@@ -195,7 +195,7 @@ class ProfileCard(GlassCard):
         desc_label = ctk.CTkLabel(
             inner,
             text=description,
-            font=ctk.CTkFont(family="Inter", size=13),
+            font=ctk.CTkFont(family="Figtree", size=13),
             text_color=colors["text_secondary"],
             wraplength=220,
             justify="left"
@@ -216,7 +216,7 @@ class ProfileCard(GlassCard):
             feature_label = ctk.CTkLabel(
                 features_frame,
                 text=f"• {feature}", # Bullet point instead of check
-                font=ctk.CTkFont(family="Inter", size=12),
+                font=ctk.CTkFont(family="Figtree", size=12),
                 text_color=colors["text_secondary"],
                 justify="left"
             )
@@ -226,7 +226,7 @@ class ProfileCard(GlassCard):
         risk_badge = ctk.CTkLabel(
             inner,
             text=risk_level,
-            font=ctk.CTkFont(family="Inter", size=10, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=10, weight="bold"),
             text_color=colors["text_primary"], # White text
             fg_color=glow_color, # Keep risk color background for badge
             corner_radius=RADIUS["full"],
@@ -298,7 +298,7 @@ class HardwareCard(GlassCard):
         title_label = ctk.CTkLabel(
             header_frame,
             text=title,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color=colors["text_primary"],
             anchor="w"
         )
@@ -308,7 +308,7 @@ class HardwareCard(GlassCard):
         subtitle_label = ctk.CTkLabel(
             self,
             text=subtitle,
-            font=ctk.CTkFont(family="Inter", size=12),
+            font=ctk.CTkFont(family="Figtree", size=12),
             text_color=colors["text_secondary"]
         )
         subtitle_label.grid(row=1, column=0, sticky="w", padx=SPACING["md"], pady=(0, SPACING["sm"]))
@@ -342,7 +342,7 @@ class HardwareCard(GlassCard):
         self.usage_label = ctk.CTkLabel(
             self.usage_frame,
             text=f"{usage}%",
-            font=ctk.CTkFont(family="Inter", size=12, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=12, weight="bold"),
             text_color=colors["text_secondary"]
         )
         self.usage_label.grid(row=0, column=1)

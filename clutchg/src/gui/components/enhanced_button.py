@@ -20,15 +20,15 @@ icon_provider = get_icon_provider()
 
 def should_reduce_motion(app) -> bool:
     """Check if reduced motion is enabled in app config"""
-    if hasattr(app, 'config') and isinstance(app.config, dict):
-        return app.config.get('reduce_motion', False)
+    if hasattr(app, "config") and isinstance(app.config, dict):
+        return app.config.get("reduce_motion", False)
     return False
 
 
 def apply_focus_style(widget, colors: dict):
     """Apply focus ring styling to a widget"""
-    focus_color = colors.get('focus_ring', colors.get('accent', '#7aa2f7'))
-    focus_width = colors.get('focus_ring_width', 2)
+    focus_color = colors.get("focus_ring", colors.get("accent", "#57c8ff"))
+    focus_width = colors.get("focus_ring_width", 2)
 
     def on_focus(event):
         try:
@@ -38,17 +38,19 @@ def apply_focus_style(widget, colors: dict):
 
     def on_unfocus(event):
         try:
-            widget.configure(border_width=0, border_color=colors.get('border_subtle', 'transparent'))
+            widget.configure(
+                border_width=0, border_color=colors.get("border_subtle", "transparent")
+            )
         except Exception:
             pass
 
-    widget.bind('<FocusIn>', on_focus)
-    widget.bind('<FocusOut>', on_unfocus)
+    widget.bind("<FocusIn>", on_focus)
+    widget.bind("<FocusOut>", on_unfocus)
 
 
 class EnhancedButton:
     """Factory for creating enhanced buttons with different styles"""
-    
+
     @staticmethod
     def primary(
         master,
@@ -56,7 +58,7 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Primary button with solid accent color (Windows 11 minimal style)
@@ -83,11 +85,11 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color=colors.get("text_on_accent", "#FFFFFF"),
-            **kwargs
+            **kwargs,
         )
-    
+
     @staticmethod
     def success(
         master,
@@ -95,7 +97,7 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Success button with solid green color (Windows 11 minimal style)
@@ -122,11 +124,11 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color="#FFFFFF",
-            **kwargs
+            **kwargs,
         )
-    
+
     @staticmethod
     def warning(
         master,
@@ -134,7 +136,7 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Warning button with solid orange color (Windows 11 minimal style)
@@ -161,11 +163,11 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color="#FFFFFF",
-            **kwargs
+            **kwargs,
         )
-    
+
     @staticmethod
     def danger(
         master,
@@ -173,7 +175,7 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Danger button with solid red color (Windows 11 minimal style)
@@ -193,13 +195,11 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color="#FFFFFF",
-            **kwargs
+            **kwargs,
         )
-    
 
-    
     @staticmethod
     def info(
         master,
@@ -207,7 +207,7 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Info button with solid blue color (Windows 11 minimal style)
@@ -234,11 +234,11 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
             text_color="#FFFFFF",
-            **kwargs
+            **kwargs,
         )
-    
+
     @staticmethod
     def outline(
         master,
@@ -247,11 +247,11 @@ class EnhancedButton:
         width: Optional[int] = None,
         height: int = 40,
         border_color: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Outline button (transparent with border)
-        
+
         Args:
             master: Parent widget
             text: Button text
@@ -284,10 +284,10 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14),
-            **kwargs
+            font=ctk.CTkFont(family="Figtree", size=14),
+            **kwargs,
         )
-    
+
     @staticmethod
     def ghost(
         master,
@@ -295,11 +295,11 @@ class EnhancedButton:
         command: Optional[Callable] = None,
         width: Optional[int] = None,
         height: int = 40,
-        **kwargs
+        **kwargs,
     ):
         """
         Ghost button (transparent, no border)
-        
+
         Args:
             master: Parent widget
             text: Button text
@@ -308,11 +308,11 @@ class EnhancedButton:
             height: Button height
         """
         colors = theme_manager.get_colors()
-        
+
         # Pop conflicting kwargs
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
-        
+
         return ctk.CTkButton(
             master,
             text=text,
@@ -324,10 +324,10 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14),
-            **kwargs
+            font=ctk.CTkFont(family="Figtree", size=14),
+            **kwargs,
         )
-    
+
     @staticmethod
     def solid(
         master,
@@ -336,11 +336,11 @@ class EnhancedButton:
         width: Optional[int] = None,
         height: int = 40,
         color: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Solid color button (no gradient)
-        
+
         Args:
             master: Parent widget
             text: Button text
@@ -350,14 +350,14 @@ class EnhancedButton:
             color: Custom color (optional, defaults to accent)
         """
         colors = theme_manager.get_colors()
-        
+
         if color is None:
             color = colors["accent"]
-        
+
         # Pop conflicting kwargs
         kwargs.pop("font", None)
         kwargs.pop("text_color", None)
-        
+
         return ctk.CTkButton(
             master,
             text=text,
@@ -367,16 +367,18 @@ class EnhancedButton:
             corner_radius=RADIUS["md"],
             height=height,
             width=width if width else 140,
-            font=ctk.CTkFont(family="Inter", size=14, weight="bold"),
-            text_color=colors.get("text_on_accent", "#FFFFFF") if color == colors["accent"] else "#FFFFFF",
+            font=ctk.CTkFont(family="Figtree", size=14, weight="bold"),
+            text_color=colors.get("text_on_accent", "#FFFFFF")
+            if color == colors["accent"]
+            else "#FFFFFF",
             border_width=0,
-            **kwargs
+            **kwargs,
         )
 
 
 class IconButton(ctk.CTkButton):
     """Button with icon (Material Symbols)"""
-    
+
     def __init__(
         self,
         master,
@@ -385,11 +387,11 @@ class IconButton(ctk.CTkButton):
         size: int = 32,
         icon_size: int = 20,
         tooltip: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Create an icon button
-        
+
         Args:
             master: Parent widget
             icon: Material Symbol unicode character
@@ -399,7 +401,7 @@ class IconButton(ctk.CTkButton):
             tooltip: Tooltip text (optional)
         """
         colors = theme_manager.get_colors()
-        
+
         super().__init__(
             master,
             text=icon,
@@ -411,10 +413,11 @@ class IconButton(ctk.CTkButton):
             text_color=colors["text_secondary"],
             font=ctk.CTkFont(family=icon_provider.get_icon_font()[0], size=icon_size),
             corner_radius=RADIUS["md"],
-            **kwargs
+            **kwargs,
         )
-        
+
         # Add tooltip if provided
         if tooltip:
             from gui.components.tooltip import ToolTip
+
             ToolTip(self, tooltip)

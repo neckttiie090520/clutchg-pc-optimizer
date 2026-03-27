@@ -253,7 +253,7 @@ class CircularProgressWithLabel(ctk.CTkFrame):
             self.label = ctk.CTkLabel(
                 self,
                 text=label_text,
-                font=ctk.CTkFont(family="Inter", size=14),
+                font=ctk.CTkFont(family="Figtree", size=14),
                 text_color="#A0AEC0"
             )
             self.label.pack()
