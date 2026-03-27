@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClutchG Phase 2 Design — Tweaks · Backup · Docs</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary:    #1c1c1c;
+    --bg-secondary:  #272727;
+    --bg-card:       #2d2d2d;
+    --bg-elevated:   #2d2d2d;
+    --bg-hover:      #333333;
+    --bg-active:     #404040;
+    --border:        #3d3d3d;
+    --border-medium: #555555;
+    --text-primary:  #fafafa;
+    --text-secondary:#b0b0b0;
+    --text-tertiary: #999999;
+    --text-muted:    #595959;
+    --accent:        #57c8ff;
+    --accent-dim:    #1a3040;
+    --accent-hover:  #6fd4ff;
+    --success:       #22C55E;
+    --success-dim:   #1a2e1f;
+    --warning:       #F59E0B;
+    --warning-dim:   #2e2510;
+    --danger:        #EF4444;
+    --danger-dim:    #2e1616;
+    --info:          #57c8ff;
+    --sp-xs: 4px;
+    --sp-sm: 8px;
+    --sp-md: 12px;
+    --sp-lg: 20px;
+    --sp-xl: 28px;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-lg: 10px;
+    --r-xl: 14px;
+    --r-full: 999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Figtree', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    padding: 32px;
+    line-height: 1.5;
+  }
+
+  /* icon font helper */
+  .mi {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal; font-style: normal;
+    font-size: 18px; line-height: 1;
+    letter-spacing: normal; text-transform: none;
+    display: inline-block; white-space: nowrap;
+    word-wrap: normal; direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    vertical-align: middle;
+  }
+  .mi-sm  { font-size: 16px; }
+  .mi-lg  { font-size: 22px; }
+  .mi-xl  { font-size: 36px; }
+
+  h1 { color: var(--text-primary); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  h2 {
+    color: var(--text-primary); font-size: 17px; font-weight: 700;
+    margin: 44px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  h3 { color: var(--text-primary); font-size: 13px; font-weight: 600; margin: 16px 0 8px; }
+  .subtitle { color: var(--text-secondary); font-size: 12px; margin-bottom: 32px; }
+
+  /* ── APPROVAL PANEL ─────────────────────────────────────────── */
+  .approval-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px 20px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .approval-panel span { font-size: 12px; color: var(--text-secondary); }
+  .check-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text-secondary);
+    background: var(--bg-hover); border-radius: var(--r-sm);
+    padding: 4px 10px; cursor: pointer; user-select: none;
+  }
+  .check-item input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+
+  /* ── SHARED CARD ─────────────────────────────────────────────── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px 18px;
+  }
+
+  /* ── BADGES ──────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: var(--r-sm);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .badge-low    { background: var(--success-dim); color: var(--success); }
+  .badge-medium { background: var(--warning-dim); color: var(--warning); }
+  .badge-high   { background: var(--danger-dim);  color: var(--danger); }
+  .badge-accent { background: var(--accent-dim);  color: var(--accent); }
+  .badge-neutral{ background: var(--bg-active);   color: var(--text-secondary); }
+
+  /* ── BUTTONS ─────────────────────────────────────────────────── */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; background: var(--accent); color: #000;
+    border: none; border-radius: var(--r-md);
+    font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  .btn-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: var(--r-md);
+    font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; background: transparent; color: var(--text-tertiary);
+    border: none; border-radius: var(--r-sm);
+    font-family: 'Figtree', sans-serif; font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-danger {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; background: transparent; color: var(--danger);
+    border: 1px solid var(--danger-dim); border-radius: var(--r-md);
+    font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-success {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; background: transparent; color: var(--success);
+    border: 1px solid var(--success-dim); border-radius: var(--r-md);
+    font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-disabled {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; background: var(--bg-active); color: var(--text-muted);
+    border: none; border-radius: var(--r-md);
+    font-family: 'Figtree', sans-serif; font-size: 12px;
+    cursor: not-allowed; opacity: 0.6;
+  }
+
+  /* ── TAB BAR ─────────────────────────────────────────────────── */
+  .tab-bar {
+    display: flex; gap: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 6px;
+    width: fit-content;
+    margin-bottom: 20px;
+  }
+  .tab {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 14px; border-radius: var(--r-md);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    color: var(--text-secondary); background: transparent;
+    border: none; font-family: 'Figtree', sans-serif;
+  }
+  .tab.active { background: var(--accent); color: #000; font-weight: 700; }
+  .tab .mi { font-size: 15px; }
+
+  /* ── SECTION HEADER ──────────────────────────────────────────── */
+  .view-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .view-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+  .view-sub   { font-size: 12px; color: var(--text-tertiary); margin-top: 3px; }
+
+  /* ── PROFILE CARD (Profiles tab) — no left stripe ──────────── */
+  .profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .profile-card.recommended { border-color: var(--success); border-width: 2px; }
+  .profile-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .profile-icon { color: var(--text-tertiary); }
+  .profile-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+  .profile-rec-tag {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: var(--r-sm); letter-spacing: 0.3px;
+    background: var(--success-dim); color: var(--success);
+  }
+  .profile-badges { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+  .profile-fps {
+    background: var(--accent-dim); color: var(--accent);
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: var(--r-sm);
+  }
+  .profile-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .profile-meta { font-size: 11px; color: var(--text-tertiary); margin-bottom: 12px; }
+  .profile-actions { display: flex; gap: 8px; }
+
+  /* ── GROUP PILLS ────────────────────────────────────────────── */
+  .group-pills { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pill {
+    padding: 5px 14px; border-radius: var(--r-md);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    background: var(--bg-card); color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  /* ── QUICK FIX CARD ─────────────────────────────────────────── */
+  .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .qa-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 14px 16px;
+  }
+  .qa-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .qa-desc  { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+  .qa-helper{ font-size: 10px; color: var(--text-tertiary); margin-bottom: 10px; }
+  .qa-meta  { display: flex; gap: 6px; margin-bottom: 10px; }
+
+  /* ── TWEAK ROW (Custom tab) ─────────────────────────────────── */
+  .tweak-section-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; padding: 6px 0;
+    color: var(--text-primary);
+  }
+  .tweak-section-header .mi { font-size: 16px; }
+  .tweak-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-card); border-radius: var(--r-sm);
+    padding: 8px 12px; margin-bottom: 4px;
+    cursor: pointer;
+  }
+  .tweak-row:hover { background: var(--bg-hover); }
+  .tweak-row.selected { background: var(--bg-hover); }
+  .tweak-row.detail-active { background: var(--bg-active); border: 1px solid var(--accent-dim); border-radius: var(--r-sm); }
+  .toggle {
+    width: 32px; height: 18px; border-radius: 9px; flex-shrink: 0;
+    background: var(--bg-active); position: relative; cursor: pointer;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%; background: #fff;
+    transition: left 0.15s;
+  }
+  .toggle.on::after { left: 16px; }
+  .tweak-name { font-size: 12px; font-weight: 600; color: var(--text-primary); min-width: 160px; }
+  .tweak-desc { font-size: 11px; color: var(--text-secondary); flex: 1; }
+  .tweak-gain { font-size: 11px; color: var(--accent); margin-left: auto; white-space: nowrap; }
+
+  /* ── SELECTION BAR ───────────────────────────────────────────── */
+  .selection-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 10px 16px;
+    margin-bottom: 16px;
+  }
+  .selection-count { font-size: 13px; font-weight: 700; color: var(--accent); }
+  .selection-actions { display: flex; gap: 8px; margin-left: auto; }
+
+  /* ── SPLIT PANE (Custom tab) ────────────────────────────────── */
+  .split-pane {
+    display: grid; grid-template-columns: 1fr 320px; gap: 16px;
+  }
+  .split-detail {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 18px 20px;
+    align-self: start; position: sticky; top: 16px;
+  }
+  .split-detail-empty {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 16px; text-align: center; gap: 8px;
+  }
+  .detail-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .detail-category { font-size: 11px; color: var(--text-tertiary); margin-bottom: 12px; }
+  .detail-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; }
+  .detail-text { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  .detail-label { font-size: 11px; color: var(--text-tertiary); }
+  .detail-value { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+
+  /* ── GLOSSARY ROW ───────────────────────────────────────────── */
+  .edu-cat-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 700; color: var(--text-primary);
+    padding: 8px 0 4px;
+  }
+  .edu-cat-header .mi { font-size: 16px; }
+  .edu-row {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-sm); padding: 10px 14px;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .edu-name  { font-size: 12px; font-weight: 600; color: var(--text-primary); min-width: 180px; }
+  .edu-desc  { font-size: 11px; color: var(--text-secondary); flex: 1; }
+  .edu-gain  { font-size: 11px; color: var(--accent); }
+  .edu-expand{ font-size: 10px; color: var(--text-muted); cursor: pointer; }
+
+  /* ── BACKUP VIEW — no left stripes ──────────────────────────── */
+  .info-banner {
+    display: flex; gap: 12px; align-items: center;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .info-banner .mi { font-size: 20px; color: var(--success); flex-shrink: 0; }
+  .info-body { flex: 1; }
+  .info-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .info-desc  { font-size: 11px; color: var(--text-secondary); }
+
+  .backup-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); display: flex; align-items: center;
+    gap: 14px; padding: 14px 16px; margin-bottom: 8px; height: 74px;
+  }
+  .backup-icon {
+    width: 40px; height: 40px; border-radius: var(--r-md);
+    background: var(--bg-hover); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .backup-icon .mi { font-size: 20px; }
+  .backup-info { flex: 1; }
+  .backup-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .backup-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .backup-date { font-size: 10px; color: var(--text-muted); }
+  .backup-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 64px 0; text-align: center; gap: 12px;
+  }
+  .empty-icon-bg {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: var(--bg-hover);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .empty-icon-bg .mi { font-size: 36px; color: var(--text-tertiary); }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .empty-desc  { font-size: 12px; color: var(--text-secondary); max-width: 320px; }
+
+  /* ── DOCS VIEW ──────────────────────────────────────────────── */
+  .help-layout { display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
+  .help-sidebar {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 14px 12px;
+    align-self: start;
+  }
+  .help-sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .help-search {
+    width: 100%; padding: 7px 12px;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--r-full); color: var(--text-primary);
+    font-family: 'Figtree', sans-serif; font-size: 11px;
+    outline: none; margin-bottom: 8px;
+  }
+  .help-topic-btn {
+    display: flex; align-items: center; gap: 6px; width: 100%;
+    padding: 7px 8px; border-radius: var(--r-sm);
+    font-size: 12px; color: var(--text-secondary); cursor: pointer;
+    background: transparent; border: none; font-family: 'Figtree', sans-serif;
+    text-align: left;
+  }
+  .help-topic-btn .mi { font-size: 16px; color: var(--text-muted); }
+  .help-topic-btn.active { background: var(--bg-hover); color: var(--accent); }
+  .help-topic-btn.active .mi { color: var(--accent); }
+  .help-content { min-height: 400px; }
+  .help-topic-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px;
+  }
+  .help-topic-title .mi { font-size: 22px; color: var(--text-tertiary); }
+  .help-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 16px 18px; margin-bottom: 10px;
+  }
+  .help-card-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .help-card-body  { font-size: 11px; color: var(--text-secondary); line-height: 1.6; }
+  .help-myth-card  {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 12px 16px; margin-bottom: 6px;
+  }
+  .myth-bad  { font-size: 11px; color: var(--danger);  margin-bottom: 4px; }
+  .myth-good { font-size: 11px; color: var(--success); }
+
+  /* ── EXECUTION DIALOG (modal preview) ───────────────────────── */
+  .dialog-overlay {
+    background: rgba(0,0,0,0.55); border-radius: var(--r-xl);
+    padding: 24px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .dialog-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .dialog-log {
+    background: #111; border-radius: var(--r-md);
+    padding: 12px 14px; font-family: 'Courier New', monospace;
+    font-size: 11px; color: #ccc; min-height: 100px; line-height: 1.7;
+  }
+  .log-ok   { color: var(--success); }
+  .log-warn { color: var(--warning); }
+  .log-err  { color: var(--danger);  }
+  .log-info { color: var(--accent);  }
+  .dialog-progress {
+    height: 6px; background: var(--bg-active); border-radius: 3px; overflow: hidden;
+  }
+  .dialog-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* ── LAYOUT HELPERS ──────────────────────────────────────────── */
+  .row { display: flex; gap: 10px; align-items: center; }
+  .col { display: flex; flex-direction: column; gap: 4px; }
+  .mt-sm { margin-top: 8px; }
+  .mt-md { margin-top: 14px; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .text-muted { font-size: 11px; color: var(--text-muted); }
+
+  /* ── CHANGE LOG (for review) ────────────────────────────────── */
+  .changelog {
+    background: var(--accent-dim); border: 1px solid var(--accent);
+    border-radius: var(--r-lg); padding: 16px 20px;
+    margin-bottom: 32px; font-size: 12px; color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .changelog strong { color: var(--accent); }
+  .changelog ul { margin: 6px 0 0 16px; }
+</style>
+</head>
+<body>
+
+<h1>ClutchG Phase 2 Design Mockup (v2)</h1>
+<p class="subtitle">Tweaks · Backup · Docs — Sun Valley dark palette, reworked per feedback</p>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- CHANGELOG — what changed from v1                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="changelog">
+  <strong>Changes from v1:</strong>
+  <ul>
+    <li>All emoji replaced with <strong>Material Symbols Outlined</strong> icon font glyphs</li>
+    <li>Colored left-stripe bars removed from all cards (profiles, backup, info banners)</li>
+    <li>Wording reworked: Optimization Center → <strong>Tweaks</strong>, Quick Actions → <strong>Quick Fix</strong>, Presets → <strong>Profiles</strong>, Custom Builder → <strong>Custom</strong>, Encyclopedia → <strong>Glossary</strong>, Help & Documentation → <strong>Docs</strong></li>
+    <li>Custom tab now has <strong>split-pane layout</strong> (tweak list left + detail/glossary panel right)</li>
+    <li>Tone reworked: shorter, nerd+gamer-friendly, less corporate</li>
+    <li>"RECOMMENDED FOR YOU" badge replaced with quieter <strong>RECOMMENDED</strong> text badge</li>
+    <li>Empty state icon now neutral gray (not colored background)</li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- APPROVAL CHECKLIST                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="approval-panel">
+  <span>Review checklist:</span>
+  <label class="check-item"><input type="checkbox"> Tweaks view (4 tabs)</label>
+  <label class="check-item"><input type="checkbox"> Execution dialog</label>
+  <label class="check-item"><input type="checkbox"> Backup view</label>
+  <label class="check-item"><input type="checkbox"> Docs view</label>
+  <label class="check-item"><input type="checkbox"> No emoji anywhere</label>
+  <label class="check-item"><input type="checkbox"> No colored left-stripes</label>
+  <label class="check-item"><input type="checkbox"> Split-pane on Custom tab</label>
+  <label class="check-item"><input type="checkbox"> Wording tone is nerd/gamer, not corporate</label>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SECTION A — TWEAKS                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2>A — Tweaks</h2>
+
+<!-- A1. Header + tab bar -->
+<h3>A1. Header + Tab Bar</h3>
+<div class="view-header">
+  <div class="col">
+    <div class="view-title">Tweaks</div>
+    <div class="view-sub">47 tweaks · 8 categories</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active"><span class="mi mi-sm">bolt</span> Quick Fix</button>
+  <button class="tab"><span class="mi mi-sm">tune</span> Profiles</button>
+  <button class="tab"><span class="mi mi-sm">build</span> Custom</button>
+  <button class="tab"><span class="mi mi-sm">menu_book</span> Glossary</button>
+</div>
+
+<!-- A2. Tab: Quick Fix -->
+<h3>A2. Tab — Quick Fix</h3>
+<p class="text-muted" style="margin-bottom:12px">One-click packs. Pick one, hit run, done.</p>
+
+<div class="group-pills">
+  <button class="pill active">General</button>
+  <button class="pill">Advanced</button>
+  <button class="pill">Cleanup</button>
+  <button class="pill">Windows</button>
+  <button class="pill">Utilities</button>
+</div>
+
+<div class="qa-grid">
+  <!-- card 1 -->
+  <div class="qa-card">
+    <div class="qa-title">Input Latency Pack</div>
+    <div class="qa-desc">Cuts mouse + keyboard polling delay. Sharper aim, faster keystrokes.</div>
+    <div class="qa-helper">3 tweaks · Safe & reversible</div>
+    <div class="qa-meta">
+      <span class="badge badge-low">LOW RISK</span>
+      <span class="badge badge-neutral">3 tweaks</span>
+    </div>
+    <button class="btn-primary"><span class="mi mi-sm">play_arrow</span> Run</button>
+  </div>
+  <!-- card 2 -->
+  <div class="qa-card">
+    <div class="qa-title">Network Optimizer</div>
+    <div class="qa-desc">Tuned TCP/IP + DNS for lower ping and less jitter.</div>
+    <div class="qa-helper">5 tweaks · Reversible</div>
+    <div class="qa-meta">
+      <span class="badge badge-medium">MEDIUM</span>
+      <span class="badge badge-neutral">5 tweaks</span>
+    </div>
+    <button class="btn-primary"><span class="mi mi-sm">play_arrow</span> Run</button>
+  </div>
+  <!-- card 3 -->
+  <div class="qa-card">
+    <div class="qa-title">Power Plan — High Performance</div>
+    <div class="qa-desc">Switches to High Performance plan. No more CPU throttling mid-game.</div>
+    <div class="qa-helper">1 tweak · Instant</div>
+    <div class="qa-meta">
+      <span class="badge badge-low">LOW RISK</span>
+      <span class="badge badge-neutral">1 tweak</span>
+    </div>
+    <button class="btn-primary"><span class="mi mi-sm">play_arrow</span> Run</button>
+  </div>
+  <!-- card 4 — link type -->
+  <div class="qa-card">
+    <div class="qa-title">HWiNFO64 (external link)</div>
+    <div class="qa-desc">Open download page for the go-to hardware monitoring tool.</div>
+    <div class="qa-helper">Trusted link</div>
+    <div class="qa-meta">
+      <span class="badge badge-accent">LINK</span>
+    </div>
+    <button class="btn-secondary"><span class="mi mi-sm">open_in_new</span> Open</button>
+  </div>
+</div>
+
+<!-- A3. Tab: Profiles -->
+<h3>A3. Tab — Profiles</h3>
+
+<!-- Safe -->
+<div class="profile-card recommended">
+  <div class="profile-title-row">
+    <span class="mi mi-lg profile-icon" style="color:var(--success)">verified_user</span>
+    <span class="profile-name">Safe</span>
+    <span class="profile-rec-tag">RECOMMENDED</span>
+    <div class="profile-badges">
+      <span class="badge badge-low">LOW RISK</span>
+      <span class="profile-fps">+2-5% FPS</span>
+    </div>
+  </div>
+  <div class="profile-desc">Light touch. Keeps everything stable, all changes reversible. Good starting point.</div>
+  <div class="profile-meta">12 tweaks · Power, Services, Network</div>
+  <div class="profile-actions">
+    <button class="btn-secondary">View Tweaks</button>
+    <button class="btn-primary" style="background:var(--success);color:#fff">Apply Safe</button>
+  </div>
+</div>
+
+<!-- Competitive -->
+<div class="profile-card">
+  <div class="profile-title-row">
+    <span class="mi mi-lg profile-icon" style="color:var(--warning)">speed</span>
+    <span class="profile-name">Competitive</span>
+    <div class="profile-badges">
+      <span class="badge badge-medium">MEDIUM</span>
+      <span class="profile-fps">+5-10% FPS</span>
+    </div>
+  </div>
+  <div class="profile-desc">Tuned for ranked play. Disables some services, aggressive network + input tweaks.</div>
+  <div class="profile-meta">24 tweaks · Power, Services, Network, GPU</div>
+  <div class="profile-actions">
+    <button class="btn-secondary">View Tweaks</button>
+    <button class="btn-primary" style="background:var(--warning);color:#000">Apply Competitive</button>
+  </div>
+</div>
+
+<!-- Extreme -->
+<div class="profile-card">
+  <div class="profile-title-row">
+    <span class="mi mi-lg profile-icon" style="color:var(--danger)">local_fire_department</span>
+    <span class="profile-name">Extreme</span>
+    <div class="profile-badges">
+      <span class="badge badge-high">HIGH RISK</span>
+      <span class="profile-fps">+10-15% FPS</span>
+    </div>
+  </div>
+  <div class="profile-desc">Max squeeze. Boot, services, latency — everything cranked. Know what you're doing.</div>
+  <div class="profile-meta">38 tweaks · Power, Services, Network, GPU, Storage, Boot</div>
+  <div class="profile-actions">
+    <button class="btn-secondary">View Tweaks</button>
+    <button class="btn-primary" style="background:var(--danger);color:#fff">Apply Extreme</button>
+  </div>
+</div>
+
+<!-- A4. Tab: Custom (split-pane) -->
+<h3>A4. Tab — Custom (split-pane layout)</h3>
+<p class="text-muted" style="margin-bottom:12px">Build your own tweak set. Click any tweak to see details on the right.</p>
+
+<div class="selection-bar">
+  <span class="selection-count">3 tweaks selected</span>
+  <div class="selection-actions">
+    <button class="btn-ghost">Import</button>
+    <button class="btn-ghost">Export</button>
+    <button class="btn-ghost">Clear All</button>
+    <button class="btn-primary">Apply 3 Tweaks</button>
+  </div>
+</div>
+
+<div class="split-pane">
+  <!-- LEFT: tweak list -->
+  <div class="split-left">
+    <!-- Category: Power -->
+    <div class="tweak-section-header">
+      <span class="mi" style="color:var(--warning)">bolt</span> Power (4)
+    </div>
+    <div class="tweak-row selected">
+      <div class="toggle on"></div>
+      <div class="tweak-name">Ultimate Performance Plan</div>
+      <div class="tweak-desc">Hidden power plan, keeps CPU at peak P-state</div>
+      <span class="badge badge-low">LOW</span>
+      <div class="tweak-gain">+3% FPS</div>
+    </div>
+    <div class="tweak-row">
+      <div class="toggle"></div>
+      <div class="tweak-name">Disable CPU Throttling</div>
+      <div class="tweak-desc">Prevent frequency scaling under load</div>
+      <span class="badge badge-medium">MED</span>
+      <div class="tweak-gain">+5% FPS</div>
+    </div>
+    <div class="tweak-row detail-active">
+      <div class="toggle"></div>
+      <div class="tweak-name">USB Selective Suspend</div>
+      <div class="tweak-desc">Disable USB power-saving for lower input latency</div>
+      <span class="badge badge-low">LOW</span>
+      <div class="tweak-gain">latency</div>
+    </div>
+
+    <!-- Category: Network -->
+    <div class="tweak-section-header" style="margin-top:12px">
+      <span class="mi" style="color:var(--accent)">lan</span> Network (3)
+    </div>
+    <div class="tweak-row selected">
+      <div class="toggle on"></div>
+      <div class="tweak-name">TCP Nagle Disable</div>
+      <div class="tweak-desc">Less TCP buffering = lower ping</div>
+      <span class="badge badge-low">LOW</span>
+      <div class="tweak-gain">-10ms ping</div>
+    </div>
+    <div class="tweak-row selected">
+      <div class="toggle on"></div>
+      <div class="tweak-name">DNS-over-HTTPS</div>
+      <div class="tweak-desc">Fast encrypted DNS (Cloudflare)</div>
+      <span class="badge badge-low">LOW</span>
+      <div class="tweak-gain">latency</div>
+    </div>
+    <div class="tweak-row">
+      <div class="toggle"></div>
+      <div class="tweak-name">QoS Packet Scheduler</div>
+      <div class="tweak-desc">Reclaim reserved bandwidth</div>
+      <span class="badge badge-medium">MED</span>
+      <div class="tweak-gain">+1% bw</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: detail/glossary panel -->
+  <div class="split-detail">
+    <div class="detail-title">USB Selective Suspend</div>
+    <div class="detail-category">Power · Registry tweak</div>
+
+    <div class="detail-section-label">What it does</div>
+    <div class="detail-text">Prevents Windows from powering down USB ports to save energy. When this kicks in during gameplay, your mouse or keyboard can stutter for a few ms while the port wakes back up. Disabling it keeps ports always-on.</div>
+
+    <div class="detail-section-label">Impact</div>
+    <div class="detail-row">
+      <span class="detail-label">Risk</span>
+      <span class="badge badge-low">LOW RISK</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Effect</span>
+      <span class="detail-value">Lower input latency</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Trade-off</span>
+      <span class="detail-value">Slightly higher idle power draw</span>
+    </div>
+
+    <div class="detail-section-label">Reversal</div>
+    <div class="detail-text">Re-enable via Power Options → USB settings, or restore from backup.</div>
+
+    <div class="detail-section-label">Registry path</div>
+    <div class="detail-text" style="font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted);word-break:break-all">HKLM\SYSTEM\CurrentControlSet\Services\USB\DisableSelectiveSuspend</div>
+  </div>
+</div>
+
+<!-- Split-pane empty state (when nothing is clicked) -->
+<h3 style="margin-top:20px">A4b. Detail panel — empty state</h3>
+<div style="max-width:320px">
+  <div class="split-detail">
+    <div class="split-detail-empty">
+      <span class="mi mi-xl" style="color:var(--text-muted)">info</span>
+      <div style="font-size:13px;font-weight:600;color:var(--text-tertiary)">Select a tweak</div>
+      <div style="font-size:11px;color:var(--text-muted)">Click any tweak on the left to see what it does, its risk level, and how to undo it.</div>
+    </div>
+  </div>
+</div>
+
+<!-- A5. Tab: Glossary -->
+<h3>A5. Tab — Glossary</h3>
+
+<div class="edu-cat-header"><span class="mi" style="color:var(--warning)">bolt</span> Power</div>
+<div class="edu-row">
+  <div class="edu-name">Ultimate Performance Plan</div>
+  <div class="edu-desc">Hidden power plan — keeps CPU at peak P-state</div>
+  <span class="badge badge-low">LOW</span>
+  <div class="edu-gain">+3% FPS</div>
+  <div class="edu-expand"><span class="mi mi-sm">expand_more</span></div>
+</div>
+<div class="edu-row">
+  <div class="edu-name">Disable CPU Throttling</div>
+  <div class="edu-desc">Stops Windows from downclocking when thermals are fine</div>
+  <span class="badge badge-medium">MED</span>
+  <div class="edu-gain">+5% FPS</div>
+  <div class="edu-expand"><span class="mi mi-sm">expand_more</span></div>
+</div>
+
+<div class="edu-cat-header" style="margin-top:12px"><span class="mi" style="color:var(--accent)">lan</span> Network</div>
+<div class="edu-row">
+  <div class="edu-name">TCP Nagle Disable</div>
+  <div class="edu-desc">Turns off Nagle's algorithm — trades bandwidth for lower latency</div>
+  <span class="badge badge-low">LOW</span>
+  <div class="edu-gain">-10ms ping</div>
+  <div class="edu-expand"><span class="mi mi-sm">expand_more</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SECTION B — EXECUTION DIALOG                                    -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2>B — Execution Dialog (modal overlay)</h2>
+
+<div style="max-width:560px">
+  <div class="dialog-overlay">
+    <div class="dialog-title">Applying: Safe</div>
+    <div class="dialog-log">
+      <div class="log-info">[snap] Taking before-snapshot...</div>
+      <div class="log-ok">[+] Ultimate Performance Plan — applied</div>
+      <div class="log-ok">[+] TCP Nagle Disable — applied</div>
+      <div class="log-warn">[~] USB Selective Suspend — skipped (already set)</div>
+      <div class="log-ok">[+] DNS-over-HTTPS — applied</div>
+      <div class="log-info">[snap] Taking after-snapshot...</div>
+      <div class="log-ok">[done] 3 applied, 1 skipped — no restart needed</div>
+    </div>
+    <div class="dialog-progress">
+      <div class="dialog-progress-fill" style="width:100%"></div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn-secondary">Copy Log</button>
+      <button class="btn-primary">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SECTION C — BACKUP                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2>C — Backup</h2>
+
+<h3>C1. Header</h3>
+<div class="view-header">
+  <div class="col">
+    <div class="view-title">Backup</div>
+    <div class="view-sub">3 backups · Last: 2026-03-26</div>
+  </div>
+  <button class="btn-primary"><span class="mi mi-sm">add</span> New Backup</button>
+</div>
+
+<h3>C2. Info banner (no stripe)</h3>
+<div class="info-banner">
+  <span class="mi">shield</span>
+  <div class="info-body">
+    <div class="info-title">Auto-backup is on</div>
+    <div class="info-desc">ClutchG snapshots your registry before every profile apply. You can also create manual backups here.</div>
+  </div>
+</div>
+
+<h3>C3. Backup list</h3>
+<!-- backup 1 — full -->
+<div class="backup-card">
+  <div class="backup-icon" style="color:var(--success)"><span class="mi">check_circle</span></div>
+  <div class="backup-info">
+    <div class="backup-name-row">
+      <span class="backup-name">Backup_20260326_1420</span>
+      <span class="badge badge-low">RESTORE POINT</span>
+      <span class="badge badge-accent">REGISTRY</span>
+    </div>
+    <div class="backup-date">2026-03-26 14:20</div>
+  </div>
+  <div class="backup-actions">
+    <button class="btn-success"><span class="mi mi-sm">restore</span> Restore</button>
+    <button class="btn-danger"><span class="mi mi-sm">delete</span> Delete</button>
+  </div>
+</div>
+
+<!-- backup 2 — registry only -->
+<div class="backup-card">
+  <div class="backup-icon" style="color:var(--text-tertiary)"><span class="mi">inventory_2</span></div>
+  <div class="backup-info">
+    <div class="backup-name-row">
+      <span class="backup-name">Before_Competitive_Mode</span>
+      <span class="badge badge-neutral">REGISTRY ONLY</span>
+    </div>
+    <div class="backup-date">2026-03-20 09:05</div>
+  </div>
+  <div class="backup-actions">
+    <button class="btn-success"><span class="mi mi-sm">restore</span> Restore</button>
+    <button class="btn-danger"><span class="mi mi-sm">delete</span> Delete</button>
+  </div>
+</div>
+
+<!-- backup 3 -->
+<div class="backup-card">
+  <div class="backup-icon" style="color:var(--text-tertiary)"><span class="mi">inventory_2</span></div>
+  <div class="backup-info">
+    <div class="backup-name-row">
+      <span class="backup-name">Manual_Mar15</span>
+      <span class="badge badge-neutral">REGISTRY ONLY</span>
+    </div>
+    <div class="backup-date">2026-03-15 18:42</div>
+  </div>
+  <div class="backup-actions">
+    <button class="btn-success"><span class="mi mi-sm">restore</span> Restore</button>
+    <button class="btn-danger"><span class="mi mi-sm">delete</span> Delete</button>
+  </div>
+</div>
+
+<h3>C4. Empty state</h3>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:0 20px">
+  <div class="empty-state">
+    <div class="empty-icon-bg"><span class="mi mi-xl">backup</span></div>
+    <div class="empty-title">No backups yet</div>
+    <div class="empty-desc">Create one before applying any tweaks. Takes a few seconds, saves hours of pain.</div>
+    <button class="btn-primary"><span class="mi mi-sm">add</span> Create Backup</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SECTION D — DOCS                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2>D — Docs</h2>
+
+<h3>D1. Header</h3>
+<div class="view-title" style="margin-bottom:20px">Docs</div>
+
+<h3>D2. Two-column layout (sidebar + content)</h3>
+<div class="help-layout">
+  <!-- Sidebar -->
+  <div class="help-sidebar">
+    <div class="help-sidebar-title">Topics</div>
+    <input class="help-search" placeholder="Search..." />
+    <button class="btn-ghost" style="width:100%;margin-bottom:8px;justify-content:center">Clear</button>
+    <button class="help-topic-btn active"><span class="mi mi-sm">rocket_launch</span> Getting Started</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">tune</span> Profiles</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">shield</span> Safety</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">description</span> Scripts</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">backup</span> Backup</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">build</span> Troubleshooting</button>
+    <button class="help-topic-btn"><span class="mi mi-sm">info</span> About</button>
+  </div>
+
+  <!-- Content: Getting Started topic -->
+  <div class="help-content">
+    <div class="help-topic-title"><span class="mi">rocket_launch</span> Getting Started</div>
+
+    <div class="help-card">
+      <div class="help-card-title">What is ClutchG?</div>
+      <div class="help-card-body">A Windows optimizer for gamers. Applies reversible tweaks to cut latency, smooth out frame times, and kill unnecessary background noise — without touching Defender, UAC, or Windows Update.</div>
+    </div>
+
+    <div class="help-card">
+      <div class="help-card-title">Quick Start</div>
+      <div class="help-card-body">
+        1. Go to <strong style="color:var(--accent)">Tweaks → Profiles</strong> and pick one (Safe is a good start).<br>
+        2. ClutchG auto-creates a backup before applying.<br>
+        3. Restart if prompted.<br>
+        4. Check <strong style="color:var(--accent)">Home</strong> for your updated score.
+      </div>
+    </div>
+
+    <div class="help-card">
+      <div class="help-card-title">Key Points</div>
+      <div class="help-card-body">
+        • Everything is logged and reversible via Backup.<br>
+        • Defender, UAC, and Windows Update are never touched.<br>
+        • Risk levels: LOW = safe for everyone · MEDIUM = read first · HIGH = advanced only.
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top:32px">D3. Safety topic — Myth cards</h3>
+<div style="max-width:680px">
+  <div class="view-title" style="margin-bottom:16px;font-size:16px">Common Myths</div>
+  <div class="help-myth-card">
+    <div class="myth-bad">MYTH: "Disabling Defender improves gaming performance"</div>
+    <div class="myth-good">FACT: Defender's real-world FPS impact is under 1%. Disabling it opens you up to malware. ClutchG never touches it.</div>
+  </div>
+  <div class="help-myth-card">
+    <div class="myth-bad">MYTH: "More RAM = faster games"</div>
+    <div class="myth-good">FACT: RAM speed matters more than capacity above 16 GB. ClutchG tunes timing settings where safe.</div>
+  </div>
+  <div class="help-myth-card">
+    <div class="myth-bad">MYTH: "BCDEdit /set useplatformtick yes always helps"</div>
+    <div class="myth-good">FACT: Helps some Intel CPUs, can hurt AMD Ryzen. ClutchG checks your CPU vendor first.</div>
+  </div>
+</div>
+
+</body>
+</html>
