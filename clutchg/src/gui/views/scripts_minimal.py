@@ -15,6 +15,7 @@ from gui.theme import (
     get_risk_colors,
     NAV_ICONS,
     ICON,
+    ICON_FONT,
     theme_manager,
 )
 from gui.style import font
@@ -57,7 +58,7 @@ def get_risk_display(level: str) -> dict:
 PRESET_INFO = {
     "safe": {
         "icon": ICON("safe"),
-        "title": "Safe Mode",  # Native Icon
+        "title": "Safe",
         "subtitle": "Evidence-based, fully reversible",
         "fps": "2-5%",
         "risk": "LOW",
@@ -67,7 +68,7 @@ PRESET_INFO = {
     },
     "competitive": {
         "icon": ICON("competitive"),
-        "title": "Competitive Mode",  # Native Icon
+        "title": "Competitive",
         "subtitle": "Balanced gaming performance",
         "fps": "5-10%",
         "risk": "MEDIUM",
@@ -77,7 +78,7 @@ PRESET_INFO = {
     },
     "extreme": {
         "icon": ICON("extreme"),
-        "title": "Extreme Mode",  # Native Icon
+        "title": "Extreme",
         "subtitle": "Maximum performance, advanced users only",
         "fps": "10-15%",
         "risk": "HIGH",
@@ -94,20 +95,20 @@ class ScriptsView(ctk.CTkFrame):
     # Localization strings (EN/TH)
     UI_STRINGS = {
         "en": {
-            "title": "Optimization Center",
+            "title": "Tweaks",
             "stats": "{tweaks} tweaks  ·  {categories} categories",
             # Tab names
-            "tab_presets": "Presets",
-            "tab_custom": "Custom Builder",
-            "tab_education": "Encyclopedia",
+            "tab_presets": "Profiles",
+            "tab_custom": "Custom",
+            "tab_education": "Glossary",
             # Preset info
-            "safe_title": "Safe Mode",
+            "safe_title": "Safe",
             "safe_subtitle": "Evidence-based, fully reversible",
             "safe_desc": "Minimal optimizations with maximum safety. Perfect for daily drivers. All changes are easily reversible.",
-            "comp_title": "Competitive Mode",
+            "comp_title": "Competitive",
             "comp_subtitle": "Balanced gaming performance",
             "comp_desc": "Optimized for competitive gaming. Disables some services and applies aggressive network/input tweaks.",
-            "ext_title": "Extreme Mode",
+            "ext_title": "Extreme",
             "ext_subtitle": "Maximum performance, advanced users only",
             "ext_desc": "Most aggressive reversible tuning set. Includes advanced boot, service, and latency tweaks for experienced users.",
             # Risk labels
@@ -117,25 +118,25 @@ class ScriptsView(ctk.CTkFrame):
             # Common
             "apply": "APPLY",
             "view_tweaks": "View Tweaks",
-            "recommended": "★ RECOMMENDED FOR YOU ★",
+            "recommended": "RECOMMENDED",
             "rec_reason": "Recommendation based on your system: {reason}",
             "tweaks_count": "{count} tweaks",
         },
         "th": {
-            "title": "Optimization Center",
+            "title": "Tweaks",
             "stats": "{tweaks} tweaks  ·  {categories} หมวดหมู่",
             # Tab names
-            "tab_presets": "โหมด Preset",
-            "tab_custom": "สร้าง Custom",
-            "tab_education": "สารบัญ Tweaks",
+            "tab_presets": "Profiles",
+            "tab_custom": "Custom",
+            "tab_education": "Glossary",
             # Preset info
-            "safe_title": "Safe Mode",
+            "safe_title": "Safe",
             "safe_subtitle": "ยืนยันได้จากหลักฐาน สามารถย้อนกลับได้",
             "safe_desc": "Optimize ขั้นต่ำแต่ปลอดภัยสูงสุด เหมาะสำหรับใช้งานทั่วไป สามารถยกเลิกการเปลี่ยนแปลงได้ทั้งหมด",
-            "comp_title": "Competitive Mode",
+            "comp_title": "Competitive",
             "comp_subtitle": "สมดุลสำหรับเกมเมอร์",
             "comp_desc": "ปรับแต่งสำหรับเกมเมอร์อย่างสมดุล ปิด Services บางตัวและปรับ Network/Input ขั้นสูง",
-            "ext_title": "Extreme Mode",
+            "ext_title": "Extreme",
             "ext_subtitle": "ประสิทธิภาพสูงสุด สำหรับผู้ใช้ขั้นสูง",
             "ext_desc": "ชุดการจูนแบบย้อนกลับได้ที่เข้มที่สุด เพิ่ม boot, service และ latency tweaks สำหรับผู้ใช้ขั้นสูง",
             # Risk labels
@@ -145,7 +146,7 @@ class ScriptsView(ctk.CTkFrame):
             # Common
             "apply": "ใช้งาน",
             "view_tweaks": "ดู Tweaks",
-            "recommended": "★ แนะนำสำหรับคุณ ★",
+            "recommended": "แนะนำ",
             "rec_reason": "แนะนำจากสเปคของคุณ: {reason}",
             "tweaks_count": "{count} tweaks",
         },
@@ -153,15 +154,15 @@ class ScriptsView(ctk.CTkFrame):
 
     UI_STRINGS["en"].update(
         {
-            "tab_quick_actions": "Quick Actions",
+            "tab_quick_actions": "Quick Fix",
             "quick_actions_subtitle": "One-click action packs for practical and safe V1 workflows.",
             "quick_group_general": "General",
             "quick_group_advanced": "Advanced",
             "quick_group_cleanup": "Cleanup",
             "quick_group_windows": "Windows",
             "quick_group_utilities": "Utilities",
-            "quick_run": "Run Action",
-            "quick_open": "Open Link",
+            "quick_run": "Run",
+            "quick_open": "Open",
             "quick_confirm_title": "Confirm Quick Action",
             "quick_confirm_body": (
                 "Action: {title}\n"
@@ -188,15 +189,15 @@ class ScriptsView(ctk.CTkFrame):
 
     UI_STRINGS["th"].update(
         {
-            "tab_quick_actions": "Quick Actions",
+            "tab_quick_actions": "Quick Fix",
             "quick_actions_subtitle": "Quick action packs with practical V1-safe defaults.",
             "quick_group_general": "General",
             "quick_group_advanced": "Advanced",
             "quick_group_cleanup": "Cleanup",
             "quick_group_windows": "Windows",
             "quick_group_utilities": "Utilities",
-            "quick_run": "Run Action",
-            "quick_open": "Open Link",
+            "quick_run": "Run",
+            "quick_open": "Open",
             "quick_confirm_title": "Confirm Quick Action",
             "quick_confirm_body": (
                 "Action: {title}\n"
@@ -234,6 +235,7 @@ class ScriptsView(ctk.CTkFrame):
         if not self.quick_actions_errors:
             self.quick_actions_errors = self.action_catalog.validate()
         self.selected_tweaks: Set[str] = set()
+        self.detail_tweak_id: Optional[str] = None
         self.active_tab = "quick_actions"
         self.active_quick_group = "general"
         self.active_edu_category: Optional[str] = None
@@ -262,7 +264,7 @@ class ScriptsView(ctk.CTkFrame):
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
         if self.app.config.get("language") == "th":
-            return ctk.CTkFont(family="Tahoma", size=size, weight=weight)
+            return ctk.CTkFont(family="Figtree", size=size, weight=weight)
         return font("body", size=size, weight=weight)
 
     def _get_preset_info(self) -> dict:
@@ -868,7 +870,7 @@ class ScriptsView(ctk.CTkFrame):
         if suggestion:
             reason_lbl = ctk.CTkLabel(
                 self.content,
-                text=f"💡 {self._ui('rec_reason', reason=suggestion.get('reason', ''))}",
+                text=self._ui("rec_reason", reason=suggestion.get("reason", "")),
                 font=self._font(12),
                 text_color=COLORS["text_tertiary"],
                 wraplength=700,
@@ -906,25 +908,14 @@ class ScriptsView(ctk.CTkFrame):
             fg_color=COLORS["bg_card"],
             corner_radius=RADIUS["lg"],
             border_width=2 if is_recommended else 1,
-            border_color=info["color"] if is_recommended else COLORS["border"],
+            border_color=COLORS["success"] if is_recommended else COLORS["border"],
         )
-        card.grid_columnconfigure(1, weight=1)
-
-        # Left accent stripe
-        stripe = ctk.CTkFrame(card, fg_color=info["color"], width=4, corner_radius=2)
-        stripe.grid(
-            row=0,
-            column=0,
-            rowspan=4,
-            sticky="ns",
-            padx=(0, SPACING["md"]),
-            pady=SPACING["sm"],
-        )
+        card.grid_columnconfigure(0, weight=1)
 
         # Row 0: Title + recommended badge
         title_frame = ctk.CTkFrame(card, fg_color="transparent")
         title_frame.grid(
-            row=0, column=1, sticky="ew", padx=SPACING["md"], pady=(SPACING["md"], 0)
+            row=0, column=0, sticky="ew", padx=SPACING["md"], pady=(SPACING["md"], 0)
         )
         title_frame.grid_columnconfigure(1, weight=1)
 
@@ -953,8 +944,8 @@ class ScriptsView(ctk.CTkFrame):
                 title_frame,
                 text=self._ui("recommended"),
                 font=self._font(12),
-                fg_color=info["color"],
-                text_color="#FFFFFF",
+                fg_color=COLORS["success_dim"],
+                text_color=COLORS["success"],
                 corner_radius=RADIUS["full"],
             )
             badge.grid(row=0, column=1, sticky="w", padx=(SPACING["sm"], 0))
@@ -992,7 +983,7 @@ class ScriptsView(ctk.CTkFrame):
             anchor="w",
             justify="left",
         ).grid(
-            row=1, column=1, sticky="ew", padx=SPACING["md"], pady=(SPACING["xs"], 0)
+            row=1, column=0, sticky="ew", padx=SPACING["md"], pady=(SPACING["xs"], 0)
         )
 
         # Row 2: Tweak count + categories
@@ -1009,14 +1000,14 @@ class ScriptsView(ctk.CTkFrame):
             wraplength=650,
             anchor="w",
         ).grid(
-            row=2, column=1, sticky="ew", padx=SPACING["md"], pady=(SPACING["xs"], 0)
+            row=2, column=0, sticky="ew", padx=SPACING["md"], pady=(SPACING["xs"], 0)
         )
 
         # Row 3: Action buttons
         btn_frame = ctk.CTkFrame(card, fg_color="transparent")
         btn_frame.grid(
             row=3,
-            column=1,
+            column=0,
             sticky="ew",
             padx=SPACING["md"],
             pady=(SPACING["sm"], SPACING["md"]),
@@ -1071,7 +1062,7 @@ class ScriptsView(ctk.CTkFrame):
                         from core.system_snapshot import SystemSnapshotManager
 
                         snap_mgr = SystemSnapshotManager()
-                        dialog.add_output("📸 Taking before-snapshot...")
+                        dialog.add_output("[snap] Taking before-snapshot...")
                         before_snap = snap_mgr.take_snapshot()
                     except Exception:
                         snap_mgr = None
@@ -1107,15 +1098,50 @@ class ScriptsView(ctk.CTkFrame):
     def _show_custom_tab(self):
         self._clear_content()
 
-        # Selection summary bar
+        # Selection summary bar (full width, above split pane)
         self._create_selection_bar()
 
-        # Tweaks grouped by category
+        # Split-pane container: left tweak list + right detail panel
+        split = ctk.CTkFrame(self.content, fg_color="transparent")
+        split.grid(sticky="nsew", pady=(0, 0))
+        split.grid_columnconfigure(0, weight=1)
+        split.grid_columnconfigure(1, weight=0)
+        split.grid_rowconfigure(0, weight=1)
+
+        # Left column — scrollable tweak list
+        self.custom_left = ctk.CTkScrollableFrame(
+            split,
+            fg_color="transparent",
+            scrollbar_button_color=COLORS["bg_card"],
+            scrollbar_button_hover_color=COLORS["accent"],
+        )
+        self.custom_left.grid(row=0, column=0, sticky="nsew", padx=(0, SPACING["sm"]))
+        self.custom_left.grid_columnconfigure(0, weight=1)
+
+        # Right column — detail panel (fixed 320px)
+        self.detail_panel = ctk.CTkFrame(
+            split,
+            fg_color=COLORS["bg_card"],
+            corner_radius=RADIUS["lg"],
+            border_width=1,
+            border_color=COLORS["border"],
+            width=320,
+        )
+        self.detail_panel.grid(row=0, column=1, sticky="nsew")
+        self.detail_panel.grid_propagate(False)
+        self.detail_panel.grid_columnconfigure(0, weight=1)
+
+        # Show empty state in detail panel
+        self._create_detail_empty_state()
+
+        # Tweaks grouped by category (into left column)
         for cat_key, cat_info in TWEAK_CATEGORIES.items():
             tweaks = self.registry.get_tweaks_by_category(cat_key)
             if not tweaks:
                 continue
-            self._create_category_section(cat_key, cat_info, tweaks)
+            self._create_category_section(
+                cat_key, cat_info, tweaks, parent=self.custom_left
+            )
 
     def _create_selection_bar(self):
         """Summary bar showing selected tweak count and apply button"""
@@ -1148,7 +1174,7 @@ class ScriptsView(ctk.CTkFrame):
         # Import button
         ctk.CTkButton(
             btn_frame,
-            text="📥 Import",
+            text="Import",
             font=font("caption"),
             fg_color="transparent",
             text_color=COLORS["text_secondary"],
@@ -1162,7 +1188,7 @@ class ScriptsView(ctk.CTkFrame):
         # Export button
         ctk.CTkButton(
             btn_frame,
-            text="📤 Export",
+            text="Export",
             font=font("caption"),
             fg_color="transparent",
             text_color=COLORS["text_secondary"],
@@ -1266,10 +1292,11 @@ class ScriptsView(ctk.CTkFrame):
         self._show_custom_tab()
 
     def _create_category_section(
-        self, cat_key: str, cat_info: dict, tweaks: List[Tweak]
+        self, cat_key: str, cat_info: dict, tweaks: List[Tweak], parent=None
     ):
         """Section for a category with tweak toggles"""
-        section = ctk.CTkFrame(self.content, fg_color="transparent")
+        container = parent if parent is not None else self.content
+        section = ctk.CTkFrame(container, fg_color="transparent")
         section.grid(sticky="ew", pady=(0, SPACING["sm"]))
         section.grid_columnconfigure(0, weight=1)
 
@@ -1278,9 +1305,17 @@ class ScriptsView(ctk.CTkFrame):
         header.grid(row=0, column=0, sticky="ew")
 
         color = cat_info.get("color", COLORS["text_secondary"])
+        icon_char = cat_info.get("icon", "")
+        if icon_char:
+            ctk.CTkLabel(
+                header,
+                text=icon_char,
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=14),
+                text_color=color,
+            ).pack(side="left", padx=(0, SPACING["xs"]))
         ctk.CTkLabel(
             header,
-            text=f"  {cat_info.get('icon', '')}  {cat_info['label']}  ({len(tweaks)})",
+            text=f"{cat_info['label']}  ({len(tweaks)})",
             font=font("body_bold"),
             text_color=color,
         ).pack(side="left")
@@ -1375,9 +1410,16 @@ class ScriptsView(ctk.CTkFrame):
         if tweak.requires_restart:
             ctk.CTkLabel(
                 row,
-                text="🔄",
-                font=ctk.CTkFont(size=12),
+                text=ICON("refresh"),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
             ).grid(row=0, column=6, padx=(0, SPACING["sm"]))
+
+        # Click row to show inline detail (split-pane)
+        row.bind("<Button-1>", lambda e, t=tweak: self._on_tweak_row_click(t))
+        for child in row.winfo_children():
+            # Propagate click to children (labels don't forward clicks)
+            if not isinstance(child, (ctk.CTkSwitch, ctk.CTkButton)):
+                child.bind("<Button-1>", lambda e, t=tweak: self._on_tweak_row_click(t))
 
         return row
 
@@ -1406,6 +1448,214 @@ class ScriptsView(ctk.CTkFrame):
                 state="normal" if count > 0 else "disabled",
             )
 
+    # ----------------------------------------------------------------
+    # Split-pane detail panel (Custom tab)
+    # ----------------------------------------------------------------
+    def _create_detail_empty_state(self):
+        """Show placeholder when no tweak is selected in the detail panel"""
+        if not hasattr(self, "detail_panel"):
+            return
+        for w in self.detail_panel.winfo_children():
+            w.destroy()
+
+        wrapper = ctk.CTkFrame(self.detail_panel, fg_color="transparent")
+        wrapper.place(relx=0.5, rely=0.4, anchor="center")
+
+        ctk.CTkLabel(
+            wrapper,
+            text="\ue946",
+            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=32),
+            text_color=COLORS["text_muted"],
+        ).pack()
+
+        ctk.CTkLabel(
+            wrapper,
+            text="Select a tweak",
+            font=font("body_bold"),
+            text_color=COLORS["text_tertiary"],
+        ).pack(pady=(SPACING["sm"], 0))
+
+        ctk.CTkLabel(
+            wrapper,
+            text="Click any tweak on the left\nto see details here",
+            font=font("caption"),
+            text_color=COLORS["text_muted"],
+            justify="center",
+        ).pack(pady=(SPACING["xs"], 0))
+
+    def _on_tweak_row_click(self, tweak: Tweak):
+        """Handle click on a tweak row — show inline detail panel"""
+        self.detail_tweak_id = tweak.id
+        self._show_inline_detail(tweak)
+
+    def _show_inline_detail(self, tweak: Tweak):
+        """Populate the right-side detail panel with tweak info"""
+        if not hasattr(self, "detail_panel"):
+            return
+        for w in self.detail_panel.winfo_children():
+            w.destroy()
+
+        # Scrollable content inside the fixed-width panel
+        scroll = ctk.CTkScrollableFrame(
+            self.detail_panel,
+            fg_color="transparent",
+            scrollbar_button_color=COLORS["bg_tertiary"],
+            scrollbar_button_hover_color=COLORS["accent"],
+        )
+        scroll.pack(fill="both", expand=True, padx=SPACING["sm"], pady=SPACING["sm"])
+        scroll.grid_columnconfigure(0, weight=1)
+
+        risk_colors = self._get_risk_colors()
+        risk_c = risk_colors.get(tweak.risk_level.upper(), risk_colors["LOW"])
+        r = 0
+
+        # Title
+        ctk.CTkLabel(
+            scroll,
+            text=tweak.name,
+            font=font("h3"),
+            text_color=COLORS["text_primary"],
+            wraplength=280,
+            anchor="w",
+            justify="left",
+        ).grid(row=r, column=0, sticky="w")
+        r += 1
+
+        # Category + type badge row
+        badge_f = ctk.CTkFrame(scroll, fg_color="transparent")
+        badge_f.grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], SPACING["sm"]))
+        r += 1
+
+        cat_info = TWEAK_CATEGORIES.get(tweak.category, {})
+        cat_label = cat_info.get("label", tweak.category)
+        ctk.CTkLabel(
+            badge_f,
+            text=f"  {cat_label}  ",
+            font=ctk.CTkFont(size=10),
+            fg_color=COLORS["bg_tertiary"],
+            text_color=cat_info.get("color", COLORS["text_secondary"]),
+            corner_radius=RADIUS["sm"],
+        ).pack(side="left", padx=(0, SPACING["xs"]))
+
+        ctk.CTkLabel(
+            badge_f,
+            text=f"  {risk_c['label']}  ",
+            font=ctk.CTkFont(size=10),
+            fg_color=risk_c["bg"],
+            text_color=risk_c["fg"],
+            corner_radius=RADIUS["sm"],
+        ).pack(side="left", padx=(0, SPACING["xs"]))
+
+        if tweak.requires_restart:
+            ctk.CTkLabel(
+                badge_f,
+                text="  Restart  ",
+                font=ctk.CTkFont(size=10),
+                fg_color=COLORS["bg_tertiary"],
+                text_color=COLORS["text_tertiary"],
+                corner_radius=RADIUS["sm"],
+            ).pack(side="left")
+
+        # Separator
+        ctk.CTkFrame(
+            scroll,
+            fg_color=COLORS["border"],
+            height=1,
+        ).grid(row=r, column=0, sticky="ew", pady=SPACING["xs"])
+        r += 1
+
+        # Content sections
+        sections = [
+            ("What it does", tweak.what_it_does),
+            ("Why it helps", tweak.why_it_helps),
+            ("Expected gain", tweak.expected_gain),
+            ("Limitations", tweak.limitations),
+        ]
+
+        for title, content in sections:
+            if not content:
+                continue
+            ctk.CTkLabel(
+                scroll,
+                text=title,
+                font=font("caption"),
+                text_color=COLORS["text_tertiary"],
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
+            r += 1
+            ctk.CTkLabel(
+                scroll,
+                text=content,
+                font=font("body"),
+                text_color=COLORS["text_secondary"],
+                wraplength=280,
+                anchor="w",
+                justify="left",
+            ).grid(row=r, column=0, sticky="ew")
+            r += 1
+
+        # Warnings
+        if tweak.warnings:
+            ctk.CTkLabel(
+                scroll,
+                text="Warnings",
+                font=font("caption"),
+                text_color=COLORS.get("warning", "#F59E0B"),
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
+            r += 1
+            for w in tweak.warnings:
+                ctk.CTkLabel(
+                    scroll,
+                    text=f"  - {w}",
+                    font=font("caption"),
+                    text_color=COLORS.get("warning", "#FBBF24"),
+                    wraplength=280,
+                    anchor="w",
+                    justify="left",
+                ).grid(row=r, column=0, sticky="ew")
+                r += 1
+
+        # Separator before technical info
+        ctk.CTkFrame(
+            scroll,
+            fg_color=COLORS["border"],
+            height=1,
+        ).grid(row=r, column=0, sticky="ew", pady=SPACING["sm"])
+        r += 1
+
+        # Registry/command paths
+        if tweak.registry_keys:
+            ctk.CTkLabel(
+                scroll,
+                text="Registry keys",
+                font=font("caption"),
+                text_color=COLORS["text_muted"],
+            ).grid(row=r, column=0, sticky="w", pady=(0, 2))
+            r += 1
+            for key in tweak.registry_keys:
+                ctk.CTkLabel(
+                    scroll,
+                    text=key,
+                    font=ctk.CTkFont(size=10, family="Consolas"),
+                    text_color=COLORS["text_muted"],
+                    wraplength=280,
+                    anchor="w",
+                    justify="left",
+                ).grid(row=r, column=0, sticky="ew")
+                r += 1
+
+        # Meta line
+        meta_parts = []
+        meta_parts.append("Reversible" if tweak.reversible else "Not reversible")
+        meta_parts.append(f"OS: Win {', '.join(tweak.compatible_os)}")
+        if tweak.requires_admin:
+            meta_parts.append("Admin required")
+        ctk.CTkLabel(
+            scroll,
+            text="  |  ".join(meta_parts),
+            font=ctk.CTkFont(size=10),
+            text_color=COLORS["text_muted"],
+        ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 0))
+
     def _apply_selected_tweaks(self):
         """Apply selected custom tweaks"""
         if not self.selected_tweaks:
@@ -1420,7 +1670,7 @@ class ScriptsView(ctk.CTkFrame):
                     from core.system_snapshot import SystemSnapshotManager
 
                     snap_mgr = SystemSnapshotManager()
-                    dialog.add_output("📸 Taking before-snapshot...")
+                    dialog.add_output("[snap] Taking before-snapshot...")
                     before_snap = snap_mgr.take_snapshot()
                 except Exception:
                     snap_mgr = None
