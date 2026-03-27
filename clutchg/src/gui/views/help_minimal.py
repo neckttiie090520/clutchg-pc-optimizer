@@ -6,7 +6,7 @@ Complete documentation viewer
 import customtkinter as ctk
 import re
 from typing import TYPE_CHECKING
-from gui.theme import COLORS, SIZES, SPACING, RADIUS, ICON
+from gui.theme import COLORS, SIZES, SPACING, RADIUS, ICON, ICON_FONT
 from gui.style import font
 from gui.components.inline_help import InlineHelpBox
 from gui.components.glass_card import GlassCard
@@ -21,7 +21,7 @@ class HelpView(ctk.CTkFrame):
 
     UI_STRINGS = {
         "en": {
-            "help_header": "Help & Documentation",
+            "help_header": "Docs",
             "topics": "Topics",
             "search_placeholder": "Search help...",
             "search_results": "Search Results",
@@ -37,7 +37,7 @@ class HelpView(ctk.CTkFrame):
             "reversibility": "Reversibility:",
         },
         "th": {
-            "help_header": "คู่มือและเอกสาร",
+            "help_header": "Docs",
             "topics": "หัวข้อ",
             "search_placeholder": "ค้นหาคู่มือ...",
             "search_results": "ผลการค้นหา",
@@ -110,6 +110,18 @@ class HelpView(ctk.CTkFrame):
         lang = "th" if self.app.config.get("language") == "th" else "en"
         return self.UI_STRINGS.get(lang, self.UI_STRINGS["en"]).get(key, key)
 
+    def _icon_label(
+        self, parent, icon_key: str, size: int = 14, color: str | None = None
+    ) -> ctk.CTkLabel:
+        """Create a CTkLabel rendering a Material Symbols icon glyph."""
+        return ctk.CTkLabel(
+            parent,
+            text=ICON(icon_key),
+            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=size),
+            text_color=color or COLORS["text_secondary"],
+            width=size + 4,
+        )
+
     def create_sidebar(self):
         """Create topic navigation sidebar with GlassCard"""
         self.sidebar = GlassCard(self, corner_radius=RADIUS["lg"], width=200)
@@ -147,15 +159,42 @@ class HelpView(ctk.CTkFrame):
         self.topic_buttons = {}
 
         for topic in topics:
-            btn = EnhancedButton.outline(
+            # Compound widget: clickable frame with icon + text labels
+            btn_frame = ctk.CTkFrame(
                 self.sidebar,
-                text=f"{topic.icon} {topic.title}",
+                fg_color="transparent",
                 height=36,
-                command=lambda t=topic: self.show_topic(t.id),
+                corner_radius=RADIUS["md"],
+                cursor="hand2",
             )
-            btn.configure(anchor="w")
-            btn.pack(fill="x", padx=SPACING["sm"], pady=2)
-            self.topic_buttons[topic.id] = btn
+            btn_frame.pack(fill="x", padx=SPACING["sm"], pady=2)
+            btn_frame.pack_propagate(False)
+
+            icon_lbl = ctk.CTkLabel(
+                btn_frame,
+                text=ICON(topic.icon),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                text_color=COLORS["text_secondary"],
+                width=20,
+            )
+            icon_lbl.pack(side="left", padx=(SPACING["sm"], 4))
+
+            text_lbl = ctk.CTkLabel(
+                btn_frame,
+                text=topic.title,
+                font=self._font(12),
+                text_color=COLORS["text_secondary"],
+                anchor="w",
+            )
+            text_lbl.pack(side="left", fill="x", expand=True)
+
+            # Bind click to frame + both labels
+            cmd = lambda t=topic: self.show_topic(t.id)
+            btn_frame.bind("<Button-1>", lambda e, c=cmd: c())
+            icon_lbl.bind("<Button-1>", lambda e, c=cmd: c())
+            text_lbl.bind("<Button-1>", lambda e, c=cmd: c())
+
+            self.topic_buttons[topic.id] = (btn_frame, icon_lbl, text_lbl)
 
         if self.search_entry:
             self.search_entry.bind("<Control-f>", self._focus_search)
@@ -186,13 +225,16 @@ class HelpView(ctk.CTkFrame):
         """Show a help topic"""
         self.current_topic_id = topic_id
         # Update sidebar highlighting
-        for tid, btn in self.topic_buttons.items():
+        for tid, widgets in self.topic_buttons.items():
+            frame, icon_lbl, text_lbl = widgets
             if tid == topic_id:
-                btn.configure(fg_color=COLORS["bg_hover"], text_color=COLORS["accent"])
+                frame.configure(fg_color=COLORS["bg_hover"])
+                icon_lbl.configure(text_color=COLORS["accent"])
+                text_lbl.configure(text_color=COLORS["accent"])
             else:
-                btn.configure(
-                    fg_color="transparent", text_color=COLORS["text_secondary"]
-                )
+                frame.configure(fg_color="transparent")
+                icon_lbl.configure(text_color=COLORS["text_secondary"])
+                text_lbl.configure(text_color=COLORS["text_secondary"])
 
         # Clear content
         for widget in self.content_frame.winfo_children():
@@ -202,13 +244,23 @@ class HelpView(ctk.CTkFrame):
         if not topic:
             return
 
-        # Title
+        # Title (compound: icon + text)
+        title_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        title_frame.pack(anchor="w", pady=(0, 20))
+
         ctk.CTkLabel(
-            self.content_frame,
-            text=f"{topic.icon} {topic.title}",
+            title_frame,
+            text=ICON(topic.icon),
+            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=20),
+            text_color=COLORS["text_primary"],
+        ).pack(side="left", padx=(0, 8))
+
+        ctk.CTkLabel(
+            title_frame,
+            text=topic.title,
             font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
-        ).pack(anchor="w", pady=(0, 20))
+        ).pack(side="left")
 
         # Quick links removed as per user request
         # self._render_quick_links()
@@ -285,15 +337,25 @@ class HelpView(ctk.CTkFrame):
                         text_color=COLORS["text_primary"],
                     ).pack(anchor="w")
 
-            # Who should use
+            # Who should use (compound: icon + text)
             if "who_should_use" in profile:
+                tip_frame = ctk.CTkFrame(details_frame, fg_color="transparent")
+                tip_frame.pack(anchor="w", pady=(10, 0))
+
                 ctk.CTkLabel(
-                    details_frame,
-                    text=f"💡 {profile['who_should_use']}",
+                    tip_frame,
+                    text=ICON("lightbulb"),
+                    font=ctk.CTkFont(family="Segoe MDL2 Assets", size=11),
+                    text_color=COLORS["accent"],
+                ).pack(side="left", padx=(0, 4))
+
+                ctk.CTkLabel(
+                    tip_frame,
+                    text=profile["who_should_use"],
                     font=self._font(10, "italic"),
                     text_color=COLORS["accent"],
-                    wraplength=600,
-                ).pack(anchor="w", pady=(10, 0))
+                    wraplength=580,
+                ).pack(side="left")
 
             if profile.get("warnings"):
                 ctk.CTkLabel(
@@ -340,13 +402,21 @@ class HelpView(ctk.CTkFrame):
         categories = scripts_data.get("categories", {})
 
         for cat_name, category in categories.items():
-            # Category section
+            # Category section — compound icon + text
+            cat_header = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+            cat_header.pack(anchor="w", pady=(20, 10))
             ctk.CTkLabel(
-                self.content_frame,
-                text=f"{category['icon']} {category['name']}",
+                cat_header,
+                text=ICON(category["icon"]),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=16),
+                text_color=COLORS["text_primary"],
+            ).pack(side="left", padx=(0, 6))
+            ctk.CTkLabel(
+                cat_header,
+                text=category["name"],
                 font=self._font(16, "bold"),
                 text_color=COLORS["text_primary"],
-            ).pack(anchor="w", pady=(20, 10))
+            ).pack(side="left")
 
             ctk.CTkLabel(
                 self.content_frame,
@@ -407,11 +477,14 @@ class HelpView(ctk.CTkFrame):
         """Return a view key if a key_point text references a navigable app area."""
         VIEW_KEYWORDS = {
             "dashboard": "dashboard",
+            "home": "dashboard",
+            "tweaks": "scripts",
             "optimization center": "scripts",
             "backup & restore": "backup",
             "backup and restore": "backup",
             "help & documentation": "help",
             "help and documentation": "help",
+            "docs": "help",
         }
         lower = text.lower()
         for keyword, view in VIEW_KEYWORDS.items():
@@ -491,19 +564,41 @@ class HelpView(ctk.CTkFrame):
             myth_frame = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             myth_frame.pack(fill="x", pady=SPACING["xs"], padx=(0, SPACING["lg"]))
 
-            ctk.CTkLabel(
-                myth_frame,
-                text=f"{ICON('error')} {myth['myth']}",
-                font=self._font(11),
-                text_color=COLORS["danger"],
-            ).pack(anchor="w", padx=15, pady=(10, 5))
+            # Myth line (compound: icon + "MYTH:" prefix + text)
+            myth_row = ctk.CTkFrame(myth_frame, fg_color="transparent")
+            myth_row.pack(anchor="w", padx=15, pady=(10, 5))
 
             ctk.CTkLabel(
-                myth_frame,
-                text=f"{ICON('success')} {myth['fact']}",
+                myth_row,
+                text=ICON("error"),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+                text_color=COLORS["danger"],
+            ).pack(side="left", padx=(0, 6))
+
+            ctk.CTkLabel(
+                myth_row,
+                text=f"MYTH: {myth['myth']}",
+                font=self._font(11),
+                text_color=COLORS["danger"],
+            ).pack(side="left")
+
+            # Fact line (compound: icon + "FACT:" prefix + text)
+            fact_row = ctk.CTkFrame(myth_frame, fg_color="transparent")
+            fact_row.pack(anchor="w", padx=15, pady=(0, 10))
+
+            ctk.CTkLabel(
+                fact_row,
+                text=ICON("success"),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+                text_color=COLORS["success"],
+            ).pack(side="left", padx=(0, 6))
+
+            ctk.CTkLabel(
+                fact_row,
+                text=f"FACT: {myth['fact']}",
                 font=self._font(11),
                 text_color=COLORS["success"],
-            ).pack(anchor="w", padx=15, pady=(0, 10))
+            ).pack(side="left")
 
     def _render_troubleshooting(self, trouble_data: dict):
         """Render troubleshooting section"""
@@ -513,12 +608,23 @@ class HelpView(ctk.CTkFrame):
             card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             card.pack(fill="x", pady=SPACING["sm"])
 
+            # Problem header (compound: icon + text)
+            problem_frame = ctk.CTkFrame(card, fg_color="transparent")
+            problem_frame.pack(anchor="w", padx=15, pady=(12, 10))
+
             ctk.CTkLabel(
-                card,
-                text=f"🔧 {issue['problem']}",
+                problem_frame,
+                text=ICON("build"),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                text_color=COLORS["text_primary"],
+            ).pack(side="left", padx=(0, 6))
+
+            ctk.CTkLabel(
+                problem_frame,
+                text=issue["problem"],
                 font=self._font(13, "bold"),
                 text_color=COLORS["text_primary"],
-            ).pack(anchor="w", padx=15, pady=(12, 10))
+            ).pack(side="left")
 
             for solution in issue["solutions"]:
                 ctk.CTkLabel(
@@ -620,12 +726,23 @@ class HelpView(ctk.CTkFrame):
             card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             card.pack(fill="x", pady=SPACING["xs"], padx=(0, SPACING["lg"]))
 
+            # Compound: icon + title
+            result_title = ctk.CTkFrame(card, fg_color="transparent")
+            result_title.pack(anchor="w", padx=15, pady=(10, 5))
+
             ctk.CTkLabel(
-                card,
-                text=f"{topic.icon} {topic.title}",
+                result_title,
+                text=ICON(topic.icon),
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                text_color=COLORS["text_primary"],
+            ).pack(side="left", padx=(0, 6))
+
+            ctk.CTkLabel(
+                result_title,
+                text=topic.title,
                 font=self._font(13, "bold"),
                 text_color=COLORS["text_primary"],
-            ).pack(anchor="w", padx=15, pady=(10, 5))
+            ).pack(side="left")
 
             snippet = self._make_snippet(topic.content, q)
             ctk.CTkLabel(
