@@ -25,31 +25,31 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(
         description="ClutchG - Windows PC Optimizer",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--test-mode",
         action="store_true",
-        help="Disable welcome overlay and popups for automated testing"
+        help="Disable welcome overlay and popups for automated testing",
     )
     parser.add_argument(
         "--config-path",
         type=str,
         default=None,
-        help="Path to custom config directory for testing"
+        help="Path to custom config directory for testing",
     )
 
     args = parser.parse_args()
 
     # Setup logging
     setup_logging()
-    
+
     # Check for admin privileges
     admin_checker = AdminChecker()
     if not admin_checker.is_admin():
         print("ClutchG requires administrator privileges.")
         print("Please run as administrator.")
-        
+
         # Attempt to elevate
         if admin_checker.request_elevation():
             # Will restart with admin privileges
@@ -58,12 +58,9 @@ def main():
             print("\nFailed to obtain administrator privileges.")
             print("Exiting...")
             return 1
-    
+
     # Create and run application
-    app = ClutchGApp(
-        test_mode=args.test_mode,
-        config_path=args.config_path
-    )
+    app = ClutchGApp(test_mode=args.test_mode, config_path=args.config_path)
     app.run()
 
     return 0

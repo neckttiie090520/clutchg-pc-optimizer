@@ -14,6 +14,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 class ClutchGApp:
     def __init__(self, test_mode: bool = False, config_path: Optional[str] = None):
         config_dir = Path(config_path) if config_path else None
@@ -48,6 +49,12 @@ class ClutchGApp:
         self.window.title("ClutchG")
         self.window.geometry("1000x700")
         self.window.minsize(900, 600)  # Minimum window size to prevent layout breaks
+
+        # Load bundled fonts (requires Tk root to exist)
+        from gui.font_loader import register_fonts
+
+        register_fonts()
+
         self._refresh_window_colors()
 
         # Check Material Symbols font availability (after window exists)
@@ -61,6 +68,7 @@ class ClutchGApp:
         self.setup_ui()
 
         from gui.components.toast import ToastManager
+
         self.toast = ToastManager(self.window)
 
         if self.action_catalog_errors:
@@ -73,7 +81,8 @@ class ClutchGApp:
         if not self.material_symbols_available:
             self._show_font_warning()
 
-    def get_version(self): return "1.0.0"
+    def get_version(self):
+        return "1.0.0"
 
     def _check_material_symbols(self) -> bool:
         """Check if Material Symbols Outlined font is installed"""
@@ -81,7 +90,7 @@ class ClutchGApp:
             test_label = ctk.CTkLabel(
                 self.window,
                 text="\ue8b8",
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=12)
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
             )
             test_label.destroy()  # Clean up test label
             return True
@@ -90,9 +99,13 @@ class ClutchGApp:
 
     def _show_font_warning(self):
         """Show non-blocking warning about missing Material Symbols font"""
-        logger.warning("Material Symbols font not installed — run: python install_material_icons.py")
-        if hasattr(self, 'toast'):
-            self.toast.warning("Material Symbols font not found — icons may show as boxes. Run: python install_material_icons.py")
+        logger.warning(
+            "Material Symbols font not installed — run: python install_material_icons.py"
+        )
+        if hasattr(self, "toast"):
+            self.toast.warning(
+                "Material Symbols font not found — icons may show as boxes. Run: python install_material_icons.py"
+            )
 
     def _refresh_window_colors(self):
         """Refresh window colors from current theme"""
@@ -102,7 +115,8 @@ class ClutchGApp:
     def detect_system(self):
         """Start async detection"""
         import threading
-        self.system_profile = None 
+
+        self.system_profile = None
         # Run in background to prevent UI freeze on startup
         threading.Thread(target=self._run_detection, daemon=True).start()
 
@@ -119,14 +133,16 @@ class ClutchGApp:
     def _on_detection_complete(self, profile):
         """Handle detection completion on main thread"""
         self.system_profile = profile
-        logger.info(f"System detection complete. Score: {profile.total_score if profile else 'N/A'}")
-        
+        logger.info(
+            f"System detection complete. Score: {profile.total_score if profile else 'N/A'}"
+        )
+
         # Refresh dashboard if currently active to show new data
         if self.active_nav == "dashboard":
             self.refresh_current_view()
-            
+
             # Show toast if available
-            if hasattr(self, 'toast'):
+            if hasattr(self, "toast"):
                 self.toast.info("System scan complete")
 
     def setup_ui(self):
@@ -136,15 +152,14 @@ class ClutchGApp:
 
         # Enhanced Sidebar
         from gui.components.enhanced_sidebar import EnhancedSidebar
+
         self.sidebar = EnhancedSidebar(self.window, self)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
 
         # Main Area
         colors = theme_manager.get_colors()
         self.main_frame = ctk.CTkFrame(
-            self.window,
-            corner_radius=0,
-            fg_color=colors["bg_primary"]
+            self.window, corner_radius=0, fg_color=colors["bg_primary"]
         )
         self.main_frame.grid(row=0, column=1, sticky="nsew", padx=30, pady=30)
         self.main_frame.grid_rowconfigure(0, weight=1)
@@ -152,6 +167,7 @@ class ClutchGApp:
 
         # Initialize View Transition Manager
         from gui.components.view_transition import ViewTransition
+
         self.view_transition = ViewTransition(self.main_frame, self)
 
         # Load initial view (immediate, no animation)
@@ -163,6 +179,7 @@ class ClutchGApp:
     def _add_settings_button(self):
         """Add settings button to sidebar nav container"""
         from gui.theme import ui_family, NAV_ICONS
+
         colors = theme_manager.get_colors()
 
         # Create settings button in the sidebar's nav container
@@ -176,7 +193,7 @@ class ClutchGApp:
             fg_color="transparent",
             text_color=colors["text_secondary"],
             hover_color=colors["bg_hover"],
-            command=lambda: self.switch_view("settings")
+            command=lambda: self.switch_view("settings"),
         )
         settings_btn.pack(pady=0, padx=8, fill="x")
 
@@ -185,7 +202,7 @@ class ClutchGApp:
             "button": settings_btn,
             "label": None,  # No label for settings
             "indicator": None,  # No indicator for settings
-            "frame": None
+            "frame": None,
         }
 
     def switch_view(self, name, immediate=False):
@@ -200,7 +217,7 @@ class ClutchGApp:
         self.active_nav = name
 
         # Update sidebar active state
-        if hasattr(self.sidebar, 'update_active_state'):
+        if hasattr(self.sidebar, "update_active_state"):
             self.sidebar.update_active_state(name)
 
         # Use view transition or immediate switch
@@ -215,22 +232,28 @@ class ClutchGApp:
 
         if name == "dashboard":
             from gui.views.dashboard_minimal import DashboardView
+
             return DashboardView(self.main_frame, self)
         elif name == "profiles":
             from gui.views.profiles_minimal import ProfilesView
+
             return ProfilesView(self.main_frame, self)
         elif name == "scripts":
             from gui.views.scripts_minimal import ScriptsView
+
             return ScriptsView(self.main_frame, self)
         elif name == "backup":
             # Unified Backup & Restore Center (Phase 1.2)
             from gui.views.backup_restore_center import BackupRestoreCenter
+
             return BackupRestoreCenter(self.main_frame, self)
         elif name == "help":
             from gui.views.help_minimal import HelpView
+
             return HelpView(self.main_frame, self)
         elif name == "settings":
             from gui.views.settings_minimal import SettingsView
+
             return SettingsView(self.main_frame, self)
 
         return None
@@ -255,6 +278,7 @@ class ClutchGApp:
         """Start the application main loop"""
         self.window.mainloop()
 
+
 if __name__ == "__main__":
     import sys
     import ctypes
@@ -271,4 +295,6 @@ if __name__ == "__main__":
     else:
         # Re-run the program with admin rights
         # Use shell execute to prompt UAC
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, " ".join(sys.argv), None, 1
+        )
