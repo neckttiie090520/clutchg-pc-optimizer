@@ -39,7 +39,7 @@ class EnhancedSidebar(ctk.CTkFrame):
             parent,
             width=width_collapsed,
             corner_radius=0,
-            fg_color=colors["bg_secondary"]
+            fg_color=colors["bg_secondary"],
         )
 
         self.app = app
@@ -67,10 +67,7 @@ class EnhancedSidebar(ctk.CTkFrame):
 
         # Logo
         self.logo_label = ctk.CTkLabel(
-            self,
-            text="C",
-            font=font("title"),
-            text_color=colors["accent"]
+            self, text="C", font=font("title"), text_color=colors["accent"]
         )
         self.logo_label.pack(pady=14)
 
@@ -81,11 +78,11 @@ class EnhancedSidebar(ctk.CTkFrame):
         # Navigation items with labels
         # Profiles page removed as per user request (duplicates Optimization Center)
         items = [
-            ("dashboard", "Dashboard", NAV_ICONS.get("dashboard", "\ue8b0")),
+            ("dashboard", "Home", NAV_ICONS.get("dashboard", "\ue8b0")),
             # ("profiles", "Profiles", NAV_ICONS.get("profiles", "\ue429")), # REMOVED
-            ("scripts", "Optimization", NAV_ICONS.get("scripts", "\ue86f")), # Renamed from Scripts
-            ("backup", "Backup & Restore", NAV_ICONS.get("backup", "\ue1d7")),
-            ("help", "Help", NAV_ICONS.get("help", "\ue88b")),
+            ("scripts", "Tweaks", NAV_ICONS.get("scripts", "\ue86f")),
+            ("backup", "Backup", NAV_ICONS.get("backup", "\ue1d7")),
+            ("help", "Docs", NAV_ICONS.get("help", "\ue88b")),
         ]
 
         for key, label, icon in items:
@@ -102,8 +99,10 @@ class EnhancedSidebar(ctk.CTkFrame):
         """
         colors = theme_manager.get_colors()
 
-        btn_frame = ctk.CTkFrame(self.nav_container, fg_color="transparent", height=40) # Reduced height (Compact)
-        btn_frame.pack(fill="x", pady=2, padx=6) # Reduced spacing
+        btn_frame = ctk.CTkFrame(
+            self.nav_container, fg_color="transparent", height=40
+        )  # Reduced height (Compact)
+        btn_frame.pack(fill="x", pady=2, padx=6)  # Reduced spacing
         btn_frame.pack_propagate(False)
         btn_frame.grid_columnconfigure(0, weight=0)  # Indicator
         btn_frame.grid_columnconfigure(1, weight=0)  # Icon button
@@ -111,10 +110,7 @@ class EnhancedSidebar(ctk.CTkFrame):
 
         # Active indicator (hidden by default)
         indicator = ctk.CTkFrame(
-            btn_frame,
-            width=3,
-            fg_color=colors["accent"],
-            corner_radius=2
+            btn_frame, width=3, fg_color=colors["accent"], corner_radius=2
         )
         indicator.grid(row=0, column=0, sticky="ns", padx=(0, 8))
         indicator.grid_remove()  # Hide initially
@@ -123,14 +119,16 @@ class EnhancedSidebar(ctk.CTkFrame):
         btn = ctk.CTkButton(
             btn_frame,
             text=icon,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=18), # Standard size for Segoe
-            width=36, # Compact touch target
+            font=ctk.CTkFont(
+                family="Segoe MDL2 Assets", size=18
+            ),  # Standard size for Segoe
+            width=36,  # Compact touch target
             height=36,
             fg_color="transparent",
             text_color=colors["text_secondary"],
             hover_color=colors["bg_hover"],
             corner_radius=SIZES["radius_md"],
-            command=lambda k=key: self.on_nav_click(k)
+            command=lambda k=key: self.on_nav_click(k),
         )
         btn.grid(row=0, column=1, sticky="w")
 
@@ -138,9 +136,9 @@ class EnhancedSidebar(ctk.CTkFrame):
         lbl = ctk.CTkLabel(
             btn_frame,
             text=label,
-            font=font("body_small", weight="bold"), # Smaller font
+            font=font("body_small", weight="bold"),  # Smaller font
             text_color=colors["text_primary"],
-            anchor="w"
+            anchor="w",
         )
         lbl.grid(row=0, column=2, sticky="w", padx=(10, 0))
         lbl.grid_remove()  # Hide initially
@@ -150,7 +148,7 @@ class EnhancedSidebar(ctk.CTkFrame):
             "frame": btn_frame,
             "button": btn,
             "label": lbl,
-            "indicator": indicator
+            "indicator": indicator,
         }
 
         # Bind hover effects
@@ -183,10 +181,12 @@ class EnhancedSidebar(ctk.CTkFrame):
         colors = theme_manager.get_colors()
 
         for key, data in self.nav_buttons.items():
-            is_active = (key == active_key)
+            is_active = key == active_key
 
             # Update button color
-            data["button"].configure(text_color=colors["accent"] if is_active else colors["text_secondary"])
+            data["button"].configure(
+                text_color=colors["accent"] if is_active else colors["text_secondary"]
+            )
 
             # Show/hide indicator (if it exists)
             if data["indicator"] is not None:
@@ -216,7 +216,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         RESPECTS reduce_motion: Skip animation if user has enabled reduce motion.
         """
         # Check for reduce_motion setting (accessibility)
-        if hasattr(self.app, 'config') and self.app.config.get('reduce_motion', False):
+        if hasattr(self.app, "config") and self.app.config.get("reduce_motion", False):
             # User prefers reduced motion - just show static active state
             if key not in self.nav_buttons:
                 return
@@ -255,8 +255,8 @@ class EnhancedSidebar(ctk.CTkFrame):
         bg_rgb = _hex_to_rgb(colors.get("bg_secondary", "#131c2e"))
         dim_rgb = _hex_to_rgb(accent_dim)
 
-        duration = 2000   # ms per full breath cycle
-        steps = 20        # steps per half-cycle (bright → dim or dim → bright)
+        duration = 2000  # ms per full breath cycle
+        steps = 20  # steps per half-cycle (bright → dim or dim → bright)
         step_delay = max(1, duration // (steps * 2))
 
         def glow_step(step: int, direction: int):
@@ -312,7 +312,7 @@ class EnhancedSidebar(ctk.CTkFrame):
             fg_color="transparent",
             text_color=colors["text_muted"],
             hover_color=colors["bg_hover"],
-            command=self.toggle_sidebar
+            command=self.toggle_sidebar,
         )
         self.toggle_button.pack(pady=10)
 
@@ -320,15 +320,15 @@ class EnhancedSidebar(ctk.CTkFrame):
         """Toggle sidebar expand/collapse with animation"""
         if self.animating:
             return  # Prevent double-click during animation
-        
+
         self.animating = True
         target_expanded = not self.is_expanded
-        
+
         start_width = self.width_expanded if self.is_expanded else self.width_collapsed
         end_width = self.width_expanded if target_expanded else self.width_collapsed
         steps = 8
         step_delay = ANIMATION["fast"] // steps
-        
+
         def animate_step(step):
             try:
                 if step > steps:
@@ -346,7 +346,7 @@ class EnhancedSidebar(ctk.CTkFrame):
                         except Exception as e:
                             logger.debug(f"Could not update label visibility: {e}")
                     return
-                
+
                 # Ease-out interpolation
                 t = step / steps
                 t = 1 - (1 - t) ** 2  # Ease-out quad
@@ -356,10 +356,8 @@ class EnhancedSidebar(ctk.CTkFrame):
             except Exception as e:
                 logger.debug(f"Sidebar animation error: {e}")
                 self.animating = False  # Reset on error
-        
+
         animate_step(0)
-
-
 
     def refresh_colors(self):
         """Refresh colors when theme changes"""
@@ -373,12 +371,12 @@ class EnhancedSidebar(ctk.CTkFrame):
 
         # Update all nav buttons
         for key, data in self.nav_buttons.items():
-            is_active = (key == self.app.active_nav)
+            is_active = key == self.app.active_nav
 
             # Update button colors
             data["button"].configure(
                 text_color=colors["accent"] if is_active else colors["text_secondary"],
-                hover_color=colors["bg_hover"]
+                hover_color=colors["bg_hover"],
             )
 
             # Update indicator color
@@ -389,11 +387,9 @@ class EnhancedSidebar(ctk.CTkFrame):
 
         # Update toggle button
         self.toggle_button.configure(
-            text_color=colors["text_muted"],
-            hover_color=colors["bg_hover"]
+            text_color=colors["text_muted"], hover_color=colors["bg_hover"]
         )
 
         # Restart glow animation for active button
         if self.app.active_nav in self.nav_buttons:
             self.update_active_state(self.app.active_nav)
-
