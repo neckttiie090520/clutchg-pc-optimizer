@@ -13,6 +13,7 @@ def _ensure_pyinstaller() -> None:
     """Install PyInstaller if it is not already available."""
     try:
         import PyInstaller  # noqa: F401
+
         print(f"PyInstaller version: {PyInstaller.__version__}")
     except ImportError:
         print("PyInstaller not found. Installing...")
@@ -50,22 +51,23 @@ def build():
     # Note: --add-data uses the Windows path separator (;) intentionally;
     # this build script targets Windows only.
     cmd = [
-        sys.executable, "-m", "PyInstaller",
+        sys.executable,
+        "-m",
+        "PyInstaller",
         "--name=ClutchG",
-        "--onefile",    # Single executable
-        "--windowed",   # No console window
+        "--onefile",  # Single executable
+        "--windowed",  # No console window
         "--uac-admin",  # Request admin privileges at launch
-
         # Hidden imports required by the runtime environment
         "--hidden-import=customtkinter",
         "--hidden-import=PIL._tkinter_finder",
         "--hidden-import=psutil",
         "--hidden-import=wmi",
-
+        "--hidden-import=tkextrafont",
+        "--collect-all=tkextrafont",
         # Output paths
         f"--distpath={dist_dir}",
         f"--workpath={build_dir}",
-
         # Entry point (must be last)
         str(src_dir / "main.py"),
     ]
@@ -73,10 +75,13 @@ def build():
     # Add data directories only if they exist
     config_dir = project_dir / "config"
     assets_dir = project_dir / "assets"
+    fonts_dir = src_dir / "fonts"
     if config_dir.exists():
         cmd.insert(-1, f"--add-data={config_dir};config")
     if assets_dir.exists():
         cmd.insert(-1, f"--add-data={assets_dir};assets")
+    if fonts_dir.exists():
+        cmd.insert(-1, f"--add-data={fonts_dir};src/fonts")
 
     print("\nRunning PyInstaller...")
     print(" ".join(str(c) for c in cmd))
@@ -102,9 +107,9 @@ def build():
         readme_content = (
             "# ClutchG - Windows PC Optimizer\n\n"
             "## Quick Start\n\n"
-            "1. Right-click ClutchG.exe -> \"Run as Administrator\"\n"
+            '1. Right-click ClutchG.exe -> "Run as Administrator"\n'
             "2. Select an optimization profile (SAFE, COMPETITIVE, EXTREME)\n"
-            "3. Click \"Apply Profile\"\n"
+            '3. Click "Apply Profile"\n'
             "4. Restart your computer if prompted\n\n"
             "## Profiles\n\n"
             "- SAFE        - Minimal optimizations, maximum safety\n"
@@ -119,7 +124,7 @@ def build():
             "---\nClutchG v1.0.0\n"
         )
         readme_file = dist_dir / "README.txt"
-        readme_file.write_text(readme_content, encoding='utf-8')
+        readme_file.write_text(readme_content, encoding="utf-8")
         print(f"Created README: {readme_file}")
 
         # Show final executable size
