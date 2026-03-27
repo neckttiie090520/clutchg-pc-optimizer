@@ -7,7 +7,15 @@ Updated: 2026-02-10 (Bug fixes: duplicate labels, missing create_content, duplic
 import customtkinter as ctk
 from typing import TYPE_CHECKING, List, Tuple
 import logging
-from gui.theme import theme_manager, COLORS, SIZES, SPACING, RADIUS, get_score_color, NAV_ICONS
+from gui.theme import (
+    theme_manager,
+    COLORS,
+    SIZES,
+    SPACING,
+    RADIUS,
+    get_score_color,
+    NAV_ICONS,
+)
 from gui.style import font
 from gui.components.glass_card import GlassCard, HardwareCard
 from gui.components.circular_progress import CircularProgress
@@ -77,28 +85,32 @@ class DashboardView(ctk.CTkFrame):
             "no_recent_activity": "ยังไม่มีกิจกรรม",
             "profile_applied": "ใช้งาน Profile '{profile}' แล้ว",
             "safe_mode": "Safe Mode",
-        }
+        },
     }
 
-    UI_STRINGS["en"].update({
-        "health_snapshot": "System Snapshot",
-        "tile_storage": "Storage",
-        "tile_tweaks": "Optimizations",
-        "tile_profile": "Active Profile",
-        "tile_status": "Status",
-        "score_context": "Score out of 100 — higher is better",
-    })
+    UI_STRINGS["en"].update(
+        {
+            "health_snapshot": "System Snapshot",
+            "tile_storage": "Storage",
+            "tile_tweaks": "Optimizations",
+            "tile_profile": "Active Profile",
+            "tile_status": "Status",
+            "score_context": "Score out of 100 — higher is better",
+        }
+    )
 
-    UI_STRINGS["th"].update({
-        "health_snapshot": "ข้อมูลระบบ",
-        "tile_storage": "Storage",
-        "tile_tweaks": "การปรับแต่ง",
-        "tile_profile": "โปรไฟล์",
-        "tile_status": "สถานะ",
-        "score_context": "คะแนนจาก 100 — ยิ่งสูงยิ่งดี",
-    })
+    UI_STRINGS["th"].update(
+        {
+            "health_snapshot": "ข้อมูลระบบ",
+            "tile_storage": "Storage",
+            "tile_tweaks": "การปรับแต่ง",
+            "tile_profile": "โปรไฟล์",
+            "tile_status": "สถานะ",
+            "score_context": "คะแนนจาก 100 — ยิ่งสูงยิ่งดี",
+        }
+    )
 
-    def __init__(self, parent, app: 'ClutchGApp'):
+    def __init__(self, parent, app: "ClutchGApp"):
         super().__init__(parent, fg_color="transparent")
         self.app = app
 
@@ -121,166 +133,309 @@ class DashboardView(ctk.CTkFrame):
         return self.UI_STRINGS.get(lang, self.UI_STRINGS["en"]).get(key, key)
 
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
-        """Choose a Thai-friendly font when needed"""
-        if self.app.config.get("language") == "th":
-            return ctk.CTkFont(family="Tahoma", size=size, weight=weight)
-        return font("body", size=size, weight=weight)
+        """Use Figtree for all languages"""
+        return ctk.CTkFont(family="Figtree", size=size, weight=weight)
 
     def destroy(self):
         super().destroy()
-        
+
     def create_header(self):
         """Create modern header with status badge"""
-        header = ctk.CTkFrame(self, fg_color="transparent", height=50)
-        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["xl"]))
+        header = ctk.CTkFrame(self, fg_color="transparent", height=36)
+        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
         header.grid_columnconfigure(1, weight=1)  # Spacer
-        
-        # Dashboard Title
+
+        # Dashboard Title — h1 level
         ctk.CTkLabel(
             header,
             text=self._ui("title"),
-            font=self._font(24, "bold"),
-            text_color=COLORS["text_primary"]
+            font=self._font(22, "bold"),
+            text_color=COLORS["text_primary"],
         ).grid(row=0, column=0, sticky="w")
 
-        # System Status Badge (Glassmorphism Pilled)
+        # System Status Badge (Glassmorphism Pill)
         status_container = ctk.CTkFrame(
             header,
             fg_color=COLORS["bg_card"],
             corner_radius=RADIUS["full"],
             border_width=1,
-            border_color=COLORS["success_dim"]
+            border_color=COLORS["success_dim"],
         )
         status_container.grid(row=0, column=2, sticky="e")
 
         # Dot indicator
         ctk.CTkLabel(
             status_container,
-            text="●",
-            font=self._font(12),
-            text_color=COLORS["success"]
-        ).pack(side="left", padx=(SPACING["md"], SPACING["xs"]), pady=SPACING["xs"])
+            text="\u25cf",
+            font=self._font(10),
+            text_color=COLORS["success"],
+        ).pack(side="left", padx=(SPACING["sm"], SPACING["xs"]), pady=SPACING["xs"])
 
         # Status Text
         ctk.CTkLabel(
             status_container,
-            text=self._ui("system_ready") if self.app.system_profile else self._ui("initializing"),
-            font=self._font(12, "bold"),
-            text_color=COLORS["success"] if self.app.system_profile else COLORS["text_muted"]
-        ).pack(side="left", padx=(0, SPACING["md"]), pady=SPACING["sm"])
-        
+            text=self._ui("system_ready")
+            if self.app.system_profile
+            else self._ui("initializing"),
+            font=self._font(11, "bold"),
+            text_color=COLORS["success"]
+            if self.app.system_profile
+            else COLORS["text_muted"],
+        ).pack(side="left", padx=(0, SPACING["sm"]), pady=SPACING["xs"])
+
     def create_content(self):
-        """Create main content area with score and hardware info"""
+        """Create main content area with score and hardware info."""
         content = ctk.CTkFrame(self, fg_color="transparent")
         content.grid(row=1, column=0, sticky="nsew")
-        
-        # Grid Layout: Left (Score) | Right (Actions & Stats)
-        content.grid_columnconfigure(0, weight=4)  # Score area (slightly larger)
-        content.grid_columnconfigure(1, weight=5)  # Stats area
+
+        content.grid_columnconfigure(0, weight=6)  # left panel — score + hardware
+        content.grid_columnconfigure(1, weight=4)  # right panel — actions + activity
         content.grid_rowconfigure(0, weight=1)
-        
-        # --- Left Panel: System Score ---
+
         self.create_left_panel(content)
-        
-        # --- Right Panel: Quick Actions & Hardware ---
         self.create_right_panel(content)
-        
+
     def create_left_panel(self, parent):
-        """Left panel containing Score Ring and Recommendation"""
+        """Left panel: score card (top) + 2×2 hardware grid (bottom)."""
         panel = ctk.CTkFrame(parent, fg_color="transparent")
-        panel.grid(row=0, column=0, sticky="nsew", padx=(0, SPACING["xl"]))
-        panel.grid_rowconfigure(0, weight=1)  # Center score vertically
+        panel.grid(row=0, column=0, sticky="nsew", padx=(0, SPACING["sm"]))
         panel.grid_columnconfigure(0, weight=1)
-        
-        # Main Score Card (Glassmorphism)
+        panel.grid_rowconfigure(0, weight=0)  # score card — natural height
+        panel.grid_rowconfigure(1, weight=1)  # hardware grid — fills remaining
+
+        # ── Score Card (pure pack inside) ────────────────────────────
         score_card = GlassCard(panel, corner_radius=RADIUS["2xl"])
-        score_card.grid(row=0, column=0, sticky="nsew")
-        score_card.grid_columnconfigure(0, weight=1)
-        score_card.grid_rowconfigure(0, weight=1) # Center content
-        
-        # Container for centering
-        center_container = ctk.CTkFrame(score_card, fg_color="transparent")
-        center_container.grid(row=0, column=0)
-        
-        # 1. Circular Progress
-        score = 0
-        if self.app.system_profile:
-            score = self.app.system_profile.total_score
-            
-        color = get_score_color(score)
-        
-        # Get dynamic theme colors
+        score_card.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
+
+        score = self.app.system_profile.total_score if self.app.system_profile else 0
         theme_colors = theme_manager.get_colors()
-        
-        # Solid colors based on score (Minimal Design)
+        badge_color = self._get_progress_color(score)
+
         if score >= 80:
             ring_colors = [theme_colors["success"], theme_colors["success"]]
         elif score >= 50:
-            ring_colors = [theme_colors["info"], theme_colors["info"]] # Info/Blue for average
+            ring_colors = [theme_colors["info"], theme_colors["info"]]
         else:
             ring_colors = [theme_colors["danger"], theme_colors["danger"]]
-            
+
+        # Ring — compact 120px
         self.score_display = CircularProgress(
-            center_container,
-            size=220,
-            thickness=20,
+            score_card,
+            size=120,
+            thickness=12,
             value=score,
             max_value=100,
             colors=ring_colors,
-            bg_color=theme_colors["bg_card"] # Match card bg
+            bg_color=theme_colors["bg_card"],
         )
-        self.score_display.pack(pady=SPACING["xl"])
-        
-        # 2. Score Label (Below ring)
-        ctk.CTkLabel(
-            center_container,
-            text=self._ui("system_score") if self.app.system_profile else self._ui("scanning"),
-            font=self._font(13, "bold"),
-            text_color=COLORS["text_secondary"]
-        ).pack(pady=(SPACING["sm"], 0))
+        self.score_display.pack(pady=(SPACING["sm"], 2))
 
-        # Score context (LOW-01)
+        # "SYSTEM SCORE" — overline style: small, bold, muted
         ctk.CTkLabel(
-            center_container,
-            text=self._ui("score_context"),
-            font=self._font(10),
-            text_color=COLORS.get("text_tertiary", COLORS["text_muted"])
-        ).pack(pady=(2, 0))
+            score_card,
+            text=self._ui("system_score")
+            if self.app.system_profile
+            else self._ui("scanning"),
+            font=self._font(10, "bold"),
+            text_color=COLORS["text_muted"],
+        ).pack()
 
-        # 3. Current Mode Badge — show actual active/recommended profile
+        # Mode badge — compact pill
         active_profile = self._get_active_profile_name()
         mode_badge = ctk.CTkFrame(
-            center_container,
+            score_card,
             fg_color="transparent",
             border_width=1,
             border_color=COLORS["border"],
-            corner_radius=RADIUS["full"]
+            corner_radius=RADIUS["full"],
         )
-        mode_badge.pack(pady=SPACING["lg"])
-
+        mode_badge.pack(pady=(SPACING["xs"], SPACING["sm"]))
         ctk.CTkLabel(
             mode_badge,
             text=active_profile,
-            font=self._font(12),
+            font=self._font(11),
             text_color=COLORS["text_secondary"],
-            wraplength=160,
-        ).pack(padx=SPACING["md"], pady=SPACING["xs"], expand=True)
+            wraplength=180,
+        ).pack(padx=SPACING["sm"], pady=2)
 
-        # 4. Component Score Breakdown (NEW)
+        # ── Hardware 2×2 Grid ─────────────────────────────────────────
         if self.app.system_profile:
-            self.create_component_scores(center_container)
+            self.create_hardware_grid(panel)
+
+    def create_hardware_grid(self, parent):
+        """2×2 grid of hardware metric cards below the score card."""
+        system = self.app.system_profile
+        if not system:
+            return
+
+        # Build spec strings
+        cpu_spec = (
+            (system.cpu.name or "Unknown")
+            .replace("AMD ", "")
+            .replace("Intel ", "")
+            .replace("Processor", "")
+            .strip()
+        )
+
+        gpu_spec = (
+            (system.gpu.name or "Unknown")
+            .replace("NVIDIA ", "")
+            .replace("AMD ", "")
+            .replace("GeForce ", "")
+            .strip()
+        )
+        if system.gpu.vram:
+            gpu_spec = (
+                f"{gpu_spec} {system.gpu.vram}GB" if len(gpu_spec) < 16 else gpu_spec
+            )
+
+        ram_spec = f"{system.ram.total_gb} GB"
+        if system.ram.type and system.ram.type != "unknown":
+            ram_spec += f" {system.ram.type.upper()}"
+        if system.ram.speed:
+            ram_spec += f" {system.ram.speed}MHz"
+
+        storage_spec = f"{system.storage.total_gb} GB"
+        if system.storage.primary_type and system.storage.primary_type != "unknown":
+            storage_spec += f" {system.storage.primary_type.upper()}"
+
+        # (label, score, max_score, icon, spec)
+        components = [
+            ("CPU", system.cpu.score, 30, NAV_ICONS.get("cpu", "\ue950"), cpu_spec),
+            ("GPU", system.gpu.score, 30, NAV_ICONS.get("gpu", "\ue7fd"), gpu_spec),
+            ("RAM", system.ram.score, 20, NAV_ICONS.get("ram", "\ue964"), ram_spec),
+            (
+                "Storage",
+                system.storage.score,
+                20,
+                NAV_ICONS.get("storage", "\ue8b7"),
+                storage_spec,
+            ),
+        ]
+
+        grid = ctk.CTkFrame(parent, fg_color="transparent")
+        grid.grid(row=1, column=0, sticky="nsew")
+        # equal-weight columns + uniform rows so all 4 cards are same size
+        grid.grid_columnconfigure(0, weight=1, uniform="hw")
+        grid.grid_columnconfigure(1, weight=1, uniform="hw")
+        grid.grid_rowconfigure(0, weight=1, uniform="hw")
+        grid.grid_rowconfigure(1, weight=1, uniform="hw")
+
+        positions = [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+        for (row, col), (label, score, max_score, icon, spec) in zip(
+            positions, components
+        ):
+            px = (0, SPACING["sm"]) if col == 0 else 0
+            py = (0, SPACING["sm"]) if row == 0 else 0
+
+            card = GlassCard(grid, corner_radius=RADIUS["xl"])
+            card.grid(row=row, column=col, sticky="nsew", padx=px, pady=py)
+            # card must expand its single column so children can fill="x"
+            card.grid_columnconfigure(0, weight=1)
+            card.grid_rowconfigure(3, weight=1)  # push bar to bottom
+
+            # ── Header: icon + label ───────────────────────────────────
+            header = ctk.CTkFrame(card, fg_color="transparent")
+            header.grid(
+                row=0,
+                column=0,
+                sticky="ew",
+                padx=SPACING["sm"],
+                pady=(SPACING["sm"], 0),
+            )
+
+            ctk.CTkLabel(
+                header,
+                text=icon,
+                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+            ).pack(side="left", padx=(0, SPACING["xs"]))
+
+            ctk.CTkLabel(
+                header,
+                text=label,
+                font=self._font(13, "bold"),
+                text_color=COLORS["text_primary"],
+            ).pack(side="left")
+
+            # ── Spec text ─────────────────────────────────────────────
+            ctk.CTkLabel(
+                card,
+                text=spec,
+                font=self._font(11),
+                text_color=COLORS["text_muted"],
+                wraplength=140,
+                justify="left",
+            ).grid(row=1, column=0, sticky="w", padx=SPACING["sm"], pady=(2, 0))
+
+            # ── Score number + /max pts ────────────────────────────────
+            percentage = (score / max_score) * 100 if max_score > 0 else 0
+            bar_color = self._get_progress_color(percentage)
+
+            score_row = ctk.CTkFrame(card, fg_color="transparent")
+            score_row.grid(
+                row=2,
+                column=0,
+                sticky="ew",
+                padx=SPACING["sm"],
+                pady=(SPACING["xs"], 0),
+            )
+
+            ctk.CTkLabel(
+                score_row,
+                text=f"{score}",
+                font=self._font(18, "bold"),
+                text_color=bar_color,
+            ).pack(side="left")
+
+            ctk.CTkLabel(
+                score_row,
+                text=f"/{max_score} pts",
+                font=self._font(11),
+                text_color=COLORS["text_muted"],
+            ).pack(side="left", padx=(2, 0))
+
+            # ── Progress bar — fills card width ───────────────────────
+            bar = ctk.CTkProgressBar(
+                card,
+                height=6,
+                corner_radius=3,
+                progress_color=bar_color,
+                fg_color=COLORS["bg_tertiary"],
+            )
+            bar.set(percentage / 100)
+            bar.grid(
+                row=3,
+                column=0,
+                sticky="sew",
+                padx=SPACING["sm"],
+                pady=(SPACING["xs"], SPACING["sm"]),
+            )
+
+    def _score_grade(self, score: int):
+        """Return (grade_label, color) based on score."""
+        if score >= 80:
+            return "EXCELLENT", COLORS["success"]
+        elif score >= 60:
+            return "GOOD", COLORS["info"]
+        elif score >= 40:
+            return "FAIR", COLORS["warning"]
+        else:
+            return "POOR", COLORS["danger"]
 
     def _get_active_profile_name(self) -> str:
         """Get the active or recommended profile name for display"""
         # Check if a profile is currently active
-        if hasattr(self.app, 'profile_manager'):
+        if hasattr(self.app, "profile_manager"):
             active = self.app.profile_manager.get_active_profile()
             if active:
                 return f"{active} {self._ui('mode')}"
 
         # Fall back to recommendation based on system profile
         if self.app.system_profile:
-            recommended = self.app.system_detector.recommend_profile(self.app.system_profile)
+            recommended = self.app.system_detector.recommend_profile(
+                self.app.system_profile
+            )
             return f"{recommended} {self._ui('mode')}{self._ui('recommended_suffix')}"
 
         return self._ui("safe_mode")
@@ -294,7 +449,7 @@ class DashboardView(ctk.CTkFrame):
         # Container for component scores - Use Grid for perfect alignment
         scores_container = ctk.CTkFrame(parent, fg_color="transparent")
         scores_container.pack(pady=SPACING["lg"], fill="x", padx=SPACING["xl"])
-        
+
         # Configure grid columns
         # 0: Icon, 1: Label, 2: Bar (Expand), 3: Score
         scores_container.grid_columnconfigure(2, weight=1)
@@ -313,15 +468,19 @@ class DashboardView(ctk.CTkFrame):
                 scores_container,
                 text=icon,
                 font=self._font(12),
-            ).grid(row=i, column=0, sticky="w", padx=(0, SPACING["xs"]), pady=SPACING["xs"])
+            ).grid(
+                row=i, column=0, sticky="w", padx=(0, SPACING["xs"]), pady=SPACING["xs"]
+            )
 
             # 2. Label
             ctk.CTkLabel(
                 scores_container,
                 text=f"{label}:",
                 font=self._font(11, "bold"),
-                text_color=COLORS["text_secondary"]
-            ).grid(row=i, column=1, sticky="w", padx=(0, SPACING["md"]), pady=SPACING["xs"])
+                text_color=COLORS["text_secondary"],
+            ).grid(
+                row=i, column=1, sticky="w", padx=(0, SPACING["md"]), pady=SPACING["xs"]
+            )
 
             # 3. Progress Bar
             percentage = (score / max_score) * 100
@@ -335,14 +494,20 @@ class DashboardView(ctk.CTkFrame):
                 fg_color=COLORS["bg_tertiary"],
             )
             progress_bar.set(percentage / 100)
-            progress_bar.grid(row=i, column=2, sticky="ew", padx=(0, SPACING["md"]), pady=SPACING["xs"])
+            progress_bar.grid(
+                row=i,
+                column=2,
+                sticky="ew",
+                padx=(0, SPACING["md"]),
+                pady=SPACING["xs"],
+            )
 
             # 4. Score Text
             ctk.CTkLabel(
                 scores_container,
                 text=f"{score}/{max_score}",
                 font=self._font(11),
-                text_color=COLORS["text_muted"]
+                text_color=COLORS["text_muted"],
             ).grid(row=i, column=3, sticky="e", pady=SPACING["xs"])
 
     def _get_progress_color(self, percentage: float) -> str:
@@ -365,57 +530,57 @@ class DashboardView(ctk.CTkFrame):
         # 1. Quick Actions Card
         self.create_quick_actions(panel)
 
-        # 2. Health tiles (System Info)
-        self.create_health_tiles(panel)
-
-        # 3. Recent Activity (Timeline)
+        # 2. Recent Activity (Timeline)
         self.create_recent_activity(panel)
 
     def create_quick_actions(self, parent):
         """Quick Actions Section"""
-        actions_card = GlassCard(parent, padding=SPACING["lg"])
-        actions_card.pack(fill="x", pady=(0, SPACING["lg"]))
+        actions_card = GlassCard(parent, padding=SPACING["md"])
+        actions_card.pack(fill="x", pady=(0, SPACING["sm"]))
 
-        # Title inside card
+        # Title inside card — section level (15px bold)
         ctk.CTkLabel(
             actions_card,
             text=self._ui("rec_optimization"),
-            font=self._font(18, "bold"),
-            text_color=COLORS["text_primary"]
-        ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
+            font=self._font(15, "bold"),
+            text_color=COLORS["text_primary"],
+        ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["sm"], SPACING["xs"]))
 
-        # Dynamic recommendation text
+        # Dynamic recommendation text — body (13px)
         rec_text = self._ui("rec_safe")
         if self.app.system_profile:
-            recommended = self.app.system_detector.recommend_profile(self.app.system_profile)
+            recommended = self.app.system_detector.recommend_profile(
+                self.app.system_profile
+            )
             rec_text = self._ui("rec_optimal").format(profile=recommended)
 
         ctk.CTkLabel(
             actions_card,
             text=rec_text,
             font=self._font(13),
-            text_color=COLORS["text_secondary"]
-        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["lg"]))
+            text_color=COLORS["text_secondary"],
+        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
 
         # Action Buttons Row
         btn_row = ctk.CTkFrame(actions_card, fg_color="transparent")
-        btn_row.pack(fill="x", padx=SPACING["md"], pady=(0, SPACING["md"]))
+        btn_row.pack(fill="x", padx=SPACING["md"], pady=(0, SPACING["sm"]))
 
-        # Main Action Button (Gradient)
-        # Fix: ensure parent is btn_row, NOT self.header
+        # Main Action Button — title case, not ALL CAPS
         action_btn = EnhancedButton.primary(
             btn_row,
-            text=self._ui("apply_optimization"),
-            command=lambda: self.app.switch_view("scripts"), # Redirect to Optimization Center
-            width=200
+            text="Apply Optimization",
+            command=lambda: self.app.switch_view("scripts"),
+            width=180,
+            height=36,
         )
-        action_btn.pack(side="left", padx=(0, SPACING["md"]))
+        action_btn.pack(side="left", padx=(0, SPACING["sm"]))
 
-        # Secondary Action
+        # Secondary Action — matching height
         EnhancedButton.outline(
             btn_row,
             text=self._ui("scan_system"),
-            command=self.scan_system
+            command=self.scan_system,
+            height=36,
         ).pack(side="left")
 
     def create_health_tiles(self, parent):
@@ -433,24 +598,34 @@ class DashboardView(ctk.CTkFrame):
             tiles.grid_columnconfigure(col, weight=1)
 
         system = self.app.system_profile
-        
+
         # Get hardware info or placeholders
         cpu_text = "N/A"
         ram_text = "N/A"
         gpu_text = "N/A"
-        
+
         if system:
             # CPU: Use simple name/family if possible, otherwise full name
             cpu_text = system.cpu.name
             # Simplify common CPU prefixes to save space
-            cpu_text = cpu_text.replace("AMD ", "").replace("Intel ", "").replace("Processor", "").strip()
-            
+            cpu_text = (
+                cpu_text.replace("AMD ", "")
+                .replace("Intel ", "")
+                .replace("Processor", "")
+                .strip()
+            )
+
             # RAM
             ram_text = f"{system.ram.total_gb} GB"
-            
+
             # GPU/VGA
             gpu_text = system.gpu.name
-            gpu_text = gpu_text.replace("NVIDIA ", "").replace("AMD ", "").replace("GeForce ", "").strip()
+            gpu_text = (
+                gpu_text.replace("NVIDIA ", "")
+                .replace("AMD ", "")
+                .replace("GeForce ", "")
+                .strip()
+            )
 
         tile_items = [
             (self._ui("cpu"), cpu_text),
@@ -466,8 +641,13 @@ class DashboardView(ctk.CTkFrame):
                 border_width=1,
                 border_color=COLORS["border"],
             )
-            tile.grid(row=0, column=idx, sticky="ew", padx=(0, SPACING["xs"]) if idx < 2 else 0)
-            
+            tile.grid(
+                row=0,
+                column=idx,
+                sticky="ew",
+                padx=(0, SPACING["xs"]) if idx < 2 else 0,
+            )
+
             # Label (Small)
             ctk.CTkLabel(
                 tile,
@@ -475,7 +655,7 @@ class DashboardView(ctk.CTkFrame):
                 font=self._font(11),
                 text_color=COLORS["text_tertiary"],
             ).pack(anchor="w", padx=SPACING["sm"], pady=(SPACING["xs"], 0))
-            
+
             # Value (Bold)
             ctk.CTkLabel(
                 tile,
@@ -490,9 +670,14 @@ class DashboardView(ctk.CTkFrame):
         """Recent Activity Section (Timeline Preview)"""
         # Just a simple list for now, full timeline in Restore Center
         container = ctk.CTkFrame(parent, fg_color="transparent")
-        container.pack(fill="x", pady=SPACING["lg"])
+        container.pack(fill="x", pady=(SPACING["sm"], 0))
 
-        ctk.CTkLabel(container, text=self._ui("recent_activity"), font=self._font(16, "bold"), text_color=COLORS["text_primary"]).pack(anchor="w", pady=(0, SPACING["md"]))
+        ctk.CTkLabel(
+            container,
+            text=self._ui("recent_activity"),
+            font=self._font(15, "bold"),
+            text_color=COLORS["text_primary"],
+        ).pack(anchor="w", pady=(0, SPACING["sm"]))
 
         # Try to load real activity from FlightRecorder
         activities = self._load_recent_activities()
@@ -505,8 +690,8 @@ class DashboardView(ctk.CTkFrame):
             ctk.CTkLabel(
                 container,
                 text=self._ui("no_recent_activity"),
-                font=self._font(13),
-                text_color=COLORS["text_muted"]
+                font=self._font(12),
+                text_color=COLORS["text_muted"],
             ).pack(anchor="w")
 
     def _load_recent_activities(self):
@@ -514,6 +699,7 @@ class DashboardView(ctk.CTkFrame):
         activities = []
         try:
             from core.flight_recorder import get_flight_recorder
+
             recorder = get_flight_recorder()
             snapshots = recorder.list_snapshots(limit=3)
 
@@ -529,21 +715,32 @@ class DashboardView(ctk.CTkFrame):
 
     def create_activity_item(self, parent, text, time_str, dot_color):
         item = ctk.CTkFrame(parent, fg_color="transparent")
-        item.pack(fill="x", pady=(0, SPACING["sm"]))
+        item.pack(fill="x", pady=(0, SPACING["xs"]))
 
         # Colored dot
-        ctk.CTkLabel(item, text="●", text_color=dot_color, font=self._font(12)).pack(side="left", padx=(0, SPACING["sm"]))
+        ctk.CTkLabel(
+            item, text="\u25cf", text_color=dot_color, font=self._font(10)
+        ).pack(side="left", padx=(0, SPACING["sm"]))
 
-        ctk.CTkLabel(item, text=text, font=self._font(13), text_color=COLORS["text_secondary"]).pack(side="left")
-        ctk.CTkLabel(item, text=time_str, font=self._font(12), text_color=COLORS["text_muted"]).pack(side="right")
+        ctk.CTkLabel(
+            item, text=text, font=self._font(12), text_color=COLORS["text_secondary"]
+        ).pack(side="left")
+        ctk.CTkLabel(
+            item, text=time_str, font=self._font(11), text_color=COLORS["text_muted"]
+        ).pack(side="right")
 
     def create_footer(self):
         """Status footer"""
-        footer = ctk.CTkFrame(self, fg_color="transparent", height=30)
-        footer.grid(row=2, column=0, sticky="ew", pady=(SPACING["md"], 0))
-        
+        footer = ctk.CTkFrame(self, fg_color="transparent", height=24)
+        footer.grid(row=2, column=0, sticky="ew", pady=(SPACING["sm"], 0))
+
         version_text = f"ClutchG v{self.app.get_version()}"
-        ctk.CTkLabel(footer, text=version_text, text_color=COLORS["text_muted"], font=font("micro")).pack(side="left")
+        ctk.CTkLabel(
+            footer,
+            text=version_text,
+            text_color=COLORS["text_muted"],
+            font=font("micro"),
+        ).pack(side="left")
 
     def scan_system(self):
         """Re-run system detection and refresh dashboard"""
