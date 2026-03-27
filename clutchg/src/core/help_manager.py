@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class HelpTopic:
     """Help topic with content"""
+
     id: str
     title: str
     icon: str
@@ -45,7 +46,7 @@ class HelpManager:
         """Load help content from JSON"""
         if self.help_file.exists():
             try:
-                with open(self.help_file, 'r', encoding='utf-8') as f:
+                with open(self.help_file, "r", encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 logger.warning(f"Error loading help content: {e}")
@@ -73,9 +74,9 @@ class HelpManager:
         return HelpTopic(
             id=topic_id,
             title=content.get("title", topic_id),
-            icon=content.get("icon", "ℹ️"),
+            icon=content.get("icon", "info"),
             content=content,
-            language=lang if lang in topic_data else "en"
+            language=lang if lang in topic_data else "en",
         )
 
     def get_all_topics(self) -> list[HelpTopic]:

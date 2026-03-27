@@ -14,89 +14,89 @@ import customtkinter as ctk
 
 MATERIAL_ICONS = {
     # Navigation & Layout
-    "dashboard": "\ue8b0",      # Dashboard icon
-    "grid_view": "\ue8d4",      # Grid view
-    "view_module": "\ue8d5",    # Module view
-
+    "dashboard": "\ue8b0",  # Dashboard icon
+    "grid_view": "\ue8d4",  # Grid view
+    "view_module": "\ue8d5",  # Module view
     # Profiles & Optimization
-    "speed": "\ue3de",          # Speed/Performance
-    "tune": "\ue429",           # Tune/Settings
-    "bolt": "\ue929",           # Lightning bolt (Extreme)
-    "shield": "\ue914",         # Shield (Safe)
-    "balance": "\uec0e",        # Balance (Competitive)
-
+    "speed": "\ue3de",  # Speed/Performance
+    "tune": "\ue429",  # Tune/Settings
+    "bolt": "\ue929",  # Lightning bolt (Extreme)
+    "shield": "\ue914",  # Shield (Safe)
+    "balance": "\uec0e",  # Balance (Competitive)
     # Scripts & Code
-    "code": "\ue86f",           # Code
-    "terminal": "\ue8c9",       # Terminal
-    "play_arrow": "\ue037",     # Play/Run
-    "list": "\ue896",           # List
-    "folder": "\ue92c",         # Folder
-
+    "code": "\ue86f",  # Code
+    "terminal": "\ue8c9",  # Terminal
+    "play_arrow": "\ue037",  # Play/Run
+    "list": "\ue896",  # List
+    "folder": "\ue92c",  # Folder
     # Backup & Storage
-    "backup": "\ue860",         # Backup (cloud_upload alternative)
-    "cloud_upload": "\ue8c5",   # Cloud upload
-    "restore": "\ue855",        # Restore (cloud_download)
-    "cloud_download": "\ue8c4", # Cloud download
-    "schedule": "\ue8b5",       # Schedule/Timeline
-    "history": "\ue8b1",        # History
-    "inventory_2": "\ue1d7",    # Stack/Layers (for backup)
-
+    "backup": "\ue860",  # Backup (cloud_upload alternative)
+    "cloud_upload": "\ue8c5",  # Cloud upload
+    "restore": "\ue855",  # Restore (cloud_download)
+    "cloud_download": "\ue8c4",  # Cloud download
+    "schedule": "\ue8b5",  # Schedule/Timeline
+    "history": "\ue8b1",  # History
+    "inventory_2": "\ue1d7",  # Stack/Layers (for backup)
     # Help & Info
-    "help": "\ue88a",           # Help
-    "help_outline": "\ue88b",   # Help outline
-    "info": "\ue88e",           # Info
-    "info_outline": "\ue88f",   # Info outline
+    "help": "\ue88a",  # Help
+    "help_outline": "\ue88b",  # Help outline
+    "info": "\ue88e",  # Info
+    "info_outline": "\ue88f",  # Info outline
     "question_mark": "\ue8b6",  # Question mark
-    "lightbulb": "\ue0a3",      # Lightbulb/Tips
-    "menu_book": "\ue8ca",      # Book/Documentation
-
+    "lightbulb": "\ue0a3",  # Lightbulb/Tips
+    "menu_book": "\ue8ca",  # Book/Documentation
     # Settings & Configuration
-    "settings": "\ue8b8",       # Settings
+    "settings": "\ue8b8",  # Settings
     "settings_applications": "\ue8c3",  # App settings
-    "palette": "\ue40a",        # Palette/Theme
-
+    "palette": "\ue40a",  # Palette/Theme
     # System & Status
-    "check_circle": "\ue86c",   # Check circle (success)
-    "error": "\ue000",          # Error
-    "warning": "\ue002",        # Warning
-    "cancel": "\ue5c9",         # Cancel/Close
-    "close": "\ue5cd",          # Close
-    "delete": "\ue872",         # Delete
-
+    "check_circle": "\ue86c",  # Check circle (success)
+    "error": "\ue000",  # Error
+    "warning": "\ue002",  # Warning
+    "cancel": "\ue5c9",  # Cancel/Close
+    "close": "\ue5cd",  # Close
+    "delete": "\ue872",  # Delete
     # Actions
-    "add": "\ue145",            # Add
-    "remove": "\ue15b",         # Remove
-    "edit": "\ue3c9",           # Edit
-    "save": "\ue161",           # Save
-    "refresh": "\ue5d5",        # Refresh
-
+    "add": "\ue145",  # Add
+    "remove": "\ue15b",  # Remove
+    "edit": "\ue3c9",  # Edit
+    "save": "\ue161",  # Save
+    "refresh": "\ue5d5",  # Refresh
     # Search & Filter
-    "search": "\ue8b6",         # Search
-    "filter_list": "\ue152",    # Filter
-    "sort": "\ue164",           # Sort
-
+    "search": "\ue8b6",  # Search
+    "filter_list": "\ue152",  # Filter
+    "sort": "\ue164",  # Sort
     # System Hardware
-    "memory": "\ue326",         # RAM/Memory
-    "storage": "\ue1db",        # Storage
-    "cpu": "\ue331",            # CPU (developer_board)
-    "developer_board": "\ue331", # Developer board (CPU)
-    "videogame_asset": "\ue338", # Game/GPU
-    "monitor": "\ue314",        # Monitor
-
+    "memory": "\ue326",  # RAM/Memory
+    "storage": "\ue1db",  # Storage
+    "cpu": "\ue331",  # CPU (developer_board)
+    "developer_board": "\ue331",  # Developer board (CPU)
+    "videogame_asset": "\ue338",  # Game/GPU
+    "monitor": "\ue314",  # Monitor
     # Arrows & Navigation
-    "arrow_back": "\ue5c4",     # Arrow back
+    "arrow_back": "\ue5c4",  # Arrow back
     "arrow_forward": "\ue5c8",  # Arrow forward
-    "home": "\ue88a",           # Home
-    "exit_to_app": "\ue905",    # Exit
-
+    "home": "\ue88a",  # Home
+    "exit_to_app": "\ue905",  # Exit
     # Misc
-    "star": "\ue838",           # Star
-    "favorite": "\ue87d",       # Favorite
-    "visibility": "\ue8f4",     # Visibility
-    "visibility_off": "\ue8f5", # Visibility off
-    "expand_more": "\ue5ce",    # Expand more (chevron down)
-    "expand_less": "\ue5cf",    # Expand less (chevron up)
-    "more_vert": "\ue5d4",      # More vertical (kebab menu)
+    "star": "\ue838",  # Star
+    "favorite": "\ue87d",  # Favorite
+    "visibility": "\ue8f4",  # Visibility
+    "visibility_off": "\ue8f5",  # Visibility off
+    "expand_more": "\ue5ce",  # Expand more (chevron down)
+    "expand_less": "\ue5cf",  # Expand less (chevron up)
+    "more_vert": "\ue5d4",  # More vertical (kebab menu)
+    # Help topic & Phase 2 icons
+    "rocket_launch": "\ue559",  # Getting Started
+    "bar_chart": "\ue26b",  # Dashboard topic
+    "extension": "\ue87b",  # Optimization topic
+    "description": "\ue873",  # Scripts/description
+    "target": "\uf2c4",  # Profile recommendations
+    "lan": "\ue639",  # Network category
+    "build": "\ue869",  # Troubleshooting / Custom tab
+    "download": "\ue2c4",  # Import/Download
+    "upload": "\ue2c6",  # Export/Upload
+    "open_in_new": "\ue89e",  # External link
 }
 
 
@@ -126,10 +126,7 @@ def get_material_font(size: int = 24) -> ctk.CTkFont:
     Returns:
         CTkFont configured for Material Symbols
     """
-    return ctk.CTkFont(
-        family="Material Symbols Outlined",
-        size=size
-    )
+    return ctk.CTkFont(family="Material Symbols Outlined", size=size)
 
 
 def get_icon_text(icon_name: str, fallback: str = None) -> str:
@@ -147,11 +144,7 @@ def get_icon_text(icon_name: str, fallback: str = None) -> str:
 
 
 def create_icon_label(
-    parent,
-    icon_name: str,
-    size: int = 24,
-    color: str = None,
-    **kwargs
+    parent, icon_name: str, size: int = 24, color: str = None, **kwargs
 ) -> ctk.CTkLabel:
     """
     Create a CTkLabel with a Material Symbol icon
@@ -176,16 +169,12 @@ def create_icon_label(
         text=icon_text,
         font=get_material_font(size),
         text_color=text_color,
-        **kwargs
+        **kwargs,
     )
 
 
 def create_icon_button(
-    parent,
-    icon_name: str,
-    size: int = 40,
-    command=None,
-    **kwargs
+    parent, icon_name: str, size: int = 40, command=None, **kwargs
 ) -> ctk.CTkButton:
     """
     Create a CTkButton with a Material Symbol icon
@@ -221,7 +210,7 @@ def create_icon_button(
         text=icon_text,
         font=get_material_font(int(size * 0.6)),
         command=command,
-        **defaults
+        **defaults,
     )
 
 
@@ -254,7 +243,4 @@ def get_profile_icon(profile_name: str) -> dict:
     Returns:
         Dict with 'icon' and 'color' keys
     """
-    return PROFILE_ICONS.get(profile_name.upper(), {
-        "icon": "tune",
-        "color": "#00C6FF"
-    })
+    return PROFILE_ICONS.get(profile_name.upper(), {"icon": "tune", "color": "#00C6FF"})

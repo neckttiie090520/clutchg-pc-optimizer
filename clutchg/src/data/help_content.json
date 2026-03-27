@@ -5,7 +5,7 @@
     "getting_started": {
       "en": {
         "title": "Getting Started",
-        "icon": "🚀",
+        "icon": "rocket_launch",
         "sections": [
           {
             "heading": "Welcome to ClutchG",
@@ -43,7 +43,7 @@
       },
       "th": {
         "title": "เริ่มต้นใช้งาน",
-        "icon": "🚀",
+        "icon": "rocket_launch",
         "sections": [
           {
             "heading": "ยินดีต้อนรับสู่ ClutchG",
@@ -83,7 +83,7 @@
     "dashboard": {
       "en": {
         "title": "Dashboard",
-        "icon": "📊",
+        "icon": "bar_chart",
         "sections": [
           {
             "heading": "What the Dashboard Shows",
@@ -106,7 +106,7 @@
       },
       "th": {
         "title": "Dashboard",
-        "icon": "📊",
+        "icon": "bar_chart",
         "sections": [
           {
             "heading": "Dashboard แสดงอะไรบ้าง",
@@ -131,7 +131,7 @@
     "profiles": {
       "en": {
         "title": "Optimization Profiles",
-        "icon": "⚙️",
+        "icon": "tune",
         "profiles": {
           "SAFE": {
             "name": "Safe Mode",
@@ -194,7 +194,7 @@
       },
       "th": {
         "title": "โปรไฟล์การปรับแต่ง",
-        "icon": "⚙️",
+        "icon": "tune",
         "profiles": {
           "SAFE": {
             "name": "Safe Mode",
@@ -256,7 +256,7 @@
     "optimization_center": {
       "en": {
         "title": "Optimization Center",
-        "icon": "🧩",
+        "icon": "extension",
         "sections": [
           {
             "heading": "What Optimization Center Includes",
@@ -284,7 +284,7 @@
       },
       "th": {
         "title": "Optimization Center",
-        "icon": "🧩",
+        "icon": "extension",
         "sections": [
           {
             "heading": "สิ่งที่มีใน Optimization Center",
@@ -314,7 +314,7 @@
     "quick_actions": {
       "en": {
         "title": "Quick Actions",
-        "icon": "⚡",
+        "icon": "bolt",
         "sections": [
           {
             "heading": "What Quick Actions Are",
@@ -347,7 +347,7 @@
       },
       "th": {
         "title": "Quick Actions",
-        "icon": "⚡",
+        "icon": "bolt",
         "sections": [
           {
             "heading": "Quick Actions คืออะไร",
@@ -382,11 +382,11 @@
     "scripts": {
       "en": {
         "title": "Script Reference",
-        "icon": "📜",
+        "icon": "description",
         "categories": {
           "power": {
             "name": "Power Management",
-            "icon": "⚡",
+            "icon": "bolt",
             "description": "Power and performance-plan related scripts for responsiveness and stable frame times.",
             "risk": "Low to Medium",
             "scripts": {
@@ -413,7 +413,7 @@
           },
           "input": {
             "name": "Input & Latency",
-            "icon": "⌨️",
+            "icon": "build",
             "description": "Improves mouse, keyboard, and scheduler responsiveness.",
             "risk": "Low to Medium",
             "scripts": {
@@ -431,7 +431,7 @@
           },
           "gpu": {
             "name": "GPU & Graphics",
-            "icon": "🎮",
+            "icon": "play_arrow",
             "description": "Graphics scheduling and GPU behavior optimizations.",
             "risk": "Low to Medium",
             "scripts": {
@@ -457,7 +457,7 @@
           },
           "network": {
             "name": "Network",
-            "icon": "🌐",
+            "icon": "lan",
             "description": "Latency-focused network tuning for gaming and responsiveness.",
             "risk": "Medium",
             "scripts": {
@@ -483,7 +483,7 @@
           },
           "services": {
             "name": "Services & Telemetry",
-            "icon": "🛠️",
+            "icon": "build",
             "description": "Service, telemetry, and background-process reduction scripts.",
             "risk": "Medium to High",
             "scripts": {
@@ -509,7 +509,7 @@
           },
           "cleanup": {
             "name": "Cleanup & Maintenance",
-            "icon": "🧹",
+            "icon": "delete",
             "description": "Storage cleanup, maintenance, debloat, and support utilities.",
             "risk": "Low to Medium",
             "scripts": {
@@ -577,11 +577,11 @@
       },
       "th": {
         "title": "คู่มือสคริปต์",
-        "icon": "📜",
+        "icon": "description",
         "categories": {
           "power": {
             "name": "การจัดการพลังงาน",
-            "icon": "⚡",
+            "icon": "bolt",
             "description": "สคริปต์ด้าน power plan และประสิทธิภาพเพื่อความลื่นไหลและ frame time ที่เสถียร",
             "risk": "Low to Medium",
             "scripts": {
@@ -607,7 +607,7 @@
           },
           "input": {
             "name": "Input & Latency",
-            "icon": "⌨️",
+            "icon": "build",
             "description": "ปรับการตอบสนองของเมาส์ คีย์บอร์ด และ scheduler",
             "risk": "Low to Medium",
             "scripts": {
@@ -624,7 +624,7 @@
           },
           "gpu": {
             "name": "GPU & Graphics",
-            "icon": "🎮",
+            "icon": "play_arrow",
             "description": "การปรับ scheduler และพฤติกรรมของ GPU/graphics",
             "risk": "Low to Medium",
             "scripts": {
@@ -650,7 +650,7 @@
           },
           "network": {
             "name": "เครือข่าย",
-            "icon": "🌐",
+            "icon": "lan",
             "description": "การจูนเครือข่ายที่เน้น latency สำหรับเกมและความลื่นไหล",
             "risk": "Medium",
             "scripts": {
@@ -675,7 +675,7 @@
           },
           "services": {
             "name": "Services & Telemetry",
-            "icon": "🛠️",
+            "icon": "build",
             "description": "สคริปต์จัดการ service, telemetry และ background process",
             "risk": "Medium to High",
             "scripts": {
@@ -701,7 +701,7 @@
           },
           "cleanup": {
             "name": "Cleanup & Maintenance",
-            "icon": "🧹",
+            "icon": "delete",
             "description": "การล้างข้อมูล บำรุงรักษา debloat และ utility ที่เกี่ยวข้อง",
             "risk": "Low to Medium",
             "scripts": {
@@ -771,7 +771,7 @@
     "backup": {
       "en": {
         "title": "Backup & Restore",
-        "icon": "💾",
+        "icon": "backup",
         "sections": [
           {
             "heading": "Simple Mode",
@@ -805,7 +805,7 @@
       },
       "th": {
         "title": "สำรองและกู้คืน",
-        "icon": "💾",
+        "icon": "backup",
         "sections": [
           {
             "heading": "โหมด Simple",
@@ -841,7 +841,7 @@
     "safety": {
       "en": {
         "title": "Safety Information",
-        "icon": "⚠️",
+        "icon": "shield",
         "warnings": [
           {
             "level": "critical",
@@ -876,7 +876,7 @@
       },
       "th": {
         "title": "ข้อมูลความปลอดภัย",
-        "icon": "⚠️",
+        "icon": "shield",
         "warnings": [
           {
             "level": "critical",
@@ -913,7 +913,7 @@
     "troubleshooting": {
       "en": {
         "title": "Troubleshooting",
-        "icon": "🔧",
+        "icon": "build",
         "issues": [
           {
             "problem": "A profile or quick action failed",
@@ -947,7 +947,7 @@
       },
       "th": {
         "title": "การแก้ปัญหา",
-        "icon": "🔧",
+        "icon": "build",
         "issues": [
           {
             "problem": "โปรไฟล์หรือ quick action ใช้งานไม่สำเร็จ",
@@ -983,7 +983,7 @@
     "settings": {
       "en": {
         "title": "Settings",
-        "icon": "⚙️",
+        "icon": "settings",
         "sections": [
           {
             "heading": "What Settings Currently Controls",
@@ -1013,7 +1013,7 @@
       },
       "th": {
         "title": "Settings",
-        "icon": "⚙️",
+        "icon": "settings",
         "sections": [
           {
             "heading": "Settings ตอนนี้ควบคุมอะไรบ้าง",
@@ -1045,7 +1045,7 @@
     "risk_levels": {
       "en": {
         "title": "Understanding Risk Levels",
-        "icon": "⚠️",
+        "icon": "warning",
         "sections": [
           {
             "heading": "How Risk Levels Work",
@@ -1075,7 +1075,7 @@
       },
       "th": {
         "title": "การเข้าใจระดับความเสี่ยง",
-        "icon": "⚠️",
+        "icon": "warning",
         "sections": [
           {
             "heading": "ระดับความเสี่ยงทำงานอย่างไร",
@@ -1107,7 +1107,7 @@
     "profile_recommendations": {
       "en": {
         "title": "Profile Recommendations",
-        "icon": "🎯",
+        "icon": "target",
         "sections": [
           {
             "heading": "How Recommendations Are Chosen",
@@ -1133,7 +1133,7 @@
       },
       "th": {
         "title": "การแนะนำโปรไฟล์",
-        "icon": "🎯",
+        "icon": "target",
         "sections": [
           {
             "heading": "ระบบเลือกคำแนะนำอย่างไร",
@@ -1161,7 +1161,7 @@
     "about": {
       "en": {
         "title": "About ClutchG",
-        "icon": "ℹ️",
+        "icon": "info",
         "content": {
           "version": "1.0.0",
           "description": "ClutchG is a Windows optimization app that combines hardware-aware recommendations, profile-based workflows, Quick Actions, tweak documentation, and backup/restore tooling.",
@@ -1177,7 +1177,7 @@
       },
       "th": {
         "title": "เกี่ยวกับ ClutchG",
-        "icon": "ℹ️",
+        "icon": "info",
         "content": {
           "version": "1.0.0",
           "description": "ClutchG คือแอปปรับแต่ง Windows ที่รวมคำแนะนำตามฮาร์ดแวร์ workflow แบบ profile, Quick Actions, เอกสาร tweak และเครื่องมือ backup/restore ไว้ด้วยกัน",

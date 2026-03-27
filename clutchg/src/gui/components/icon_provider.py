@@ -21,65 +21,79 @@ class IconProvider:
     # Material Symbols Outlined icon mappings
     ICONS = {
         # Navigation
-        "dashboard": "\ue871",        # grid_view
-        "profiles": "\ue8d8",         # tune
-        "scripts": "\uf069",          # terminal
-        "backup": "\uf1c9",           # backup / save
-        "restore": "\ue855",          # restore / history
-        "help": "\ue8b8",             # settings / help
-        "settings": "\ue8b8",         # settings
-
+        "dashboard": "\ue871",  # grid_view
+        "profiles": "\ue8d8",  # tune
+        "scripts": "\uf069",  # terminal
+        "backup": "\uf1c9",  # backup / save
+        "restore": "\ue855",  # restore / history
+        "help": "\ue8b8",  # settings / help
+        "settings": "\ue8b8",  # settings
         # Actions
-        "create": "\ue145",           # add_circle
-        "add": "\ue145",              # add
-        "delete": "\ue872",           # delete
-        "edit": "\ue3c9",             # edit
-        "save": "\ue161",             # save
-        "cancel": "\ue5c9",           # close
-        "confirm": "\ue876",          # check_circle
-        "apply": "\ue157",            # done
-
+        "create": "\ue145",  # add_circle
+        "add": "\ue145",  # add
+        "delete": "\ue872",  # delete
+        "edit": "\ue3c9",  # edit
+        "save": "\ue161",  # save
+        "cancel": "\ue5c9",  # close
+        "confirm": "\ue876",  # check_circle
+        "apply": "\ue157",  # done
         # Status
-        "success": "\ue876",          # check_circle
-        "error": "\uf5ad",            # error / cancel
-        "warning": "\ue002",          # warning
-        "info": "\ue88e",             # info
-        "loading": "\ue863",          # refresh
-
+        "success": "\ue876",  # check_circle
+        "error": "\uf5ad",  # error / cancel
+        "warning": "\ue002",  # warning
+        "info": "\ue88e",  # info
+        "loading": "\ue863",  # refresh
         # States
-        "check": "\ue876",            # check
-        "close": "\ue5c9",            # close
-        "expand": "\ue5c5",           # expand_more
-        "collapse": "\ue5c6",         # expand_less
-        "arrow_right": "\ue5c8",      # arrow_forward
-        "arrow_left": "\ue5c4",       # arrow_back
-        "arrow_down": "\ue5c5",       # arrow_downward
-        "arrow_up": "\ue5c7",         # arrow_upward
-
+        "check": "\ue876",  # check
+        "close": "\ue5c9",  # close
+        "expand": "\ue5c5",  # expand_more
+        "collapse": "\ue5c6",  # expand_less
+        "arrow_right": "\ue5c8",  # arrow_forward
+        "arrow_left": "\ue5c4",  # arrow_back
+        "arrow_down": "\ue5c5",  # arrow_downward
+        "arrow_up": "\ue5c7",  # arrow_upward
         # System
-        "cpu": "\ue635",              # memory
-        "gpu": "\ue334",              # display_settings
-        "ram": "\ue322",              # memory
-        "storage": "\ue1db",          # storage
-        "network": "\ue639",          # wifi
-
+        "cpu": "\ue635",  # memory
+        "gpu": "\ue334",  # display_settings
+        "ram": "\ue322",  # memory
+        "storage": "\ue1db",  # storage
+        "network": "\ue639",  # wifi
         # UI Elements
-        "search": "\ue8b6",           # search
-        "filter": "\ue152",           # filter_list
-        "sort": "\ue164",             # sort
-        "more": "\ue5d3",             # more_vert
-        "menu": "\ue5d2",             # menu
-        "home": "\ue88a",             # home
-
+        "search": "\ue8b6",  # search
+        "filter": "\ue152",  # filter_list
+        "sort": "\ue164",  # sort
+        "more": "\ue5d3",  # more_vert
+        "menu": "\ue5d2",  # menu
+        "home": "\ue88a",  # home
         # Backup/Restore specific
-        "history": "\ue81c",          # history (Segoe MDL2)
-        "backup_restore": "\ue855",   # restore_from_trash
+        "history": "\ue81c",  # history (Segoe MDL2)
+        "backup_restore": "\ue855",  # restore_from_trash
         "system_snapshot": "\ue8b8",  # settings_backup_restore
-
         # Files/Folders
-        "folder": "\ue2c7",           # folder
-        "file": "\ue873",             # insert_drive_file
-        "document": "\ue873",         # description
+        "folder": "\ue2c7",  # folder
+        "file": "\ue873",  # insert_drive_file
+        "document": "\ue873",  # description
+        # Help topic icons
+        "rocket_launch": "\ue559",  # Getting Started
+        "bar_chart": "\ue26b",  # Dashboard topic
+        "tune": "\ue429",  # Profiles / tune
+        "extension": "\ue87b",  # Optimization topic
+        "bolt": "\ue929",  # Quick Actions / Power
+        "description": "\ue873",  # Scripts topic
+        "shield": "\ue914",  # Safety topic
+        "target": "\uf2c4",  # Profile recommendations
+        "lightbulb": "\ue0a3",  # Tips
+        "lan": "\ue639",  # Network category
+        "build": "\ue869",  # Troubleshooting / Custom tab
+        "menu_book": "\ue8ca",  # Glossary tab
+        "download": "\ue2c4",  # Import
+        "upload": "\ue2c6",  # Export
+        "play_arrow": "\ue037",  # Run button
+        "open_in_new": "\ue89e",  # External link
+        "expand_more": "\ue5cf",  # Expand arrow
+        "check_circle": "\ue86c",  # Backup with restore point
+        "inventory_2": "\ue1d7",  # Registry-only backup
+        "refresh": "\ue5d5",  # Restart indicator
     }
 
     def __init__(self):
@@ -121,6 +135,7 @@ class IconProvider:
         """
         try:
             import tkinter.font as tkfont
+
             available = tkfont.families()
             return family_name in available
         except Exception:
