@@ -42,7 +42,7 @@ class ConfigManager:
         # Load from file if exists
         if self.config_file.exists():
             try:
-                with open(self.config_file, 'r', encoding='utf-8') as f:
+                with open(self.config_file, "r", encoding="utf-8") as f:
                     file_config = json.load(f)
                     config.update(file_config)
             except Exception as e:
@@ -51,7 +51,7 @@ class ConfigManager:
         # Override with user config if exists
         if self.user_config_file.exists():
             try:
-                with open(self.user_config_file, 'r', encoding='utf-8') as f:
+                with open(self.user_config_file, "r", encoding="utf-8") as f:
                     user_config = json.load(f)
                     config.update(user_config)
             except Exception as e:
@@ -83,11 +83,15 @@ class ConfigManager:
                 user_value = config[key]
                 # Check type match (handle nested dicts recursively)
                 if isinstance(default_value, dict) and isinstance(user_value, dict):
-                    validated[key] = self._validate_config_recursive(user_value, default_value)
+                    validated[key] = self._validate_config_recursive(
+                        user_value, default_value
+                    )
                 elif type(user_value) == type(default_value):
                     validated[key] = user_value
                 else:
-                    print(f"Warning: Invalid type for '{key}', expected {type(default_value).__name__}, using default")
+                    print(
+                        f"Warning: Invalid type for '{key}', expected {type(default_value).__name__}, using default"
+                    )
                     validated[key] = default_value
             else:
                 validated[key] = default_value
@@ -101,47 +105,51 @@ class ConfigManager:
             if key in user_dict:
                 user_value = user_dict[key]
                 if isinstance(default_value, dict) and isinstance(user_value, dict):
-                    validated[key] = self._validate_config_recursive(user_value, default_value)
+                    validated[key] = self._validate_config_recursive(
+                        user_value, default_value
+                    )
                 elif type(user_value) == type(default_value):
                     validated[key] = user_value
                 else:
-                    print(f"Warning: Invalid type for '{key}', expected {type(default_value).__name__}, using default")
+                    print(
+                        f"Warning: Invalid type for '{key}', expected {type(default_value).__name__}, using default"
+                    )
                     validated[key] = default_value
             else:
                 validated[key] = default_value
         return validated
-    
+
     def save_config(self, config: Dict[str, Any]) -> bool:
         """
         Save configuration to user config file
-        
+
         Args:
             config: Configuration dictionary
-            
+
         Returns:
             True if successful, False otherwise
         """
         try:
-            with open(self.user_config_file, 'w', encoding='utf-8') as f:
+            with open(self.user_config_file, "w", encoding="utf-8") as f:
                 json.dump(config, f, indent=2)
             return True
         except Exception as e:
             print(f"Error: Failed to save config: {e}")
             return False
-    
+
     def reset_to_defaults(self) -> Dict[str, Any]:
         """
         Reset configuration to defaults
-        
+
         Returns:
             Default configuration dictionary
         """
         # Remove user config
         if self.user_config_file.exists():
             self.user_config_file.unlink()
-        
+
         return self.get_default_config()
-    
+
     def get_default_config(self) -> Dict[str, Any]:
         """
         Get default configuration
@@ -153,7 +161,7 @@ class ConfigManager:
             "version": "1.0.0",
             "language": "en",
             "theme": "modern",
-            "accent": "tokyo_blue",  # Accent color preset
+            "accent": "sunvalley",  # Accent color preset
             "auto_backup": True,
             "confirm_actions": True,
             "log_level": "INFO",
@@ -161,17 +169,13 @@ class ConfigManager:
             "backup_dir": "./data/backups",
             "max_backups": 10,
             "default_profile": "SAFE",
-            "window_size": {
-                "width": 1000,
-                "height": 700
-            },
+            "window_size": {"width": 1000, "height": 700},
             "startup_checks": {
                 "check_admin": True,
                 "detect_system": True,
-                "verify_scripts": True
+                "verify_scripts": True,
             },
-
             # Accessibility settings
             "reduce_motion": False,  # Reduce animations for motion-sensitive users
-            "high_contrast": False,   # High contrast mode for accessibility
+            "high_contrast": False,  # High contrast mode for accessibility
         }

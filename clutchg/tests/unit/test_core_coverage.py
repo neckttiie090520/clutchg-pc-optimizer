@@ -38,6 +38,7 @@ from core.batch_executor import BatchExecutor, ExecutionResult
 # ConfigManager
 # ===========================================================================
 
+
 @pytest.mark.unit
 class TestConfigManager:
     """Tests for ConfigManager – no real filesystem needed (uses tmp_path)."""
@@ -45,15 +46,22 @@ class TestConfigManager:
     def test_get_default_config_returns_required_keys(self, tmp_path):
         mgr = ConfigManager(config_dir=tmp_path)
         cfg = mgr.get_default_config()
-        for key in ("version", "language", "theme", "accent", "auto_backup",
-                    "confirm_actions", "default_profile"):
+        for key in (
+            "version",
+            "language",
+            "theme",
+            "accent",
+            "auto_backup",
+            "confirm_actions",
+            "default_profile",
+        ):
             assert key in cfg, f"Missing key: {key}"
 
     def test_default_theme_is_modern(self, tmp_path):
         mgr = ConfigManager(config_dir=tmp_path)
         cfg = mgr.get_default_config()
         assert cfg["theme"] == "modern"
-        assert cfg["accent"] == "tokyo_blue"
+        assert cfg["accent"] == "sunvalley"
 
     def test_load_config_returns_defaults_when_no_files(self, tmp_path):
         mgr = ConfigManager(config_dir=tmp_path)
@@ -110,6 +118,7 @@ class TestConfigManager:
 # HelpManager
 # ===========================================================================
 
+
 @pytest.mark.unit
 class TestHelpManager:
     """Tests for HelpManager using in-memory fixture data."""
@@ -123,12 +132,12 @@ class TestHelpManager:
                     "profiles": {
                         "SAFE": {"name": "Safe", "risk": "LOW"},
                         "EXTREME": {"name": "Extreme", "risk": "HIGH"},
-                    }
+                    },
                 },
                 "th": {
                     "title": "โปรไฟล์",
                     "icon": "🎮",
-                }
+                },
             },
             "scripts": {
                 "en": {
@@ -140,9 +149,9 @@ class TestHelpManager:
                                 "power-plan.bat": {"description": "Power plan tweak"}
                             }
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 
@@ -223,15 +232,40 @@ class TestHelpManager:
 # ProfileRecommender
 # ===========================================================================
 
+
 @pytest.mark.unit
 class TestProfileRecommender:
     """Tests for ProfileRecommender – pure logic, no subprocess."""
 
     # Convenience system-info dicts
-    LOW_END = {"cpu_tier": 1, "gpu_tier": 1, "ram_gb": 4, "is_laptop": False, "is_gaming_gpu": False}
-    MID_TIER = {"cpu_tier": 3, "gpu_tier": 3, "ram_gb": 16, "is_laptop": False, "is_gaming_gpu": True}
-    HIGH_END = {"cpu_tier": 5, "gpu_tier": 5, "ram_gb": 32, "is_laptop": False, "is_gaming_gpu": True}
-    HIGH_END_LAPTOP = {"cpu_tier": 5, "gpu_tier": 5, "ram_gb": 32, "is_laptop": True, "is_gaming_gpu": True}
+    LOW_END = {
+        "cpu_tier": 1,
+        "gpu_tier": 1,
+        "ram_gb": 4,
+        "is_laptop": False,
+        "is_gaming_gpu": False,
+    }
+    MID_TIER = {
+        "cpu_tier": 3,
+        "gpu_tier": 3,
+        "ram_gb": 16,
+        "is_laptop": False,
+        "is_gaming_gpu": True,
+    }
+    HIGH_END = {
+        "cpu_tier": 5,
+        "gpu_tier": 5,
+        "ram_gb": 32,
+        "is_laptop": False,
+        "is_gaming_gpu": True,
+    }
+    HIGH_END_LAPTOP = {
+        "cpu_tier": 5,
+        "gpu_tier": 5,
+        "ram_gb": 32,
+        "is_laptop": True,
+        "is_gaming_gpu": True,
+    }
 
     def test_beginner_low_end_gets_safe(self):
         r = ProfileRecommender()
@@ -246,9 +280,7 @@ class TestProfileRecommender:
     def test_advanced_high_end_desktop_gets_extreme(self):
         r = ProfileRecommender()
         result = r.recommend(
-            self.HIGH_END,
-            user_experience="advanced",
-            user_goal="maximum_performance"
+            self.HIGH_END, user_experience="advanced", user_goal="maximum_performance"
         )
         assert result.recommended_profile == "EXTREME"
 
@@ -257,7 +289,7 @@ class TestProfileRecommender:
         result = r.recommend(
             self.HIGH_END_LAPTOP,
             user_experience="advanced",
-            user_goal="maximum_performance"
+            user_goal="maximum_performance",
         )
         # EXTREME requires desktop
         assert result.recommended_profile != "EXTREME"
@@ -324,9 +356,7 @@ class TestProfileRecommender:
     def test_extreme_warning_list_not_empty(self):
         r = ProfileRecommender()
         result = r.recommend(
-            self.HIGH_END,
-            user_experience="advanced",
-            user_goal="maximum_performance"
+            self.HIGH_END, user_experience="advanced", user_goal="maximum_performance"
         )
         assert len(result.warnings) > 0
 
@@ -339,6 +369,7 @@ class TestProfileRecommender:
 # ===========================================================================
 # SystemSnapshot / SnapshotDiff / SystemSnapshotManager
 # ===========================================================================
+
 
 @pytest.mark.unit
 class TestSystemSnapshot:
@@ -456,9 +487,7 @@ class TestSystemSnapshotManager:
 
     @patch("core.system_snapshot.subprocess.run")
     def test_take_snapshot_uses_subprocess(self, mock_run):
-        mock_run.return_value = MagicMock(
-            stdout="50\n", stderr="", returncode=0
-        )
+        mock_run.return_value = MagicMock(stdout="50\n", stderr="", returncode=0)
         mgr = SystemSnapshotManager()
         snap = mgr.take_snapshot()
         assert mock_run.called
@@ -469,6 +498,7 @@ class TestSystemSnapshotManager:
 # ===========================================================================
 # BatchExecutor / ExecutionResult
 # ===========================================================================
+
 
 @pytest.mark.unit
 class TestBatchExecutor:
