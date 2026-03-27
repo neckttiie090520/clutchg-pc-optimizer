@@ -90,6 +90,10 @@ jobs:
           path: clutchg/test-results/
           retention-days: 14
 
+      # ---- Syntax Check ----
+      - name: Check Python syntax
+        run: python -m compileall clutchg/src
+
       # ---- Coverage summary in PR ----
       - name: Coverage summary
         if: always()
