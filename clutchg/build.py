@@ -26,6 +26,25 @@ def _ensure_pyinstaller() -> None:
             sys.exit(1)
 
 
+def _convert_icon(png_path: Path, ico_path: Path) -> bool:
+    """Convert a PNG to ICO with multiple sizes for Windows.
+
+    Returns True on success, False on failure.
+    """
+    try:
+        from PIL import Image
+
+        img = Image.open(png_path)
+        # Standard Windows icon sizes
+        sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+        img.save(ico_path, format="ICO", sizes=sizes)
+        print(f"Icon generated: {ico_path}")
+        return True
+    except Exception as exc:
+        print(f"WARNING: Could not convert icon ({exc}). Building without icon.")
+        return False
+
+
 def build():
     """Build ClutchG executable"""
 
@@ -46,6 +65,12 @@ def build():
     print("=" * 60)
 
     _ensure_pyinstaller()
+
+    # Convert app icon PNG → ICO
+    icon_png = src_dir / "assets" / "icon.png"
+    icon_ico = build_dir / "icon.ico"
+    icon_ico.parent.mkdir(parents=True, exist_ok=True)
+    has_icon = icon_png.is_file() and _convert_icon(icon_png, icon_ico)
 
     # PyInstaller command
     # Note: --add-data uses the Windows path separator (;) intentionally;
@@ -71,6 +96,10 @@ def build():
         # Entry point (must be last)
         str(src_dir / "main.py"),
     ]
+
+    # Add icon flag if conversion succeeded
+    if has_icon:
+        cmd.insert(-1, f"--icon={icon_ico}")
 
     # Add data directories only if they exist
     config_dir = project_dir / "config"
