@@ -20,23 +20,23 @@
 
 ### 2.1 Source Code CIs
 
-| CI-ID | ประเภท | ที่ตั้ง | LOC (est.) | ความสำคัญ | หมายเหตุ |
-|-------|--------|-------|-----------|----------|---------|
-| CI-CORE-01 | Python Module | `clutchg/src/core/tweak_registry.py` | 1013 | สูง | Central tweak database, 48 tweaks |
-| CI-CORE-02 | Python Module | `clutchg/src/core/profile_manager.py` | 528 | สูง | Profile orchestration |
-| CI-CORE-03 | Python Module | `clutchg/src/core/flight_recorder.py` | 616 | สูง | Change tracking + rollback (rewritten CR-004) |
-| CI-CORE-04 | Python Module | `clutchg/src/core/backup_manager.py` | 373 | สูง | Backup + restore points |
-| CI-CORE-05 | Python Module | `clutchg/src/core/system_info.py` | 381 | ปานกลาง | HW detection |
-| CI-CORE-06 | Python Module | `clutchg/src/core/batch_parser.py` | 450 | ปานกลาง | .bat parsing |
-| CI-CORE-07 | Python Module | `clutchg/src/core/batch_executor.py` | 200 | ปานกลาง | .bat execution |
-| CI-CORE-08 | Python Module | `clutchg/src/core/benchmark_database.py` | 450 | ปานกลาง | HW scoring |
-| CI-CORE-09 | Python Module | `clutchg/src/core/config.py` | 120 | ต่ำ | App config |
-| CI-CORE-10 | Python Module | `clutchg/src/core/help_manager.py` | 100 | ต่ำ | Help content |
-| CI-GUI-01 | Python Module | `clutchg/src/app_minimal.py` | 324 | สูง | Main controller |
-| CI-GUI-02 | Python Module | `clutchg/src/gui/views/scripts_minimal.py` | ~1800 | สูง | Largest view (63.5KB) |
-| CI-GUI-03 | Python Module | `clutchg/src/gui/views/backup_restore_center.py` | ~1000 | สูง | Timeline + rollback |
-| CI-GUI-04 | Python Module | `clutchg/src/gui/views/dashboard_minimal.py` | ~730 | ปานกลาง | System info display |
-| CI-BAT-01~09 | Batch Scripts | `clutchg/src/core/*.bat` | 9 files | สูง | System optimization scripts |
+| CI-ID        | ประเภท        | ที่ตั้ง                                          | LOC (est.) | ความสำคัญ | หมายเหตุ                                      |
+| ------------ | ------------- | ------------------------------------------------ | ---------- | --------- | --------------------------------------------- |
+| CI-CORE-01   | Python Module | `clutchg/src/core/tweak_registry.py`             | 1013       | สูง       | Central tweak database, 48 tweaks             |
+| CI-CORE-02   | Python Module | `clutchg/src/core/profile_manager.py`            | 528        | สูง       | Profile orchestration                         |
+| CI-CORE-03   | Python Module | `clutchg/src/core/flight_recorder.py`            | 616        | สูง       | Change tracking + rollback (rewritten CR-004) |
+| CI-CORE-04   | Python Module | `clutchg/src/core/backup_manager.py`             | 373        | สูง       | Backup + restore points                       |
+| CI-CORE-05   | Python Module | `clutchg/src/core/system_info.py`                | 381        | ปานกลาง   | HW detection                                  |
+| CI-CORE-06   | Python Module | `clutchg/src/core/batch_parser.py`               | 450        | ปานกลาง   | .bat parsing                                  |
+| CI-CORE-07   | Python Module | `clutchg/src/core/batch_executor.py`             | 200        | ปานกลาง   | .bat execution                                |
+| CI-CORE-08   | Python Module | `clutchg/src/core/benchmark_database.py`         | 450        | ปานกลาง   | HW scoring                                    |
+| CI-CORE-09   | Python Module | `clutchg/src/core/config.py`                     | 120        | ต่ำ       | App config                                    |
+| CI-CORE-10   | Python Module | `clutchg/src/core/help_manager.py`               | 100        | ต่ำ       | Help content                                  |
+| CI-GUI-01    | Python Module | `clutchg/src/app_minimal.py`                     | 324        | สูง       | Main controller                               |
+| CI-GUI-02    | Python Module | `clutchg/src/gui/views/scripts_minimal.py`       | ~1800      | สูง       | Largest view (63.5KB)                         |
+| CI-GUI-03    | Python Module | `clutchg/src/gui/views/backup_restore_center.py` | ~1000      | สูง       | Timeline + rollback                           |
+| CI-GUI-04    | Python Module | `clutchg/src/gui/views/dashboard_minimal.py`     | ~730       | ปานกลาง   | System info display                           |
+| CI-BAT-01~09 | Batch Scripts | `clutchg/src/core/*.bat`                         | 9 files    | สูง       | System optimization scripts                   |
 
 ### 2.2 Test CIs
 
