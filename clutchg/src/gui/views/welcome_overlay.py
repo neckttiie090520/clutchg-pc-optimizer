@@ -1,12 +1,14 @@
 """
 Welcome/Tutorial Overlay
-First-time user walkthrough
+First-time user walkthrough — Phase 3 redesign
 """
 
 import customtkinter as ctk
+from pathlib import Path
 from typing import TYPE_CHECKING, Optional
+
 from gui.theme import COLORS, SIZES, ICON
-from gui.style import font, style_primary_button, style_outline_button, style_ghost_button
+from gui.style import font, style_primary_button, style_outline_button
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -37,13 +39,13 @@ class WelcomeOverlay(ctk.CTkToplevel):
             "step4_highlight": "Safety first - never optimize without a backup",
             # Step 5
             "step5_title": "Ready to Optimize!",
-            "step5_content": "You're all set!\n\n1. Go to Profiles tab\n2. Choose a profile\n3. Click Apply\n4. Wait for completion\n5. Restart if prompted\n\nNeed help? Click the Help button in the sidebar.",
+            "step5_content": "You're all set!\n\n1. Go to Profiles\n2. Choose a profile\n3. Click Apply\n4. Wait for completion\n5. Restart if prompted\n\nNeed help? Click Docs in the sidebar.",
             "step5_highlight": "Enjoy your optimized PC!",
             # Buttons
-            "back_btn": "← Back",
-            "next_btn": "Next →",
+            "back_btn": "Back",
+            "next_btn": "Next",
             "skip_btn": "Skip Tutorial",
-            "get_started": "Get Started →",
+            "get_started": "Get Started",
             # Progress
             "progress": "Step {current} of {total}",
         },
@@ -67,19 +69,19 @@ class WelcomeOverlay(ctk.CTkToplevel):
             "step4_highlight": "ความปลอดภัยเป็นหลัก - อย่า Optimize โดยไม่มี Backup",
             # Step 5
             "step5_title": "พร้อม Optimize แล้ว!",
-            "step5_content": "พร้อมแล้ว!\n\n1. ไปที่แท็บ Profiles\n2. เลือก Profile\n3. กด Apply\n4. รอให้เสร็จ\n5. Restart ถ้าถูกถาม\n\nต้องการความช่วยเหลือ? กดปุ่ม Help ในแถบด้านข้าง",
+            "step5_content": "พร้อมแล้ว!\n\n1. ไปที่ Profiles\n2. เลือก Profile\n3. กด Apply\n4. รอให้เสร็จ\n5. Restart ถ้าถูกถาม\n\nต้องการความช่วยเหลือ? กด Docs ในแถบด้านข้าง",
             "step5_highlight": "เพลิดเพลินกับ PC ที่ Optimize แล้ว!",
             # Buttons
-            "back_btn": "← ย้อนกลับ",
-            "next_btn": "ถัดไป →",
+            "back_btn": "ย้อนกลับ",
+            "next_btn": "ถัดไป",
             "skip_btn": "ข้ามบทนำ",
-            "get_started": "เริ่มใช้งาน →",
+            "get_started": "เริ่มใช้งาน",
             # Progress
             "progress": "ขั้นตอน {current} จาก {total}",
-        }
+        },
     }
 
-    def __init__(self, parent, app: Optional['ClutchGApp'] = None, on_close=None):
+    def __init__(self, parent, app: Optional["ClutchGApp"] = None, on_close=None):
         super().__init__(parent)
 
         self.app = app
@@ -89,7 +91,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
         # Get language from app or default to English
         self.language = "en"
-        if app and hasattr(app, 'config'):
+        if app and hasattr(app, "config"):
             self.language = app.config.get("language", "en")
 
         # Configure window
@@ -109,7 +111,11 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
     def _ui(self, key: str, **kwargs) -> str:
         """Get UI string in current language"""
-        return self.UI_STRINGS.get(self.language, self.UI_STRINGS["en"]).get(key, key).format(**kwargs)
+        return (
+            self.UI_STRINGS.get(self.language, self.UI_STRINGS["en"])
+            .get(key, key)
+            .format(**kwargs)
+        )
 
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
@@ -120,92 +126,151 @@ class WelcomeOverlay(ctk.CTkToplevel):
     def _build_steps(self):
         """Build steps content with localized strings"""
         # Get icons for step 3
-        safe_icon = ICON('safe')
-        comp_icon = ICON('competitive')
-        ext_icon = ICON('extreme')
+        safe_icon = ICON("safe")
+        comp_icon = ICON("competitive")
+        ext_icon = ICON("extreme")
 
         self.steps = [
             {
                 "title": self._ui("step1_title"),
                 "content": self._ui("step1_content"),
-                "highlight": self._ui("step1_highlight")
+                "highlight": self._ui("step1_highlight"),
             },
             {
                 "title": self._ui("step2_title"),
                 "content": self._ui("step2_content"),
-                "highlight": self._ui("step2_highlight")
+                "highlight": self._ui("step2_highlight"),
             },
             {
                 "title": self._ui("step3_title"),
-                "content": self._ui("step3_content", safe=safe_icon, comp=comp_icon, ext=ext_icon),
-                "highlight": self._ui("step3_highlight")
+                "content": self._ui(
+                    "step3_content", safe=safe_icon, comp=comp_icon, ext=ext_icon
+                ),
+                "highlight": self._ui("step3_highlight"),
             },
             {
                 "title": self._ui("step4_title"),
                 "content": self._ui("step4_content"),
-                "highlight": self._ui("step4_highlight")
+                "highlight": self._ui("step4_highlight"),
             },
             {
                 "title": self._ui("step5_title"),
                 "content": self._ui("step5_content"),
-                "highlight": self._ui("step5_highlight")
-            }
+                "highlight": self._ui("step5_highlight"),
+            },
         ]
 
     def setup_ui(self):
-        """Setup UI"""
-        self.grid_rowconfigure(1, weight=1)
+        """Setup UI with grid layout:
+        Row 0: Logo (step 0 only)
+        Row 1: Header (title)
+        Row 2: Content text (weight=1)
+        Row 3: Highlight box
+        Row 4: Dots + progress text
+        Row 5: Navigation buttons (Back/Next)
+        """
+        self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # Header
+        # --- Row 0: App logo (step 0 only) ---
+        self._logo_image = None  # prevent GC
+        icon_path = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
+        if icon_path.is_file():
+            try:
+                from PIL import Image
+
+                pil_img = Image.open(icon_path)
+                self._logo_image = ctk.CTkImage(
+                    light_image=pil_img, dark_image=pil_img, size=(64, 64)
+                )
+                self.logo_label = ctk.CTkLabel(self, image=self._logo_image, text="")
+                self.logo_label.grid(
+                    row=0, column=0, padx=40, pady=(30, 10), sticky="w"
+                )
+            except Exception:
+                pass
+
+        # --- Skip button (top-right, absolute position) ---
+        self.skip_btn = ctk.CTkButton(
+            self,
+            text=self._ui("skip_btn"),
+            width=100,
+            fg_color="transparent",
+            text_color=COLORS["text_muted"],
+            hover_color=COLORS.get("bg_hover", "#333333"),
+            font=self._font(11),
+            command=self.close,
+        )
+        self.skip_btn.place(relx=1.0, x=-20, y=15, anchor="ne")
+
+        # --- Row 1: Header ---
         self.header_label = ctk.CTkLabel(
             self,
             text="",
             font=self._font(20, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         )
-        self.header_label.grid(row=0, column=0, sticky="w", padx=40, pady=(30, 20))
+        self.header_label.grid(row=1, column=0, sticky="w", padx=40, pady=(10, 20))
 
-        # Content
+        # --- Row 2: Content ---
         self.content_label = ctk.CTkLabel(
             self,
             text="",
             font=self._font(13),
             text_color=COLORS["text_secondary"],
             wraplength=620,
-            justify="left"
+            justify="left",
         )
-        self.content_label.grid(row=1, column=0, sticky="nsew", padx=40)
+        self.content_label.grid(row=2, column=0, sticky="nsew", padx=40)
 
-        # Highlight box
+        # --- Row 3: Highlight box ---
         self.highlight_box = ctk.CTkFrame(
-            self,
-            fg_color=COLORS["accent"],
-            corner_radius=SIZES["card_radius"]
+            self, fg_color=COLORS["accent"], corner_radius=SIZES["card_radius"]
         )
-        self.highlight_box.grid(row=2, column=0, sticky="ew", padx=40, pady=(0, 20))
+        self.highlight_box.grid(row=3, column=0, sticky="ew", padx=40, pady=(0, 20))
 
         self.highlight_label = ctk.CTkLabel(
             self.highlight_box,
             text="",
             font=self._font(12, "bold"),
             text_color="white",
-            wraplength=580
+            wraplength=580,
         )
         self.highlight_label.pack(padx=20, pady=15)
 
-        # Progress indicator
+        # --- Row 4: Dot indicators + progress text ---
+        progress_frame = ctk.CTkFrame(self, fg_color="transparent")
+        progress_frame.grid(row=4, column=0, pady=(5, 0))
+
+        # Dots
+        self.dots_frame = ctk.CTkFrame(progress_frame, fg_color="transparent")
+        self.dots_frame.pack(pady=(0, 4))
+
+        self.dots = []
+        for _ in range(self.total_steps):
+            dot = ctk.CTkFrame(
+                self.dots_frame,
+                width=8,
+                height=8,
+                corner_radius=4,
+                fg_color=COLORS["bg_tertiary"],
+            )
+            dot.pack(side="left", padx=3)
+            dot.pack_propagate(False)
+            self.dots.append(dot)
+
+        # Text progress
         self.progress_label = ctk.CTkLabel(
-            self,
+            progress_frame,
             text="",
             font=self._font(11),
-            text_color=COLORS["text_muted"]
+            text_color=COLORS["text_muted"],
         )
-        self.progress_label.grid(row=3, column=0, pady=10)
+        self.progress_label.pack()
 
-        # Navigation buttons
+        # --- Row 5: Navigation buttons (Back / Next) ---
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
-        btn_frame.grid(row=4, column=0, pady=(10, 30))
+        btn_frame.grid(row=5, column=0, pady=(10, 30))
 
         self.back_btn = ctk.CTkButton(
             btn_frame,
@@ -216,7 +281,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
             border_color=COLORS["border"],
             text_color=COLORS["text_primary"],
             command=self.prev_step,
-            state="disabled"
+            state="disabled",
         )
         style_outline_button(self.back_btn, small=True, color=COLORS["border"])
         self.back_btn.pack(side="left", padx=10)
@@ -227,21 +292,10 @@ class WelcomeOverlay(ctk.CTkToplevel):
             width=100,
             fg_color=COLORS["accent"],
             text_color="white",
-            command=self.next_step
+            command=self.next_step,
         )
         style_primary_button(self.next_btn, small=True)
         self.next_btn.pack(side="left", padx=10)
-
-        self.skip_btn = ctk.CTkButton(
-            btn_frame,
-            text=self._ui("skip_btn"),
-            width=120,
-            fg_color="transparent",
-            text_color=COLORS["text_muted"],
-            command=self.close
-        )
-        style_ghost_button(self.skip_btn, small=True)
-        self.skip_btn.pack(side="right", padx=10)
 
     def show_step(self, step: int):
         """Show a specific step"""
@@ -253,8 +307,32 @@ class WelcomeOverlay(ctk.CTkToplevel):
         self.content_label.configure(text=step_data["content"])
         self.highlight_label.configure(text=step_data["highlight"])
 
-        # Update progress
-        self.progress_label.configure(text=self._ui("progress", current=step + 1, total=self.total_steps))
+        # Logo visibility — only on step 0
+        if hasattr(self, "logo_label"):
+            if step == 0:
+                self.logo_label.grid()
+            else:
+                self.logo_label.grid_remove()
+
+        # Step 5 highlight uses success (green), others use accent (sky blue)
+        if step == self.total_steps - 1:
+            self.highlight_box.configure(fg_color=COLORS["success"])
+        else:
+            self.highlight_box.configure(fg_color=COLORS["accent"])
+
+        # Dot indicators
+        for i, dot in enumerate(self.dots):
+            if i == step:
+                dot.configure(fg_color=COLORS["accent"])
+            elif i < step:
+                dot.configure(fg_color=COLORS["text_muted"])
+            else:
+                dot.configure(fg_color=COLORS["bg_tertiary"])
+
+        # Update progress text
+        self.progress_label.configure(
+            text=self._ui("progress", current=step + 1, total=self.total_steps)
+        )
 
         # Update buttons
         self.back_btn.configure(state="normal" if step > 0 else "disabled")
