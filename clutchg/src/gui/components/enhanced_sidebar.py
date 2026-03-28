@@ -7,7 +7,7 @@ import customtkinter as ctk
 import logging
 from pathlib import Path
 from PIL import Image
-from gui.theme import theme_manager, SIZES, NAV_ICONS, ANIMATION
+from gui.theme import theme_manager, SIZES, RADIUS, NAV_ICONS, ANIMATION
 from gui.style import font
 from gui.components.tooltip import ToolTipBinder
 
@@ -100,6 +100,18 @@ class EnhancedSidebar(ctk.CTkFrame):
         for key, label, icon in items:
             self.create_nav_button(key, label, icon)
 
+        # Divider before Settings
+        divider = ctk.CTkFrame(
+            self.nav_container,
+            height=1,
+            fg_color=colors["border"],
+        )
+        divider.pack(fill="x", padx=12, pady=(8, 4))
+        self._settings_divider = divider
+
+        # Settings nav item (below divider)
+        self.create_nav_button("settings", "Settings", "\ue713")
+
     def create_nav_button(self, key: str, label: str, icon: str):
         """
         Create enhanced navigation button
@@ -139,7 +151,7 @@ class EnhancedSidebar(ctk.CTkFrame):
             fg_color="transparent",
             text_color=colors["text_secondary"],
             hover_color=colors["bg_hover"],
-            corner_radius=SIZES["radius_md"],
+            corner_radius=RADIUS["md"],
             command=lambda k=key: self.on_nav_click(k),
         )
         btn.grid(row=0, column=1, sticky="w")

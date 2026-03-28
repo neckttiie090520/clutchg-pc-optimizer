@@ -185,38 +185,6 @@ class ClutchGApp:
         # Load initial view (immediate, no animation)
         self.switch_view("dashboard", immediate=True)
 
-        # Add settings button to sidebar
-        self._add_settings_button()
-
-    def _add_settings_button(self):
-        """Add settings button to sidebar nav container"""
-        from gui.theme import ui_family, NAV_ICONS
-
-        colors = theme_manager.get_colors()
-
-        # Create settings button in the sidebar's nav container
-        settings_icon = NAV_ICONS.get("settings", "\ue8b8")  # Settings gear
-        settings_btn = ctk.CTkButton(
-            self.sidebar.nav_container,
-            text=settings_icon,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
-            width=28,
-            height=28,
-            fg_color="transparent",
-            text_color=colors["text_secondary"],
-            hover_color=colors["bg_hover"],
-            command=lambda: self.switch_view("settings"),
-        )
-        settings_btn.pack(pady=0, padx=8, fill="x")
-
-        # Store in sidebar's nav_buttons for consistency
-        self.sidebar.nav_buttons["settings"] = {
-            "button": settings_btn,
-            "label": None,  # No label for settings
-            "indicator": None,  # No indicator for settings
-            "frame": None,
-        }
-
     def switch_view(self, name, immediate=False):
         """
         Switch to a view with smooth transition
