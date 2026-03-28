@@ -73,27 +73,28 @@ class IconProvider:
         "folder": "\ue8b7",  # FolderOpen
         "file": "\ue8a5",  # Page
         "document": "\ue8a5",  # Page
-        # Help topic icons
-        "rocket_launch": "\ue819",  # Up (launch analogy)
-        "bar_chart": "\ue9d2",  # BarChart
-        "tune": "\ue713",  # Settings
-        "extension": "\uea86",  # Puzzle
-        "bolt": "\ue945",  # Lightning
-        "description": "\ue8a5",  # Page
-        "shield": "\ue83d",  # Shield
-        "target": "\ue786",  # Target
-        "lightbulb": "\uea80",  # Lightbulb
-        "lan": "\ue839",  # NetworkTower
-        "build": "\ue90f",  # Repair
-        "menu_book": "\ue82d",  # Library
-        "download": "\ue896",  # Download
-        "upload": "\ue898",  # Upload
-        "play_arrow": "\ue768",  # Play
-        "open_in_new": "\ue8a7",  # OpenInNewWindow
-        "expand_more": "\ue70d",  # ChevronDown
-        "check_circle": "\ue73e",  # CheckMark
-        "inventory_2": "\ue74e",  # Save (registry backup analogy)
-        "refresh": "\ue72c",  # Refresh
+        # Material Symbols Outlined codepoints (used for content icons)
+        "rocket_launch": "\ue559",  # Getting Started
+        "bar_chart": "\ue26b",  # Dashboard topic
+        "tune": "\ue429",  # Profiles topic / Tune
+        "extension": "\ue87b",  # Optimization Center topic
+        "bolt": "\ue929",  # Quick Actions / Power / Extreme
+        "description": "\ue873",  # Scripts topic
+        "shield": "\ue914",  # Safety topic / Safe profile
+        "target": "\uf2c4",  # Profile recommendations
+        "lightbulb": "\ue0a3",  # Tips
+        "lan": "\ue639",  # Network category
+        "build": "\ue869",  # Troubleshooting / Custom tab
+        "menu_book": "\ue8ca",  # Glossary tab
+        "download": "\ue2c4",  # Import
+        "upload": "\ue2c6",  # Export
+        "play_arrow": "\ue037",  # Run button
+        "open_in_new": "\ue89e",  # External link
+        "expand_more": "\ue5cf",  # Glossary expand arrow
+        "check_circle": "\ue86c",  # Backup with restore point
+        "inventory_2": "\ue1d7",  # Registry-only backup
+        "refresh": "\ue5d5",  # Restart indicator
+        "backup": "\ue860",  # Backup (cloud-upload style)
     }
 
     def __init__(self):
