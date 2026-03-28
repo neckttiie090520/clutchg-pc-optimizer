@@ -67,7 +67,12 @@ class EnhancedSidebar(ctk.CTkFrame):
         """Create navigation buttons with enhanced styling"""
         colors = theme_manager.get_colors()
 
-        # Logo — app icon from assets
+        # Logo area — icon + app name (name hidden when collapsed)
+        logo_frame = ctk.CTkFrame(self, fg_color="transparent")
+        logo_frame.pack(fill="x", padx=8, pady=12)
+        logo_frame.grid_columnconfigure(0, weight=0)  # icon
+        logo_frame.grid_columnconfigure(1, weight=1)  # name
+
         icon_path = Path(__file__).parent.parent / "assets" / "icon.png"
         if icon_path.exists():
             self._logo_image = ctk.CTkImage(
@@ -75,13 +80,24 @@ class EnhancedSidebar(ctk.CTkFrame):
                 dark_image=Image.open(icon_path),
                 size=(32, 32),
             )
-            self.logo_label = ctk.CTkLabel(self, image=self._logo_image, text="")
+            self.logo_label = ctk.CTkLabel(logo_frame, image=self._logo_image, text="")
         else:
             # Fallback: text "C" if icon not found
             self.logo_label = ctk.CTkLabel(
-                self, text="C", font=font("title"), text_color=colors["accent"]
+                logo_frame, text="C", font=font("title"), text_color=colors["accent"]
             )
-        self.logo_label.pack(pady=14)
+        self.logo_label.grid(row=0, column=0, padx=(8, 4))
+
+        # App name label — shown only when sidebar is expanded
+        self.logo_name_label = ctk.CTkLabel(
+            logo_frame,
+            text="ClutchG",
+            font=font("body", weight="bold"),
+            text_color=colors["text_primary"],
+            anchor="w",
+        )
+        self.logo_name_label.grid(row=0, column=1, sticky="w")
+        self.logo_name_label.grid_remove()  # hidden until expanded
 
         # Nav items container
         self.nav_container = ctk.CTkFrame(self, fg_color="transparent")
@@ -369,6 +385,12 @@ class EnhancedSidebar(ctk.CTkFrame):
                                 data["label"].grid_remove()
                         except Exception as e:
                             logger.debug(f"Could not update label visibility: {e}")
+                    # Show/hide the logo name label alongside nav labels
+                    if hasattr(self, "logo_name_label"):
+                        if self.is_expanded:
+                            self.logo_name_label.grid()
+                        else:
+                            self.logo_name_label.grid_remove()
                     return
 
                 # Ease-out interpolation
@@ -390,8 +412,9 @@ class EnhancedSidebar(ctk.CTkFrame):
         # Update sidebar background
         self.configure(fg_color=colors["bg_secondary"])
 
-        # Update logo color
-        self.logo_label.configure(text_color=colors["accent"])
+        # Update logo color (only if logo_label is a text label, not CTkImage)
+        if not hasattr(self, "_logo_image"):
+            self.logo_label.configure(text_color=colors["accent"])
 
         # Update all nav buttons
         for key, data in self.nav_buttons.items():
