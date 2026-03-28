@@ -16,13 +16,13 @@ from gui.components.glass_card import GlassCard
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
 
-_ICON_FONT = "Segoe MDL2 Assets"
+_ICON_FONT = "Material Symbols Outlined"
 
 _SECTION_ICONS = {
-    "appearance": "\ue790",
-    "language": "\ue775",
-    "safety": "\ue81e",
-    "about": "\ue897",
+    "appearance": "\ue40a",  # palette
+    "language": "\ue8e2",  # translate
+    "safety": "\ue914",  # shield
+    "about": "\ue88e",  # info
 }
 
 _GITHUB_URL = "https://github.com/neckttiie090520/clutchg-pc-optimizer"

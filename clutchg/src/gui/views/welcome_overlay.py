@@ -44,7 +44,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
             # Buttons
             "back_btn": "Back",
             "next_btn": "Next",
-            "skip_btn": "Skip Tutorial",
+            "skip_btn": "Skip",
             "get_started": "Get Started",
             # Progress
             "progress": "Step {current} of {total}",
@@ -74,7 +74,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
             # Buttons
             "back_btn": "ย้อนกลับ",
             "next_btn": "ถัดไป",
-            "skip_btn": "ข้ามบทนำ",
+            "skip_btn": "ข้าม",
             "get_started": "เริ่มใช้งาน",
             # Progress
             "progress": "ขั้นตอน {current} จาก {total}",
@@ -119,9 +119,10 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
+        w = weight if weight in ("normal", "bold") else "normal"  # type: ignore[arg-type]
         if self.language == "th":
-            return ctk.CTkFont(family="Figtree", size=size, weight=weight)
-        return font("body", size=size, weight=weight)
+            return ctk.CTkFont(family="Figtree", size=size, weight=w)  # type: ignore[arg-type]
+        return font("body", size=size, weight=w)  # type: ignore[arg-type]
 
     def _build_steps(self):
         """Build steps content with localized strings"""
@@ -225,7 +226,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
         # --- Row 3: Highlight box ---
         self.highlight_box = ctk.CTkFrame(
-            self, fg_color=COLORS["accent"], corner_radius=SIZES["card_radius"]
+            self, fg_color=COLORS["accent_dim"], corner_radius=SIZES["card_radius"]
         )
         self.highlight_box.grid(row=3, column=0, sticky="ew", padx=40, pady=(0, 20))
 
@@ -233,12 +234,12 @@ class WelcomeOverlay(ctk.CTkToplevel):
             self.highlight_box,
             text="",
             font=self._font(12, "bold"),
-            text_color="white",
+            text_color=COLORS["accent"],
             wraplength=580,
         )
         self.highlight_label.pack(padx=20, pady=15)
 
-        # --- Row 4: Dot indicators + progress text ---
+        # --- Row 4: Dot indicators only (no progress text) ---
         progress_frame = ctk.CTkFrame(self, fg_color="transparent")
         progress_frame.grid(row=4, column=0, pady=(5, 0))
 
@@ -258,15 +259,6 @@ class WelcomeOverlay(ctk.CTkToplevel):
             dot.pack(side="left", padx=3)
             dot.pack_propagate(False)
             self.dots.append(dot)
-
-        # Text progress
-        self.progress_label = ctk.CTkLabel(
-            progress_frame,
-            text="",
-            font=self._font(11),
-            text_color=COLORS["text_muted"],
-        )
-        self.progress_label.pack()
 
         # --- Row 5: Navigation buttons (Back / Next) ---
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -316,9 +308,11 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
         # Step 5 highlight uses success (green), others use accent (sky blue)
         if step == self.total_steps - 1:
-            self.highlight_box.configure(fg_color=COLORS["success"])
+            self.highlight_box.configure(fg_color=COLORS["success_dim"])
+            self.highlight_label.configure(text_color=COLORS["success"])
         else:
-            self.highlight_box.configure(fg_color=COLORS["accent"])
+            self.highlight_box.configure(fg_color=COLORS["accent_dim"])
+            self.highlight_label.configure(text_color=COLORS["accent"])
 
         # Dot indicators
         for i, dot in enumerate(self.dots):
@@ -328,11 +322,6 @@ class WelcomeOverlay(ctk.CTkToplevel):
                 dot.configure(fg_color=COLORS["text_muted"])
             else:
                 dot.configure(fg_color=COLORS["bg_tertiary"])
-
-        # Update progress text
-        self.progress_label.configure(
-            text=self._ui("progress", current=step + 1, total=self.total_steps)
-        )
 
         # Update buttons
         self.back_btn.configure(state="normal" if step > 0 else "disabled")

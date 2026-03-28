@@ -20,9 +20,14 @@ if TYPE_CHECKING:
 
 # Stats for each profile — used by cards and compare table
 PROFILE_STATS = {
-    "SAFE": {"tweaks": 12, "gain": "+8%", "risk": "LOW", "restart": "No"},
-    "COMPETITIVE": {"tweaks": 24, "gain": "+18%", "risk": "MEDIUM", "restart": "Yes"},
-    "EXTREME": {"tweaks": 35, "gain": "+30%", "risk": "HIGH", "restart": "Yes"},
+    "SAFE": {"tweaks": 12, "gain": "+2-5% FPS", "risk": "LOW", "restart": "No"},
+    "COMPETITIVE": {
+        "tweaks": 24,
+        "gain": "+5-10% FPS",
+        "risk": "MEDIUM",
+        "restart": "Yes",
+    },
+    "EXTREME": {"tweaks": 35, "gain": "+10-15% FPS", "risk": "HIGH", "restart": "Yes"},
 }
 
 REVERSIBLE_MAP = {

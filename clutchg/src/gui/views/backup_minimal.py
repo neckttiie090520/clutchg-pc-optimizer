@@ -119,9 +119,10 @@ class BackupView(ctk.CTkFrame):
 
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
+        w = weight if weight in ("normal", "bold") else "normal"  # type: ignore[arg-type]
         if self.app.config.get("language") == "th":
-            return ctk.CTkFont(family="Figtree", size=size, weight=weight)
-        return font("body", size=size, weight=weight)
+            return ctk.CTkFont(family="Figtree", size=size, weight=w)  # type: ignore[arg-type]
+        return font("body", size=size, weight=w)  # type: ignore[arg-type]
 
     def create_header(self):
         """Create header with action button"""
@@ -141,7 +142,9 @@ class BackupView(ctk.CTkFrame):
             header,
             text=f"{ICON('add')} {self._ui('create_btn')}",
             width=140,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13, weight="bold"),
+            font=ctk.CTkFont(
+                family="Material Symbols Outlined", size=13, weight="bold"
+            ),
             command=self.create_backup,
         ).grid(row=0, column=1, sticky="e")
 
@@ -158,7 +161,7 @@ class BackupView(ctk.CTkFrame):
         ctk.CTkLabel(
             content,
             text=ICON("shield"),
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=20),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=20),
             text_color=COLORS["success"],
         ).pack(side="left", padx=(0, 12))
 
@@ -232,7 +235,7 @@ class BackupView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_bg,
             text=ICON("backup"),
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=36),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=36),
             text_color=COLORS["text_tertiary"],
         ).place(relx=0.5, rely=0.5, anchor="center")
 
@@ -259,7 +262,9 @@ class BackupView(ctk.CTkFrame):
             text=f"{ICON('add')} {self._ui('empty_cta')}",
             height=44,
             width=200,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13, weight="bold"),
+            font=ctk.CTkFont(
+                family="Material Symbols Outlined", size=13, weight="bold"
+            ),
             command=self.create_backup,
         ).pack()
 
@@ -271,7 +276,7 @@ class BackupView(ctk.CTkFrame):
         ctk.CTkLabel(
             error_frame,
             text=ICON("error"),
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=32),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=32),
             text_color=COLORS["danger"],
         ).pack(pady=(0, 12))
 
@@ -321,7 +326,7 @@ class BackupView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_frame,
             text=icon_text,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=18),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
             text_color=icon_color,
         ).place(relx=0.5, rely=0.5, anchor="center")
 

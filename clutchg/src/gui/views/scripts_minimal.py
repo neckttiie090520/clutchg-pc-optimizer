@@ -587,8 +587,6 @@ class ScriptsView(ctk.CTkFrame):
             # Add small gap between buttons
             btn.pack(
                 side="left",
-                expand=True,
-                fill="x",
                 padx=(0, SPACING["xs"]) if i < len(values) - 1 else 0,
             )
             self.quick_group_buttons[val] = btn
