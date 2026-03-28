@@ -5,6 +5,8 @@ Collapsible sidebar with animated transitions and hover effects
 
 import customtkinter as ctk
 import logging
+from pathlib import Path
+from PIL import Image
 from gui.theme import theme_manager, SIZES, NAV_ICONS, ANIMATION
 from gui.style import font
 from gui.components.tooltip import ToolTipBinder
@@ -65,10 +67,20 @@ class EnhancedSidebar(ctk.CTkFrame):
         """Create navigation buttons with enhanced styling"""
         colors = theme_manager.get_colors()
 
-        # Logo
-        self.logo_label = ctk.CTkLabel(
-            self, text="C", font=font("title"), text_color=colors["accent"]
-        )
+        # Logo — app icon from assets
+        icon_path = Path(__file__).parent.parent / "assets" / "icon.png"
+        if icon_path.exists():
+            self._logo_image = ctk.CTkImage(
+                light_image=Image.open(icon_path),
+                dark_image=Image.open(icon_path),
+                size=(32, 32),
+            )
+            self.logo_label = ctk.CTkLabel(self, image=self._logo_image, text="")
+        else:
+            # Fallback: text "C" if icon not found
+            self.logo_label = ctk.CTkLabel(
+                self, text="C", font=font("title"), text_color=colors["accent"]
+            )
         self.logo_label.pack(pady=14)
 
         # Nav items container

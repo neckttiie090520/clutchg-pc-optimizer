@@ -55,6 +55,18 @@ class ClutchGApp:
 
         register_fonts()
 
+        # Set window icon (taskbar + title bar)
+        icon_path = Path(__file__).parent / "assets" / "icon.png"
+        if icon_path.exists():
+            try:
+                from PIL import Image, ImageTk
+
+                icon_img = Image.open(icon_path)
+                self._icon_photo = ImageTk.PhotoImage(icon_img.resize((32, 32)))
+                self.window.iconphoto(False, self._icon_photo)
+            except Exception:
+                logger.debug("Could not set window icon")
+
         self._refresh_window_colors()
 
         # Check Material Symbols font availability (after window exists)
