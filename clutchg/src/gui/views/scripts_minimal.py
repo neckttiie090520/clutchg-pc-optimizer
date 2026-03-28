@@ -274,7 +274,7 @@ class ScriptsView(ctk.CTkFrame):
         """
         return {
             "safe": {
-                "icon": ICON("safe"),
+                "icon": "\ue914",  # Material Symbols: shield
                 "title": self._ui("safe_title"),
                 "subtitle": self._ui("safe_subtitle"),
                 "fps": "2-5%",
@@ -284,7 +284,7 @@ class ScriptsView(ctk.CTkFrame):
                 "desc": self._ui("safe_desc"),
             },
             "competitive": {
-                "icon": ICON("competitive"),
+                "icon": "\uec0e",  # Material Symbols: balance
                 "title": self._ui("comp_title"),
                 "subtitle": self._ui("comp_subtitle"),
                 "fps": "5-10%",
@@ -294,7 +294,7 @@ class ScriptsView(ctk.CTkFrame):
                 "desc": self._ui("comp_desc"),
             },
             "extreme": {
-                "icon": ICON("extreme"),
+                "icon": "\ue929",  # Material Symbols: bolt
                 "title": self._ui("ext_title"),
                 "subtitle": self._ui("ext_subtitle"),
                 "fps": "10-15%",
@@ -364,12 +364,12 @@ class ScriptsView(ctk.CTkFrame):
         )
         bar.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["md"]))
 
-        # Native Icons directly used here
+        # Material Symbols Outlined codepoints
         tabs = [
-            ("quick_actions", "\ue768", self._ui("tab_quick_actions")),
-            ("presets", "\ue762", self._ui("tab_presets")),
-            ("custom", "\ue70f", self._ui("tab_custom")),
-            ("education", "\ue82d", self._ui("tab_education")),
+            ("quick_actions", "\ue929", self._ui("tab_quick_actions")),  # bolt
+            ("presets", "\ue429", self._ui("tab_presets")),  # tune
+            ("custom", "\ue869", self._ui("tab_custom")),  # build
+            ("education", "\ue8ca", self._ui("tab_education")),  # menu_book
         ]
 
         self.tab_buttons = {}
@@ -407,11 +407,11 @@ class ScriptsView(ctk.CTkFrame):
         content_frame = ctk.CTkFrame(btn_frame, fg_color="transparent")
         content_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-        # Icon Label (Segoe font)
+        # Icon Label (Material Symbols font)
         icon_lbl = ctk.CTkLabel(
             content_frame,
             text=icon,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=16),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
             text_color=text_color,
         )
         icon_lbl.pack(side="left", padx=(10, 5))
@@ -923,11 +923,11 @@ class ScriptsView(ctk.CTkFrame):
         header_row = ctk.CTkFrame(title_frame, fg_color="transparent")
         header_row.grid(row=0, column=0, sticky="w")
 
-        # Icon Label (Native Font)
+        # Icon Label (Material Symbols font)
         ctk.CTkLabel(
             header_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=26),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=26),
             text_color=info["color"],  # Icon matches preset color
         ).pack(side="left", padx=(0, SPACING["sm"]))
 
@@ -1310,7 +1310,7 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 header,
                 text=icon_char,
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=14),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=14),
                 text_color=color,
             ).pack(side="left", padx=(0, SPACING["xs"]))
         ctk.CTkLabel(
@@ -1395,10 +1395,10 @@ class ScriptsView(ctk.CTkFrame):
         # Info button
         ctk.CTkButton(
             row,
-            text="\ue946",
+            text="\ue88e",
             width=28,
             height=28,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=14),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=14),
             fg_color="transparent",
             text_color=COLORS["text_tertiary"],
             hover_color=COLORS["bg_card_hover"],
@@ -1411,7 +1411,7 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row,
                 text=ICON("refresh"),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
             ).grid(row=0, column=6, padx=(0, SPACING["sm"]))
 
         # Click row to show inline detail (split-pane)
@@ -1463,8 +1463,8 @@ class ScriptsView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             wrapper,
-            text="\ue946",
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=32),
+            text="\ue88e",
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=32),
             text_color=COLORS["text_muted"],
         ).pack()
 
@@ -1875,8 +1875,8 @@ class ScriptsView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             search_container,
-            text="\ue721",
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=16),
+            text="\ue8b6",
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
             text_color=COLORS["text_secondary"],
         ).pack(side="left", padx=(SPACING["md"], SPACING["xs"]))
 
@@ -1906,8 +1906,8 @@ class ScriptsView(ctk.CTkFrame):
         scroll_indicator.grid(row=0, column=1, sticky="ns")
         ctk.CTkLabel(
             scroll_indicator,
-            text="\ue76c",  # ChevronRight
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+            text="\ue5c8",  # arrow_forward (Material Symbols)
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
             text_color=COLORS["text_muted"],
         ).pack(expand=True)
 

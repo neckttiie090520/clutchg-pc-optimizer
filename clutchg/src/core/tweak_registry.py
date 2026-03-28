@@ -13,16 +13,17 @@ logger = get_logger(__name__)
 @dataclass
 class Tweak:
     """Single optimization tweak with full documentation"""
+
     id: str
     name: str
     category: str
-    description: str          # Short 1-line
-    what_it_does: str         # Full technical explanation
-    why_it_helps: str         # Performance reasoning
-    limitations: str          # What breaks or won't work
-    warnings: List[str]       # Risk warnings
-    risk_level: str           # LOW / MEDIUM / HIGH
-    expected_gain: str        # e.g. "1-3% less CPU usage"
+    description: str  # Short 1-line
+    what_it_does: str  # Full technical explanation
+    why_it_helps: str  # Performance reasoning
+    limitations: str  # What breaks or won't work
+    warnings: List[str]  # Risk warnings
+    risk_level: str  # LOW / MEDIUM / HIGH
+    expected_gain: str  # e.g. "1-3% less CPU usage"
     requires_admin: bool = True
     requires_restart: bool = False
     reversible: bool = True
@@ -38,16 +39,16 @@ class Tweak:
 
 # Category display metadata
 TWEAK_CATEGORIES = {
-    "telemetry":  {"icon": "\uE72E", "color": "#8B5CF6", "label": "Telemetry & Privacy"},
-    "input":      {"icon": "\uE765", "color": "#06B6D4", "label": "Input & Latency"},
-    "power":      {"icon": "\uE945", "color": "#F59E0B", "label": "Power Management"},
-    "gpu":        {"icon": "\uE7F4", "color": "#10B981", "label": "GPU & Graphics"},
-    "network":    {"icon": "\uE968", "color": "#3B82F6", "label": "Network"},
-    "services":   {"icon": "\uE90F", "color": "#EF4444", "label": "Services"},
-    "memory":     {"icon": "\uE964", "color": "#EC4899", "label": "Memory"},
-    "boot":       {"icon": "\uE7BA", "color": "#F97316", "label": "Boot (BCDEdit)"},
-    "visual":     {"icon": "\uE771", "color": "#A855F7", "label": "Visual Effects"},
-    "cleanup":    {"icon": "\uE74D", "color": "#64748B", "label": "Cleanup & Debloat"},
+    "telemetry": {"icon": "\ue914", "color": "#8B5CF6", "label": "Telemetry & Privacy"},
+    "input": {"icon": "\ue338", "color": "#06B6D4", "label": "Input & Latency"},
+    "power": {"icon": "\ue929", "color": "#F59E0B", "label": "Power Management"},
+    "gpu": {"icon": "\ue338", "color": "#10B981", "label": "GPU & Graphics"},
+    "network": {"icon": "\ue639", "color": "#3B82F6", "label": "Network"},
+    "services": {"icon": "\ue8c3", "color": "#EF4444", "label": "Services"},
+    "memory": {"icon": "\ue326", "color": "#EC4899", "label": "Memory"},
+    "boot": {"icon": "\ue002", "color": "#F97316", "label": "Boot (BCDEdit)"},
+    "visual": {"icon": "\ue40a", "color": "#A855F7", "label": "Visual Effects"},
+    "cleanup": {"icon": "\ue872", "color": "#64748B", "label": "Cleanup & Debloat"},
 }
 
 
@@ -66,11 +67,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees CPU cycles and network bandwidth used for telemetry data collection and transmission. Reduces background disk I/O.",
             limitations="Microsoft won't receive crash reports. Some Windows troubleshooting features may not work.",
             warnings=["Windows Update still works normally"],
-            risk_level="LOW", expected_gain="1-2% less background CPU",
+            risk_level="LOW",
+            expected_gain="1-2% less background CPU",
             requires_restart=True,
             registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Services\\DiagTrack"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_telemetry",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_telemetry",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_advertising",
@@ -81,10 +86,16 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces background tracking processes. Privacy improvement with minimal performance impact.",
             limitations="You'll see generic ads instead of personalized ones in supported apps.",
             warnings=[],
-            risk_level="LOW", expected_gain="Privacy improvement",
-            registry_keys=["HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_privacy",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Privacy improvement",
+            registry_keys=[
+                "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
+            ],
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_privacy",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_cortana",
@@ -95,10 +106,16 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates background Cortana process (~50-100MB RAM). Start menu search becomes faster (local only).",
             limitations="Voice assistant won't work. Start menu search is local-only (no web results).",
             warnings=["Bing search in Start menu will be disabled"],
-            risk_level="LOW", expected_gain="50-100MB RAM freed",
-            registry_keys=["HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_privacy",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="50-100MB RAM freed",
+            registry_keys=[
+                "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+            ],
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_privacy",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_activity",
@@ -109,10 +126,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces background logging I/O and cloud sync. Minor performance gain, major privacy gain.",
             limitations="Windows Timeline feature won't show history. Cross-device activity sync disabled.",
             warnings=[],
-            risk_level="LOW", expected_gain="Privacy improvement",
+            risk_level="LOW",
+            expected_gain="Privacy improvement",
             registry_keys=["HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_privacy",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_privacy",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_xbox_dvr",
@@ -123,10 +144,17 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates 2-5% FPS overhead from background recording. Reduces GPU memory usage by ~200MB. Less input lag from overlay.",
             limitations="Can't use Win+G overlay, game clips, or Xbox social features. Use OBS/ShadowPlay instead.",
             warnings=["Game Mode stays ON (it helps performance)"],
-            risk_level="LOW", expected_gain="2-5% FPS improvement",
-            registry_keys=["HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "HKCU\\System\\GameConfigStore"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_xbox_dvr",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="2-5% FPS improvement",
+            registry_keys=[
+                "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+                "HKCU\\System\\GameConfigStore",
+            ],
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_xbox_dvr",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_ads_suggestions",
@@ -137,10 +165,16 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces background content download. Cleaner UI without promotional distractions.",
             limitations="Lock screen will show your chosen wallpaper instead of rotating Spotlight images.",
             warnings=[],
-            risk_level="LOW", expected_gain="Cleaner experience",
-            registry_keys=["HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_ads",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Cleaner experience",
+            registry_keys=[
+                "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+            ],
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_ads",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_location",
@@ -151,10 +185,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces background location polling. Privacy improvement.",
             limitations="Weather app, Maps, and location-based apps won't know your location. You can still manually set location.",
             warnings=["Find My Device won't work if laptop is lost"],
-            risk_level="LOW", expected_gain="Privacy improvement",
-            registry_keys=["HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location"],
-            bat_script="core/telemetry-blocker.bat", bat_function=":apply_privacy",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Privacy improvement",
+            registry_keys=[
+                "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location"
+            ],
+            bat_script="core/telemetry-blocker.bat",
+            bat_function=":apply_privacy",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="tel_copilot",
@@ -165,13 +204,17 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Saves RAM and CPU from AI model loading. Recall uses significant disk space for screenshots.",
             limitations="Copilot AI assistant unavailable. Recall timeline search won't work.",
             warnings=["Windows 11 only feature"],
-            risk_level="LOW", expected_gain="200-500MB RAM freed",
+            risk_level="LOW",
+            expected_gain="200-500MB RAM freed",
             compatible_os=["11"],
-            registry_keys=["HKCU\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot"],
-            bat_script="core/debloater.bat", bat_function=":apply_copilot",
-            preset_competitive=True, preset_extreme=True,
+            registry_keys=[
+                "HKCU\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+            ],
+            bat_script="core/debloater.bat",
+            bat_function=":apply_copilot",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
-
         # ================================================================
         # INPUT & LATENCY (6 tweaks)
         # ================================================================
@@ -184,10 +227,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Critical for FPS gaming — muscle memory works correctly. Eliminates variable sensitivity that changes with mouse speed.",
             limitations="Mouse may feel 'different' at first. You may need to adjust DPI on your mouse software.",
             warnings=["Adjust your mouse DPI after applying"],
-            risk_level="LOW", expected_gain="More consistent aim",
+            risk_level="LOW",
+            expected_gain="More consistent aim",
             registry_keys=["HKCU\\Control Panel\\Mouse"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_mouse",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_mouse",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="inp_keyboard",
@@ -198,10 +245,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Faster key repeat for gaming (movement keys) and typing. Reduces perceived input lag.",
             limitations="Keys may repeat too fast for some users when held down.",
             warnings=[],
-            risk_level="LOW", expected_gain="Faster key response",
+            risk_level="LOW",
+            expected_gain="Faster key response",
             registry_keys=["HKCU\\Control Panel\\Keyboard"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_keyboard",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_keyboard",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="inp_mmcss",
@@ -212,10 +263,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Ensures game threads get maximum CPU time. Reduces DPC latency by 2-5ms. Eliminates network throttling during games.",
             limitations="Background tasks (downloads, updates) may be slower while gaming.",
             warnings=["Background downloads may slow during gameplay"],
-            risk_level="LOW", expected_gain="2-5ms latency reduction",
-            registry_keys=["HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_latency",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="2-5ms latency reduction",
+            registry_keys=[
+                "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+            ],
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_latency",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="inp_menu_delay",
@@ -226,10 +282,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="UI feels snappier. Right-click menus appear instantly. Shutdown/restart is faster.",
             limitations="No smooth menu fade-in animation.",
             warnings=[],
-            risk_level="LOW", expected_gain="Snappier UI feel",
+            risk_level="LOW",
+            expected_gain="Snappier UI feel",
             registry_keys=["HKCU\\Control Panel\\Desktop"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_ui",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_ui",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="inp_data_queue",
@@ -240,11 +300,17 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces input lag by minimizing the buffer between your mouse/keyboard and Windows. Source: QuickBoost.",
             limitations="Very rarely, extremely fast mouse movements might miss samples. Negligible in practice.",
             warnings=[],
-            risk_level="LOW", expected_gain="~1ms input lag reduction",
+            risk_level="LOW",
+            expected_gain="~1ms input lag reduction",
             requires_restart=True,
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Services\\mouclass\\Parameters", "HKLM\\SYSTEM\\CurrentControlSet\\Services\\kbdclass\\Parameters"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_mouse",
-            preset_competitive=True, preset_extreme=True,
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Services\\mouclass\\Parameters",
+                "HKLM\\SYSTEM\\CurrentControlSet\\Services\\kbdclass\\Parameters",
+            ],
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_mouse",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="inp_priority_sep",
@@ -255,12 +321,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Active game gets 3x more CPU time than background processes. Reduces frame drops caused by background activity.",
             limitations="Background tasks run slower while a game is in focus.",
             warnings=[],
-            risk_level="LOW", expected_gain="1-3% smoother gameplay",
+            risk_level="LOW",
+            expected_gain="1-3% smoother gameplay",
             registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_latency",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_latency",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
-
         # ================================================================
         # POWER MANAGEMENT (7 tweaks)
         # ================================================================
@@ -273,10 +341,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="CPU doesn't throttle or park cores. Eliminates 5-15ms wake-from-idle latency. Consistent frame times.",
             limitations="Higher power consumption (10-30W more). More heat output. Not suitable for laptops on battery.",
             warnings=["Increases power consumption", "Desktop recommended"],
-            risk_level="LOW", expected_gain="3-5% FPS, consistent frametimes",
+            risk_level="LOW",
+            expected_gain="3-5% FPS, consistent frametimes",
             registry_keys=[],
-            bat_script="core/power-manager.bat", bat_function=":apply_ultimate",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/power-manager.bat",
+            bat_function=":apply_ultimate",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_hibernate",
@@ -287,9 +359,12 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Saves disk space equal to your RAM size. Clean boot avoids stale driver states. Prevents wake-from-hibernate issues.",
             limitations="No hibernate option. Boot time may increase by 2-5 seconds (SSD) or 10-20 seconds (HDD).",
             warnings=["Boot may be slightly slower on HDD"],
-            risk_level="LOW", expected_gain="Save disk space (= RAM size)",
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_modern_standby",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Save disk space (= RAM size)",
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_modern_standby",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_throttling",
@@ -300,10 +375,16 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates unexpected CPU throttling during gaming. Background processes don't trigger power-saving mode.",
             limitations="Higher power consumption. Laptop battery life significantly reduced.",
             warnings=["Significant battery impact on laptops"],
-            risk_level="MEDIUM", expected_gain="Consistent CPU performance",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling", "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power"],
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_power_throttling",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="Consistent CPU performance",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power",
+            ],
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_power_throttling",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_epp",
@@ -314,10 +395,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates CPU frequency scaling delays. Instant boost response for gaming workloads.",
             limitations="CPU runs hotter. Fan noise increases. Not suitable for quiet environments.",
             warnings=["CPU runs at max frequency constantly"],
-            risk_level="MEDIUM", expected_gain="1-3% FPS improvement",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings"],
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_epp_performance",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="1-3% FPS improvement",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings"
+            ],
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_epp_performance",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_cppc",
@@ -328,10 +414,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Windows schedules game threads on the fastest cores. Better single-thread performance. 1-3% boost on Ryzen 5000+.",
             limitations="AMD Ryzen only. No effect on Intel CPUs. Requires BIOS CPPC support.",
             warnings=["AMD Ryzen only"],
-            risk_level="LOW", expected_gain="1-3% on AMD Ryzen",
+            risk_level="LOW",
+            expected_gain="1-3% on AMD Ryzen",
             compatible_hardware={"cpu_vendor": "AMD"},
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_cppc_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_cppc_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_coalescence",
@@ -342,9 +431,12 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Lower DPC latency by reducing timer batching. Source: Ghost-Optimizer.",
             limitations="Slightly higher power consumption from more frequent timer interrupts.",
             warnings=[],
-            risk_level="LOW", expected_gain="1-2ms DPC latency reduction",
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_coalescence_timers",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="1-2ms DPC latency reduction",
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_coalescence_timers",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="pwr_spectre",
@@ -354,14 +446,21 @@ def _build_tweaks() -> List[Tweak]:
             what_it_does="Sets FeatureSettingsOverride=3 and FeatureSettingsOverrideMask=3 to disable all Spectre/Meltdown CPU mitigations.",
             why_it_helps="5-15% CPU performance gain by removing branch prediction restrictions and memory isolation overhead.",
             limitations="System is vulnerable to Spectre/Meltdown side-channel attacks. Only safe on isolated gaming PCs.",
-            warnings=["⚠️ SECURITY RISK: Removes CPU vulnerability protections", "Only for dedicated gaming PCs, NOT daily drivers", "Requires restart"],
-            risk_level="HIGH", expected_gain="5-15% CPU performance",
+            warnings=[
+                "⚠️ SECURITY RISK: Removes CPU vulnerability protections",
+                "Only for dedicated gaming PCs, NOT daily drivers",
+                "Requires restart",
+            ],
+            risk_level="HIGH",
+            expected_gain="5-15% CPU performance",
             requires_restart=True,
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"],
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_spectre_disable",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+            ],
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_spectre_disable",
             preset_extreme=True,
         ),
-
         # ================================================================
         # GPU & GRAPHICS (8 tweaks)
         # ================================================================
@@ -374,11 +473,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="3-5% FPS gain in GPU-bound scenarios. Lower CPU overhead for frame presentation. Reduced input lag.",
             limitations="Requires Windows 10 2004+ and compatible GPU driver. May cause issues with very old games.",
             warnings=["Requires compatible GPU driver"],
-            risk_level="LOW", expected_gain="3-5% FPS improvement",
+            risk_level="LOW",
+            expected_gain="3-5% FPS improvement",
             requires_restart=True,
             registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"],
-            bat_script="core/gpu-optimizer.bat", bat_function=":apply_hags",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/gpu-optimizer.bat",
+            bat_function=":apply_hags",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="gpu_nvidia_telemetry",
@@ -389,10 +492,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces background CPU usage from NVIDIA services. Privacy improvement.",
             limitations="NVIDIA GeForce Experience may have reduced recommendations.",
             warnings=["NVIDIA GPU only"],
-            risk_level="LOW", expected_gain="1-2% less background CPU",
+            risk_level="LOW",
+            expected_gain="1-2% less background CPU",
             compatible_hardware={"gpu_vendor": "NVIDIA"},
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_nvidia_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_nvidia_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="gpu_msi_mode",
@@ -403,9 +509,11 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Lower interrupt latency for GPU operations. Can reduce DPC latency by 1-3ms. Source: CS2-Ultimate-Optimization.",
             limitations="Some older GPUs may not support MSI. Very rarely causes display issues.",
             warnings=["Test stability after enabling"],
-            risk_level="MEDIUM", expected_gain="1-3ms DPC latency reduction",
+            risk_level="MEDIUM",
+            expected_gain="1-3ms DPC latency reduction",
             requires_restart=True,
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_msi_mode",
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_msi_mode",
             preset_extreme=True,
         ),
         Tweak(
@@ -417,10 +525,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Prevents false GPU timeout crashes. Shader cache reduces stutter on second launch. Optimized flip queue reduces latency.",
             limitations="TdrDelay increase means frozen screens last longer before recovery.",
             warnings=[],
-            risk_level="LOW", expected_gain="Less stutter, fewer crashes",
+            risk_level="LOW",
+            expected_gain="Less stutter, fewer crashes",
             registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"],
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_directx_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_directx_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="gpu_fullscreen",
@@ -431,10 +542,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="True fullscreen bypasses DWM compositor. Lower input lag by 5-15ms. More consistent frame delivery.",
             limitations="Alt-Tab is slower from true fullscreen. Multi-monitor setups may flash when switching.",
             warnings=["Alt-Tab will be slower in fullscreen games"],
-            risk_level="LOW", expected_gain="5-15ms input lag reduction",
+            risk_level="LOW",
+            expected_gain="5-15ms input lag reduction",
             registry_keys=["HKCU\\System\\GameConfigStore"],
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_fullscreen_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_fullscreen_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="gpu_nvidia_pstate",
@@ -445,9 +559,11 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates micro-stutters from GPU frequency changes. More consistent frame times.",
             limitations="GPU runs warmer at idle. Higher power draw when not gaming.",
             warnings=["NVIDIA only", "Higher idle power consumption"],
-            risk_level="MEDIUM", expected_gain="Consistent frametimes",
+            risk_level="MEDIUM",
+            expected_gain="Consistent frametimes",
             compatible_hardware={"gpu_vendor": "NVIDIA"},
-            bat_script="core/power-manager-enhanced.bat", bat_function=":apply_gpu_pstate",
+            bat_script="core/power-manager-enhanced.bat",
+            bat_function=":apply_gpu_pstate",
             preset_extreme=True,
         ),
         Tweak(
@@ -458,11 +574,16 @@ def _build_tweaks() -> List[Tweak]:
             what_it_does="Disables VBS (Virtualization-Based Security) and HVCI (Hypervisor-Enforced Code Integrity). Removes hypervisor overhead from graphics pipeline.",
             why_it_helps="5-10% FPS gain by removing VBS overhead. Significant in CPU-bound games. Source: Ghost-Optimizer.",
             limitations="Reduces system security. Credential Guard disabled. Memory integrity protection removed.",
-            warnings=["⚠️ SECURITY RISK: Disables hardware security features", "Not recommended for systems handling sensitive data"],
-            risk_level="HIGH", expected_gain="5-10% FPS improvement",
+            warnings=[
+                "⚠️ SECURITY RISK: Disables hardware security features",
+                "Not recommended for systems handling sensitive data",
+            ],
+            risk_level="HIGH",
+            expected_gain="5-10% FPS improvement",
             requires_restart=True,
             registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard"],
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_vbs_disable",
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_vbs_disable",
             preset_extreme=True,
         ),
         Tweak(
@@ -474,12 +595,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Lower DWM CPU usage. Slightly better frame pacing in borderless windowed mode.",
             limitations="May affect window transparency rendering.",
             warnings=[],
-            risk_level="LOW", expected_gain="1-2% in windowed mode",
+            risk_level="LOW",
+            expected_gain="1-2% in windowed mode",
             registry_keys=["HKLM\\SOFTWARE\\Microsoft\\Windows\\Dwm"],
-            bat_script="core/gpu-optimizer-enhanced.bat", bat_function=":apply_fullscreen_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/gpu-optimizer-enhanced.bat",
+            bat_function=":apply_fullscreen_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
-
         # ================================================================
         # NETWORK (6 tweaks)
         # ================================================================
@@ -492,10 +615,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Critical for online gaming: game actions are sent instantly. Reduces network latency by 5-20ms in games.",
             limitations="Slightly more network overhead from smaller packets. Impacts large file download efficiency.",
             warnings=["May reduce large file transfer speed by 5-10%"],
-            risk_level="MEDIUM", expected_gain="5-20ms network latency reduction",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces"],
-            bat_script="core/network-optimizer-enhanced.bat", bat_function=":apply_nagle_disable",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="5-20ms network latency reduction",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces"
+            ],
+            bat_script="core/network-optimizer-enhanced.bat",
+            bat_function=":apply_nagle_disable",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="net_tcp_global",
@@ -506,9 +634,12 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="ECN disable prevents some ISPs from throttling. RSS spreads network load across CPU cores. Timestamps disable saves packet overhead.",
             limitations="ECN disable may slightly increase packet loss on congested networks.",
             warnings=["Advanced network change"],
-            risk_level="MEDIUM", expected_gain="2-5ms network improvement",
-            bat_script="core/network-optimizer-enhanced.bat", bat_function=":apply_tcp_global",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="2-5ms network improvement",
+            bat_script="core/network-optimizer-enhanced.bat",
+            bat_function=":apply_tcp_global",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="net_dns",
@@ -519,9 +650,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Faster DNS resolution = faster initial connection to game servers. Cloudflare averages 11ms vs ISP 20-50ms.",
             limitations="ISP-specific internal services may not resolve. Parental controls via ISP DNS won't work.",
             warnings=["Override your ISP's DNS"],
-            risk_level="LOW", expected_gain="Faster server connections",
-            bat_script="core/network-optimizer-enhanced.bat", bat_function=":set_dns_preset",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Faster server connections",
+            bat_script="core/network-optimizer-enhanced.bat",
+            bat_function=":set_dns_preset",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="net_netbios",
@@ -532,10 +667,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces network attack surface. Eliminates NetBIOS broadcast traffic. Minor latency improvement.",
             limitations="Very old network printers or NAS devices using NetBIOS names won't be accessible by name. Use IP instead.",
             warnings=["Legacy network devices may need IP address instead of name"],
-            risk_level="LOW", expected_gain="Cleaner network stack",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters"],
-            bat_script="core/network-optimizer-enhanced.bat", bat_function=":apply_tcp_global",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Cleaner network stack",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters"
+            ],
+            bat_script="core/network-optimizer-enhanced.bat",
+            bat_function=":apply_tcp_global",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="net_window_size",
@@ -546,10 +686,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="More available ports for game connections. Faster connection teardown frees resources sooner.",
             limitations="On very high bandwidth connections (10Gbps+), the window size cap may limit throughput.",
             warnings=[],
-            risk_level="MEDIUM", expected_gain="More reliable connections",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"],
-            bat_script="core/network-optimizer-enhanced.bat", bat_function=":apply_nagle_disable",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="More reliable connections",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+            ],
+            bat_script="core/network-optimizer-enhanced.bat",
+            bat_function=":apply_nagle_disable",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="net_throttling",
@@ -560,12 +705,16 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Removes artificial bandwidth caps during gaming. Full network throughput available.",
             limitations="None significant.",
             warnings=[],
-            risk_level="LOW", expected_gain="Full network bandwidth",
-            registry_keys=["HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"],
-            bat_script="core/input-optimizer.bat", bat_function=":apply_latency",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Full network bandwidth",
+            registry_keys=[
+                "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+            ],
+            bat_script="core/input-optimizer.bat",
+            bat_function=":apply_latency",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
-
         # ================================================================
         # SERVICES (5 tweaks)
         # ================================================================
@@ -578,10 +727,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees 1-3% CPU used for data collection. Reduces network usage.",
             limitations="Windows troubleshooting feedback loop broken. Microsoft won't receive crash data.",
             warnings=[],
-            risk_level="LOW", expected_gain="1-3% CPU freed",
+            risk_level="LOW",
+            expected_gain="1-3% CPU freed",
             requires_restart=True,
-            bat_script="core/service-manager.bat", bat_function=":disable_telemetry",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            bat_script="core/service-manager.bat",
+            bat_function=":disable_telemetry",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="svc_xbox",
@@ -592,10 +745,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees ~50MB RAM and background CPU from Xbox services. Faster boot time.",
             limitations="Xbox Game Pass features won't work. Xbox social features unavailable. Some games may require re-enabling.",
             warnings=["Xbox Game Pass games may not launch"],
-            risk_level="MEDIUM", expected_gain="~50MB RAM, faster boot",
+            risk_level="MEDIUM",
+            expected_gain="~50MB RAM, faster boot",
             requires_restart=True,
-            bat_script="core/service-manager.bat", bat_function=":disable_xbox",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/service-manager.bat",
+            bat_function=":disable_xbox",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="svc_search",
@@ -605,10 +761,15 @@ def _build_tweaks() -> List[Tweak]:
             what_it_does="Disables the Windows Search service that continuously indexes files for Start menu and Explorer search.",
             why_it_helps="Eliminates 1-5% constant CPU and disk I/O from indexing. Major improvement on HDD systems.",
             limitations="Start menu search is much slower. File Explorer search won't find content inside files.",
-            warnings=["⚠️ Start menu search will be very slow", "Use Everything app as replacement"],
-            risk_level="MEDIUM", expected_gain="1-5% CPU, less disk I/O",
+            warnings=[
+                "⚠️ Start menu search will be very slow",
+                "Use Everything app as replacement",
+            ],
+            risk_level="MEDIUM",
+            expected_gain="1-5% CPU, less disk I/O",
             requires_restart=True,
-            bat_script="core/service-manager.bat", bat_function=":disable_optional",
+            bat_script="core/service-manager.bat",
+            bat_function=":disable_optional",
             preset_extreme=True,
         ),
         Tweak(
@@ -620,10 +781,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees RAM for games instead of preloaded apps. Reduces random disk I/O. Especially useful on systems with 8GB RAM.",
             limitations="Frequently used apps take longer to open initially. First launch after boot is slower.",
             warnings=["Apps may open slower the first time after boot"],
-            risk_level="MEDIUM", expected_gain="200-500MB RAM freed",
+            risk_level="MEDIUM",
+            expected_gain="200-500MB RAM freed",
             requires_restart=True,
-            bat_script="core/service-manager.bat", bat_function=":disable_optional",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/service-manager.bat",
+            bat_function=":disable_optional",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="svc_print",
@@ -634,12 +798,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Removes security vulnerability. Frees ~20MB RAM. Faster boot.",
             limitations="Cannot print to any printer (local or network). Must re-enable to print.",
             warnings=["Cannot print while disabled"],
-            risk_level="LOW", expected_gain="Security hardening + 20MB RAM",
+            risk_level="LOW",
+            expected_gain="Security hardening + 20MB RAM",
             requires_restart=True,
-            bat_script="core/service-manager.bat", bat_function=":disable_optional",
+            bat_script="core/service-manager.bat",
+            bat_function=":disable_optional",
             preset_extreme=True,
         ),
-
         # ================================================================
         # MEMORY (4 tweaks)
         # ================================================================
@@ -652,11 +817,14 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="On systems with 16GB+ RAM, reduces the number of svchost.exe processes by grouping services. Saves ~200MB RAM. Source: QuickBoost.",
             limitations="Grouped services share memory space. A crash in one service may affect grouped services.",
             warnings=["Set based on your RAM amount"],
-            risk_level="MEDIUM", expected_gain="~200MB RAM saved",
+            risk_level="MEDIUM",
+            expected_gain="~200MB RAM saved",
             requires_restart=True,
             registry_keys=["HKLM\\SYSTEM\\ControlSet001\\Control"],
-            bat_script="core/service-manager.bat", bat_function=":apply_svchost",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/service-manager.bat",
+            bat_function=":apply_svchost",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="mem_paging_exec",
@@ -667,10 +835,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Prevents micro-stutters from kernel code being paged to disk. More consistent frame times. Source: QuickBoost.",
             limitations="Uses more physical RAM (~100-200MB). Not recommended for systems with less than 8GB RAM.",
             warnings=["Requires 8GB+ RAM"],
-            risk_level="MEDIUM", expected_gain="Fewer micro-stutters",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"],
-            bat_script="core/service-manager.bat", bat_function=":apply_memory",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="MEDIUM",
+            expected_gain="Fewer micro-stutters",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+            ],
+            bat_script="core/service-manager.bat",
+            bat_function=":apply_memory",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="mem_large_cache",
@@ -681,9 +854,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces game stutter from disk I/O. Faster level loading. Most effective on systems with 16GB+ RAM.",
             limitations="Less free RAM available for applications. Not suitable for systems with 8GB or less RAM.",
             warnings=["Best for 16GB+ RAM systems"],
-            risk_level="MEDIUM", expected_gain="Faster loading, less stutter",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"],
-            bat_script="core/service-manager.bat", bat_function=":apply_memory",
+            risk_level="MEDIUM",
+            expected_gain="Faster loading, less stutter",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+            ],
+            bat_script="core/service-manager.bat",
+            bat_function=":apply_memory",
             preset_extreme=True,
         ),
         Tweak(
@@ -695,12 +872,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates CPU overhead from memory compression/decompression. Reduces DPC latency spikes. Source: QuickBoost.",
             limitations="Higher RAM usage since pages aren't shared or compressed. Requires 16GB+ RAM.",
             warnings=["Requires 16GB+ RAM", "Higher memory usage"],
-            risk_level="MEDIUM", expected_gain="Lower DPC latency",
-            registry_keys=["HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"],
-            bat_script="core/service-manager.bat", bat_function=":apply_memory",
+            risk_level="MEDIUM",
+            expected_gain="Lower DPC latency",
+            registry_keys=[
+                "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+            ],
+            bat_script="core/service-manager.bat",
+            bat_function=":apply_memory",
             preset_extreme=True,
         ),
-
         # ================================================================
         # BOOT / BCDEDIT (5 tweaks)
         # ================================================================
@@ -713,10 +893,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="More consistent timer resolution. Reduces jitter in frame timing. Essential for competitive gaming.",
             limitations="Slightly higher power consumption from constant timer interrupts. Requires restart.",
             warnings=["Requires restart", "BCD change"],
-            risk_level="MEDIUM", expected_gain="More consistent frametimes",
+            risk_level="MEDIUM",
+            expected_gain="More consistent frametimes",
             requires_restart=True,
-            bat_script="core/bcdedit-manager.bat", bat_function=":apply_safe_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/bcdedit-manager.bat",
+            bat_function=":apply_safe_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="bcd_tsc_sync",
@@ -727,10 +910,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Better timer accuracy across cores. Reduces timing inconsistencies. Important for multi-threaded games.",
             limitations="Very minor boot time increase.",
             warnings=["Requires restart"],
-            risk_level="LOW", expected_gain="Better timer accuracy",
+            risk_level="LOW",
+            expected_gain="Better timer accuracy",
             requires_restart=True,
-            bat_script="core/bcdedit-manager.bat", bat_function=":apply_safe_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/bcdedit-manager.bat",
+            bat_function=":apply_safe_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="bcd_x2apic",
@@ -741,10 +927,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Faster interrupt handling reduces DPC latency. More efficient CPU interrupt routing.",
             limitations="CPU must support x2APIC (most CPUs since 2010+). Falls back silently if unsupported.",
             warnings=["Requires restart"],
-            risk_level="LOW", expected_gain="~1ms DPC improvement",
+            risk_level="LOW",
+            expected_gain="~1ms DPC improvement",
             requires_restart=True,
-            bat_script="core/bcdedit-manager.bat", bat_function=":apply_safe_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/bcdedit-manager.bat",
+            bat_function=":apply_safe_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="bcd_configaccess",
@@ -755,10 +944,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Slightly faster hardware communication. Reduces boot-time hardware initialization latency.",
             limitations="On very rare hardware, may cause boot issues. Easily reversible with bcdedit /deletevalue.",
             warnings=["Requires restart"],
-            risk_level="LOW", expected_gain="Faster hardware access",
+            risk_level="LOW",
+            expected_gain="Faster hardware access",
             requires_restart=True,
-            bat_script="core/bcdedit-manager.bat", bat_function=":apply_safe_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/bcdedit-manager.bat",
+            bat_function=":apply_safe_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="bcd_hypervisor",
@@ -768,13 +960,17 @@ def _build_tweaks() -> List[Tweak]:
             what_it_does="Sets hypervisorlaunchtype=off. Disables the Windows hypervisor that enables WSL2, Docker, and Hyper-V virtual machines.",
             why_it_helps="Removes hypervisor overhead (2-5% CPU). Direct hardware access for games. Lower interrupt latency.",
             limitations="WSL2 won't work. Docker Desktop won't work. Hyper-V VMs won't start. Android emulators may fail.",
-            warnings=["⚠️ Breaks WSL2, Docker, and Hyper-V", "Only for dedicated gaming PCs"],
-            risk_level="HIGH", expected_gain="2-5% CPU performance",
+            warnings=[
+                "⚠️ Breaks WSL2, Docker, and Hyper-V",
+                "Only for dedicated gaming PCs",
+            ],
+            risk_level="HIGH",
+            expected_gain="2-5% CPU performance",
             requires_restart=True,
-            bat_script="core/bcdedit-manager.bat", bat_function=":apply_advanced_tweaks",
+            bat_script="core/bcdedit-manager.bat",
+            bat_function=":apply_advanced_tweaks",
             preset_extreme=True,
         ),
-
         # ================================================================
         # VISUAL EFFECTS (4 tweaks)
         # ================================================================
@@ -787,10 +983,17 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Eliminates GPU time spent on animations. Windows feel more responsive. 1-2% GPU freed on integrated graphics.",
             limitations="UI feels less polished. No smooth transitions.",
             warnings=[],
-            risk_level="LOW", expected_gain="Snappier UI, 1-2% GPU on iGPU",
-            registry_keys=["HKCU\\Control Panel\\Desktop\\WindowMetrics", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"],
-            bat_script="core/registry-utils.bat", bat_function=":apply_visual_tweaks",
-            preset_safe=True, preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="Snappier UI, 1-2% GPU on iGPU",
+            registry_keys=[
+                "HKCU\\Control Panel\\Desktop\\WindowMetrics",
+                "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+            ],
+            bat_script="core/registry-utils.bat",
+            bat_function=":apply_visual_tweaks",
+            preset_safe=True,
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="vis_transparency",
@@ -801,10 +1004,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Saves GPU resources used for blur calculations. Especially impactful on integrated graphics (3-5% GPU).",
             limitations="Flat, opaque appearance. Less visually appealing UI.",
             warnings=[],
-            risk_level="LOW", expected_gain="3-5% GPU on integrated graphics",
-            registry_keys=["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"],
-            bat_script="core/registry-utils.bat", bat_function=":apply_visual_tweaks",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="3-5% GPU on integrated graphics",
+            registry_keys=[
+                "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+            ],
+            bat_script="core/registry-utils.bat",
+            bat_function=":apply_visual_tweaks",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="vis_drag_full",
@@ -815,9 +1023,11 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces GPU rendering during window management. Minor performance gain.",
             limitations="Can't see window content while dragging.",
             warnings=[],
-            risk_level="LOW", expected_gain="Minor GPU reduction",
+            risk_level="LOW",
+            expected_gain="Minor GPU reduction",
             registry_keys=["HKCU\\Control Panel\\Desktop"],
-            bat_script="core/registry-utils.bat", bat_function=":apply_visual_tweaks",
+            bat_script="core/registry-utils.bat",
+            bat_function=":apply_visual_tweaks",
             preset_extreme=True,
         ),
         Tweak(
@@ -829,12 +1039,15 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Maximum GPU resources for games. Eliminates all compositor overhead. Significant on low-end systems.",
             limitations="Windows looks like Windows 2000. No font smoothing. No thumbnail previews. Very spartan appearance.",
             warnings=["UI will look very basic"],
-            risk_level="LOW", expected_gain="5-10% on low-end GPUs",
-            registry_keys=["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects"],
-            bat_script="core/registry-utils.bat", bat_function=":apply_visual_tweaks",
+            risk_level="LOW",
+            expected_gain="5-10% on low-end GPUs",
+            registry_keys=[
+                "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects"
+            ],
+            bat_script="core/registry-utils.bat",
+            bat_function=":apply_visual_tweaks",
             preset_extreme=True,
         ),
-
         # ================================================================
         # CLEANUP & DEBLOAT (3 tweaks)
         # ================================================================
@@ -847,8 +1060,10 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees 1-3GB disk space. Removes background update processes for unused apps. Cleaner Start menu.",
             limitations="Removed apps are gone (can reinstall from Microsoft Store). Some users may want specific apps.",
             warnings=["Apps can be reinstalled from Microsoft Store if needed"],
-            risk_level="MEDIUM", expected_gain="1-3GB disk space, cleaner system",
-            bat_script="core/debloater.bat", bat_function=":apply_debloat",
+            risk_level="MEDIUM",
+            expected_gain="1-3GB disk space, cleaner system",
+            bat_script="core/debloater.bat",
+            bat_function=":apply_debloat",
             preset_extreme=True,
         ),
         Tweak(
@@ -860,10 +1075,13 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Frees 50-200MB RAM and CPU from OneDrive sync. Faster login time.",
             limitations="Files won't sync automatically. Must open OneDrive manually when needed.",
             warnings=["Cloud sync paused until manually opened"],
-            risk_level="LOW", expected_gain="50-200MB RAM, faster login",
+            risk_level="LOW",
+            expected_gain="50-200MB RAM, faster login",
             registry_keys=["HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"],
-            bat_script="core/debloater.bat", bat_function=":apply_onedrive",
-            preset_competitive=True, preset_extreme=True,
+            bat_script="core/debloater.bat",
+            bat_function=":apply_onedrive",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
         Tweak(
             id="cln_ntfs",
@@ -874,9 +1092,12 @@ def _build_tweaks() -> List[Tweak]:
             why_it_helps="Reduces disk write operations by 5-10%. Faster file operations, especially with many small files.",
             limitations="Programs that rely on last access time won't see accurate data. Very old 16-bit programs may not find files.",
             warnings=[],
-            risk_level="LOW", expected_gain="5-10% faster file operations",
-            bat_script="core/storage-optimizer.bat", bat_function=":apply_ntfs",
-            preset_competitive=True, preset_extreme=True,
+            risk_level="LOW",
+            expected_gain="5-10% faster file operations",
+            bat_script="core/storage-optimizer.bat",
+            bat_function=":apply_ntfs",
+            preset_competitive=True,
+            preset_extreme=True,
         ),
     ]
 
@@ -908,11 +1129,13 @@ class TweakRegistry:
     def get_compatible_tweaks(self, system_profile: Any) -> List[Tweak]:
         """Filter tweaks by system compatibility"""
         compatible = []
-        os_ver = getattr(system_profile, 'os', None)
-        os_version = "11" if os_ver and "11" in str(getattr(os_ver, 'version', '')) else "10"
+        os_ver = getattr(system_profile, "os", None)
+        os_version = (
+            "11" if os_ver and "11" in str(getattr(os_ver, "version", "")) else "10"
+        )
         gpu_vendor = ""
-        if hasattr(system_profile, 'gpu'):
-            gpu_vendor = getattr(system_profile.gpu, 'vendor', '').upper()
+        if hasattr(system_profile, "gpu"):
+            gpu_vendor = getattr(system_profile.gpu, "vendor", "").upper()
 
         for t in self._tweaks.values():
             # Check OS
@@ -925,8 +1148,8 @@ class TweakRegistry:
                         continue
                 if "cpu_vendor" in t.compatible_hardware:
                     cpu_vendor = ""
-                    if hasattr(system_profile, 'cpu'):
-                        cpu_vendor = getattr(system_profile.cpu, 'vendor', '').upper()
+                    if hasattr(system_profile, "cpu"):
+                        cpu_vendor = getattr(system_profile.cpu, "vendor", "").upper()
                     if t.compatible_hardware["cpu_vendor"].upper() not in cpu_vendor:
                         continue
             compatible.append(t)
@@ -934,14 +1157,14 @@ class TweakRegistry:
 
     def suggest_preset(self, system_profile: Any) -> Dict[str, Any]:
         """Suggest a preset based on system specs"""
-        tier = getattr(system_profile, 'tier', 'mid-range')
-        total_score = getattr(system_profile, 'total_score', 50)
-        form_factor = getattr(system_profile, 'form_factor', 'desktop')
+        tier = getattr(system_profile, "tier", "mid-range")
+        total_score = getattr(system_profile, "total_score", 50)
+        form_factor = getattr(system_profile, "form_factor", "desktop")
         ram_gb = 16
-        if hasattr(system_profile, 'ram'):
-            ram_gb = getattr(system_profile.ram, 'total_gb', 16)
+        if hasattr(system_profile, "ram"):
+            ram_gb = getattr(system_profile.ram, "total_gb", 16)
 
-        if total_score >= 80 and form_factor == 'desktop' and ram_gb >= 16:
+        if total_score >= 80 and form_factor == "desktop" and ram_gb >= 16:
             preset = "extreme"
             reason = "High-end desktop with 16GB+ RAM — maximum performance available"
         elif total_score >= 50 and ram_gb >= 8:
@@ -1003,6 +1226,7 @@ class TweakRegistry:
 
 # Singleton
 _registry_instance: Optional[TweakRegistry] = None
+
 
 def get_tweak_registry() -> TweakRegistry:
     """Get singleton TweakRegistry instance"""
