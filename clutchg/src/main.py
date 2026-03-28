@@ -46,7 +46,7 @@ def main():
 
     # Check for admin privileges
     admin_checker = AdminChecker()
-    if not admin_checker.is_admin():
+    if not args.test_mode and not admin_checker.is_admin():
         print("ClutchG requires administrator privileges.")
         print("Please run as administrator.")
 
