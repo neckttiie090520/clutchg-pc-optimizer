@@ -117,7 +117,7 @@ class HelpView(ctk.CTkFrame):
         return ctk.CTkLabel(
             parent,
             text=ICON(icon_key),
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=size),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=size),
             text_color=color or COLORS["text_secondary"],
             width=size + 4,
         )
@@ -173,7 +173,7 @@ class HelpView(ctk.CTkFrame):
             icon_lbl = ctk.CTkLabel(
                 btn_frame,
                 text=ICON(topic.icon),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
                 text_color=COLORS["text_secondary"],
                 width=20,
             )
@@ -251,7 +251,7 @@ class HelpView(ctk.CTkFrame):
         ctk.CTkLabel(
             title_frame,
             text=ICON(topic.icon),
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=20),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=20),
             text_color=COLORS["text_primary"],
         ).pack(side="left", padx=(0, 8))
 
@@ -345,7 +345,7 @@ class HelpView(ctk.CTkFrame):
                 ctk.CTkLabel(
                     tip_frame,
                     text=ICON("lightbulb"),
-                    font=ctk.CTkFont(family="Segoe MDL2 Assets", size=11),
+                    font=ctk.CTkFont(family="Material Symbols Outlined", size=11),
                     text_color=COLORS["accent"],
                 ).pack(side="left", padx=(0, 4))
 
@@ -408,7 +408,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 cat_header,
                 text=ICON(category["icon"]),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=16),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
             ctk.CTkLabel(
@@ -571,7 +571,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 myth_row,
                 text=ICON("error"),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
                 text_color=COLORS["danger"],
             ).pack(side="left", padx=(0, 6))
 
@@ -589,7 +589,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 fact_row,
                 text=ICON("success"),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=12),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
                 text_color=COLORS["success"],
             ).pack(side="left", padx=(0, 6))
 
@@ -615,7 +615,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 problem_frame,
                 text=ICON("build"),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
 
@@ -733,7 +733,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 result_title,
                 text=ICON(topic.icon),
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
 
