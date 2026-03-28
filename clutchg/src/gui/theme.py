@@ -68,9 +68,9 @@ THEMES = {
         "glass_bg": "#1A2332",
         "glass_border": "#2D3748",
         "glass_highlight": "#323942",
-        "glass_light": "rgba(255, 255, 255, 0.05)",
-        "glass_medium": "rgba(255, 255, 255, 0.08)",
-        "glass_strong": "rgba(255, 255, 255, 0.12)",
+        "glass_light": "#1f2538",  # ~5% white on #1A2332
+        "glass_medium": "#222940",  # ~8% white on #1A2332
+        "glass_strong": "#283044",  # ~12% white on #1A2332
     },
     "zinc": {
         # Professional Monotone (Zinc/Slate)
@@ -102,9 +102,9 @@ THEMES = {
         "glass_bg": "#18181b",
         "glass_border": "#27272a",
         "glass_highlight": "#3f3f46",
-        "glass_light": "rgba(255, 255, 255, 0.03)",
-        "glass_medium": "rgba(255, 255, 255, 0.05)",
-        "glass_strong": "rgba(255, 255, 255, 0.1)",
+        "glass_light": "#1d1d20",  # ~3% white on #18181b
+        "glass_medium": "#212124",  # ~5% white on #18181b
+        "glass_strong": "#2c2c2f",  # ~10% white on #18181b
     },
     "light": {
         # Backgrounds
@@ -136,9 +136,9 @@ THEMES = {
         "glass_bg": "#FFFFFF",
         "glass_border": "#E5E5E5",
         "glass_highlight": "#F0F0F0",
-        "glass_light": "rgba(0, 0, 0, 0.03)",
-        "glass_medium": "rgba(0, 0, 0, 0.05)",
-        "glass_strong": "rgba(0, 0, 0, 0.08)",
+        "glass_light": "#f7f7f7",  # ~3% black on #FFFFFF
+        "glass_medium": "#f2f2f2",  # ~5% black on #FFFFFF
+        "glass_strong": "#ebebeb",  # ~8% black on #FFFFFF
     },
     "modern": {
         # Sun Valley-inspired theme (Windows 11 dark)
@@ -171,9 +171,9 @@ THEMES = {
         "glass_bg": "#2d2d2d",
         "glass_border": "#3d3d3d",
         "glass_highlight": "#404040",
-        "glass_light": "rgba(255, 255, 255, 0.04)",
-        "glass_medium": "rgba(255, 255, 255, 0.07)",
-        "glass_strong": "rgba(255, 255, 255, 0.11)",
+        "glass_light": "#222222",  # ~4% white on #1c1c1c
+        "glass_medium": "#252525",  # ~7% white on #1c1c1c
+        "glass_strong": "#292929",  # ~11% white on #1c1c1c
     },
 }
 
@@ -409,7 +409,6 @@ FONTS = {
     # Body text
     "body_large": ("Figtree", 16, "normal"),
     "body": ("Figtree", 14, "normal"),
-    "body_medium": ("Figtree", 14, "normal"),
     "body_small": ("Figtree", 12, "normal"),
     "body_bold": ("Figtree", 14, "bold"),
     # Special
@@ -438,15 +437,10 @@ TYPOGRAPHY = FONTS
 # ============================================================================
 SIZES = {
     "sidebar_width": 60,
-    "radius_sm": 6,
-    "radius_md": 8,
-    "radius_lg": 10,
-    "radius_xl": 12,
-    "radius_full": 9999,
-    # Legacy aliases
-    "card_radius": 12,
-    "button_radius": 8,  # Slightly sharper
-    "button_height": 32,  # Reduced from 36
+    # Legacy aliases — values sourced from RADIUS
+    "card_radius": 14,  # matches RADIUS["xl"]
+    "button_radius": 6,  # matches RADIUS["md"]
+    "button_height": 32,
     "button_height_sm": 28,
     "input_height": 32,
     "score_ring_size": 180,

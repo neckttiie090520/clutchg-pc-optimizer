@@ -27,7 +27,7 @@ class CircularProgress(ctk.CTkFrame):
         bg_color: str = None,
         show_value: bool = True,
         value_font: Tuple = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Create a circular progress indicator
@@ -54,10 +54,10 @@ class CircularProgress(ctk.CTkFrame):
 
         if value_font is None:
             # Improved typography: larger font for 240px ring
-            value_font = ("Inter", 56, "bold")  # Increased from 48 to 56
-        
+            value_font = ("Figtree", 56, "bold")  # Increased from 48 to 56
+
         super().__init__(master, fg_color="transparent", **kwargs)
-        
+
         self.size = size
         self.thickness = thickness
         self.value = value
@@ -66,55 +66,53 @@ class CircularProgress(ctk.CTkFrame):
         self.bg_color = bg_color
         self.show_value = show_value
         self.value_font = value_font
-        
+
         # Create canvas
         self.canvas = Canvas(
-            self,
-            width=size,
-            height=size,
-            bg=bg_color,
-            highlightthickness=0
+            self, width=size, height=size, bg=bg_color, highlightthickness=0
         )
         self.canvas.pack()
-        
+
         # Create value label if needed
         if show_value:
             self.value_label = ctk.CTkLabel(
                 self,
                 text=str(int(value)),
-                font=ctk.CTkFont(family=value_font[0], size=value_font[1], weight=value_font[2]),
-                text_color=theme_colors["text_primary"]
+                font=ctk.CTkFont(
+                    family=value_font[0], size=value_font[1], weight=value_font[2]
+                ),
+                text_color=theme_colors["text_primary"],
             )
             self.value_label.place(relx=0.5, rely=0.5, anchor="center")
-        
+
         # Draw initial state
         self.draw_ring()
-    
+
     def set_value(self, value: float, animate: bool = False):
         """
         Update progress value
-        
+
         Args:
             value: New value
             animate: Whether to animate the change (not implemented yet)
         """
         self.value = min(max(0, value), self.max_value)
         self.draw_ring()
-        
-        if self.show_value and hasattr(self, 'value_label'):
+
+        if self.show_value and hasattr(self, "value_label"):
             self.value_label.configure(text=str(int(self.value)))
-    
+
     def draw_ring(self):
         """Draw the circular progress"""
         theme_colors = theme_manager.get_colors()
 
         self.canvas.delete("all")
-        
+
         # Calculate dimensions
         # Calculate dimensions
         center = self.size / 2
         radius = (self.size - self.thickness) / 2
-        
+
         # Draw background track
         self.canvas.create_oval(
             center - radius,
@@ -124,19 +122,19 @@ class CircularProgress(ctk.CTkFrame):
             # Use 'bg_active' or 'border' so it stands out against 'bg_card'
             outline=theme_colors.get("bg_active", "#323D54"),
             width=self.thickness,
-            tags="bg"
+            tags="bg",
         )
-        
+
         # Calculate progress angle
         progress_ratio = self.value / self.max_value
         extent = -(progress_ratio * 360)  # Negative for clockwise (CW)
-        
+
         # Optimization: Draw solid arc if colors are identical (ANTI-ALIASING FIX)
         # Gradient drawing (multiple small arcs) causes pixelation/aliasing.
         # Single arc is vector-smooth.
         if not self.colors or len(self.colors) < 2 or self.colors[0] == self.colors[1]:
             color = self.colors[0] if self.colors else theme_colors["accent"]
-            
+
             self.canvas.create_arc(
                 center - radius,
                 center - radius,
@@ -147,55 +145,55 @@ class CircularProgress(ctk.CTkFrame):
                 outline=color,
                 width=self.thickness,
                 style="arc",
-                tags="progress"
+                tags="progress",
             )
         else:
             # Gradient fallback (only used if colors differ)
             steps = max(1, int(abs(extent)))
-            
+
             for i in range(steps):
                 t = i / max(1, steps - 1) if steps > 1 else 0
                 color = self._interpolate_color(t)
-                
+
                 # Draw Clockwise (CW)
                 step_extent = extent / steps
                 # Start at 90 and move CW (negative extent means decreasing angle)
                 # i=0 -> start=90
                 # i=1 -> start=90 + step_extent (which is negative)
                 start_angle = 90 + (extent * i / steps)
-                
+
                 self.canvas.create_arc(
                     center - radius,
                     center - radius,
                     center + radius,
                     center + radius,
                     start=start_angle,
-                    extent=step_extent * 1.5, # Slight overlap to reduce gaps
+                    extent=step_extent * 1.5,  # Slight overlap to reduce gaps
                     outline=color,
                     width=self.thickness,
                     style="arc",
-                    tags="progress"
+                    tags="progress",
                 )
-    
+
     def _interpolate_color(self, t: float) -> str:
         """Interpolate between gradient colors"""
         if len(self.colors) < 2:
             return self.colors[0] if self.colors else "#00f2fe"
-        
+
         c1 = self._hex_to_rgb(self.colors[0])
         c2 = self._hex_to_rgb(self.colors[1])
-        
+
         r = int(c1[0] + (c2[0] - c1[0]) * t)
         g = int(c1[1] + (c2[1] - c1[1]) * t)
         b = int(c1[2] + (c2[2] - c1[2]) * t)
-        
+
         return f"#{r:02x}{g:02x}{b:02x}"
-    
+
     def _hex_to_rgb(self, hex_color: str) -> Tuple[int, int, int]:
         """Convert hex to RGB"""
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    
+        hex_color = hex_color.lstrip("#")
+        return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+
     def get_color_for_value(self, value: float) -> str:
         """Get appropriate color based on value (for score-based coloring)"""
         theme_colors = theme_manager.get_colors()
@@ -211,7 +209,7 @@ class CircularProgress(ctk.CTkFrame):
 
 class CircularProgressWithLabel(ctk.CTkFrame):
     """Circular progress with label below"""
-    
+
     def __init__(
         self,
         master,
@@ -221,11 +219,11 @@ class CircularProgressWithLabel(ctk.CTkFrame):
         max_value: float = 100,
         colors: List[str] = None,
         label_text: str = "",
-        **kwargs
+        **kwargs,
     ):
         """
         Create circular progress with label
-        
+
         Args:
             master: Parent widget
             size: Circle size
@@ -236,7 +234,7 @@ class CircularProgressWithLabel(ctk.CTkFrame):
             label_text: Text to show below circle
         """
         super().__init__(master, fg_color="transparent", **kwargs)
-        
+
         # Create progress circle
         self.progress = CircularProgress(
             self,
@@ -244,25 +242,25 @@ class CircularProgressWithLabel(ctk.CTkFrame):
             thickness=thickness,
             value=value,
             max_value=max_value,
-            colors=colors
+            colors=colors,
         )
         self.progress.pack(pady=(0, 8))
-        
+
         # Create label
         if label_text:
             self.label = ctk.CTkLabel(
                 self,
                 text=label_text,
                 font=ctk.CTkFont(family="Figtree", size=14),
-                text_color="#A0AEC0"
+                text_color="#A0AEC0",
             )
             self.label.pack()
-    
+
     def set_value(self, value: float):
         """Update progress value"""
         self.progress.set_value(value)
-    
+
     def set_label(self, text: str):
         """Update label text"""
-        if hasattr(self, 'label'):
+        if hasattr(self, "label"):
             self.label.configure(text=text)

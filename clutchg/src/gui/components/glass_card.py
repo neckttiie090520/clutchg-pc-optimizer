@@ -58,6 +58,9 @@ class GlassCard(ctk.CTkFrame):
         self.glow_color = glow_color
         self.default_border_color = border_color
         self.default_border_width = border_width
+        self._padding = padding
+
+        # Apply internal padding via pack/grid on children — CTkFrame doesn't support padx/pady in configure()
 
         # Apply glow if specified
         if glow_color:

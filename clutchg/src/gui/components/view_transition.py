@@ -49,8 +49,14 @@ class ViewTransition:
 
         self.transitioning = True
 
+        # Safety timeout: force-clear transitioning flag after 3s
+        # to prevent stuck state if animation fails silently
+        self.parent.after(3000, self._clear_stuck_transition)
+
         # Fade out old view
-        self.fade_out(old_view, duration, lambda: self._create_new_view(view_builder, duration))
+        self.fade_out(
+            old_view, duration, lambda: self._create_new_view(view_builder, duration)
+        )
 
     def _create_new_view(self, view_builder: Callable, duration: int):
         """Create new view and fade it in"""
@@ -63,6 +69,7 @@ class ViewTransition:
             new_view = view_builder()
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             new_view = self._create_error_view(str(e))
 
@@ -71,7 +78,7 @@ class ViewTransition:
         self.current_widget = new_view
 
         # Fade in new view
-        self.fade_in(new_view, duration, lambda: setattr(self, 'transitioning', False))
+        self.fade_in(new_view, duration, lambda: setattr(self, "transitioning", False))
 
     def current_view_exists(self) -> bool:
         """Check if current view widget still exists"""
@@ -82,6 +89,11 @@ class ViewTransition:
             return True
         except Exception:
             return False
+
+    def _clear_stuck_transition(self):
+        """Safety net: force-clear transitioning flag if still set after timeout"""
+        if self.transitioning:
+            self.transitioning = False
 
     def fade_out(self, widget, duration: int, callback: Optional[Callable] = None):
         """
@@ -108,8 +120,14 @@ class ViewTransition:
         """
         self._animate_opacity(widget, 0.0, 1.0, duration, callback)
 
-    def _animate_opacity(self, widget, start: float, end: float,
-                        duration: int, callback: Optional[Callable] = None):
+    def _animate_opacity(
+        self,
+        widget,
+        start: float,
+        end: float,
+        duration: int,
+        callback: Optional[Callable] = None,
+    ):
         """
         Animate widget opacity (simulated with overlay)
 
@@ -135,48 +153,44 @@ class ViewTransition:
         # Create overlay if fading in
         overlay = None
         if end > start:  # Fading in (start transparent, end opaque)
-            overlay = ctk.CTkFrame(
-                widget,
-                fg_color=bg_color,
-                corner_radius=0
-            )
+            overlay = ctk.CTkFrame(widget, fg_color=bg_color, corner_radius=0)
             overlay.place(x=0, y=0, relwidth=1, relheight=1)
             widget._fade_overlay = overlay
 
         def step(current_step):
-            if current_step >= steps:
-                # Animation complete
-                if callback:
-                    callback()
-                # Clean up overlay if it exists
-                if hasattr(widget, '_fade_overlay') and widget._fade_overlay:
-                    if end > start:  # Fading in, remove overlay
-                        widget._fade_overlay.destroy()
-                        delattr(widget, '_fade_overlay')
-                return
+            try:
+                if current_step >= steps:
+                    # Animation complete
+                    if callback:
+                        callback()
+                    # Clean up overlay if it exists
+                    if hasattr(widget, "_fade_overlay") and widget._fade_overlay:
+                        if end > start:  # Fading in, remove overlay
+                            widget._fade_overlay.destroy()
+                            delattr(widget, "_fade_overlay")
+                    return
 
-            # Calculate current opacity
-            opacity = start + (step_size * current_step)
+                # Calculate current opacity
+                opacity = start + (step_size * current_step)
 
-            # For fade out: create/update overlay
-            if end < start:  # Fading out
-                if not hasattr(widget, '_fade_overlay'):
-                    overlay = ctk.CTkFrame(
-                        widget,
-                        fg_color=bg_color,
-                        corner_radius=0
-                    )
-                    overlay.place(x=0, y=0, relwidth=1, relheight=1)
-                    widget._fade_overlay = overlay
+                # For fade out: create/update overlay
+                if end < start:  # Fading out
+                    if not hasattr(widget, "_fade_overlay"):
+                        overlay = ctk.CTkFrame(
+                            widget, fg_color=bg_color, corner_radius=0
+                        )
+                        overlay.place(x=0, y=0, relwidth=1, relheight=1)
+                        widget._fade_overlay = overlay
 
-                # Simulate opacity by adjusting overlay color
-                # (This is a simplification - true opacity would require
-                # more complex color blending)
-                if current_step >= steps - 1:  # Final step - fully cover
-                    widget._fade_overlay.configure(fg_color=bg_color)
+                    # Simulate opacity by adjusting overlay color
+                    if current_step >= steps - 1:  # Final step - fully cover
+                        widget._fade_overlay.configure(fg_color=bg_color)
 
-            # Schedule next step
-            widget.after(step_duration, lambda: step(current_step + 1))
+                # Schedule next step
+                widget.after(step_duration, lambda: step(current_step + 1))
+            except Exception:
+                # Widget was destroyed mid-animation — clean up silently
+                self.transitioning = False
 
         step(0)
 
@@ -198,6 +212,7 @@ class ViewTransition:
             new_view = view_builder()
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             new_view = self._create_error_view(str(e))
 
@@ -209,31 +224,28 @@ class ViewTransition:
     def _create_error_view(self, error_message: str) -> ctk.CTkFrame:
         """Create a view to display an error message"""
         colors = theme_manager.get_colors()
-        
+
         frame = ctk.CTkFrame(self.parent, fg_color=colors["bg_primary"])
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
-        
+
         content = ctk.CTkFrame(frame, fg_color="transparent")
         content.grid(row=0, column=0, sticky="nsew")
         content.place(relx=0.5, rely=0.5, anchor="center")
-        
+
         # Error Icon
         ctk.CTkLabel(
-            content,
-            text="❌",
-            font=ctk.CTkFont(size=48),
-            text_color=colors["danger"]
+            content, text="❌", font=ctk.CTkFont(size=48), text_color=colors["danger"]
         ).pack(pady=(0, 20))
-        
+
         # Title
         ctk.CTkLabel(
             content,
             text="Error Loading View",
             font=ctk.CTkFont(size=20, weight="bold"),
-            text_color=colors["text_primary"]
+            text_color=colors["text_primary"],
         ).pack(pady=(0, 10))
-        
+
         # Message
         ctk.CTkLabel(
             content,
@@ -241,7 +253,7 @@ class ViewTransition:
             font=ctk.CTkFont(size=14),
             text_color=colors["text_secondary"],
             wraplength=600,
-            justify="center"
+            justify="center",
         ).pack()
-        
+
         return frame

@@ -25,29 +25,6 @@ def should_reduce_motion(app) -> bool:
     return False
 
 
-def apply_focus_style(widget, colors: dict):
-    """Apply focus ring styling to a widget"""
-    focus_color = colors.get("focus_ring", colors.get("accent", "#57c8ff"))
-    focus_width = colors.get("focus_ring_width", 2)
-
-    def on_focus(event):
-        try:
-            widget.configure(border_width=focus_width, border_color=focus_color)
-        except Exception:
-            pass
-
-    def on_unfocus(event):
-        try:
-            widget.configure(
-                border_width=0, border_color=colors.get("border_subtle", "transparent")
-            )
-        except Exception:
-            pass
-
-    widget.bind("<FocusIn>", on_focus)
-    widget.bind("<FocusOut>", on_unfocus)
-
-
 class EnhancedButton:
     """Factory for creating enhanced buttons with different styles"""
 
@@ -57,7 +34,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -96,7 +73,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -135,7 +112,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -174,7 +151,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -206,7 +183,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -245,7 +222,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         border_color: Optional[str] = None,
         **kwargs,
     ):
@@ -294,7 +271,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         **kwargs,
     ):
         """
@@ -334,7 +311,7 @@ class EnhancedButton:
         text: str,
         command: Optional[Callable] = None,
         width: Optional[int] = None,
-        height: int = 40,
+        height: int = 32,
         color: Optional[str] = None,
         **kwargs,
     ):

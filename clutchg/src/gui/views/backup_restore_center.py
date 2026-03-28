@@ -437,7 +437,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
         icon_frame = ctk.CTkFrame(
             card,
             fg_color=COLORS["bg_hover"],
-            corner_radius=SIZES["radius_md"],
+            corner_radius=RADIUS["md"],
             width=44,
             height=44,
         )
@@ -481,7 +481,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
                 font=self._font(9, "bold"),
                 text_color=COLORS["success"],
                 fg_color=COLORS["success_dim"],
-                corner_radius=SIZES["radius_sm"],
+                corner_radius=RADIUS["sm"],
             )
             badge.pack(side="left", padx=(10, 0))
 
@@ -492,7 +492,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
                 font=self._font(9, "bold"),
                 text_color=COLORS["accent"],
                 fg_color=COLORS["accent_dim"],
-                corner_radius=SIZES["radius_sm"],
+                corner_radius=RADIUS["sm"],
             )
             badge.pack(side="left", padx=(6, 0))
 

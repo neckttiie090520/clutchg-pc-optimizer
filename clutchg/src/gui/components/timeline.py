@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List, Optional, Callable
 from dataclasses import dataclass
 
-from gui.theme import COLORS, SIZES
+from gui.theme import COLORS, SIZES, RADIUS
 from gui.style import font
 
 if TYPE_CHECKING:
@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 @dataclass
 class TimelineNode:
     """Represents a single point on the timeline"""
+
     id: str
     timestamp: datetime
     title: str
@@ -41,8 +42,8 @@ class Timeline(ctk.CTkFrame):
     def __init__(
         self,
         parent,
-        app: 'ClutchGApp',
-        on_node_click: Optional[Callable[[TimelineNode], None]] = None
+        app: "ClutchGApp",
+        on_node_click: Optional[Callable[[TimelineNode], None]] = None,
     ):
         """
         Initialize timeline.
@@ -64,14 +65,14 @@ class Timeline(ctk.CTkFrame):
 
         # Scrollable timeline area
         self.timeline_scroll = ctk.CTkScrollableFrame(
-            self,
-            fg_color="transparent",
-            orientation="horizontal"
+            self, fg_color="transparent", orientation="horizontal"
         )
         self.timeline_scroll.grid(row=1, column=0, sticky="nsew", pady=(20, 0))
 
         # Container for nodes
-        self.nodes_container = ctk.CTkFrame(self.timeline_scroll, fg_color="transparent")
+        self.nodes_container = ctk.CTkFrame(
+            self.timeline_scroll, fg_color="transparent"
+        )
         self.nodes_container.pack(fill="both", expand=True)
 
         # Store node widgets and data
@@ -89,7 +90,7 @@ class Timeline(ctk.CTkFrame):
             header,
             text="Backup Timeline",
             font=font("section", size=16, weight="bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).grid(row=0, column=0, sticky="w")
 
         # Legend
@@ -100,16 +101,13 @@ class Timeline(ctk.CTkFrame):
             ("Manual", COLORS["accent"]),
             ("Auto", COLORS["success"]),
             ("Profile", COLORS["warning"]),
-            ("Restore", COLORS["danger"])
+            ("Restore", COLORS["danger"]),
         ]
 
         for i, (label, color) in enumerate(legend_items):
             # Color dot
             dot = ctk.CTkLabel(
-                legend_frame,
-                text="●",
-                font=font("micro", size=10),
-                text_color=color
+                legend_frame, text="●", font=font("micro", size=10), text_color=color
             )
             dot.pack(side="left", padx=(10 if i > 0 else 0, 3))
 
@@ -118,7 +116,7 @@ class Timeline(ctk.CTkFrame):
                 legend_frame,
                 text=label,
                 font=font("micro", size=9),
-                text_color=COLORS["text_secondary"]
+                text_color=COLORS["text_secondary"],
             ).pack(side="left")
 
     def set_nodes(self, nodes: List[TimelineNode]):
@@ -143,7 +141,9 @@ class Timeline(ctk.CTkFrame):
             widget.destroy()
         self.node_widgets.clear()
 
-    def create_node_widget(self, node: TimelineNode, index: int, total: int) -> ctk.CTkFrame:
+    def create_node_widget(
+        self, node: TimelineNode, index: int, total: int
+    ) -> ctk.CTkFrame:
         """
         Create a single timeline node widget.
 
@@ -160,19 +160,13 @@ class Timeline(ctk.CTkFrame):
 
         # Node container
         node_frame = ctk.CTkFrame(
-            self.nodes_container,
-            fg_color="transparent",
-            width=120
+            self.nodes_container, fg_color="transparent", width=120
         )
         node_frame.pack_propagate(False)
 
         # Timeline line connector
         if index < total - 1:
-            connector = ctk.CTkFrame(
-                node_frame,
-                height=2,
-                fg_color=COLORS["border"]
-            )
+            connector = ctk.CTkFrame(node_frame, height=2, fg_color=COLORS["border"])
             connector.place(x=60, y=40, relwidth=0.5, anchor="w")
 
         # Node circle
@@ -183,17 +177,14 @@ class Timeline(ctk.CTkFrame):
             fg_color=COLORS["bg_card"],
             corner_radius=16,
             border_width=2,
-            border_color=node_color
+            border_color=node_color,
         )
         circle_frame.place(x=60, y=40, anchor="center")
         circle_frame.grid_propagate(False)
 
         # Bind click event
         if self.on_node_click:
-            circle_frame.bind(
-                "<Button-1>",
-                lambda e: self.on_node_click(node)
-            )
+            circle_frame.bind("<Button-1>", lambda e: self.on_node_click(node))
 
         # Hover effect
         def on_enter(event):
@@ -208,10 +199,7 @@ class Timeline(ctk.CTkFrame):
         # Node icon
         icon = self._get_node_icon(node)
         ctk.CTkLabel(
-            circle_frame,
-            text=icon,
-            font=font("body", size=14),
-            text_color=node_color
+            circle_frame, text=icon, font=font("body", size=14), text_color=node_color
         ).place(relx=0.5, rely=0.5, anchor="center")
 
         # Date label
@@ -220,7 +208,7 @@ class Timeline(ctk.CTkFrame):
             node_frame,
             text=date_str,
             font=font("micro", size=9),
-            text_color=COLORS["text_secondary"]
+            text_color=COLORS["text_secondary"],
         )
         date_label.place(x=60, y=70, anchor="n")
 
@@ -230,7 +218,7 @@ class Timeline(ctk.CTkFrame):
             node_frame,
             text=time_str,
             font=font("micro", size=8),
-            text_color=COLORS["text_muted"]
+            text_color=COLORS["text_muted"],
         )
         time_label.place(x=60, y=85, anchor="n")
 
@@ -240,7 +228,7 @@ class Timeline(ctk.CTkFrame):
             node_frame,
             text=title_text,
             font=font("micro", size=9, weight="bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         )
         title_label.place(x=60, y=5, anchor="s")
 
@@ -258,7 +246,7 @@ class Timeline(ctk.CTkFrame):
             "manual": COLORS["accent"],
             "auto": COLORS["success"],
             "profile_applied": COLORS["warning"],
-            "restore": COLORS["danger"]
+            "restore": COLORS["danger"],
         }
         return type_colors.get(node.node_type, COLORS["text_muted"])
 
@@ -268,7 +256,7 @@ class Timeline(ctk.CTkFrame):
             "manual": "💾",
             "auto": "🔄",
             "profile_applied": "⚡",
-            "restore": "↩️"
+            "restore": "↩️",
         }
         return type_icons.get(node.node_type, "●")
 
@@ -297,7 +285,7 @@ class CompactTimeline(ctk.CTkFrame):
     Shows timeline nodes in a vertical list format.
     """
 
-    def __init__(self, parent, app: 'ClutchGApp', max_nodes: int = 5):
+    def __init__(self, parent, app: "ClutchGApp", max_nodes: int = 5):
         """
         Initialize compact timeline.
 
@@ -330,7 +318,7 @@ class CompactTimeline(ctk.CTkFrame):
         self.clear_nodes()
 
         # Limit to max_nodes
-        display_nodes = nodes[:self.max_nodes]
+        display_nodes = nodes[: self.max_nodes]
 
         # Create node rows
         for i, node in enumerate(display_nodes):
@@ -353,27 +341,22 @@ class CompactTimeline(ctk.CTkFrame):
             self.nodes_container,
             fg_color=COLORS["bg_card"],
             corner_radius=SIZES["card_radius"],
-            height=50
+            height=50,
         )
         row.pack_propagate(False)
         row.grid_columnconfigure(1, weight=1)
 
         # Left color strip
         strip = ctk.CTkFrame(
-            row,
-            width=4,
-            fg_color=node_color,
-            corner_radius=SIZES["radius_sm"]
+            row, width=4, fg_color=node_color, corner_radius=RADIUS["sm"]
         )
         strip.grid(row=0, column=0, rowspan=2, sticky="ns")
 
         # Icon
         icon = self._get_node_icon(node)
-        ctk.CTkLabel(
-            row,
-            text=icon,
-            font=font("body", size=16)
-        ).grid(row=0, column=1, rowspan=2, padx=(12, 8), pady=12)
+        ctk.CTkLabel(row, text=icon, font=font("body", size=16)).grid(
+            row=0, column=1, rowspan=2, padx=(12, 8), pady=12
+        )
 
         # Title
         ctk.CTkLabel(
@@ -381,7 +364,7 @@ class CompactTimeline(ctk.CTkFrame):
             text=node.title,
             font=font("body_bold", size=11, weight="bold"),
             text_color=COLORS["text_primary"],
-            anchor="w"
+            anchor="w",
         ).grid(row=0, column=2, sticky="ew", padx=(0, 10), pady=(8, 0))
 
         # Timestamp
@@ -391,7 +374,7 @@ class CompactTimeline(ctk.CTkFrame):
             text=time_str,
             font=font("micro", size=9),
             text_color=COLORS["text_muted"],
-            anchor="w"
+            anchor="w",
         ).grid(row=1, column=2, sticky="ew", padx=(0, 10), pady=(0, 8))
 
         return row
@@ -407,7 +390,7 @@ class CompactTimeline(ctk.CTkFrame):
             "manual": COLORS["accent"],
             "auto": COLORS["success"],
             "profile_applied": COLORS["warning"],
-            "restore": COLORS["danger"]
+            "restore": COLORS["danger"],
         }
         return type_colors.get(node.node_type, COLORS["text_muted"])
 
@@ -417,7 +400,7 @@ class CompactTimeline(ctk.CTkFrame):
             "manual": "💾",
             "auto": "🔄",
             "profile_applied": "⚡",
-            "restore": "↩️"
+            "restore": "↩️",
         }
         return type_icons.get(node.node_type, "●")
 
@@ -436,7 +419,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Automatic weekly backup",
             node_type="auto",
             status="success",
-            metadata={"size": "245 MB"}
+            metadata={"size": "245 MB"},
         ),
         TimelineNode(
             id="2",
@@ -445,7 +428,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Applied SAFE optimization profile",
             node_type="profile_applied",
             status="success",
-            metadata={"profile": "SAFE", "tweaks": 12}
+            metadata={"profile": "SAFE", "tweaks": 12},
         ),
         TimelineNode(
             id="3",
@@ -454,7 +437,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Created before trying EXTREME",
             node_type="manual",
             status="success",
-            metadata={"size": "250 MB"}
+            metadata={"size": "250 MB"},
         ),
         TimelineNode(
             id="4",
@@ -463,7 +446,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Applied COMPETITIVE profile",
             node_type="profile_applied",
             status="success",
-            metadata={"profile": "COMPETITIVE", "tweaks": 18}
+            metadata={"profile": "COMPETITIVE", "tweaks": 18},
         ),
         TimelineNode(
             id="5",
@@ -472,7 +455,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Restored to manual backup",
             node_type="restore",
             status="success",
-            metadata={"restore_target": "3"}
+            metadata={"restore_target": "3"},
         ),
         TimelineNode(
             id="6",
@@ -481,7 +464,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Automatic backup before profile change",
             node_type="auto",
             status="success",
-            metadata={"size": "255 MB"}
+            metadata={"size": "255 MB"},
         ),
         TimelineNode(
             id="7",
@@ -490,7 +473,7 @@ def create_sample_nodes() -> List[TimelineNode]:
             description="Applied SAFE profile again",
             node_type="profile_applied",
             status="success",
-            metadata={"profile": "SAFE", "tweaks": 12}
+            metadata={"profile": "SAFE", "tweaks": 12},
         ),
     ]
 
