@@ -1,7 +1,7 @@
 """
-Profiles View - Modern Redesign (Phase 2)
-Premium cards with glassmorphism and clear risk indicators
-Updated: 2026-02-03 (Modern UI)
+Profiles View - Phase 3 Redesign
+Stats-grid cards, risk bar, compare panel, no feature bullets
+Updated: 2026-03-28 (Phase 3 S2)
 """
 
 import customtkinter as ctk
@@ -10,12 +10,26 @@ import threading
 
 from gui.theme import COLORS, SIZES, SPACING, RADIUS, PROFILE_COLORS, NAV_ICONS, ICON
 from gui.style import font
-from gui.components.glass_card import ProfileCard
+from gui.components.glass_card import ProfileCard, GlassCard
 from gui.components.enhanced_button import EnhancedButton
 from gui.components.refined_dialog import show_confirmation, show_info
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
+
+
+# Stats for each profile — used by cards and compare table
+PROFILE_STATS = {
+    "SAFE": {"tweaks": 12, "gain": "+8%", "risk": "LOW", "restart": "No"},
+    "COMPETITIVE": {"tweaks": 24, "gain": "+18%", "risk": "MEDIUM", "restart": "Yes"},
+    "EXTREME": {"tweaks": 35, "gain": "+30%", "risk": "HIGH", "restart": "Yes"},
+}
+
+REVERSIBLE_MAP = {
+    "SAFE": "yes",
+    "COMPETITIVE": "mostly",
+    "EXTREME": "partial",
+}
 
 
 class ProfilesView(ctk.CTkFrame):
@@ -24,9 +38,9 @@ class ProfilesView(ctk.CTkFrame):
     # Localization strings (EN/TH)
     UI_STRINGS = {
         "en": {
-            "title": "Optimization Profiles",
-            "hero_title": "Choose a performance profile tailored to your needs.",
-            "hero_subtitle": "Each profile includes specific tweaks for Windows 11. Start with SAFE if you are unsure.",
+            "title": "Profiles",
+            "hero_title": "Pick a profile. Start with Safe if unsure.",
+            "hero_subtitle": "Each profile bundles specific Windows 11 tweaks. All changes are logged and reversible.",
             # Profile descriptions
             "safe_desc": "For everyday use and stability. Applies conservative, reversible optimizations.",
             "competitive_desc": "Balanced for gamers. Improves responsiveness with moderate trade-offs.",
@@ -35,16 +49,19 @@ class ProfilesView(ctk.CTkFrame):
             "low_risk": "LOW RISK",
             "medium_risk": "MEDIUM RISK",
             "high_risk": "HIGH RISK",
-            # Features
-            "safe_feat1": "Basic Optimization",
-            "safe_feat2": "Privacy Tweaks",
-            "safe_feat3": "Safe Service Disabling",
-            "comp_feat1": "Network Optimization",
-            "comp_feat2": "Power Plan High Perf",
-            "comp_feat3": "Gaming Service Tweaks",
-            "ext_feat1": "BCDEdit Tweaks",
-            "ext_feat2": "Aggressive Service Tuning",
-            "ext_feat3": "Maximum Power Override",
+            # Stats & compare
+            "preview": "Preview",
+            "apply_btn": "Apply {name}",
+            "compare_title": "Compare Profiles",
+            "stat_tweaks": "Tweaks",
+            "stat_gain": "Gain",
+            "stat_risk": "Risk",
+            "stat_restart": "Restart",
+            "stat_reversible": "Reversible",
+            "yes": "Yes",
+            "no": "No",
+            "mostly": "Mostly",
+            "partial": "Partial",
             # Error messages
             "error": "Error",
             "profile_not_found": "Profile {name} not found!",
@@ -55,9 +72,9 @@ class ProfilesView(ctk.CTkFrame):
             "warning_intro": "This profile has warnings:\n\n",
         },
         "th": {
-            "title": "Optimization Profiles",
-            "hero_title": "เลือก Profile สำหรับเพิ่มประสิทธิภาพตามความต้องการของคุณ",
-            "hero_subtitle": "แต่ละ Profile มีการปรับแต่งเฉพาะสำหรับ Windows 11 หากไม่แน่ใจ ให้เริ่มจาก SAFE",
+            "title": "Profiles",
+            "hero_title": "เลือก Profile เริ่มจาก Safe ถ้าไม่แน่ใจ",
+            "hero_subtitle": "แต่ละ Profile รวม tweak เฉพาะของ Windows 11 ทุกการเปลี่ยนแปลงบันทึกและย้อนกลับได้",
             # Profile descriptions
             "safe_desc": "สำหรับการใช้งานทั่วไปและความเสถียร ใช้การปรับแต่งแบบอนุรักษ์นิยมที่ย้อนกลับได้",
             "competitive_desc": "สมดุลสำหรับเกมเมอร์ เพิ่มความลื่นไหลด้วย trade-off ระดับกลาง",
@@ -66,16 +83,19 @@ class ProfilesView(ctk.CTkFrame):
             "low_risk": "LOW RISK",
             "medium_risk": "MEDIUM RISK",
             "high_risk": "HIGH RISK",
-            # Features
-            "safe_feat1": "Optimize พื้นฐาน",
-            "safe_feat2": "ปรับแต่งความเป็นส่วนตัว",
-            "safe_feat3": "ปิด Services ที่ปลอดภัย",
-            "comp_feat1": "Optimize เครือข่าย",
-            "comp_feat2": "โหมดประสิทธิภาพสูงสุด",
-            "comp_feat3": "ปรับ Services สำหรับเกม",
-            "ext_feat1": "ปรับ BCDEdit",
-            "ext_feat2": "ปรับ Services ขั้นสูง",
-            "ext_feat3": "บังคับใช้พลังงานสูงสุด",
+            # Stats & compare
+            "preview": "ดูรายละเอียด",
+            "apply_btn": "Apply {name}",
+            "compare_title": "เปรียบเทียบ Profiles",
+            "stat_tweaks": "Tweaks",
+            "stat_gain": "ผลลัพธ์",
+            "stat_risk": "ความเสี่ยง",
+            "stat_restart": "Restart",
+            "stat_reversible": "ย้อนกลับ",
+            "yes": "ใช่",
+            "no": "ไม่",
+            "mostly": "ส่วนใหญ่",
+            "partial": "บางส่วน",
             # Error messages
             "error": "ข้อผิดพลาด",
             "profile_not_found": "ไม่พบ Profile {name}!",
@@ -84,15 +104,17 @@ class ProfilesView(ctk.CTkFrame):
             "apply_question": "ใช้งาน Profile {name}?\nClutchG จะพยายามสร้าง backup อัตโนมัติก่อนเริ่มการเปลี่ยนแปลง",
             "continue": "ดำเนินการต่อ?",
             "warning_intro": "Profile นี้มีคำเตือน:\n\n",
-        }
+        },
     }
 
-    def __init__(self, parent, app: 'ClutchGApp'):
+    def __init__(self, parent, app: "ClutchGApp"):
         super().__init__(parent, fg_color="transparent")
         self.app = app
+        self.compare_visible = False
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=0)
 
         # 1. Header
         self.create_header()
@@ -102,6 +124,9 @@ class ProfilesView(ctk.CTkFrame):
 
         # 3. Profile Cards Grid
         self.create_profile_cards()
+
+        # 4. Compare Panel (initially hidden)
+        self.create_compare_panel()
 
     def _ui(self, key: str) -> str:
         """Get UI string in current language"""
@@ -123,7 +148,7 @@ class ProfilesView(ctk.CTkFrame):
             header,
             text=self._ui("title"),
             font=self._font(24, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(side="left")
 
     def create_hero_section(self):
@@ -135,22 +160,20 @@ class ProfilesView(ctk.CTkFrame):
             hero,
             text=self._ui("hero_title"),
             font=self._font(15, "bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         ).pack(anchor="w")
 
         ctk.CTkLabel(
             hero,
             text=self._ui("hero_subtitle"),
             font=self._font(13),
-            text_color=COLORS["text_secondary"]
+            text_color=COLORS["text_secondary"],
         ).pack(anchor="w", pady=(SPACING["xs"], 0))
 
     def create_profile_cards(self):
         """Create responsive grid of profile cards"""
         cards_container = ctk.CTkScrollableFrame(
-            self,
-            fg_color="transparent",
-            label_text=""
+            self, fg_color="transparent", label_text=""
         )
         cards_container.grid(row=2, column=0, sticky="nsew")
 
@@ -159,32 +182,31 @@ class ProfilesView(ctk.CTkFrame):
         cards_container.grid_rowconfigure(0, weight=1)
 
         # Profile Configurations
-        # Using native icons via ICON() helper
         profiles = [
             {
                 "name": "SAFE",
-                "icon": ICON("safe"), # Shield
+                "icon": ICON("safe"),
                 "desc": self._ui("safe_desc"),
                 "risk": self._ui("low_risk"),
-                "features": [self._ui("safe_feat1"), self._ui("safe_feat2"), self._ui("safe_feat3")],
-                "color": COLORS["risk_low"]
+                "stats": PROFILE_STATS["SAFE"],
+                "color": COLORS["risk_low"],
             },
             {
                 "name": "COMPETITIVE",
-                "icon": ICON("competitive"), # Lightning
+                "icon": ICON("competitive"),
                 "desc": self._ui("competitive_desc"),
                 "risk": self._ui("medium_risk"),
-                "features": [self._ui("comp_feat1"), self._ui("comp_feat2"), self._ui("comp_feat3")],
-                "color": COLORS["risk_medium"]
+                "stats": PROFILE_STATS["COMPETITIVE"],
+                "color": COLORS["risk_medium"],
             },
             {
                 "name": "EXTREME",
-                "icon": ICON("extreme"), # Fire/Warning
+                "icon": ICON("extreme"),
                 "desc": self._ui("extreme_desc"),
                 "risk": self._ui("high_risk"),
-                "features": [self._ui("ext_feat1"), self._ui("ext_feat2"), self._ui("ext_feat3")],
-                "color": COLORS["risk_high"]
-            }
+                "stats": PROFILE_STATS["EXTREME"],
+                "color": COLORS["risk_high"],
+            },
         ]
 
         for i, p in enumerate(profiles):
@@ -192,23 +214,136 @@ class ProfilesView(ctk.CTkFrame):
 
     def create_single_card(self, parent, col_index, data):
         """Instantiate ProfileCard component"""
+        name = data["name"]
         card = ProfileCard(
             parent,
-            profile_name=data["name"],
+            profile_name=name,
             profile_icon=data["icon"],
             description=data["desc"],
             risk_level=data["risk"],
-            features=data["features"],
+            stats=data["stats"],
             glow_color=data["color"],
-            on_apply=lambda n=data["name"]: self.apply_profile(n)
+            on_apply=lambda n=name: self.apply_profile(n),
+            on_preview=None,
         )
         # Add spacing between cards
         padx = (0, SPACING["lg"]) if col_index < 2 else 0
-        card.grid(row=0, column=col_index, sticky="nsew", padx=padx, pady=(0, SPACING["lg"]))
+        card.grid(
+            row=0, column=col_index, sticky="nsew", padx=padx, pady=(0, SPACING["lg"])
+        )
 
         # Add hover effect
         card.add_hover_effect()
 
+    # ------------------------------------------------------------------
+    # Compare Panel
+    # ------------------------------------------------------------------
+    def create_compare_panel(self):
+        """Collapsible compare-profiles table below the cards grid."""
+        # Toggle button — ghost / text-link style
+        self.compare_btn = ctk.CTkButton(
+            self,
+            text=self._ui("compare_title") + "  \u25bc",  # chevron down
+            fg_color="transparent",
+            hover_color=COLORS.get("bg_tertiary", "#383838"),
+            text_color=COLORS["text_secondary"],
+            font=ctk.CTkFont(family="Figtree", size=12),
+            border_width=0,
+            command=self._toggle_compare,
+            anchor="w",
+            height=28,
+        )
+        self.compare_btn.grid(row=3, column=0, sticky="w", pady=(SPACING["sm"], 0))
+
+        # Container for comparison table — hidden initially
+        self.compare_container = GlassCard(self, padding=SPACING["md"])
+        self.compare_container.grid(
+            row=4, column=0, sticky="ew", pady=(SPACING["sm"], 0)
+        )
+        self.compare_container.grid_remove()
+        self.grid_rowconfigure(4, weight=0)
+
+        self._build_compare_table()
+
+    def _toggle_compare(self):
+        """Show or hide the compare panel."""
+        self.compare_visible = not self.compare_visible
+        if self.compare_visible:
+            self.compare_container.grid()
+            chevron = "\u25b2"  # up
+        else:
+            self.compare_container.grid_remove()
+            chevron = "\u25bc"  # down
+        self.compare_btn.configure(text=self._ui("compare_title") + "  " + chevron)
+
+    def _build_compare_table(self):
+        """Populate the comparison grid inside compare_container."""
+        tbl = ctk.CTkFrame(self.compare_container, fg_color="transparent")
+        tbl.pack(fill="both", expand=True, padx=SPACING["sm"], pady=SPACING["sm"])
+
+        # 4 columns: label | Safe | Competitive | Extreme
+        for c in range(4):
+            tbl.grid_columnconfigure(c, weight=1)
+
+        headers = ["", "Safe", "Competitive", "Extreme"]
+        profile_keys = ["SAFE", "COMPETITIVE", "EXTREME"]
+
+        row_defs = [
+            ("stat_tweaks", lambda k: str(PROFILE_STATS[k]["tweaks"])),
+            ("stat_gain", lambda k: PROFILE_STATS[k]["gain"]),
+            ("stat_risk", lambda k: PROFILE_STATS[k]["risk"]),
+            ("stat_restart", lambda k: PROFILE_STATS[k]["restart"]),
+            ("stat_reversible", lambda k: self._ui(REVERSIBLE_MAP[k])),
+        ]
+
+        risk_color_map = {
+            "LOW": COLORS["success"],
+            "MEDIUM": COLORS["warning"],
+            "HIGH": COLORS["danger"],
+        }
+
+        # Header row
+        for c, h in enumerate(headers):
+            ctk.CTkLabel(
+                tbl,
+                text=h,
+                font=ctk.CTkFont(family="Figtree", size=12, weight="bold"),
+                text_color=COLORS["text_primary"],
+            ).grid(
+                row=0,
+                column=c,
+                padx=4,
+                pady=(0, SPACING["xs"]),
+                sticky="w" if c == 0 else "",
+            )
+
+        # Data rows
+        for r, (label_key, value_fn) in enumerate(row_defs, start=1):
+            # Label column
+            ctk.CTkLabel(
+                tbl,
+                text=self._ui(label_key),
+                font=ctk.CTkFont(family="Figtree", size=12),
+                text_color=COLORS["text_secondary"],
+            ).grid(row=r, column=0, padx=4, pady=2, sticky="w")
+
+            for c, pk in enumerate(profile_keys, start=1):
+                val = value_fn(pk)
+                # Color risk cells
+                text_color = COLORS["text_primary"]
+                if label_key == "stat_risk":
+                    text_color = risk_color_map.get(val, COLORS["text_primary"])
+
+                ctk.CTkLabel(
+                    tbl,
+                    text=val,
+                    font=ctk.CTkFont(family="Figtree", size=12),
+                    text_color=text_color,
+                ).grid(row=r, column=c, padx=4, pady=2)
+
+    # ------------------------------------------------------------------
+    # Apply profile logic
+    # ------------------------------------------------------------------
     def apply_profile(self, name):
         """Apply profile logic (same business logic, better UI interaction)"""
         from gui.components.execution_dialog import ExecutionDialog
@@ -218,7 +353,7 @@ class ProfilesView(ctk.CTkFrame):
             show_info(
                 self.app.window,
                 self._ui("error"),
-                self._ui("profile_not_found").format(name=name)
+                self._ui("profile_not_found").format(name=name),
             )
             return
 
@@ -226,7 +361,7 @@ class ProfilesView(ctk.CTkFrame):
         if profile.warnings:
             warning_msg = (
                 self._ui("warning_intro")
-                + "\n".join(f"• {w}" for w in profile.warnings)
+                + "\n".join(f"  {w}" for w in profile.warnings)
                 + "\n\n"
                 + self._ui("continue")
             )
@@ -235,7 +370,7 @@ class ProfilesView(ctk.CTkFrame):
                 self._ui("safety_check"),
                 warning_msg,
                 confirm_text=self._ui("continue"),
-                risk_level="HIGH"
+                risk_level="HIGH",
             ):
                 return
         else:
@@ -243,8 +378,8 @@ class ProfilesView(ctk.CTkFrame):
                 self.app.window,
                 self._ui("confirm_apply"),
                 self._ui("apply_question").format(name=name),
-                confirm_text="Apply",
-                risk_level="MEDIUM"
+                confirm_text=self._ui("apply_btn").format(name=name),
+                risk_level="MEDIUM",
             ):
                 return
 
@@ -252,9 +387,7 @@ class ProfilesView(ctk.CTkFrame):
 
         def run_profile():
             result = self.app.profile_manager.apply_profile(
-                profile,
-                on_progress=dialog.set_progress,
-                on_output=dialog.add_output
+                profile, on_progress=dialog.set_progress, on_output=dialog.add_output
             )
             dialog.show_result(result)
 
