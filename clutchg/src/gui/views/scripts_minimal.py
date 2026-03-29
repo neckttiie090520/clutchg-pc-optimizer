@@ -37,19 +37,19 @@ def get_risk_display(level: str) -> dict:
         return {
             "bg": COLORS["success_dim"],
             "fg": COLORS["risk_low"],
-            "label": "LOW RISK",
+            "label": "Low Risk",
         }
     if level_upper in ("MEDIUM", "MED"):
         return {
             "bg": COLORS["warning_dim"],
             "fg": COLORS["risk_medium"],
-            "label": "MEDIUM",
+            "label": "Medium",
         }
     if level_upper == "HIGH":
         return {
             "bg": COLORS["danger_dim"],
             "fg": COLORS["risk_high"],
-            "label": "HIGH RISK",
+            "label": "High Risk",
         }
     return {"bg": COLORS["bg_card"], "fg": COLORS["text_secondary"], "label": "N/A"}
 
@@ -64,27 +64,27 @@ PRESET_INFO = {
         "risk": "LOW",
         "color": "#10B981",
         "dim": "#064E3B",
-        "desc": "Minimal optimizations with maximum safety. Perfect for daily drivers. All changes are easily reversible.",
+        "desc": "Light touch. Keeps everything stable, all changes reversible. Good starting point.",
     },
     "competitive": {
         "icon": ICON("competitive"),
         "title": "Competitive",
-        "subtitle": "Balanced gaming performance",
+        "subtitle": "Tuned for ranked play",
         "fps": "5-10%",
         "risk": "MEDIUM",
         "color": "#F59E0B",
         "dim": "#78350F",
-        "desc": "Optimized for competitive gaming. Disables some services and applies aggressive network/input tweaks.",
+        "desc": "Tuned for ranked play. Disables some services, aggressive network + input tweaks.",
     },
     "extreme": {
         "icon": ICON("extreme"),
         "title": "Extreme",
-        "subtitle": "Maximum performance, advanced users only",
+        "subtitle": "Max squeeze, advanced users only",
         "fps": "10-15%",
         "risk": "HIGH",
         "color": "#EF4444",
         "dim": "#7F1D1D",
-        "desc": "Most aggressive reversible tuning set. Includes advanced boot, service, and latency tweaks for experienced users.",
+        "desc": "Max squeeze. Boot, services, latency \u2014 everything cranked. Know what you're doing.",
     },
 }
 
@@ -104,21 +104,21 @@ class ScriptsView(ctk.CTkFrame):
             # Preset info
             "safe_title": "Safe",
             "safe_subtitle": "Evidence-based, fully reversible",
-            "safe_desc": "Minimal optimizations with maximum safety. Perfect for daily drivers. All changes are easily reversible.",
+            "safe_desc": "Light touch. Keeps everything stable, all changes reversible. Good starting point.",
             "comp_title": "Competitive",
-            "comp_subtitle": "Balanced gaming performance",
-            "comp_desc": "Optimized for competitive gaming. Disables some services and applies aggressive network/input tweaks.",
+            "comp_subtitle": "Tuned for ranked play",
+            "comp_desc": "Tuned for ranked play. Disables some services, aggressive network + input tweaks.",
             "ext_title": "Extreme",
-            "ext_subtitle": "Maximum performance, advanced users only",
-            "ext_desc": "Most aggressive reversible tuning set. Includes advanced boot, service, and latency tweaks for experienced users.",
+            "ext_subtitle": "Max squeeze, advanced users only",
+            "ext_desc": "Max squeeze. Boot, services, latency \u2014 everything cranked. Know what you're doing.",
             # Risk labels
-            "low_risk": "LOW RISK",
-            "medium_risk": "MEDIUM",
-            "high_risk": "HIGH RISK",
+            "low_risk": "Low Risk",
+            "medium_risk": "Medium",
+            "high_risk": "High Risk",
             # Common
-            "apply": "APPLY",
+            "apply": "Apply",
             "view_tweaks": "View Tweaks",
-            "recommended": "RECOMMENDED",
+            "recommended": "Recommended",
             "rec_reason": "Recommendation based on your system: {reason}",
             "tweaks_count": "{count} tweaks",
         },
@@ -132,17 +132,17 @@ class ScriptsView(ctk.CTkFrame):
             # Preset info
             "safe_title": "Safe",
             "safe_subtitle": "ยืนยันได้จากหลักฐาน สามารถย้อนกลับได้",
-            "safe_desc": "Optimize ขั้นต่ำแต่ปลอดภัยสูงสุด เหมาะสำหรับใช้งานทั่วไป สามารถยกเลิกการเปลี่ยนแปลงได้ทั้งหมด",
+            "safe_desc": "แตะเบาๆ ทุกอย่างยังเสถียร ย้อนกลับได้หมด จุดเริ่มต้นที่ดี",
             "comp_title": "Competitive",
-            "comp_subtitle": "สมดุลสำหรับเกมเมอร์",
-            "comp_desc": "ปรับแต่งสำหรับเกมเมอร์อย่างสมดุล ปิด Services บางตัวและปรับ Network/Input ขั้นสูง",
+            "comp_subtitle": "จูนสำหรับเกม Ranked",
+            "comp_desc": "จูนสำหรับเกม Ranked ปิด Services บางตัว ดัน Network + Input แบบจัดหนัก",
             "ext_title": "Extreme",
-            "ext_subtitle": "ประสิทธิภาพสูงสุด สำหรับผู้ใช้ขั้นสูง",
-            "ext_desc": "ชุดการจูนแบบย้อนกลับได้ที่เข้มที่สุด เพิ่ม boot, service และ latency tweaks สำหรับผู้ใช้ขั้นสูง",
+            "ext_subtitle": "บีบสุด สำหรับคนรู้จริง",
+            "ext_desc": "บีบทุกหยด Boot, Services, Latency \u2014 หมุนจนสุด รู้ว่าทำอะไรอยู่ก่อนกด",
             # Risk labels
-            "low_risk": "LOW RISK",
-            "medium_risk": "MEDIUM",
-            "high_risk": "HIGH RISK",
+            "low_risk": "Low Risk",
+            "medium_risk": "Medium",
+            "high_risk": "High Risk",
             # Common
             "apply": "ใช้งาน",
             "view_tweaks": "ดู Tweaks",
@@ -155,7 +155,7 @@ class ScriptsView(ctk.CTkFrame):
     UI_STRINGS["en"].update(
         {
             "tab_quick_actions": "Quick Fix",
-            "quick_actions_subtitle": "One-click action packs for practical and safe V1 workflows.",
+            "quick_actions_subtitle": "One-click packs. Pick one, hit run, done.",
             "quick_group_general": "General",
             "quick_group_advanced": "Advanced",
             "quick_group_cleanup": "Cleanup",
@@ -190,7 +190,7 @@ class ScriptsView(ctk.CTkFrame):
     UI_STRINGS["th"].update(
         {
             "tab_quick_actions": "Quick Fix",
-            "quick_actions_subtitle": "Quick action packs with practical V1-safe defaults.",
+            "quick_actions_subtitle": "แพ็คสำเร็จรูป เลือก กดรัน จบ",
             "quick_group_general": "General",
             "quick_group_advanced": "Advanced",
             "quick_group_cleanup": "Cleanup",
@@ -669,7 +669,7 @@ class ScriptsView(ctk.CTkFrame):
             display_risk,
             {"bg": COLORS["bg_card"], "fg": COLORS["text_secondary"], "label": "N/A"},
         )
-        badge_label = risk_color["label"] if action.kind == "tweak_pack" else "LINK"
+        badge_label = risk_color["label"] if action.kind == "tweak_pack" else "Link"
 
         card = GlassCard(parent, corner_radius=RADIUS["lg"], padding=SPACING["md"])
         card.grid_columnconfigure(0, weight=1)

@@ -23,7 +23,7 @@ class HelpView(ctk.CTkFrame):
         "en": {
             "help_header": "Docs",
             "topics": "Topics",
-            "search_placeholder": "Search help...",
+            "search_placeholder": "Search...",
             "search_results": "Search Results",
             "no_matches": "No matches found.",
             "open": "Open",
@@ -72,10 +72,10 @@ class HelpView(ctk.CTkFrame):
         self.header_label = ctk.CTkLabel(
             self,
             text=self._ui("help_header"),
-            font=self._font(24, "bold"),
+            font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
         )
-        self.header_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 30))
+        self.header_label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 20))
 
         # Sidebar navigation
         self.create_sidebar()
@@ -164,7 +164,7 @@ class HelpView(ctk.CTkFrame):
                 self.sidebar,
                 fg_color="transparent",
                 height=36,
-                corner_radius=RADIUS["md"],
+                corner_radius=RADIUS["sm"],
                 cursor="hand2",
             )
             btn_frame.pack(fill="x", padx=SPACING["sm"], pady=2)
@@ -173,8 +173,8 @@ class HelpView(ctk.CTkFrame):
             icon_lbl = ctk.CTkLabel(
                 btn_frame,
                 text=ICON(topic.icon),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
-                text_color=COLORS["text_secondary"],
+                font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+                text_color=COLORS.get("text_muted", COLORS["text_secondary"]),
                 width=20,
             )
             icon_lbl.pack(side="left", padx=(SPACING["sm"], 4))
@@ -251,14 +251,14 @@ class HelpView(ctk.CTkFrame):
         ctk.CTkLabel(
             title_frame,
             text=ICON(topic.icon),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=20),
-            text_color=COLORS["text_primary"],
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=22),
+            text_color=COLORS.get("text_tertiary", COLORS["text_secondary"]),
         ).pack(side="left", padx=(0, 8))
 
         ctk.CTkLabel(
             title_frame,
             text=topic.title,
-            font=self._font(20, "bold"),
+            font=self._font(18, "bold"),
             text_color=COLORS["text_primary"],
         ).pack(side="left")
 
@@ -564,16 +564,9 @@ class HelpView(ctk.CTkFrame):
             myth_frame = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
             myth_frame.pack(fill="x", pady=SPACING["xs"], padx=(0, SPACING["lg"]))
 
-            # Myth line (compound: icon + "MYTH:" prefix + text)
+            # Myth line
             myth_row = ctk.CTkFrame(myth_frame, fg_color="transparent")
             myth_row.pack(anchor="w", padx=15, pady=(10, 5))
-
-            ctk.CTkLabel(
-                myth_row,
-                text=ICON("error"),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
-                text_color=COLORS["danger"],
-            ).pack(side="left", padx=(0, 6))
 
             ctk.CTkLabel(
                 myth_row,
@@ -582,16 +575,9 @@ class HelpView(ctk.CTkFrame):
                 text_color=COLORS["danger"],
             ).pack(side="left")
 
-            # Fact line (compound: icon + "FACT:" prefix + text)
+            # Fact line
             fact_row = ctk.CTkFrame(myth_frame, fg_color="transparent")
             fact_row.pack(anchor="w", padx=15, pady=(0, 10))
-
-            ctk.CTkLabel(
-                fact_row,
-                text=ICON("success"),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
-                text_color=COLORS["success"],
-            ).pack(side="left", padx=(0, 6))
 
             ctk.CTkLabel(
                 fact_row,

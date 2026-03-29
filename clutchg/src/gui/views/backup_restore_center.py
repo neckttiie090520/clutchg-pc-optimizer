@@ -1,16 +1,14 @@
 """
-Backup & Restore Center - Unified View
-Combines simple backup management with advanced timeline visualization
-Phase 1.2 - Unified backup/restore experience
+Backup Center - Simplified backup management view
+Phase 2 redesign — removed Simple/Advanced toggle, aligned with spec
 """
 
 import customtkinter as ctk
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from gui.theme import COLORS, SIZES, SPACING, RADIUS, ICON, ICON_FONT
+from gui.theme import COLORS, SPACING, RADIUS, ICON, ICON_FONT
 from gui.style import font
-from gui.components.glass_card import GlassCard
 from gui.components.enhanced_button import EnhancedButton
 
 if TYPE_CHECKING:
@@ -19,34 +17,27 @@ if TYPE_CHECKING:
 
 class BackupRestoreCenter(ctk.CTkFrame):
     """
-    Unified Backup & Restore Center with two modes:
-    - Simple Mode: List view of backups (using BackupManager)
-    - Advanced Mode: Timeline visualization (using FlightRecorder)
+    Backup Center — flat list of backups with info banner.
+    No Simple/Advanced toggle; just a clean card list.
     """
 
     # Localization strings (EN/TH)
     UI_STRINGS = {
         "en": {
-            "title": "Backup & Restore",
-            "subtitle": "Manage system backups and restore points",
-            "simple": "Simple",
-            "advanced": "Advanced",
+            "title": "Backup",
+            "subtitle_with_data": "{count} backups \u00b7 Last: {date}",
+            "subtitle_empty": "No backups yet",
             "create_backup": "New Backup",
             "restore_point": "RESTORE POINT",
             "registry": "REGISTRY",
-            "created": "Created: {date}",
+            "registry_only": "REGISTRY ONLY",
             "restore": "Restore",
             "delete": "Delete",
             "no_backups": "No backups yet",
             "no_backups_desc": "Create one before applying any tweaks.\nTakes a few seconds, saves hours of pain.",
             "create_first": "Create Backup",
-            "backup_safety_hint": "Create backups before applying tweaks for safety.",
-            "no_timeline": "No timeline history yet",
-            "no_timeline_desc": "Apply profiles to see history here",
-            "go_to_optimization": "Go to Tweaks",
-            "changes": "{count} changes",
-            "system_snapshot": "System snapshot",
-            "snapshot_details": "Snapshot Details",
+            "info_banner_title": "Auto-backup is on",
+            "info_banner_desc": "ClutchG snapshots your registry before every profile apply. You can also create manual backups here.",
             "error_loading": "Error Loading Data",
             "retry": "Retry",
             "loading": "Loading...",
@@ -66,55 +57,41 @@ class BackupRestoreCenter(ctk.CTkFrame):
             "delete_failed": "Delete failed",
             "error_prefix": "Error: {msg}",
             "permission_denied": "Permission denied. Run as Administrator",
-            "advanced_unavailable": "Advanced mode requires FlightRecorder - using simple mode",
-            "snapshot_error": "Error loading snapshot: {msg}",
-            "timeline_error": "Timeline component not available: {msg}",
-            "timeline_load_error": "Error loading timeline: {msg}",
         },
         "th": {
-            "title": "Backup & Restore",
-            "subtitle": "จัดการ Backup และจุด Restore ของระบบ",
-            "simple": "Simple",
-            "advanced": "Advanced",
-            "create_backup": "Backup ใหม่",
+            "title": "Backup",
+            "subtitle_with_data": "{count} backups \u00b7 \u0e25\u0e48\u0e32\u0e2a\u0e38\u0e14: {date}",
+            "subtitle_empty": "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35 Backup",
+            "create_backup": "Backup \u0e43\u0e2b\u0e21\u0e48",
             "restore_point": "RESTORE POINT",
             "registry": "REGISTRY",
-            "created": "สร้างเมื่อ: {date}",
+            "registry_only": "REGISTRY ONLY",
             "restore": "Restore",
-            "delete": "ลบ",
-            "no_backups": "ยังไม่มี Backup",
-            "no_backups_desc": "สร้าง Backup ก่อนใช้ Tweaks\nใช้เวลาไม่กี่วินาที แต่ช่วยประหยัดเวลาได้มาก",
-            "create_first": "สร้าง Backup",
-            "backup_safety_hint": "สร้าง Backup ก่อนใช้งาน Tweaks เพื่อความปลอดภัย",
-            "no_timeline": "ยังไม่มีประวัติ Timeline",
-            "no_timeline_desc": "ใช้ Profile เพื่อดูประวัติที่นี่",
-            "go_to_optimization": "ไปที่ Tweaks",
-            "changes": "{count} การเปลี่ยนแปลง",
-            "system_snapshot": "สแนปชอตระบบ",
-            "snapshot_details": "รายละเอียดสแนปชอต",
-            "error_loading": "เกิดข้อผิดพลาดในการโหลดข้อมูล",
-            "retry": "ลองใหม่",
-            "loading": "กำลังโหลด...",
+            "delete": "\u0e25\u0e1a",
+            "no_backups": "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35 Backup",
+            "no_backups_desc": "\u0e2a\u0e23\u0e49\u0e32\u0e07 Backup \u0e01\u0e48\u0e2d\u0e19\u0e43\u0e0a\u0e49 Tweaks\n\u0e43\u0e0a\u0e49\u0e40\u0e27\u0e25\u0e32\u0e44\u0e21\u0e48\u0e01\u0e35\u0e48\u0e27\u0e34\u0e19\u0e32\u0e17\u0e35 \u0e41\u0e15\u0e48\u0e0a\u0e48\u0e27\u0e22\u0e1b\u0e23\u0e30\u0e2b\u0e22\u0e31\u0e14\u0e40\u0e27\u0e25\u0e32\u0e44\u0e14\u0e49\u0e21\u0e32\u0e01",
+            "create_first": "\u0e2a\u0e23\u0e49\u0e32\u0e07 Backup",
+            "info_banner_title": "Auto-backup \u0e40\u0e1b\u0e34\u0e14\u0e2d\u0e22\u0e39\u0e48",
+            "info_banner_desc": "ClutchG snapshot registry \u0e01\u0e48\u0e2d\u0e19\u0e43\u0e0a\u0e49 profile \u0e17\u0e38\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07 \u0e2a\u0e23\u0e49\u0e32\u0e07 backup \u0e40\u0e2d\u0e07\u0e44\u0e14\u0e49\u0e17\u0e35\u0e48\u0e19\u0e35\u0e48",
+            "error_loading": "\u0e40\u0e01\u0e34\u0e14\u0e02\u0e49\u0e2d\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14\u0e43\u0e19\u0e01\u0e32\u0e23\u0e42\u0e2b\u0e25\u0e14\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25",
+            "retry": "\u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48",
+            "loading": "\u0e01\u0e33\u0e25\u0e31\u0e07\u0e42\u0e2b\u0e25\u0e14...",
             # Dialogs
-            "create_dialog_title": "Backup ใหม่",
-            "create_dialog_prompt": "ใส่ชื่อสำหรับ Backup นี้:",
+            "create_dialog_title": "Backup \u0e43\u0e2b\u0e21\u0e48",
+            "create_dialog_prompt": "\u0e43\u0e2a\u0e48\u0e0a\u0e37\u0e48\u0e2d\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a Backup \u0e19\u0e35\u0e49:",
             "restore_dialog_title": "Restore Backup",
-            "restore_dialog_msg": "Restore จาก '{name}'?\n\nนี่จะคืนค่า Settings ระบบกลับไปสู่สถานะ Backup\nอาจต้อง Restart เครื่อง",
-            "delete_dialog_title": "ลบ Backup",
-            "delete_dialog_msg": "ลบ '{name}'?\n\nการกระทำนี้ไม่สามารถยกเลิกได้",
+            "restore_dialog_msg": "Restore \u0e08\u0e32\u0e01 '{name}'?\n\n\u0e19\u0e35\u0e48\u0e08\u0e30\u0e04\u0e37\u0e19\u0e04\u0e48\u0e32 Settings \u0e23\u0e30\u0e1a\u0e1a\u0e01\u0e25\u0e31\u0e1a\u0e44\u0e1b\u0e2a\u0e39\u0e48\u0e2a\u0e16\u0e32\u0e19\u0e30 Backup\n\u0e2d\u0e32\u0e08\u0e15\u0e49\u0e2d\u0e07 Restart \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07",
+            "delete_dialog_title": "\u0e25\u0e1a Backup",
+            "delete_dialog_msg": "\u0e25\u0e1a '{name}'?\n\n\u0e01\u0e32\u0e23\u0e01\u0e23\u0e30\u0e17\u0e33\u0e19\u0e35\u0e49\u0e44\u0e21\u0e48\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01\u0e44\u0e14\u0e49",
             # Toasts
-            "backup_created": "สร้าง Backup สำเร็จ: {name}",
-            "backup_failed": "สร้าง Backup ไม่สำเร็จ",
-            "restore_success": "Restore สำเร็จ ต้อง Restart เครื่องเพื่อให้มีผลเต็มที่",
-            "restore_failed": "Restore ไม่สำเร็จ",
-            "deleted_success": "ลบ Backup สำเร็จ",
-            "delete_failed": "ลบ Backup ไม่สำเร็จ",
-            "error_prefix": "ข้อผิดพลาด: {msg}",
-            "permission_denied": "ปฏิเสธการเข้าถึง รันเป็น Administrator",
-            "advanced_unavailable": "โหมด Advanced ต้องการ FlightRecorder - ใช้โหมด Simple",
-            "snapshot_error": "ข้อผิดพลาดในการโหลดสแนปชอต: {msg}",
-            "timeline_error": "Timeline component ไม่พร้อมใช้งาน: {msg}",
-            "timeline_load_error": "ข้อผิดพลาดในการโหลด Timeline: {msg}",
+            "backup_created": "\u0e2a\u0e23\u0e49\u0e32\u0e07 Backup \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08: {name}",
+            "backup_failed": "\u0e2a\u0e23\u0e49\u0e32\u0e07 Backup \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08",
+            "restore_success": "Restore \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 \u0e15\u0e49\u0e2d\u0e07 Restart \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e43\u0e2b\u0e49\u0e21\u0e35\u0e1c\u0e25\u0e40\u0e15\u0e47\u0e21\u0e17\u0e35\u0e48",
+            "restore_failed": "Restore \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08",
+            "deleted_success": "\u0e25\u0e1a Backup \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08",
+            "delete_failed": "\u0e25\u0e1a Backup \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08",
+            "error_prefix": "\u0e02\u0e49\u0e2d\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14: {msg}",
+            "permission_denied": "\u0e1b\u0e0f\u0e34\u0e40\u0e2a\u0e18\u0e01\u0e32\u0e23\u0e40\u0e02\u0e49\u0e32\u0e16\u0e36\u0e07 \u0e23\u0e31\u0e19\u0e40\u0e1b\u0e47\u0e19 Administrator",
         },
     }
 
@@ -124,13 +101,12 @@ class BackupRestoreCenter(ctk.CTkFrame):
 
         # Grid configuration
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)  # row 0=header, 1=banner, 2=content
 
         # State
-        self.current_mode = "simple"  # "simple" or "advanced"
         self._init_error = None
 
-        # Initialize managers (wrapped to prevent blank page on failure)
+        # Initialize BackupManager (wrapped to prevent blank page on failure)
         try:
             from core.backup_manager import BackupManager
 
@@ -143,23 +119,14 @@ class BackupRestoreCenter(ctk.CTkFrame):
             self.backup_mgr = None
             self._init_error = str(e)
 
-        # FlightRecorder (for advanced mode)
-        try:
-            from core.flight_recorder import get_flight_recorder
-
-            self.flight_recorder = get_flight_recorder()
-            self.flight_recorder_available = True
-        except Exception as e:
-            print(f"Warning: FlightRecorder not available: {e}")
-            self.flight_recorder = None
-            self.flight_recorder_available = False
-
-        # Build UI (always runs, even if managers failed)
+        # Build UI
+        self._subtitle_label = None
         self.create_header()
+        self.create_info_banner()
         self.create_content()
 
         # Load initial data
-        self.refresh_current_view()
+        self.refresh_view()
 
     def _ui(self, key: str, **kwargs) -> str:
         """Get UI string in current language"""
@@ -176,11 +143,19 @@ class BackupRestoreCenter(ctk.CTkFrame):
             return ctk.CTkFont(family="Figtree", size=size, weight=weight)
         return font("body", size=size, weight=weight)
 
+    def _material_font(self, size: int) -> ctk.CTkFont:
+        """Get Material Symbols Outlined font at given size"""
+        return ctk.CTkFont(family=ICON_FONT("shield")[0], size=size)
+
+    # ========================================================================
+    # HEADER (C1)
+    # ========================================================================
+
     def create_header(self):
-        """Create header with title, mode toggle, and actions"""
+        """Create header: title + dynamic subtitle on left, New Backup button on right"""
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["xl"]))
-        header.grid_columnconfigure(1, weight=1)
+        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        header.grid_columnconfigure(0, weight=1)
 
         # Left: Title + Subtitle
         left_frame = ctk.CTkFrame(header, fg_color="transparent")
@@ -193,189 +168,118 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text_color=COLORS["text_primary"],
         ).pack(anchor="w")
 
-        ctk.CTkLabel(
+        self._subtitle_label = ctk.CTkLabel(
             left_frame,
-            text=self._ui("subtitle"),
+            text=self._ui("subtitle_empty"),
             font=self._font(11),
             text_color=COLORS["text_tertiary"],
-        ).pack(anchor="w", pady=(2, 0))
+        )
+        self._subtitle_label.pack(anchor="w", pady=(2, 0))
 
-        # Center: Mode Toggle (Segmented Button)
-        # Center: Mode Toggle (Custom Buttons for Contrast)
-        toggle_container = ctk.CTkFrame(header, fg_color="transparent")
-        toggle_container.grid(row=0, column=1, sticky="ew", padx=SPACING["lg"])
-        toggle_container.grid_columnconfigure(0, weight=1)
-        toggle_container.grid_columnconfigure(1, weight=1)
-
-        self.mode_buttons = {}
-        modes = [("simple", self._ui("simple")), ("advanced", self._ui("advanced"))]
-
-        for i, (mode_key, mode_label) in enumerate(modes):
-            is_active = mode_key == self.current_mode
-
-            btn = ctk.CTkButton(
-                toggle_container,
-                text=mode_label,
-                font=self._font(13, "bold" if is_active else "normal"),
-                fg_color=COLORS["accent"] if is_active else COLORS["bg_tertiary"],
-                text_color=COLORS.get("text_on_accent", "#FFFFFF")
-                if is_active
-                else COLORS["text_secondary"],
-                hover_color=COLORS["accent_hover"] if is_active else COLORS["bg_hover"],
-                corner_radius=RADIUS["md"],
-                height=32,
-                command=lambda m=mode_label: self.switch_mode(m),
-            )
-            btn.grid(row=0, column=i, sticky="ew", padx=2)
-            self.mode_buttons[mode_label] = btn
-
-        header.grid_columnconfigure(1, weight=1)
-
-        # Right: Actions
+        # Right: New Backup button (Material Symbols "add" icon)
         actions_frame = ctk.CTkFrame(header, fg_color="transparent")
-        actions_frame.grid(row=0, column=2, sticky="e")
+        actions_frame.grid(row=0, column=1, sticky="e")
 
-        # Create Backup Button
+        add_icon = ICON("add")
         EnhancedButton.primary(
             actions_frame,
-            text=f"{ICON('add')} {self._ui('create_backup')}",
-            width=140,
+            text=f"{add_icon}  {self._ui('create_backup')}",
+            width=150,
             height=36,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13, weight="bold"),
+            font=self._font(13, "bold"),
             command=self.create_backup,
         ).pack(side="left")
 
-        # Help Button
-        help_btn = ctk.CTkButton(
-            actions_frame,
-            text=ICON("help"),
-            width=36,
-            height=36,
-            font=ctk.CTkFont(
-                family="Segoe MDL2 Assets",
-                size=16,
-            ),
-            fg_color="transparent",
-            hover_color=COLORS["bg_hover"],
-            text_color=COLORS["text_secondary"],
-            corner_radius=RADIUS["md"],
-            command=lambda: (
-                self.app.switch_view("help")
-                if hasattr(self.app, "switch_view")
-                else None
-            ),
+    def _update_subtitle(self, backups=None):
+        """Update subtitle with backup count and last date"""
+        if not self._subtitle_label:
+            return
+
+        if backups and len(backups) > 0:
+            count = len(backups)
+            # Get most recent backup date
+            try:
+                latest = max(backups, key=lambda b: b.created_at)
+                dt = datetime.fromisoformat(latest.created_at)
+                date_str = dt.strftime("%Y-%m-%d")
+            except Exception:
+                date_str = "unknown"
+            text = self._ui("subtitle_with_data", count=count, date=date_str)
+        else:
+            text = self._ui("subtitle_empty")
+
+        self._subtitle_label.configure(text=text)
+
+    # ========================================================================
+    # INFO BANNER (C2)
+    # ========================================================================
+
+    def create_info_banner(self):
+        """Create info banner: shield icon + auto-backup message"""
+        banner = ctk.CTkFrame(
+            self,
+            fg_color=COLORS["bg_card"],
+            border_color=COLORS["border"],
+            border_width=1,
+            corner_radius=RADIUS["lg"],
         )
-        help_btn.pack(side="left", padx=(SPACING["sm"], 0))
+        banner.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["md"]))
+
+        inner = ctk.CTkFrame(banner, fg_color="transparent")
+        inner.pack(fill="x", padx=16, pady=14)
+
+        # Shield icon (Material Symbols)
+        ctk.CTkLabel(
+            inner,
+            text=ICON("shield"),
+            font=self._material_font(20),
+            text_color=COLORS["success"],
+        ).pack(side="left", padx=(0, 12))
+
+        # Text block
+        text_frame = ctk.CTkFrame(inner, fg_color="transparent")
+        text_frame.pack(side="left", fill="x", expand=True)
+
+        ctk.CTkLabel(
+            text_frame,
+            text=self._ui("info_banner_title"),
+            font=self._font(13, "bold"),
+            text_color=COLORS["text_primary"],
+        ).pack(anchor="w")
+
+        ctk.CTkLabel(
+            text_frame,
+            text=self._ui("info_banner_desc"),
+            font=self._font(11),
+            text_color=COLORS["text_secondary"],
+            wraplength=500,
+            justify="left",
+        ).pack(anchor="w", pady=(4, 0))
+
+    # ========================================================================
+    # CONTENT AREA (C3 / C4)
+    # ========================================================================
 
     def create_content(self):
-        """Create content area that switches between modes"""
+        """Create scrollable content area for backup list"""
         self.content_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.content_frame.grid(row=1, column=0, sticky="nsew")
+        self.content_frame.grid(row=2, column=0, sticky="nsew")
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_rowconfigure(0, weight=1)
 
-        # Simple Mode Container (Initial)
-        self.simple_container = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        self.simple_container.grid(row=0, column=0, sticky="nsew")
-        self.simple_container.grid_columnconfigure(0, weight=1)
-        self.simple_container.grid_rowconfigure(0, weight=1)
-
-        # Advanced Mode Container (Hidden initially)
-        self.advanced_container = ctk.CTkFrame(
-            self.content_frame, fg_color="transparent"
-        )
-        # Don't grid yet, will show when switched
-
-    # ========================================================================
-    # MODE SWITCHING
-    # ========================================================================
-
-    def switch_mode(self, selected_mode: str):
-        """Switch between Simple and Advanced mode"""
-        new_mode = "simple" if selected_mode == self._ui("simple") else "advanced"
-
-        if new_mode == self.current_mode:
-            return  # Already in this mode
-
-        self.current_mode = new_mode
-
-        # Hide all containers
-        self.simple_container.grid_forget()
-        self.advanced_container.grid_forget()
-
-        # Show appropriate container
-        if new_mode == "simple":
-            self.simple_container.grid(row=0, column=0, sticky="nsew")
-            self.refresh_simple_mode()
-        else:
-            if not self.flight_recorder_available:
-                # Show warning if FlightRecorder not available
-                if hasattr(self.app, "toast"):
-                    self.app.toast.warning(self._ui("advanced_unavailable"))
-                self.current_mode = "simple"
-                self.simple_container.grid(row=0, column=0, sticky="nsew")
-                self.refresh_simple_mode()
-                self._update_toggle_buttons()
-                return
-
-            self.advanced_container.grid(row=0, column=0, sticky="nsew")
-            self.refresh_advanced_mode()
-
-        # Update button visuals
-        self._update_toggle_buttons()
-
-    def _update_toggle_buttons(self):
-        """Update toggle button visual states"""
-        simple_label = self._ui("simple")
-        advanced_label = self._ui("advanced")
-
-        # Helper to get button if exists
-        def get_btn(label):
-            return self.mode_buttons.get(label)
-
-        for label, btn in self.mode_buttons.items():
-            if not btn:
-                continue
-
-            # Determine if this button corresponds to current mode
-            is_active = False
-            if self.current_mode == "simple" and label == simple_label:
-                is_active = True
-            elif self.current_mode == "advanced" and label == advanced_label:
-                is_active = True
-
-            btn.configure(
-                font=self._font(13, "bold" if is_active else "normal"),
-                fg_color=COLORS["accent"] if is_active else COLORS["bg_tertiary"],
-                text_color=COLORS.get("text_on_accent", "#FFFFFF")
-                if is_active
-                else COLORS["text_secondary"],
-                hover_color=COLORS["accent_hover"] if is_active else COLORS["bg_hover"],
-            )
-
-    def refresh_current_view(self):
-        """Refresh the current view based on mode"""
-        if self.current_mode == "simple":
-            self.refresh_simple_mode()
-        else:
-            self.refresh_advanced_mode()
-
-    # ========================================================================
-    # SIMPLE MODE (Backup List)
-    # ========================================================================
-
-    def refresh_simple_mode(self):
-        """Refresh simple mode - show backup list"""
-        # Clear simple container
-        for widget in self.simple_container.winfo_children():
+    def refresh_view(self):
+        """Refresh the backup list"""
+        # Clear content
+        for widget in self.content_frame.winfo_children():
             widget.destroy()
 
         # Check if BackupManager initialization failed
         if self.backup_mgr is None:
             print(f"[Backup] BackupManager not available: {self._init_error}")
-            self.show_error_state(
+            self._show_error_state(
                 f"Backup system unavailable: {self._init_error or 'Unknown error'}"
             )
+            self._update_subtitle(None)
             return
 
         try:
@@ -383,26 +287,31 @@ class BackupRestoreCenter(ctk.CTkFrame):
             backups = self.backup_mgr.get_all_backups()
             print(f"[Backup] Found {len(backups)} backup(s)")
 
+            self._update_subtitle(backups)
+
             if not backups:
                 print("[Backup] No backups found, showing empty state")
-                self.show_simple_empty_state()
+                self._show_empty_state()
                 return
 
             print("[Backup] Showing backup list")
-            self.show_backup_list(backups)
+            self._show_backup_list(backups)
 
         except Exception as e:
             print(f"[Backup] Error loading backups: {str(e)}")
             import traceback
 
             traceback.print_exc()
-            self.show_error_state(f"Error loading backups: {str(e)}")
+            self._show_error_state(f"Error loading backups: {str(e)}")
 
-    def show_backup_list(self, backups):
-        """Show list of backups as cards"""
-        # Scrollable list
+    # ========================================================================
+    # BACKUP LIST (C3)
+    # ========================================================================
+
+    def _show_backup_list(self, backups):
+        """Show list of backups as plain bordered cards"""
         scroll_frame = ctk.CTkScrollableFrame(
-            self.simple_container,
+            self.content_frame,
             fg_color="transparent",
             scrollbar_button_color=COLORS["border"],
             scrollbar_button_hover_color=COLORS["accent"],
@@ -411,90 +320,97 @@ class BackupRestoreCenter(ctk.CTkFrame):
         scroll_frame.grid_columnconfigure(0, weight=1)
 
         for backup in backups:
-            self.create_backup_card(scroll_frame, backup)
+            self._create_backup_card(scroll_frame, backup)
 
-        # Hint text below list (LOW-04)
-        ctk.CTkLabel(
-            scroll_frame,
-            text=self._ui("backup_safety_hint"),
-            font=self._font(11),
-            text_color=COLORS["text_muted"],
-            justify="center",
-        ).pack(pady=(SPACING["md"], SPACING["xs"]))
-
-    def create_backup_card(self, parent, backup):
-        """Create a backup card (from backup_minimal.py)"""
-        from gui.theme import get_score_color
-
-        card = GlassCard(
+    def _create_backup_card(self, parent, backup):
+        """Create a single backup card matching spec C3"""
+        # Plain bordered card (no GlassCard)
+        card = ctk.CTkFrame(
             parent,
+            fg_color=COLORS["bg_card"],
+            border_color=COLORS["border"],
+            border_width=1,
             corner_radius=RADIUS["lg"],
+            height=74,
         )
-        card.pack(fill="x", pady=SPACING["xs"])
+        card.pack(fill="x", pady=(0, SPACING["xs"]))
+        card.pack_propagate(False)
         card.grid_columnconfigure(1, weight=1)
 
-        # Icon with status
+        # Icon box (40x40, bg_hover, rounded)
         icon_frame = ctk.CTkFrame(
             card,
             fg_color=COLORS["bg_hover"],
             corner_radius=RADIUS["md"],
-            width=44,
-            height=44,
+            width=40,
+            height=40,
         )
-        icon_frame.grid(row=0, column=0, rowspan=2, padx=(16, 16), pady=18)
+        icon_frame.grid(row=0, column=0, padx=(16, 14), pady=17)
         icon_frame.pack_propagate(False)
 
-        # Use IconProvider for icons
-        icon = ICON("check_circle") if backup.has_restore_point else ICON("inventory_2")
-        icon_color = (
-            COLORS["success"] if backup.has_restore_point else COLORS["text_tertiary"]
-        )
+        # Pick icon + color based on backup type
+        if backup.has_restore_point:
+            icon_name = "check_circle"
+            icon_color = COLORS["success"]
+        else:
+            icon_name = "inventory_2"
+            icon_color = COLORS["text_tertiary"]
 
         ctk.CTkLabel(
             icon_frame,
-            text=icon,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=18),
+            text=ICON(icon_name),
+            font=self._material_font(20),
             text_color=icon_color,
         ).place(relx=0.5, rely=0.5, anchor="center")
 
-        # Backup info
+        # Info column (name row + date)
         info_frame = ctk.CTkFrame(card, fg_color="transparent")
-        info_frame.grid(row=0, column=1, rowspan=2, sticky="nsew", pady=16)
+        info_frame.grid(row=0, column=1, sticky="nsew", pady=14)
 
-        # Name row
+        # Name + badges row
         name_row = ctk.CTkFrame(info_frame, fg_color="transparent")
         name_row.pack(anchor="w", fill="x")
 
         ctk.CTkLabel(
             name_row,
             text=backup.name,
-            font=self._font(14, "bold"),
+            font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
-            wraplength=300,
+            wraplength=280,
         ).pack(side="left")
 
-        # Status badges
+        # Badges
         if backup.has_restore_point:
-            badge = ctk.CTkLabel(
+            ctk.CTkLabel(
                 name_row,
                 text=self._ui("restore_point"),
                 font=self._font(9, "bold"),
                 text_color=COLORS["success"],
                 fg_color=COLORS["success_dim"],
                 corner_radius=RADIUS["sm"],
-            )
-            badge.pack(side="left", padx=(10, 0))
+            ).pack(side="left", padx=(8, 0))
 
         if backup.has_registry_backup:
-            badge = ctk.CTkLabel(
-                name_row,
-                text=self._ui("registry"),
-                font=self._font(9, "bold"),
-                text_color=COLORS["accent"],
-                fg_color=COLORS["accent_dim"],
-                corner_radius=RADIUS["sm"],
-            )
-            badge.pack(side="left", padx=(6, 0))
+            if backup.has_restore_point:
+                # Full backup: show REGISTRY badge
+                ctk.CTkLabel(
+                    name_row,
+                    text=self._ui("registry"),
+                    font=self._font(9, "bold"),
+                    text_color=COLORS["accent"],
+                    fg_color=COLORS["accent_dim"],
+                    corner_radius=RADIUS["sm"],
+                ).pack(side="left", padx=(6, 0))
+            else:
+                # Registry-only backup: show REGISTRY ONLY badge (neutral)
+                ctk.CTkLabel(
+                    name_row,
+                    text=self._ui("registry_only"),
+                    font=self._font(9, "bold"),
+                    text_color=COLORS["text_secondary"],
+                    fg_color=COLORS["bg_hover"],
+                    corner_radius=RADIUS["sm"],
+                ).pack(side="left", padx=(8, 0))
 
         # Date
         try:
@@ -505,240 +421,144 @@ class BackupRestoreCenter(ctk.CTkFrame):
 
         ctk.CTkLabel(
             info_frame,
-            text=self._ui("created", date=date_str),
-            font=self._font(11),
+            text=date_str,
+            font=self._font(10),
             text_color=COLORS["text_muted"],
-        ).pack(anchor="w", pady=(4, 0))
+        ).pack(anchor="w", pady=(3, 0))
 
-        # Actions
+        # Action buttons (right side)
         actions = ctk.CTkFrame(card, fg_color="transparent")
-        actions.grid(row=0, column=2, rowspan=2, padx=16)
+        actions.grid(row=0, column=2, padx=16)
 
-        # Restore button (if available)
         if backup.has_registry_backup:
+            restore_icon = ICON("restore")
             EnhancedButton.success(
                 actions,
-                text=self._ui("restore"),
-                width=70,
+                text=f"{restore_icon} {self._ui('restore')}",
+                width=90,
                 height=32,
+                font=self._font(12),
                 command=lambda b=backup: self.restore_backup(b),
-            ).pack(side="left", padx=(0, SPACING["xs"]))
+            ).pack(side="left", padx=(0, 6))
 
-        # Delete button
+        delete_icon = ICON("delete")
         EnhancedButton.danger(
             actions,
-            text=self._ui("delete"),
-            width=70,
+            text=f"{delete_icon} {self._ui('delete')}",
+            width=80,
             height=32,
+            font=self._font(12),
             command=lambda b=backup: self.delete_backup(b),
         ).pack(side="left")
 
-    def show_simple_empty_state(self):
-        """Show empty state for simple mode"""
-        print("[Backup] Creating empty state UI...")
-        # Use pack with expand=True + anchor=center for vertical centering
-        empty_frame = ctk.CTkFrame(self.simple_container, fg_color="transparent")
-        empty_frame.pack(fill="both", expand=True)
+    # ========================================================================
+    # EMPTY STATE (C4)
+    # ========================================================================
 
-        # Vertical spacer for centering
-        ctk.CTkFrame(empty_frame, fg_color="transparent", height=1).pack(expand=True)
-
-        # Icon container
-        icon_bg = ctk.CTkFrame(
-            empty_frame,
-            fg_color=COLORS.get("bg_hover", "#333333"),
-            corner_radius=SIZES.get("radius_xl", 16),
-            width=100,
-            height=100,
+    def _show_empty_state(self):
+        """Show empty state matching spec C4"""
+        # Card container with border
+        card = ctk.CTkFrame(
+            self.content_frame,
+            fg_color=COLORS["bg_card"],
+            border_color=COLORS["border"],
+            border_width=1,
+            corner_radius=RADIUS["lg"],
         )
-        icon_bg.pack(pady=(0, 24))
+        card.pack(fill="x")
+
+        # Inner centered content
+        inner = ctk.CTkFrame(card, fg_color="transparent")
+        inner.pack(pady=64)
+
+        # Icon background (80x80, rounded 20px)
+        icon_bg = ctk.CTkFrame(
+            inner,
+            fg_color=COLORS["bg_hover"],
+            corner_radius=20,
+            width=80,
+            height=80,
+        )
+        icon_bg.pack(pady=(0, 12))
         icon_bg.pack_propagate(False)
 
-        # Center the icon
-        icon_label = ctk.CTkLabel(
+        ctk.CTkLabel(
             icon_bg,
             text=ICON("backup"),
-            font=ctk.CTkFont(
-                family="Segoe MDL2 Assets",
-                size=42,
-                weight="bold",
-            ),
-        )
-        icon_label.place(relx=0.5, rely=0.5, anchor="center")
+            font=self._material_font(36),
+            text_color=COLORS["text_tertiary"],
+        ).place(relx=0.5, rely=0.5, anchor="center")
 
         # Title
         ctk.CTkLabel(
-            empty_frame,
+            inner,
             text=self._ui("no_backups"),
             font=self._font(16, "bold"),
             text_color=COLORS["text_primary"],
-        ).pack()
+        ).pack(pady=(0, 0))
 
         # Description
         ctk.CTkLabel(
-            empty_frame,
+            inner,
             text=self._ui("no_backups_desc"),
-            font=self._font(13),
+            font=self._font(12),
             text_color=COLORS["text_secondary"],
             justify="center",
-        ).pack(pady=(8, 24))
+            wraplength=320,
+        ).pack(pady=(4, 12))
 
         # CTA Button
+        add_icon = ICON("add")
         EnhancedButton.primary(
-            empty_frame,
-            text=f"{ICON('add')} {self._ui('create_first')}",
-            height=44,
-            width=200,
-            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13, weight="bold"),
+            inner,
+            text=f"{add_icon}  {self._ui('create_first')}",
+            height=40,
+            width=180,
+            font=self._font(13, "bold"),
             command=self.create_backup,
         ).pack()
 
-        # Bottom spacer for centering
-        ctk.CTkFrame(empty_frame, fg_color="transparent", height=1).pack(expand=True)
-        print("[Backup] Empty state UI created successfully")
-
     # ========================================================================
-    # ADVANCED MODE (Timeline)
+    # ERROR STATE
     # ========================================================================
 
-    def refresh_advanced_mode(self):
-        """Refresh advanced mode - show timeline"""
-        # Clear advanced container
-        for widget in self.advanced_container.winfo_children():
-            widget.destroy()
-
-        try:
-            from gui.components.timeline import Timeline, TimelineNode
-
-            # Create timeline
-            self.timeline = Timeline(
-                self.advanced_container,
-                self.app,
-                on_node_click=self.on_timeline_node_clicked,
-            )
-            self.timeline.pack(fill="both", expand=True)
-
-            # Load snapshots
-            self.load_timeline_data()
-
-        except ImportError as e:
-            # Timeline component not available
-            self.show_error_state(f"Timeline component not available: {str(e)}")
-        except Exception as e:
-            self.show_error_state(f"Error loading timeline: {str(e)}")
-
-    def load_timeline_data(self):
-        """Load snapshots from FlightRecorder and populate timeline"""
-        if not self.flight_recorder:
-            return
-
-        try:
-            snapshots = self.flight_recorder.list_snapshots(limit=50)
-            nodes = []
-
-            for snapshot in snapshots:
-                # Determine node type
-                node_type = "manual"
-                if snapshot.operation_type == "profile_applied":
-                    node_type = "profile_applied"
-                elif "restore" in snapshot.operation_type.lower():
-                    node_type = "restore"
-
-                node = TimelineNode(
-                    id=snapshot.snapshot_id,
-                    timestamp=snapshot.timestamp,
-                    title=snapshot.profile,
-                    description=self._ui("changes", count=len(snapshot.tweaks))
-                    if snapshot.tweaks
-                    else self._ui("system_snapshot"),
-                    node_type=node_type,
-                    status="success" if snapshot.success else "error",
-                    metadata={"snapshot_id": snapshot.snapshot_id},
-                )
-                nodes.append(node)
-
-            if nodes and hasattr(self.timeline, "set_nodes"):
-                self.timeline.set_nodes(nodes)
-            else:
-                self.show_timeline_empty_state()
-
-        except Exception as e:
-            print(f"Error loading timeline data: {e}")
-            self.show_timeline_empty_state()
-
-    def on_timeline_node_clicked(self, node):
-        """Handle timeline node click - show snapshot details"""
-        snapshot_id = node.metadata.get("snapshot_id")
-        if snapshot_id and self.flight_recorder:
-            try:
-                snapshot = self.flight_recorder.get_snapshot(snapshot_id)
-                if snapshot:
-                    self.show_snapshot_details(snapshot)
-            except Exception as e:
-                if hasattr(self.app, "toast"):
-                    self.app.toast.error(self._ui("snapshot_error", msg=str(e)))
-
-    def show_snapshot_details(self, snapshot):
-        """Show snapshot details in a dialog"""
-
-        details = f"Profile: {snapshot.profile}\n"
-        details += f"Date: {snapshot.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n"
-        details += f"Status: {'Success' if snapshot.success else 'Failed'}\n"
-        details += f"Changes: {len(snapshot.tweaks)}\n\n"
-
-        if snapshot.tweaks:
-            details += "Changes Applied:\n"
-            for tweak in snapshot.tweaks[:10]:  # Show first 10
-                details += f"  - {tweak.name}: {tweak.old_value} -> {tweak.new_value}\n"
-
-            if len(snapshot.tweaks) > 10:
-                details += f"  ... and {len(snapshot.tweaks) - 10} more\n"
-
-        from gui.components.refined_dialog import show_info
-
-        show_info(self.app.window, self._ui("snapshot_details"), details)
-
-    def show_timeline_empty_state(self):
-        """Show empty state for timeline"""
-        # Use pack with expand for proper centering
-        wrapper = ctk.CTkFrame(self.advanced_container, fg_color="transparent")
+    def _show_error_state(self, error: str):
+        """Show error state with Material Symbols icon"""
+        wrapper = ctk.CTkFrame(self.content_frame, fg_color="transparent")
         wrapper.pack(fill="both", expand=True)
 
         ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
 
-        empty_frame = ctk.CTkFrame(wrapper, fg_color="transparent")
-        empty_frame.pack()
+        error_frame = ctk.CTkFrame(wrapper, fg_color="transparent")
+        error_frame.pack()
 
         ctk.CTkLabel(
-            empty_frame,
-            text=ICON("history"),
-            font=ctk.CTkFont(
-                family="Segoe MDL2 Assets",
-                size=48,
-            ),
-            text_color=COLORS["text_tertiary"],
-        ).pack(pady=(0, 16))
+            error_frame,
+            text=ICON("error"),
+            font=self._material_font(32),
+            text_color=COLORS.get("danger", "#EF4444"),
+        ).pack(pady=(0, 12))
 
         ctk.CTkLabel(
-            empty_frame,
-            text=self._ui("no_timeline"),
-            font=self._font(16, "bold"),
-            text_color=COLORS["text_primary"],
+            error_frame,
+            text=self._ui("error_loading"),
+            font=self._font(14, "bold"),
+            text_color=COLORS.get("danger", "#EF4444"),
         ).pack()
 
         ctk.CTkLabel(
-            empty_frame,
-            text=self._ui("no_timeline_desc"),
+            error_frame,
+            text=error,
             font=self._font(13),
-            text_color=COLORS["text_secondary"],
-        ).pack()
+            text_color=COLORS.get("text_muted", "#6B7280"),
+            wraplength=400,
+        ).pack(pady=(4, 0))
 
         EnhancedButton.primary(
-            empty_frame,
-            text=self._ui("go_to_optimization"),
-            height=40,
-            width=220,
-            command=lambda: self.app.switch_view("scripts"),
+            error_frame,
+            text=self._ui("retry"),
+            width=100,
+            command=self.refresh_view,
         ).pack(pady=(16, 0))
 
         ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
@@ -749,7 +569,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
 
     def create_backup(self):
         """Create new backup with dialog"""
-        from gui.components.refined_dialog import show_input, show_info
+        from gui.components.refined_dialog import show_input
 
         default_name = f"Backup_{datetime.now().strftime('%Y%m%d_%H%M')}"
         name = show_input(
@@ -761,7 +581,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
 
         if name:
             try:
-                self._show_loading(self._ui("loading"))
+                self._show_loading()
 
                 backup = self.backup_mgr.create_backup(name=name)
 
@@ -772,7 +592,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
                         self.app.toast.success(
                             self._ui("backup_created", name=backup.name)
                         )
-                    self.refresh_current_view()
+                    self.refresh_view()
                 else:
                     if hasattr(self.app, "toast"):
                         self.app.toast.error(self._ui("backup_failed"))
@@ -823,7 +643,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             try:
                 success = self.backup_mgr.delete_backup(backup.id)
                 if success:
-                    self.refresh_current_view()
+                    self.refresh_view()
                     if hasattr(self.app, "toast"):
                         self.app.toast.success(self._ui("deleted_success"))
                 else:
@@ -834,68 +654,10 @@ class BackupRestoreCenter(ctk.CTkFrame):
                     self.app.toast.error(self._ui("error_prefix", msg=str(e)))
 
     # ========================================================================
-    # ERROR STATES & HELPERS
+    # HELPERS
     # ========================================================================
 
-    def show_error_state(self, error: str):
-        """Show error state (shared between modes)"""
-        # Determine which container to show error in
-        container = (
-            self.simple_container
-            if self.current_mode == "simple"
-            else self.advanced_container
-        )
-
-        # Clear container
-        for widget in container.winfo_children():
-            widget.destroy()
-
-        # Use pack with expand for proper centering (not .place())
-        wrapper = ctk.CTkFrame(container, fg_color="transparent")
-        wrapper.pack(fill="both", expand=True)
-
-        ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
-
-        error_frame = ctk.CTkFrame(wrapper, fg_color="transparent")
-        error_frame.pack()
-
-        ctk.CTkLabel(
-            error_frame,
-            text=ICON("error"),
-            font=ctk.CTkFont(
-                family="Segoe MDL2 Assets",
-                size=32,
-                weight="bold",
-            ),
-            text_color=COLORS.get("danger", "#EF4444"),
-        ).pack(pady=(0, 12))
-
-        ctk.CTkLabel(
-            error_frame,
-            text=self._ui("error_loading"),
-            font=self._font(14, "bold"),
-            text_color=COLORS.get("danger", "#EF4444"),
-        ).pack()
-
-        ctk.CTkLabel(
-            error_frame,
-            text=error,
-            font=self._font(13),
-            text_color=COLORS.get("text_muted", "#6B7280"),
-            wraplength=400,
-        ).pack(pady=(4, 0))
-
-        # Retry button
-        EnhancedButton.primary(
-            error_frame,
-            text=self._ui("retry"),
-            width=100,
-            command=self.refresh_current_view,
-        ).pack(pady=(16, 0))
-
-        ctk.CTkFrame(wrapper, fg_color="transparent", height=1).pack(expand=True)
-
-    def _show_loading(self, message: str = None):
+    def _show_loading(self):
         """Show loading state via busy cursor"""
         try:
             self.app.window.config(cursor="watch")
@@ -911,10 +673,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
         except Exception:
             pass
 
-    def _check_icon_font(self) -> bool:
-        """Check if icon font is available"""
-        try:
-            font_family = ICON_FONT()[0]
-            return "Material" in font_family or "Segoe" in font_family
-        except Exception:
-            return False
+    # Legacy compat — old callers may use refresh_current_view()
+    def refresh_current_view(self):
+        """Alias for refresh_view() — backward compatibility"""
+        self.refresh_view()

@@ -11,24 +11,34 @@ from gui.style import font
 class InlineHelpBox(ctk.CTkFrame):
     """Inline help box with icon, title, and content"""
 
+    # Material Symbols Outlined codepoints for each help type
+    _MATERIAL_ICONS = {
+        "info": "\ue88e",  # info
+        "warning": "\ue002",  # warning
+        "danger": "\ue5c9",  # close (X mark)
+        "critical": "\ue000",  # error
+        "success": "\ue86c",  # check_circle
+    }
+
     def __init__(self, parent, title: str, content: str, help_type: str = "info"):
         super().__init__(
             parent,
             fg_color=self._get_bg_color(help_type),
             corner_radius=SIZES["card_radius"],
             border_width=1,
-            border_color=self._get_border_color(help_type)
+            border_color=self._get_border_color(help_type),
         )
 
         self.help_type = help_type
         self.grid_columnconfigure(1, weight=1)
 
-        # Icon
-        icon = self._get_icon(help_type)
+        # Icon (Material Symbols Outlined)
+        icon = self._MATERIAL_ICONS.get(help_type, self._MATERIAL_ICONS["info"])
         ctk.CTkLabel(
             self,
             text=icon,
-            font=font("section", size=18)
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
+            text_color=self._get_border_color(help_type),
         ).grid(row=0, column=0, padx=(15, 10), pady=12)
 
         # Content
@@ -39,7 +49,7 @@ class InlineHelpBox(ctk.CTkFrame):
             content_frame,
             text=title,
             font=font("body_bold", size=12, weight="bold"),
-            text_color=self._get_text_color(help_type)
+            text_color=self._get_text_color(help_type),
         ).pack(anchor="w")
 
         ctk.CTkLabel(
@@ -47,7 +57,7 @@ class InlineHelpBox(ctk.CTkFrame):
             text=content,
             font=font("caption", size=11),
             text_color=self._get_text_color(help_type),
-            wraplength=600
+            wraplength=600,
         ).pack(anchor="w", pady=(5, 0))
 
     def _get_bg_color(self, help_type: str) -> str:
@@ -56,7 +66,7 @@ class InlineHelpBox(ctk.CTkFrame):
             "warning": COLORS["bg_card"],
             "danger": COLORS["bg_card"],
             "critical": COLORS["bg_card"],
-            "success": COLORS["bg_card"]
+            "success": COLORS["bg_card"],
         }
         return colors.get(help_type, colors["info"])
 
@@ -65,8 +75,8 @@ class InlineHelpBox(ctk.CTkFrame):
             "info": COLORS["accent"],
             "warning": "#F59E0B",
             "danger": "#EF4444",
-            "critical": "#EF4444",  # Same as danger
-            "success": "#22C55E"
+            "critical": "#EF4444",
+            "success": "#22C55E",
         }
         return colors.get(help_type, colors["info"])
 
@@ -76,16 +86,6 @@ class InlineHelpBox(ctk.CTkFrame):
             "warning": COLORS["text_primary"],
             "danger": COLORS["text_primary"],
             "critical": COLORS["text_primary"],
-            "success": COLORS["text_primary"]
+            "success": COLORS["text_primary"],
         }
         return colors.get(help_type, colors["info"])
-
-    def _get_icon(self, help_type: str) -> str:
-        icons = {
-            "info": "ℹ️",
-            "warning": "⚠️",
-            "danger": "❌",
-            "critical": "🚨",  # Distinct icon for critical
-            "success": "✅"
-        }
-        return icons.get(help_type, icons["info"])
