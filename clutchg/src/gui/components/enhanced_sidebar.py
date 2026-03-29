@@ -56,6 +56,14 @@ class EnhancedSidebar(ctk.CTkFrame):
         self.create_toggle_button()
         self.create_navigation()
 
+    def destroy(self):
+        """Clean up glow animations before destroying sidebar."""
+        # Stop all active glow animations
+        for key in list(self.glow_animations.keys()):
+            self.glow_animations[key] = False
+        self.glow_animations.clear()
+        super().destroy()
+
     def setup_layout(self):
         """Configure grid layout"""
         self.grid_rowconfigure(0, weight=0)  # Logo

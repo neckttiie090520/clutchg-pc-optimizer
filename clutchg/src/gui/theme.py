@@ -58,8 +58,8 @@ THEMES = {
         "text_primary": "#FFFFFF",  # Pure white for headings
         "text_secondary": "#A0AEC0",  # Light gray for body
         "text_tertiary": "#8A9BB0",  # Muted text (improved contrast 4.8:1)
-        "text_muted": "#4A5568",  # Very muted
-        "text_dim": "#4A5568",  # Alias
+        "text_muted": "#4A5568",  # Very muted (labels, placeholders)
+        "text_dim": "#384050",  # Dimmer than muted (decorative / disabled)
         # Focus indicators (WCAG 2.4.7)
         "focus_ring": "#7aa2f7",  # Focus ring color
         "focus_ring_offset": 2,  # Focus ring offset in pixels
@@ -437,9 +437,10 @@ TYPOGRAPHY = FONTS
 # ============================================================================
 SIZES = {
     "sidebar_width": 60,
-    # Legacy aliases — values sourced from RADIUS
-    "card_radius": 14,  # matches RADIUS["xl"]
-    "button_radius": 6,  # matches RADIUS["md"]
+    # DEPRECATED: Use RADIUS["xl"] / RADIUS["md"] directly.
+    # Kept for backward compatibility — will be removed in a future release.
+    "card_radius": 14,  # → RADIUS["xl"]
+    "button_radius": 6,  # → RADIUS["md"]
     "button_height": 32,
     "button_height_sm": 28,
     "input_height": 32,

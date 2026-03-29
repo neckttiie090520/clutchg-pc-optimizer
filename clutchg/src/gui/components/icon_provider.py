@@ -1,7 +1,12 @@
 """
 Icon Provider - Centralized Icon Management
-Uses Segoe MDL2 Assets as the canonical icon font on Windows.
-Fallback chain: Segoe MDL2 Assets > Segoe UI Symbol > text labels.
+
+Two icon font systems:
+  1. Segoe MDL2 Assets  — navigation & system icons (ships with Win 10/11)
+  2. Material Symbols Outlined — content / topic icons (bundled with app)
+
+get_icon_font(icon_name) returns the correct font for each icon.
+Fallback chain per font: Segoe MDL2 > Segoe UI Symbol > text labels.
 """
 
 import platform
@@ -12,13 +17,15 @@ class IconProvider:
     """
     Centralized icon management for ClutchG.
 
-    All codepoints target Segoe MDL2 Assets (ships with Windows 10/11).
-    On non-Windows platforms the font won't be present, so callers
-    should use get_icon_with_fallback() for graceful degradation.
+    Icons are split into two font families:
+      - SEGOE_ICONS:    Segoe MDL2 Assets codepoints (nav, actions, status, system)
+      - MATERIAL_ICONS: Material Symbols Outlined codepoints (content / topic icons)
+
+    Use get_icon_with_fallback() for graceful degradation on non-Windows.
     """
 
-    # Segoe MDL2 Assets codepoints
-    ICONS = {
+    # ── Segoe MDL2 Assets codepoints ──────────────────────────────────
+    SEGOE_ICONS: Dict[str, str] = {
         # Navigation
         "dashboard": "\ue80f",  # Home
         "home": "\ue80f",  # Home
@@ -73,7 +80,10 @@ class IconProvider:
         "folder": "\ue8b7",  # FolderOpen
         "file": "\ue8a5",  # Page
         "document": "\ue8a5",  # Page
-        # Material Symbols Outlined codepoints (used for content icons)
+    }
+
+    # ── Material Symbols Outlined codepoints ──────────────────────────
+    MATERIAL_ICONS: Dict[str, str] = {
         "rocket_launch": "\ue559",  # Getting Started
         "bar_chart": "\ue26b",  # Dashboard topic
         "tune": "\ue429",  # Profiles topic / Tune
@@ -94,19 +104,26 @@ class IconProvider:
         "check_circle": "\ue86c",  # Backup with restore point
         "inventory_2": "\ue1d7",  # Registry-only backup
         "refresh": "\ue5d5",  # Restart indicator
-        "backup": "\ue860",  # Backup (cloud-upload style)
+        "backup_cloud": "\ue860",  # Backup (cloud-upload style)
     }
 
-    def __init__(self):
-        """Initialize icon provider and detect available fonts"""
-        self.system = platform.system()
-        self._segmdl2_available = self._check_segmdl2()
+    # ── Merged lookup (kept for backward compat) ──────────────────────
+    ICONS: Dict[str, str] = {**SEGOE_ICONS, **MATERIAL_ICONS}
 
-    def _check_segmdl2(self) -> bool:
-        """Check if Segoe MDL2 Assets font is available (Windows only)."""
-        if self.system != "Windows":
+    MATERIAL_FONT = "Material Symbols Outlined"
+    SEGOE_FONT = "Segoe MDL2 Assets"
+
+    def __init__(self):
+        """Initialize icon provider and detect available fonts."""
+        self.system = platform.system()
+        self._segmdl2_available = self._check_font(self.SEGOE_FONT)
+        self._material_available = self._check_font(self.MATERIAL_FONT)
+
+    def _check_font(self, family_name: str) -> bool:
+        """Check if a font family is available (Windows only for Segoe)."""
+        if self.system != "Windows" and family_name == self.SEGOE_FONT:
             return False
-        return self._is_font_available("Segoe MDL2 Assets")
+        return self._is_font_available(family_name)
 
     @staticmethod
     def _is_font_available(family_name: str) -> bool:
@@ -127,6 +144,10 @@ class IconProvider:
         except Exception:
             return False
 
+    def _is_material_icon(self, icon_name: str) -> bool:
+        """Return True if icon_name belongs to the Material Symbols set."""
+        return icon_name in self.MATERIAL_ICONS
+
     def get_icon(self, icon_name: str) -> str:
         """
         Get icon character for the given name.
@@ -141,18 +162,27 @@ class IconProvider:
 
     def get_icon_font(self, icon_name: Optional[str] = None) -> tuple:
         """
-        Get the icon font family tuple.
+        Get the correct icon font family tuple for the given icon.
 
-        Returns Segoe MDL2 Assets on Windows, otherwise a system fallback.
+        Returns Material Symbols Outlined for content icons,
+        Segoe MDL2 Assets for navigation/system icons.
 
         Args:
-            icon_name: Unused — kept for API compatibility
+            icon_name: Name of the icon. If None, defaults to Segoe MDL2.
 
         Returns:
             Tuple of font family name(s)
         """
+        # Material Symbols path
+        if icon_name and self._is_material_icon(icon_name):
+            if self._material_available:
+                return (self.MATERIAL_FONT,)
+            # Material font missing — fall through to generic fallback
+            return ("Segoe UI",)
+
+        # Segoe MDL2 path (default)
         if self._segmdl2_available:
-            return ("Segoe MDL2 Assets",)
+            return (self.SEGOE_FONT,)
 
         # Fallback chain per platform
         if self.system == "Windows":

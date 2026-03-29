@@ -6,6 +6,7 @@ Smooth fade transitions between views
 import customtkinter as ctk
 from typing import Callable, Optional
 from gui.theme import theme_manager, ANIMATION
+from gui.style import font
 
 
 class ViewTransition:
@@ -235,14 +236,17 @@ class ViewTransition:
 
         # Error Icon
         ctk.CTkLabel(
-            content, text="❌", font=ctk.CTkFont(size=48), text_color=colors["danger"]
+            content,
+            text="❌",
+            font=font("display_small", size=48),
+            text_color=colors["danger"],
         ).pack(pady=(0, 20))
 
         # Title
         ctk.CTkLabel(
             content,
             text="Error Loading View",
-            font=ctk.CTkFont(size=20, weight="bold"),
+            font=font("h2", size=20, weight="bold"),
             text_color=colors["text_primary"],
         ).pack(pady=(0, 10))
 
@@ -250,7 +254,7 @@ class ViewTransition:
         ctk.CTkLabel(
             content,
             text=f"An error occurred while loading this view:\n\n{error_message}",
-            font=ctk.CTkFont(size=14),
+            font=font("body_large", size=14),
             text_color=colors["text_secondary"],
             wraplength=600,
             justify="center",
