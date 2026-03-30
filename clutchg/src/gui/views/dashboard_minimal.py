@@ -228,6 +228,7 @@ class DashboardView(ctk.CTkFrame):
             max_value=100,
             colors=ring_colors,
             bg_color=theme_colors["bg_card"],
+            value_font=("Figtree", 28, "bold"),
         )
         self.score_display.pack(pady=(SPACING["sm"], 2))
 
