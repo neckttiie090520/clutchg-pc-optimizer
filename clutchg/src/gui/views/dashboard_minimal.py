@@ -117,14 +117,8 @@ class DashboardView(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        # 1. Header Section
         self.create_header()
-
-        # 2. Main Content Grid
         self.create_content()
-
-        # 3. Footer / Status Bar
-        self.create_footer()
 
     def _ui(self, key: str) -> str:
         """Get UI string in current language"""
@@ -270,12 +264,11 @@ class DashboardView(ctk.CTkFrame):
             self.create_hardware_grid(panel)
 
     def create_hardware_grid(self, parent):
-        """2×2 grid of hardware metric cards below the score card."""
+        """1×3 row of hardware spec cards (CPU, GPU, RAM only)."""
         system = self.app.system_profile
         if not system:
             return
 
-        # Build spec strings
         cpu_spec = (
             (system.cpu.name or "Unknown")
             .replace("AMD ", "")
@@ -302,47 +295,41 @@ class DashboardView(ctk.CTkFrame):
         if system.ram.speed:
             ram_spec += f" {system.ram.speed}MHz"
 
-        storage_spec = f"{system.storage.total_gb} GB"
-        if system.storage.primary_type and system.storage.primary_type != "unknown":
-            storage_spec += f" {system.storage.primary_type.upper()}"
+        section_label = ctk.CTkFrame(parent, fg_color="transparent")
+        section_label.grid(
+            row=0, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"])
+        )
+        ctk.CTkLabel(
+            section_label,
+            text="SYSTEM HARDWARE",
+            font=self._font(11, "bold"),
+            text_color=COLORS["text_muted"],
+        ).pack(anchor="w")
 
-        # (label, score, max_score, icon, spec)
         components = [
-            ("CPU", system.cpu.score, 30, NAV_ICONS.get("cpu", "\ue950"), cpu_spec),
-            ("GPU", system.gpu.score, 30, NAV_ICONS.get("gpu", "\ue7fd"), gpu_spec),
-            ("RAM", system.ram.score, 20, NAV_ICONS.get("ram", "\ue964"), ram_spec),
-            (
-                "Storage",
-                system.storage.score,
-                20,
-                NAV_ICONS.get("storage", "\ue8b7"),
-                storage_spec,
-            ),
+            (self._ui("cpu"), NAV_ICONS.get("cpu", "\ue950"), cpu_spec),
+            (self._ui("gpu"), NAV_ICONS.get("gpu", "\ue7fd"), gpu_spec),
+            (self._ui("ram"), NAV_ICONS.get("ram", "\ue964"), ram_spec),
         ]
 
         grid = ctk.CTkFrame(parent, fg_color="transparent")
         grid.grid(row=1, column=0, sticky="nsew")
-        # equal-weight columns + uniform rows so all 4 cards are same size
         grid.grid_columnconfigure(0, weight=1, uniform="hw")
         grid.grid_columnconfigure(1, weight=1, uniform="hw")
-        grid.grid_rowconfigure(0, weight=1, uniform="hw")
-        grid.grid_rowconfigure(1, weight=1, uniform="hw")
+        grid.grid_columnconfigure(2, weight=1, uniform="hw")
+        grid.grid_rowconfigure(0, weight=1)
 
-        positions = [(0, 0), (0, 1), (1, 0), (1, 1)]
-
-        for (row, col), (label, score, max_score, icon, spec) in zip(
-            positions, components
-        ):
-            px = (0, SPACING["sm"]) if col == 0 else 0
-            py = (0, SPACING["sm"]) if row == 0 else 0
-
+        for col, (label, icon, spec) in enumerate(components):
             card = GlassCard(grid, corner_radius=RADIUS["xl"])
-            card.grid(row=row, column=col, sticky="nsew", padx=px, pady=py)
-            # card must expand its single column so children can fill="x"
+            card.grid(
+                row=0,
+                column=col,
+                sticky="nsew",
+                padx=(0 if col == 0 else SPACING["xs"], 0),
+            )
             card.grid_columnconfigure(0, weight=1)
-            card.grid_rowconfigure(3, weight=1)  # push bar to bottom
+            card.grid_rowconfigure(2, weight=1)
 
-            # ── Header: icon + label ───────────────────────────────────
             header = ctk.CTkFrame(card, fg_color="transparent")
             header.grid(
                 row=0,
@@ -356,6 +343,7 @@ class DashboardView(ctk.CTkFrame):
                 header,
                 text=icon,
                 font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
+                text_color=COLORS["text_secondary"],
             ).pack(side="left", padx=(0, SPACING["xs"]))
 
             ctk.CTkLabel(
@@ -365,56 +353,17 @@ class DashboardView(ctk.CTkFrame):
                 text_color=COLORS["text_primary"],
             ).pack(side="left")
 
-            # ── Spec text ─────────────────────────────────────────────
             ctk.CTkLabel(
                 card,
                 text=spec,
-                font=self._font(11),
-                text_color=COLORS["text_muted"],
-                wraplength=140,
+                font=self._font(14, "bold"),
+                text_color=COLORS["text_primary"],
+                wraplength=160,
                 justify="left",
-            ).grid(row=1, column=0, sticky="w", padx=SPACING["sm"], pady=(2, 0))
-
-            # ── Score number + /max pts ────────────────────────────────
-            percentage = (score / max_score) * 100 if max_score > 0 else 0
-            bar_color = self._get_progress_color(percentage)
-
-            score_row = ctk.CTkFrame(card, fg_color="transparent")
-            score_row.grid(
-                row=2,
+            ).grid(
+                row=1,
                 column=0,
-                sticky="ew",
-                padx=SPACING["sm"],
-                pady=(SPACING["xs"], 0),
-            )
-
-            ctk.CTkLabel(
-                score_row,
-                text=f"{score}",
-                font=self._font(18, "bold"),
-                text_color=bar_color,
-            ).pack(side="left")
-
-            ctk.CTkLabel(
-                score_row,
-                text=f"/{max_score} pts",
-                font=self._font(11),
-                text_color=COLORS["text_muted"],
-            ).pack(side="left", padx=(2, 0))
-
-            # ── Progress bar — fills card width ───────────────────────
-            bar = ctk.CTkProgressBar(
-                card,
-                height=6,
-                corner_radius=3,
-                progress_color=bar_color,
-                fg_color=COLORS["bg_tertiary"],
-            )
-            bar.set(percentage / 100)
-            bar.grid(
-                row=3,
-                column=0,
-                sticky="sew",
+                sticky="w",
                 padx=SPACING["sm"],
                 pady=(SPACING["xs"], SPACING["sm"]),
             )
@@ -563,19 +512,6 @@ class DashboardView(ctk.CTkFrame):
         ctk.CTkLabel(
             item, text=time_str, font=self._font(11), text_color=COLORS["text_muted"]
         ).pack(side="right")
-
-    def create_footer(self):
-        """Status footer"""
-        footer = ctk.CTkFrame(self, fg_color="transparent", height=24)
-        footer.grid(row=2, column=0, sticky="ew", pady=(SPACING["sm"], 0))
-
-        version_text = f"ClutchG v{self.app.get_version()}"
-        ctk.CTkLabel(
-            footer,
-            text=version_text,
-            text_color=COLORS["text_muted"],
-            font=font("micro"),
-        ).pack(side="left")
 
     def scan_system(self):
         """Re-run system detection and refresh dashboard"""

@@ -105,6 +105,21 @@ class IconProvider:
         "inventory_2": "\ue1d7",  # Registry-only backup
         "refresh": "\ue5d5",  # Restart indicator
         "backup_cloud": "\ue860",  # Backup (cloud-upload style)
+        # Profile icons
+        "verified_user": "\ue8e8",  # Safe profile
+        "speed": "\ue3de",  # Competitive profile
+        "local_fire_department": "\uef55",  # Extreme profile
+        # Compare / Preview
+        "compare_arrows": "\ue915",  # Compare panel toggle
+        "visibility": "\ue8f4",  # Preview button
+        "arrow_forward_ms": "\ue5c8",  # Material forward arrow (nav)
+        "arrow_back_ms": "\ue5c4",  # Material back arrow (nav)
+        # Welcome overlay step & highlight icons
+        "waving_hand": "\ue766",  # Welcome step icon
+        "dashboard_ms": "\ue871",  # Home step icon (Material version)
+        "backup_ms": "\ue864",  # Backup step icon (Material version)
+        "restore_ms": "\ue929",  # Restore highlight icon (uses 'settings_backup_restore')
+        "history_ms": "\ue889",  # History highlight icon (Material version)
     }
 
     # ── Merged lookup (kept for backward compat) ──────────────────────

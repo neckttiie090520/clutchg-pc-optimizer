@@ -114,11 +114,10 @@ class EnhancedSidebar(ctk.CTkFrame):
         # Navigation items with labels
         # Profiles page removed as per user request (duplicates Optimization Center)
         items = [
-            ("dashboard", "Home", NAV_ICONS.get("dashboard", "\ue8b0")),
-            # ("profiles", "Profiles", NAV_ICONS.get("profiles", "\ue429")), # REMOVED
-            ("scripts", "Tweaks", NAV_ICONS.get("scripts", "\ue86f")),
+            ("dashboard", "Dashboard", NAV_ICONS.get("dashboard", "\ue8b0")),
+            ("scripts", "Optimize", NAV_ICONS.get("scripts", "\ue86f")),
             ("backup", "Backup", NAV_ICONS.get("backup", "\ue1d7")),
-            ("help", "Docs", NAV_ICONS.get("help", "\ue88b")),
+            ("help", "Help", NAV_ICONS.get("help", "\ue88b")),
         ]
 
         for key, label, icon in items:

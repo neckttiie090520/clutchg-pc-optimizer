@@ -1,84 +1,159 @@
 """
 Welcome/Tutorial Overlay
-First-time user walkthrough — Phase 3 redesign
+First-time user walkthrough — Phase 3C redesign
+
+Layout (per spec):
+  Header:  bolt-icon + "ClutchG" left  |  Skip ghost-button right  (no skip on step 5)
+  Body:    centered step icon (72x72, 18px radius) → title → description → highlight rows
+  Footer:  dot indicators left  |  Back / Next buttons right  (border-top separator)
+
+Dialog: 660px wide, bg_secondary, border-medium, r-xl radius.
+Step 5 uses success-dim icon bg + success color; "Get Started" replaces "Next".
 """
 
 import customtkinter as ctk
-from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from gui.theme import COLORS, SIZES, ICON
+from gui.theme import COLORS, SIZES, SPACING, RADIUS, ICON, ICON_FONT
 from gui.style import font, style_primary_button, style_outline_button
+from gui.components.icon_provider import get_icon
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
 
 
-class WelcomeOverlay(ctk.CTkToplevel):
-    """Welcome overlay for first-time users"""
+# ── Step definitions ────────────────────────────────────────────────
+# Each step: icon_name, icon_color_key, icon_bg_key, title, desc, highlights
+# highlights = list of (icon_name, icon_color_override|None, text)
 
-    # Localization strings (EN/TH)
+STEP_DEFS = [
+    {
+        "icon": "waving_hand",
+        "icon_color": "accent",
+        "icon_bg": "accent_dim",
+    },
+    {
+        "icon": "dashboard_ms",
+        "icon_color": "accent",
+        "icon_bg": "accent_dim",
+    },
+    {
+        "icon": "tune",
+        "icon_color": "accent",
+        "icon_bg": "accent_dim",
+    },
+    {
+        "icon": "backup_ms",
+        "icon_color": "accent",
+        "icon_bg": "accent_dim",
+    },
+    {
+        "icon": "rocket_launch",
+        "icon_color": "success",
+        "icon_bg": "success_dim",
+    },
+]
+
+
+class WelcomeOverlay(ctk.CTkToplevel):
+    """Welcome overlay for first-time users — Phase 3C redesign"""
+
+    # ── Localization strings (EN / TH) ───────────────────────────────
     UI_STRINGS = {
         "en": {
             "window_title": "Welcome to ClutchG",
-            # Step 1
-            "step1_title": "Welcome to ClutchG!",
-            "step1_content": "ClutchG optimizes your Windows PC for gaming and performance.\n\nBased on research from 28 different optimization tools, ClutchG focuses on safe, evidence-based tweaks that actually work.",
-            "step1_highlight": "You're in control. All changes are reversible.",
-            # Step 2
-            "step2_title": "Dashboard Overview",
-            "step2_content": "The dashboard shows your system's hardware and a performance score.\n\nYour score is based on real benchmark data, not marketing claims.",
-            "step2_highlight": "Higher score = Better performance potential",
-            # Step 3
-            "step3_title": "Choose Your Profile",
-            "step3_content": "ClutchG offers three optimization profiles:\n\n{safe} SAFE - For beginners, minimal risk\n{comp} COMPETITIVE - For gamers, balanced\n{ext} EXTREME - Maximum performance, advanced users only",
-            "step3_highlight": "Start with SAFE if you're unsure",
-            # Step 4
+            "logo_text": "ClutchG",
+            "skip_btn": "Skip",
+            # Step 1 — Welcome
+            "step1_title": "Welcome to ClutchG",
+            "step1_desc": "A Windows optimizer built for gamers. Real tweaks, no placebo.\nEverything is logged and reversible.",
+            "step1_h1": "Evidence-based tweaks only",
+            "step1_h2": "Full backup before every change",
+            "step1_h3": "One-click rollback if anything goes wrong",
+            # Step 2 — Home
+            "step2_title": "Home",
+            "step2_desc": "Your dashboard. See system status, recent activity,\nand jump to any section from here.",
+            # Step 3 — Choose a Profile
+            "step3_title": "Choose a Profile",
+            "step3_desc": "Three levels to match your comfort zone.\nStart with Safe if you're not sure.",
+            "step3_h1_bold": "Safe",
+            "step3_h1": "Low risk, stable tweaks",
+            "step3_h2_bold": "Competitive",
+            "step3_h2": "Aggressive, for ranked play",
+            "step3_h3_bold": "Extreme",
+            "step3_h3": "Max FPS, know the risks",
+            # Step 4 — Backup
             "step4_title": "Automatic Backups",
-            "step4_content": "Before applying any optimizations, ClutchG automatically creates:\n\n• Windows System Restore point\n• Registry backups\n• Configuration snapshots\n\nYou can always revert if something goes wrong.",
-            "step4_highlight": "Safety first - never optimize without a backup",
-            # Step 5
-            "step5_title": "Ready to Optimize!",
-            "step5_content": "You're all set!\n\n1. Go to Profiles\n2. Choose a profile\n3. Click Apply\n4. Wait for completion\n5. Restart if prompted\n\nNeed help? Click Docs in the sidebar.",
-            "step5_highlight": "Enjoy your optimized PC!",
+            "step4_desc": "ClutchG creates a System Restore point before any optimization.\nIf something breaks, one click rolls it back.",
+            "step4_h1": "System Restore point created before every apply",
+            "step4_h2": "Registry keys backed up separately",
+            "step4_h3": "Full change log in the Backup section",
+            # Step 5 — Ready
+            "step5_title": "You're All Set",
+            "step5_desc": "Head to Profiles to pick your optimization level,\nor explore Tweaks to handpick individual changes.\nCheck Docs if you want to learn more.",
             # Buttons
             "back_btn": "Back",
             "next_btn": "Next",
-            "skip_btn": "Skip",
             "get_started": "Get Started",
-            # Progress
-            "progress": "Step {current} of {total}",
         },
         "th": {
             "window_title": "ยินดีต้อนรับสู่ ClutchG",
-            # Step 1
-            "step1_title": "ยินดีต้อนรับสู่ ClutchG!",
-            "step1_content": "ClutchG ช่วย Optimize  Windows PC ของคุณสำหรับเกมและประสิทธิภาพสูงสุด\n\nอิงจากการวิจัยจากเครื่องมือ Optimize 28 ตัว ClutchG ใช้การปรับแต่งที่ปลอดภัยและได้ผลจริง",
-            "step1_highlight": "คุณคุมอะไรได้บ้าง การเปลี่ยนแปลงทั้งหมดสามารถย้อนกลับได้",
-            # Step 2
-            "step2_title": "ภาพรวม Dashboard",
-            "step2_content": "Dashboard แสดงฮาร์ดแวร์และคะแนนประสิทธิภาพของระบบ\n\nคะแนนของคุณอิงจาก Benchmark จริง ไม่ใช่คำโฆษณา",
-            "step2_highlight": "คะแนนสูงกว่า = ประสิทธิภาพดีกว่า",
-            # Step 3
-            "step3_title": "เลือก Profile ของคุณ",
-            "step3_content": "ClutchG มี 3 Profile สำหรับ Optimize:\n\n{safe} SAFE - สำหรับมือใหม่ ความเสี่ยงต่ำ\n{comp} COMPETITIVE - สำหรับเกมเมอร์ สมดุล\n{ext} EXTREME - ประสิทธิภาพสูงสุด สำหรับผู้ใช้ขั้นสูง",
-            "step3_highlight": "แนะนำให้เริ่มจาก SAFE หากไม่แน่ใจ",
-            # Step 4
-            "step4_title": "สร้าง Backup อัตโนมัติ",
-            "step4_content": "ก่อน Optimize ใดๆ ClutchG จะสร้าง:\n\n• System Restore point\n• Registry backups\n• Configuration snapshots\n\nคุณสามารถย้อนกลับได้เสมอหากมีปัญหา",
-            "step4_highlight": "ความปลอดภัยเป็นหลัก - อย่า Optimize โดยไม่มี Backup",
-            # Step 5
-            "step5_title": "พร้อม Optimize แล้ว!",
-            "step5_content": "พร้อมแล้ว!\n\n1. ไปที่ Profiles\n2. เลือก Profile\n3. กด Apply\n4. รอให้เสร็จ\n5. Restart ถ้าถูกถาม\n\nต้องการความช่วยเหลือ? กด Docs ในแถบด้านข้าง",
-            "step5_highlight": "เพลิดเพลินกับ PC ที่ Optimize แล้ว!",
+            "logo_text": "ClutchG",
+            "skip_btn": "ข้าม",
+            # Step 1 — Welcome
+            "step1_title": "ยินดีต้อนรับสู่ ClutchG",
+            "step1_desc": "Optimizer สำหรับ Windows ที่สร้างมาเพื่อเกมเมอร์\nปรับแต่งจริง ไม่มี Placebo ทุกอย่าง Log ไว้และย้อนกลับได้",
+            "step1_h1": "ปรับแต่งที่มีหลักฐานรองรับเท่านั้น",
+            "step1_h2": "Backup ก่อนทุกการเปลี่ยนแปลง",
+            "step1_h3": "กดย้อนกลับได้ทันทีหากมีปัญหา",
+            # Step 2 — Home
+            "step2_title": "หน้าหลัก",
+            "step2_desc": "Dashboard ของคุณ ดูสถานะระบบ กิจกรรมล่าสุด\nและเข้าถึงทุกส่วนได้จากที่นี่",
+            # Step 3 — Choose a Profile
+            "step3_title": "เลือก Profile",
+            "step3_desc": "3 ระดับให้เลือกตามความถนัด\nแนะนำ Safe ถ้ายังไม่แน่ใจ",
+            "step3_h1_bold": "Safe",
+            "step3_h1": "ความเสี่ยงต่ำ ปรับแต่งพื้นฐาน",
+            "step3_h2_bold": "Competitive",
+            "step3_h2": "ดุดัน สำหรับเล่น Ranked",
+            "step3_h3_bold": "Extreme",
+            "step3_h3": "FPS สูงสุด ต้องรู้ความเสี่ยง",
+            # Step 4 — Backup
+            "step4_title": "Backup อัตโนมัติ",
+            "step4_desc": "ClutchG สร้าง System Restore point ก่อน Optimize ทุกครั้ง\nถ้ามีปัญหา กดย้อนกลับได้เลย",
+            "step4_h1": "สร้าง Restore point ก่อนทุกครั้งที่ Apply",
+            "step4_h2": "Backup Registry key แยกต่างหาก",
+            "step4_h3": "Log การเปลี่ยนแปลงทั้งหมดในส่วน Backup",
+            # Step 5 — Ready
+            "step5_title": "พร้อมแล้ว!",
+            "step5_desc": "ไปที่ Profiles เพื่อเลือกระดับ Optimize\nหรือเข้า Tweaks เพื่อเลือกปรับแต่งทีละตัว\nดู Docs ถ้าอยากเรียนรู้เพิ่มเติม",
             # Buttons
             "back_btn": "ย้อนกลับ",
             "next_btn": "ถัดไป",
-            "skip_btn": "ข้าม",
             "get_started": "เริ่มใช้งาน",
-            # Progress
-            "progress": "ขั้นตอน {current} จาก {total}",
         },
+    }
+
+    # highlight rows per step: list of (icon_name, color_key_or_None, text_key, bold_key_or_None)
+    # color_key=None → use accent
+    STEP_HIGHLIGHTS = {
+        0: [
+            ("check_circle", None, "step1_h1", None),
+            ("check_circle", None, "step1_h2", None),
+            ("check_circle", None, "step1_h3", None),
+        ],
+        1: [],  # Step 2 has no highlights
+        2: [
+            ("verified_user", "success", "step3_h1", "step3_h1_bold"),
+            ("speed", "warning", "step3_h2", "step3_h2_bold"),
+            ("local_fire_department", "danger", "step3_h3", "step3_h3_bold"),
+        ],
+        3: [
+            ("restore_ms", None, "step4_h1", None),
+            ("inventory_2", None, "step4_h2", None),
+            ("history_ms", None, "step4_h3", None),
+        ],
+        4: [],  # Step 5 has no highlights
     }
 
     def __init__(self, parent, app: Optional["ClutchGApp"] = None, on_close=None):
@@ -94,245 +169,353 @@ class WelcomeOverlay(ctk.CTkToplevel):
         if app and hasattr(app, "config"):
             self.language = app.config.get("language", "en")
 
-        # Configure window
+        # Configure window — 660px wide (spec), auto height
         self.title(self._ui("window_title"))
-        self.geometry("700x500")
-        self.configure(fg_color=COLORS["bg_primary"])
+        self.geometry("660x520")
+        self.configure(fg_color=COLORS["bg_secondary"])
+        self.resizable(False, False)
 
         # Make modal
         self.transient(parent)
         self.grab_set()
 
-        # Build steps with localized content
-        self._build_steps()
-
-        self.setup_ui()
+        self._build_ui()
         self.show_step(0)
 
-    def _ui(self, key: str, **kwargs) -> str:
+    # ── Helpers ──────────────────────────────────────────────────────
+
+    def _ui(self, key: str) -> str:
         """Get UI string in current language"""
-        return (
-            self.UI_STRINGS.get(self.language, self.UI_STRINGS["en"])
-            .get(key, key)
-            .format(**kwargs)
-        )
+        return self.UI_STRINGS.get(self.language, self.UI_STRINGS["en"]).get(key, key)
 
     def _font(self, size: int, weight: str = "normal") -> ctk.CTkFont:
         """Choose a Thai-friendly font when needed"""
-        w = weight if weight in ("normal", "bold") else "normal"  # type: ignore[arg-type]
+        w = weight if weight in ("normal", "bold") else "normal"
         if self.language == "th":
-            return ctk.CTkFont(family="Figtree", size=size, weight=w)  # type: ignore[arg-type]
-        return font("body", size=size, weight=w)  # type: ignore[arg-type]
+            return ctk.CTkFont(family="Figtree", size=size, weight=w)
+        return font("body", size=size, weight=w)
 
-    def _build_steps(self):
-        """Build steps content with localized strings"""
-        # Get icons for step 3
-        safe_icon = ICON("safe")
-        comp_icon = ICON("competitive")
-        ext_icon = ICON("extreme")
+    def _icon_font(self, size: int) -> ctk.CTkFont:
+        """Material Symbols font at given size"""
+        return ctk.CTkFont(family="Material Symbols Outlined", size=size)
 
-        self.steps = [
-            {
-                "title": self._ui("step1_title"),
-                "content": self._ui("step1_content"),
-                "highlight": self._ui("step1_highlight"),
-            },
-            {
-                "title": self._ui("step2_title"),
-                "content": self._ui("step2_content"),
-                "highlight": self._ui("step2_highlight"),
-            },
-            {
-                "title": self._ui("step3_title"),
-                "content": self._ui(
-                    "step3_content", safe=safe_icon, comp=comp_icon, ext=ext_icon
-                ),
-                "highlight": self._ui("step3_highlight"),
-            },
-            {
-                "title": self._ui("step4_title"),
-                "content": self._ui("step4_content"),
-                "highlight": self._ui("step4_highlight"),
-            },
-            {
-                "title": self._ui("step5_title"),
-                "content": self._ui("step5_content"),
-                "highlight": self._ui("step5_highlight"),
-            },
-        ]
+    # ── Build UI ─────────────────────────────────────────────────────
 
-    def setup_ui(self):
-        """Setup UI with grid layout:
-        Row 0: Logo (step 0 only)
-        Row 1: Header (title)
-        Row 2: Content text (weight=1)
-        Row 3: Highlight box
-        Row 4: Dots + progress text
-        Row 5: Navigation buttons (Back/Next)
+    def _build_ui(self):
+        """Build the full overlay layout.
+
+        Structure:
+          self (CTkToplevel, bg_secondary)
+            ├─ header_frame   (row 0)  — bolt icon + "ClutchG" … Skip
+            ├─ body_frame     (row 1, weight=1)  — step icon, title, desc, highlights
+            └─ footer_frame   (row 2)  — dots … Back / Next
         """
-        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # --- Row 0: App logo (step 0 only) ---
-        self._logo_image = None  # prevent GC
-        icon_path = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
-        if icon_path.is_file():
-            try:
-                from PIL import Image
+        self._build_header()
+        self._build_body()
+        self._build_footer()
 
-                pil_img = Image.open(icon_path)
-                self._logo_image = ctk.CTkImage(
-                    light_image=pil_img, dark_image=pil_img, size=(64, 64)
-                )
-                self.logo_label = ctk.CTkLabel(self, image=self._logo_image, text="")
-                self.logo_label.grid(
-                    row=0, column=0, padx=40, pady=(30, 10), sticky="w"
-                )
-            except Exception:
-                pass
+    # ── Header ───────────────────────────────────────────────────────
 
-        # --- Skip button (top-right, absolute position) ---
+    def _build_header(self):
+        """Header bar: bolt icon (36x36 accent-dim bg) + 'ClutchG' + Skip button"""
+        header = ctk.CTkFrame(self, fg_color="transparent")
+        header.grid(row=0, column=0, sticky="ew", padx=28, pady=(20, 0))
+        header.grid_columnconfigure(1, weight=1)
+
+        # Logo icon — 36x36 accent-dim rounded box with bolt
+        logo_box = ctk.CTkFrame(
+            header,
+            width=36,
+            height=36,
+            fg_color=COLORS["accent_dim"],
+            corner_radius=RADIUS["md"],
+        )
+        logo_box.grid(row=0, column=0, padx=(0, 10))
+        logo_box.grid_propagate(False)
+
+        bolt_label = ctk.CTkLabel(
+            logo_box,
+            text=get_icon("bolt"),
+            font=self._icon_font(20),
+            text_color=COLORS["accent"],
+        )
+        bolt_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        # "ClutchG" text
+        logo_text = ctk.CTkLabel(
+            header,
+            text=self._ui("logo_text"),
+            font=self._font(15, "bold"),
+            text_color=COLORS["text_primary"],
+        )
+        logo_text.grid(row=0, column=1, sticky="w")
+
+        # Skip ghost button (right side)
         self.skip_btn = ctk.CTkButton(
-            self,
+            header,
             text=self._ui("skip_btn"),
-            width=100,
+            width=60,
+            height=26,
             fg_color="transparent",
             text_color=COLORS["text_muted"],
             hover_color=COLORS.get("bg_hover", "#333333"),
             font=self._font(11),
+            corner_radius=RADIUS["sm"],
             command=self.close,
         )
-        self.skip_btn.place(relx=1.0, x=-20, y=15, anchor="ne")
+        self.skip_btn.grid(row=0, column=2, sticky="e")
 
-        # --- Row 1: Header ---
-        self.header_label = ctk.CTkLabel(
-            self,
+    # ── Body ─────────────────────────────────────────────────────────
+
+    def _build_body(self):
+        """Centered body area: step icon → title → desc → highlight box"""
+        self.body_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.body_frame.grid(row=1, column=0, sticky="nsew", padx=28, pady=(24, 0))
+        self.body_frame.grid_columnconfigure(0, weight=1)
+
+        # Step icon container (72x72, 18px radius)
+        self.step_icon_box = ctk.CTkFrame(
+            self.body_frame,
+            width=72,
+            height=72,
+            fg_color=COLORS["accent_dim"],
+            corner_radius=18,
+        )
+        self.step_icon_box.pack(pady=(0, 16))
+        self.step_icon_box.pack_propagate(False)
+
+        self.step_icon_label = ctk.CTkLabel(
+            self.step_icon_box,
             text="",
-            font=self._font(20, "bold"),
+            font=self._icon_font(32),
+            text_color=COLORS["accent"],
+        )
+        self.step_icon_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Step title
+        self.title_label = ctk.CTkLabel(
+            self.body_frame,
+            text="",
+            font=self._font(18, "bold"),
             text_color=COLORS["text_primary"],
         )
-        self.header_label.grid(row=1, column=0, sticky="w", padx=40, pady=(10, 20))
+        self.title_label.pack(pady=(0, 8))
 
-        # --- Row 2: Content ---
-        self.content_label = ctk.CTkLabel(
-            self,
+        # Step description
+        self.desc_label = ctk.CTkLabel(
+            self.body_frame,
             text="",
             font=self._font(13),
             text_color=COLORS["text_secondary"],
-            wraplength=620,
-            justify="left",
+            wraplength=480,
+            justify="center",
         )
-        self.content_label.grid(row=2, column=0, sticky="nsew", padx=40)
+        self.desc_label.pack(pady=(0, 20))
 
-        # --- Row 3: Highlight box ---
-        self.highlight_box = ctk.CTkFrame(
-            self, fg_color=COLORS["accent_dim"], corner_radius=SIZES["card_radius"]
+        # Highlight box container — will be filled/cleared per step
+        self.highlight_frame = ctk.CTkFrame(
+            self.body_frame,
+            fg_color=COLORS["bg_card"],
+            border_width=1,
+            border_color=COLORS["border"],
+            corner_radius=RADIUS["lg"],
         )
-        self.highlight_box.grid(row=3, column=0, sticky="ew", padx=40, pady=(0, 20))
+        # Don't pack yet — show_step manages visibility
 
-        self.highlight_label = ctk.CTkLabel(
-            self.highlight_box,
-            text="",
-            font=self._font(12, "bold"),
-            text_color=COLORS["accent"],
-            wraplength=580,
+    # ── Footer ───────────────────────────────────────────────────────
+
+    def _build_footer(self):
+        """Footer bar: dots (left) … Back / Next (right), with border-top"""
+        footer = ctk.CTkFrame(
+            self,
+            fg_color="transparent",
+            border_width=0,
         )
-        self.highlight_label.pack(padx=20, pady=15)
+        footer.grid(row=2, column=0, sticky="ew", padx=0, pady=0)
+        footer.grid_columnconfigure(1, weight=1)
 
-        # --- Row 4: Dot indicators only (no progress text) ---
-        progress_frame = ctk.CTkFrame(self, fg_color="transparent")
-        progress_frame.grid(row=4, column=0, pady=(5, 0))
+        # Top separator line
+        sep = ctk.CTkFrame(footer, height=1, fg_color=COLORS["border"])
+        sep.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # Dots
-        self.dots_frame = ctk.CTkFrame(progress_frame, fg_color="transparent")
-        self.dots_frame.pack(pady=(0, 4))
+        # Dots container (left)
+        dots_wrapper = ctk.CTkFrame(footer, fg_color="transparent")
+        dots_wrapper.grid(row=1, column=0, sticky="w", padx=28, pady=(16, 20))
 
-        self.dots = []
+        self.dots: List[ctk.CTkFrame] = []
         for _ in range(self.total_steps):
             dot = ctk.CTkFrame(
-                self.dots_frame,
+                dots_wrapper,
                 width=8,
                 height=8,
                 corner_radius=4,
-                fg_color=COLORS["bg_tertiary"],
+                fg_color=COLORS["bg_active"],
             )
             dot.pack(side="left", padx=3)
             dot.pack_propagate(False)
             self.dots.append(dot)
 
-        # --- Row 5: Navigation buttons (Back / Next) ---
-        btn_frame = ctk.CTkFrame(self, fg_color="transparent")
-        btn_frame.grid(row=5, column=0, pady=(10, 30))
+        # Buttons container (right)
+        btn_wrapper = ctk.CTkFrame(footer, fg_color="transparent")
+        btn_wrapper.grid(row=1, column=2, sticky="e", padx=28, pady=(16, 20))
 
+        # Back button (outline style)
         self.back_btn = ctk.CTkButton(
-            btn_frame,
-            text=self._ui("back_btn"),
+            btn_wrapper,
+            text="",
             width=100,
+            height=SIZES["button_height_sm"],
             fg_color="transparent",
             border_width=1,
             border_color=COLORS["border"],
-            text_color=COLORS["text_primary"],
+            text_color=COLORS["text_secondary"],
+            hover_color=COLORS.get("bg_hover", "#333333"),
+            font=self._font(12, "bold"),
+            corner_radius=RADIUS["md"],
             command=self.prev_step,
-            state="disabled",
         )
-        style_outline_button(self.back_btn, small=True, color=COLORS["border"])
-        self.back_btn.pack(side="left", padx=10)
+        self.back_btn.pack(side="left", padx=(0, 8))
 
+        # Next / Get Started button (primary style)
         self.next_btn = ctk.CTkButton(
-            btn_frame,
-            text=self._ui("next_btn"),
-            width=100,
+            btn_wrapper,
+            text="",
+            width=110,
+            height=SIZES["button_height_sm"],
             fg_color=COLORS["accent"],
-            text_color="white",
+            text_color="#000000",
+            hover_color=COLORS.get("accent_hover", "#6fd4ff"),
+            font=self._font(12, "bold"),
+            corner_radius=RADIUS["md"],
             command=self.next_step,
         )
-        style_primary_button(self.next_btn, small=True)
-        self.next_btn.pack(side="left", padx=10)
+        self.next_btn.pack(side="left")
+
+    # ── Step navigation ──────────────────────────────────────────────
 
     def show_step(self, step: int):
-        """Show a specific step"""
+        """Update all UI elements for the given step index."""
         self.step = step
-        step_data = self.steps[step]
+        step_def = STEP_DEFS[step]
+        highlights = self.STEP_HIGHLIGHTS.get(step, [])
 
-        # Update content
-        self.header_label.configure(text=step_data["title"])
-        self.content_label.configure(text=step_data["content"])
-        self.highlight_label.configure(text=step_data["highlight"])
+        # --- Step icon ---
+        icon_bg = COLORS[step_def["icon_bg"]]
+        icon_color = COLORS[step_def["icon_color"]]
+        self.step_icon_box.configure(fg_color=icon_bg)
+        self.step_icon_label.configure(
+            text=get_icon(step_def["icon"]),
+            text_color=icon_color,
+        )
 
-        # Logo visibility — only on step 0
-        if hasattr(self, "logo_label"):
-            if step == 0:
-                self.logo_label.grid()
-            else:
-                self.logo_label.grid_remove()
+        # --- Title & description ---
+        self.title_label.configure(text=self._ui(f"step{step + 1}_title"))
+        self.desc_label.configure(text=self._ui(f"step{step + 1}_desc"))
 
-        # Step 5 highlight uses success (green), others use accent (sky blue)
-        if step == self.total_steps - 1:
-            self.highlight_box.configure(fg_color=COLORS["success_dim"])
-            self.highlight_label.configure(text_color=COLORS["success"])
+        # --- Highlight box ---
+        # Destroy old highlight children and hide/show frame
+        for child in self.highlight_frame.winfo_children():
+            child.destroy()
+
+        if highlights:
+            self.highlight_frame.pack(pady=(0, 8))
+            for idx, (h_icon, h_color_key, h_text_key, h_bold_key) in enumerate(
+                highlights
+            ):
+                row = ctk.CTkFrame(self.highlight_frame, fg_color="transparent")
+                row.pack(
+                    fill="x",
+                    padx=18,
+                    pady=(6 if idx == 0 else 0, 6 if idx == len(highlights) - 1 else 0),
+                )
+
+                # Icon (16px)
+                color = COLORS[h_color_key] if h_color_key else COLORS["accent"]
+                icon_label = ctk.CTkLabel(
+                    row,
+                    text=get_icon(h_icon),
+                    font=self._icon_font(16),
+                    text_color=color,
+                    width=20,
+                )
+                icon_label.pack(side="left", padx=(0, 10), pady=6)
+
+                # Text — if bold_key exists, show "Bold — rest" pattern
+                if h_bold_key:
+                    bold_text = self._ui(h_bold_key)
+                    rest_text = self._ui(h_text_key)
+                    # Bold part
+                    bold_label = ctk.CTkLabel(
+                        row,
+                        text=bold_text,
+                        font=self._font(12, "bold"),
+                        text_color=COLORS["text_primary"],
+                    )
+                    bold_label.pack(side="left")
+                    # " — rest" part
+                    dash_label = ctk.CTkLabel(
+                        row,
+                        text=f" \u2014 {rest_text}",
+                        font=self._font(12),
+                        text_color=COLORS["text_secondary"],
+                    )
+                    dash_label.pack(side="left")
+                else:
+                    text_label = ctk.CTkLabel(
+                        row,
+                        text=self._ui(h_text_key),
+                        font=self._font(12),
+                        text_color=COLORS["text_secondary"],
+                    )
+                    text_label.pack(side="left")
         else:
-            self.highlight_box.configure(fg_color=COLORS["accent_dim"])
-            self.highlight_label.configure(text_color=COLORS["accent"])
+            self.highlight_frame.pack_forget()
 
-        # Dot indicators
+        # --- Dot indicators ---
         for i, dot in enumerate(self.dots):
             if i == step:
                 dot.configure(fg_color=COLORS["accent"])
-            elif i < step:
-                dot.configure(fg_color=COLORS["text_muted"])
             else:
-                dot.configure(fg_color=COLORS["bg_tertiary"])
+                dot.configure(fg_color=COLORS["bg_active"])
 
-        # Update buttons
-        self.back_btn.configure(state="normal" if step > 0 else "disabled")
-
+        # --- Skip button visibility (hidden on step 5) ---
         if step == self.total_steps - 1:
-            self.next_btn.configure(text=self._ui("get_started"))
+            self.skip_btn.grid_remove()
         else:
-            self.next_btn.configure(text=self._ui("next_btn"))
+            self.skip_btn.grid()
+
+        # --- Back button (disabled on step 0, hidden on step 0 for cleanliness) ---
+        if step == 0:
+            self.back_btn.pack_forget()
+        else:
+            # Make sure it's visible and before next_btn
+            self.back_btn.pack(side="left", padx=(0, 8), before=self.next_btn)
+            back_icon = get_icon("arrow_back_ms")
+            self.back_btn.configure(text=f"{back_icon} {self._ui('back_btn')}")
+
+        # --- Next / Get Started button ---
+        if step == self.total_steps - 1:
+            rocket = get_icon("rocket_launch")
+            self.next_btn.configure(
+                text=f"{rocket} {self._ui('get_started')}",
+                fg_color=COLORS["success"],
+                hover_color=COLORS.get("success", "#22C55E"),
+                width=130,
+            )
+        else:
+            arrow = get_icon("arrow_forward_ms")
+            self.next_btn.configure(
+                text=f"{self._ui('next_btn')} {arrow}",
+                fg_color=COLORS["accent"],
+                hover_color=COLORS.get("accent_hover", "#6fd4ff"),
+                width=110,
+            )
 
     def next_step(self):
-        """Go to next step"""
+        """Go to next step or close on last step"""
         if self.step < self.total_steps - 1:
             self.show_step(self.step + 1)
         else:
@@ -344,7 +527,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
             self.show_step(self.step - 1)
 
     def close(self):
-        """Close overlay"""
+        """Close overlay and call on_close callback"""
         self.destroy()
         if self.on_close:
             self.on_close()

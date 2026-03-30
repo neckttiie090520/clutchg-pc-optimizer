@@ -24,8 +24,8 @@ class ClutchGApp:
         self.system_detector = SystemDetector()
 
         # Init Theme Manager
-        saved_theme = self.config.get("theme", "dark")
-        saved_accent = self.config.get("accent", "cyan")
+        saved_theme = self.config.get("theme", "modern")
+        saved_accent = self.config.get("accent", "sunvalley")
         theme_manager.set_theme(saved_theme, saved_accent)
 
         # Init Managers

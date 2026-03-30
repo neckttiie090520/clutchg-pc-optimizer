@@ -1,17 +1,14 @@
 """
-Settings View - Windows 11 Dark UI
+Settings View - Windows 11 Dark UI (Phase 3B Redesign)
 """
 
 import webbrowser
 import customtkinter as ctk
-from pathlib import Path
 from typing import TYPE_CHECKING
-
-from PIL import Image
 
 from gui.theme import theme_manager, COLORS, SPACING, RADIUS
 from gui.style import font
-from gui.components.glass_card import GlassCard
+from gui.components.icon_provider import get_icon
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -34,43 +31,47 @@ class SettingsView(ctk.CTkFrame):
     UI_STRINGS = {
         "en": {
             "title": "Settings",
+            "settings_subtitle": "Customize your experience",
             "appearance": "Appearance",
-            "appearance_desc": "Choose your visual theme",
+            "appearance_desc": "Choose your preferred color scheme",
             "theme": "Theme",
             "language": "Language",
-            "language_desc": "Interface language (app restarts view)",
+            "language_desc": "Changes labels and descriptions throughout the app",
             "safety": "Safety",
             "auto_backup": "Auto Backup",
-            "auto_backup_desc": "Create backup before applying profiles",
+            "auto_backup_desc": "Create a restore point before applying any profile",
             "confirm_actions": "Confirm Actions",
-            "confirm_actions_desc": "Show confirmation dialogs before changes",
+            "confirm_actions_desc": "Ask for confirmation before running tweaks",
             "flight_recorder": "Flight Recorder",
-            "flight_recorder_desc": "Log every tweak, rollback, and profile apply to a local file",
+            "flight_recorder_desc": "Log every change for easy rollback and debugging",
             "about": "About",
             "about_tagline": "A Windows optimizer built for gamers who want real performance gains, not snake oil.",
+            "about_version": "v1.0.0 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
-            "toast_theme": "Theme \u2192 {value}",
-            "toast_language": "Language \u2192 {value}",
+            "toast_theme": "Theme → {value}",
+            "toast_language": "Language → {value}",
         },
         "th": {
             "title": "Settings",
+            "settings_subtitle": "ปรับแต่งประสบการณ์การใช้งาน",
             "appearance": "Appearance",
-            "appearance_desc": "\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e18\u0e35\u0e21\u0e17\u0e35\u0e48\u0e0a\u0e2d\u0e1a",
+            "appearance_desc": "เลือกธีมสีที่ชอบ",
             "theme": "Theme",
             "language": "Language",
-            "language_desc": "\u0e20\u0e32\u0e29\u0e32\u0e02\u0e2d\u0e07\u0e41\u0e2d\u0e1b (\u0e23\u0e35\u0e40\u0e1f\u0e23\u0e0a\u0e2b\u0e19\u0e49\u0e32)",
+            "language_desc": "เปลี่ยนภาษาข้อความทั่วทั้งแอป",
             "safety": "Safety",
             "auto_backup": "Auto Backup",
-            "auto_backup_desc": "\u0e2a\u0e23\u0e49\u0e32\u0e07 Backup \u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34\u0e01\u0e48\u0e2d\u0e19\u0e43\u0e0a\u0e49 Profile",
+            "auto_backup_desc": "สร้าง Restore Point ก่อนใช้ Profile ทุกครั้ง",
             "confirm_actions": "Confirm Actions",
-            "confirm_actions_desc": "\u0e41\u0e2a\u0e14\u0e07\u0e01\u0e25\u0e48\u0e2d\u0e07\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19\u0e01\u0e48\u0e2d\u0e19\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e41\u0e1b\u0e25\u0e07",
+            "confirm_actions_desc": "ถามยืนยันก่อนรัน Tweak",
             "flight_recorder": "Flight Recorder",
-            "flight_recorder_desc": "\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e17\u0e38\u0e01\u0e01\u0e32\u0e23\u0e1b\u0e23\u0e31\u0e1a\u0e41\u0e15\u0e48\u0e07\u0e41\u0e25\u0e30 rollback \u0e25\u0e07\u0e44\u0e1f\u0e25\u0e4c",
+            "flight_recorder_desc": "บันทึกทุกการเปลี่ยนแปลงเพื่อ rollback ได้ง่าย",
             "about": "About",
-            "about_tagline": "\u0e42\u0e1b\u0e23\u0e41\u0e01\u0e23\u0e21 Optimize Windows \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e40\u0e01\u0e21\u0e40\u0e21\u0e2d\u0e23\u0e4c\u0e17\u0e35\u0e48\u0e15\u0e49\u0e2d\u0e07\u0e01\u0e32\u0e23\u0e1c\u0e25\u0e25\u0e31\u0e1e\u0e18\u0e4c\u0e08\u0e23\u0e34\u0e07 \u0e44\u0e21\u0e48\u0e43\u0e0a\u0e48 snake oil",
+            "about_tagline": "โปรแกรม Optimize Windows สำหรับเกมเมอร์ที่ต้องการผลลัพธ์จริง ไม่ใช่ snake oil",
+            "about_version": "v1.0.0 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
-            "toast_theme": "Theme \u2192 {value}",
-            "toast_language": "Language \u2192 {value}",
+            "toast_theme": "Theme → {value}",
+            "toast_language": "Language → {value}",
         },
     }
 
@@ -84,13 +85,23 @@ class SettingsView(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        # Header
+        # Header — 20px title + subtitle
+        header = ctk.CTkFrame(self, fg_color="transparent")
+        header.grid(row=0, column=0, sticky="w", pady=(0, SPACING["lg"]))
+
         ctk.CTkLabel(
-            self,
+            header,
             text=self._ui("title"),
-            font=self._font(24, "bold"),
+            font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
-        ).grid(row=0, column=0, sticky="w", pady=(0, 30))
+        ).pack(anchor="w")
+
+        ctk.CTkLabel(
+            header,
+            text=self._ui("settings_subtitle"),
+            font=self._font(12),
+            text_color=COLORS["text_secondary"],
+        ).pack(anchor="w", pady=(2, 0))
 
         # Settings content
         content = ctk.CTkScrollableFrame(self, fg_color="transparent")
@@ -159,32 +170,42 @@ class SettingsView(ctk.CTkFrame):
         label: str,
         description: str,
         control_builder,
+        *,
+        is_last: bool = False,
     ) -> ctk.CTkFrame:
         """Create a setting row with label+description on the left and a
-        control widget on the right.
+        control widget on the right. Rows have border-bottom separators
+        except the last row.
 
         Args:
             parent: Parent widget.
-            label: Primary label text (13px).
-            description: Secondary description text (11px).
+            label: Primary label text (13px bold).
+            description: Secondary description text (11px, text_tertiary).
             control_builder: Callable(frame) -> widget placed in column 1.
+            is_last: If True, omit the bottom border separator.
 
         Returns:
             The row frame.
         """
         row = ctk.CTkFrame(parent, fg_color="transparent")
-        row.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+        row.pack(fill="x", padx=18, pady=0)
         row.grid_columnconfigure(0, weight=1)
         row.grid_columnconfigure(1, weight=0)
 
+        # Inner content with vertical padding
+        inner = ctk.CTkFrame(row, fg_color="transparent")
+        inner.grid(row=0, column=0, columnspan=2, sticky="ew", pady=14)
+        inner.grid_columnconfigure(0, weight=1)
+        inner.grid_columnconfigure(1, weight=0)
+
         # Left: stacked label + description
-        text_frame = ctk.CTkFrame(row, fg_color="transparent")
+        text_frame = ctk.CTkFrame(inner, fg_color="transparent")
         text_frame.grid(row=0, column=0, sticky="w")
 
         ctk.CTkLabel(
             text_frame,
             text=label,
-            font=self._font(13),
+            font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
             anchor="w",
         ).pack(anchor="w")
@@ -193,14 +214,22 @@ class SettingsView(ctk.CTkFrame):
             text_frame,
             text=description,
             font=self._font(11),
-            text_color=COLORS["text_secondary"],
+            text_color=COLORS["text_tertiary"],
             anchor="w",
-        ).pack(anchor="w")
+        ).pack(anchor="w", pady=(2, 0))
 
         # Right: control
-        control_frame = ctk.CTkFrame(row, fg_color="transparent")
+        control_frame = ctk.CTkFrame(inner, fg_color="transparent")
         control_frame.grid(row=0, column=1, sticky="e", padx=(SPACING["md"], 0))
         control_builder(control_frame)
+
+        # Border-bottom separator (skip on last row)
+        if not is_last:
+            ctk.CTkFrame(
+                row,
+                fg_color=COLORS["border"],
+                height=1,
+            ).grid(row=1, column=0, columnspan=2, sticky="ew")
 
         return row
 
@@ -209,35 +238,44 @@ class SettingsView(ctk.CTkFrame):
     # ------------------------------------------------------------------
 
     def create_section(self, parent, title: str, creators, *, icon_char: str = ""):
-        """Create settings section with GlassCard and optional icon."""
-        section = GlassCard(parent, corner_radius=RADIUS["lg"])
-        section.pack(fill="x", pady=SPACING["md"])
+        """Create settings section with bordered CTkFrame, icon + uppercase title,
+        and a border-bottom separator after the header."""
+        section = ctk.CTkFrame(
+            parent,
+            fg_color=COLORS["bg_card"],
+            border_width=1,
+            border_color=COLORS["border"],
+            corner_radius=RADIUS["lg"],
+        )
+        section.pack(fill="x", pady=SPACING["sm"])
         section.grid_columnconfigure(0, weight=1)
 
-        # Header frame: icon + title
+        # Header frame: icon + uppercase title
         header = ctk.CTkFrame(section, fg_color="transparent")
-        header.pack(anchor="w", padx=SPACING["lg"], pady=(SPACING["md"], SPACING["sm"]))
+        header.pack(fill="x", padx=18, pady=(14, 0))
 
         if icon_char:
             ctk.CTkLabel(
                 header,
                 text=icon_char,
-                font=ctk.CTkFont(family=_ICON_FONT, size=12),
-                text_color=COLORS["text_secondary"],
-            ).pack(side="left", padx=(0, 6))
+                font=ctk.CTkFont(family=_ICON_FONT, size=18),
+                text_color=COLORS["text_tertiary"],
+            ).pack(side="left", padx=(0, 10))
 
         ctk.CTkLabel(
             header,
             text=title.upper(),
-            font=self._font(10, "bold"),
+            font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
         ).pack(side="left")
 
+        # Separator line after header
+        sep_wrap = ctk.CTkFrame(section, fg_color="transparent")
+        sep_wrap.pack(fill="x", padx=18, pady=(14, 0))
+        ctk.CTkFrame(sep_wrap, fg_color=COLORS["border"], height=1).pack(fill="x")
+
         for creator in creators:
             creator(section)
-
-        # Bottom spacer
-        ctk.CTkLabel(section, text="", height=SPACING["sm"]).pack()
 
     # ------------------------------------------------------------------
     # Appearance
@@ -248,6 +286,7 @@ class SettingsView(ctk.CTkFrame):
         available_themes = theme_manager.get_available_themes()
         current_theme = self.config.get("theme", "modern")
         theme_display = {t: t.capitalize() for t in available_themes}
+        theme_display["modern"] = "Sun Valley"
         display_values = [theme_display[t] for t in available_themes]
         current_display = theme_display.get(current_theme, current_theme.capitalize())
 
@@ -259,10 +298,11 @@ class SettingsView(ctk.CTkFrame):
                 values=display_values,
                 variable=self.theme_var,
                 command=self.change_theme,
-                width=120,
-                fg_color=COLORS["bg_elevated"],
+                width=140,
+                fg_color=COLORS["bg_secondary"],
                 button_color=COLORS["accent"],
                 button_hover_color=COLORS["accent_hover"],
+                corner_radius=RADIUS["md"],
             ).pack()
 
         self._setting_row(
@@ -270,11 +310,18 @@ class SettingsView(ctk.CTkFrame):
             label=self._ui("theme"),
             description=self._ui("appearance_desc"),
             control_builder=_build_control,
+            is_last=True,
         )
 
     def change_theme(self, value: str):
         """Apply selected theme"""
-        theme_key = value.lower()
+        display_to_key = {
+            "Sun Valley": "modern",
+            "Dark": "dark",
+            "Zinc": "zinc",
+            "Light": "light",
+        }
+        theme_key = display_to_key.get(value, value.lower())
         theme_manager.set_theme(theme_key)
         self.config["theme"] = theme_key
         self.app.config["theme"] = theme_key
@@ -300,10 +347,11 @@ class SettingsView(ctk.CTkFrame):
                 values=["English", "\u0e44\u0e17\u0e22"],
                 variable=self.lang_var,
                 command=self.change_language,
-                width=120,
-                fg_color=COLORS["bg_elevated"],
+                width=140,
+                fg_color=COLORS["bg_secondary"],
                 button_color=COLORS["accent"],
                 button_hover_color=COLORS["accent_hover"],
+                corner_radius=RADIUS["md"],
             ).pack()
 
         self._setting_row(
@@ -311,6 +359,7 @@ class SettingsView(ctk.CTkFrame):
             label=self._ui("language"),
             description=self._ui("language_desc"),
             control_builder=_build_control,
+            is_last=True,
         )
 
     def change_language(self, value):
@@ -411,6 +460,7 @@ class SettingsView(ctk.CTkFrame):
             label=self._ui("flight_recorder"),
             description=self._ui("flight_recorder_desc"),
             control_builder=_build_flight_recorder,
+            is_last=True,
         )
 
     # ------------------------------------------------------------------
@@ -418,46 +468,48 @@ class SettingsView(ctk.CTkFrame):
     # ------------------------------------------------------------------
 
     def create_about(self, parent):
-        """About section with app icon, name, tagline, and link buttons."""
+        """About section with bolt icon box, name, version, tagline, and links."""
         frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="x", padx=SPACING["lg"], pady=SPACING["sm"])
+        frame.pack(fill="x", padx=18, pady=(SPACING["lg"], SPACING["md"]))
         frame.grid_columnconfigure(1, weight=1)
 
-        # App icon (48x48)
-        icon_path = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
-        if icon_path.is_file():
-            try:
-                pil_img = Image.open(icon_path).resize((48, 48), Image.LANCZOS)
-                ctk_img = ctk.CTkImage(
-                    light_image=pil_img, dark_image=pil_img, size=(48, 48)
-                )
-                ctk.CTkLabel(frame, image=ctk_img, text="").grid(
-                    row=0,
-                    column=0,
-                    rowspan=3,
-                    sticky="nw",
-                    padx=(0, SPACING["md"]),
-                )
-            except Exception:
-                # Fallback: no icon shown if load fails
-                pass
-
-        # App name + version
-        ctk.CTkLabel(
+        # Bolt icon in accent-dim box (48x48)
+        icon_box = ctk.CTkFrame(
             frame,
+            width=48,
+            height=48,
+            fg_color=COLORS["accent_dim"],
+            corner_radius=RADIUS["lg"],
+        )
+        icon_box.grid(row=0, column=0, rowspan=4, sticky="nw", padx=(0, 16))
+        icon_box.grid_propagate(False)
+
+        bolt_codepoint = get_icon("bolt")
+        ctk.CTkLabel(
+            icon_box,
+            text=bolt_codepoint,
+            font=ctk.CTkFont(family=_ICON_FONT, size=24),
+            text_color=COLORS["accent"],
+        ).place(relx=0.5, rely=0.5, anchor="center")
+
+        # App name + version on same line
+        name_row = ctk.CTkFrame(frame, fg_color="transparent")
+        name_row.grid(row=0, column=1, sticky="w")
+
+        ctk.CTkLabel(
+            name_row,
             text=self._ui("app_name"),
             font=self._font(15, "bold"),
             text_color=COLORS["text_primary"],
-            anchor="w",
-        ).grid(row=0, column=1, sticky="w")
+        ).pack(side="left")
 
         ctk.CTkLabel(
             frame,
-            text="v1.0.0",
+            text=self._ui("about_version"),
             font=self._font(11),
-            text_color=COLORS["text_muted"],
+            text_color=COLORS["text_tertiary"],
             anchor="w",
-        ).grid(row=0, column=2, sticky="w", padx=(6, 0))
+        ).grid(row=1, column=1, sticky="w", pady=(2, 0))
 
         # Tagline
         ctk.CTkLabel(
@@ -468,32 +520,36 @@ class SettingsView(ctk.CTkFrame):
             anchor="w",
             wraplength=400,
             justify="left",
-        ).grid(row=1, column=1, columnspan=2, sticky="w", pady=(2, SPACING["sm"]))
+        ).grid(row=2, column=1, sticky="w", pady=(4, 0))
 
         # Link buttons row
         btn_row = ctk.CTkFrame(frame, fg_color="transparent")
-        btn_row.grid(row=2, column=1, columnspan=2, sticky="w")
+        btn_row.grid(row=3, column=1, sticky="w", pady=(8, 0))
 
+        # GitHub link with open_in_new icon
+        open_icon = get_icon("open_in_new")
         ctk.CTkButton(
             btn_row,
-            text="GitHub",
-            font=self._font(12),
+            text=f"{open_icon}  GitHub",
+            font=ctk.CTkFont(family=_ICON_FONT, size=12),
+            fg_color="transparent",
+            hover_color=COLORS["bg_hover"],
+            text_color=COLORS["accent"],
+            width=80,
+            height=28,
+            command=lambda: self._open_url(_GITHUB_URL),
+        ).pack(side="left", padx=(0, SPACING["md"]))
+
+        # Docs link with description icon
+        docs_icon = get_icon("description")
+        ctk.CTkButton(
+            btn_row,
+            text=f"{docs_icon}  Docs",
+            font=ctk.CTkFont(family=_ICON_FONT, size=12),
             fg_color="transparent",
             hover_color=COLORS["bg_hover"],
             text_color=COLORS["accent"],
             width=70,
-            height=28,
-            command=lambda: self._open_url(_GITHUB_URL),
-        ).pack(side="left", padx=(0, SPACING["sm"]))
-
-        ctk.CTkButton(
-            btn_row,
-            text="Docs",
-            font=self._font(12),
-            fg_color="transparent",
-            hover_color=COLORS["bg_hover"],
-            text_color=COLORS["accent"],
-            width=60,
             height=28,
             command=lambda: self.app.switch_view("help"),
         ).pack(side="left")
