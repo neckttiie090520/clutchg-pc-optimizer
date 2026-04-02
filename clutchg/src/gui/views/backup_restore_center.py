@@ -144,7 +144,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
         return font("body", size=size, weight=weight)
 
     def _material_font(self, size: int) -> ctk.CTkFont:
-        """Get Material Symbols Outlined font at given size"""
+        """Get Tabler Icons font at given size"""
         return ctk.CTkFont(family=ICON_FONT("shield")[0], size=size)
 
     # ========================================================================

@@ -11,7 +11,7 @@ from gui.style import font
 class InlineHelpBox(ctk.CTkFrame):
     """Inline help box with icon, title, and content"""
 
-    # Material Symbols Outlined codepoints for each help type
+    # Tabler Icons codepoints for each help type
     _MATERIAL_ICONS = {
         "info": "\ue88e",  # info
         "warning": "\ue002",  # warning
@@ -32,12 +32,12 @@ class InlineHelpBox(ctk.CTkFrame):
         self.help_type = help_type
         self.grid_columnconfigure(1, weight=1)
 
-        # Icon (Material Symbols Outlined)
+        # Icon (Tabler Icons)
         icon = self._MATERIAL_ICONS.get(help_type, self._MATERIAL_ICONS["info"])
         ctk.CTkLabel(
             self,
             text=icon,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
+            font=ctk.CTkFont(family="Tabler Icons", size=18),
             text_color=self._get_border_color(help_type),
         ).grid(row=0, column=0, padx=(15, 10), pady=12)
 

@@ -3,7 +3,7 @@ Icon Provider - Centralized Icon Management
 
 Two icon font systems:
   1. Segoe MDL2 Assets  — navigation & system icons (ships with Win 10/11)
-  2. Material Symbols Outlined — content / topic icons (bundled with app)
+  2. Tabler Icons       — content / topic icons (bundled with app, tabler-icons.ttf)
 
 get_icon_font(icon_name) returns the correct font for each icon.
 Fallback chain per font: Segoe MDL2 > Segoe UI Symbol > text labels.
@@ -18,8 +18,8 @@ class IconProvider:
     Centralized icon management for ClutchG.
 
     Icons are split into two font families:
-      - SEGOE_ICONS:    Segoe MDL2 Assets codepoints (nav, actions, status, system)
-      - MATERIAL_ICONS: Material Symbols Outlined codepoints (content / topic icons)
+      - SEGOE_ICONS:  Segoe MDL2 Assets codepoints (nav, actions, status, system)
+      - TABLER_ICONS: Tabler Icons codepoints (content / topic icons, bundled TTF)
 
     Use get_icon_with_fallback() for graceful degradation on non-Windows.
     """
@@ -82,58 +82,58 @@ class IconProvider:
         "document": "\ue8a5",  # Page
     }
 
-    # ── Material Symbols Outlined codepoints ──────────────────────────
-    MATERIAL_ICONS: Dict[str, str] = {
-        "rocket_launch": "\ue559",  # Getting Started
-        "bar_chart": "\ue26b",  # Dashboard topic
-        "tune": "\ue429",  # Profiles topic / Tune
-        "extension": "\ue87b",  # Optimization Center topic
-        "bolt": "\ue929",  # Quick Actions / Power / Extreme
-        "description": "\ue873",  # Scripts topic
-        "shield": "\ue914",  # Safety topic / Safe profile
-        "target": "\uf2c4",  # Profile recommendations
-        "lightbulb": "\ue0a3",  # Tips
-        "lan": "\ue639",  # Network category
-        "build": "\ue869",  # Troubleshooting / Custom tab
-        "menu_book": "\ue8ca",  # Glossary tab
-        "download": "\ue2c4",  # Import
-        "upload": "\ue2c6",  # Export
-        "play_arrow": "\ue037",  # Run button
-        "open_in_new": "\ue89e",  # External link
-        "expand_more": "\ue5cf",  # Glossary expand arrow
-        "check_circle": "\ue86c",  # Backup with restore point
-        "inventory_2": "\ue1d7",  # Registry-only backup
-        "refresh": "\ue5d5",  # Restart indicator
-        "backup_cloud": "\ue860",  # Backup (cloud-upload style)
+    # ── Tabler Icons codepoints (tabler-icons.ttf, v3.41.1) ──────────
+    TABLER_ICONS: Dict[str, str] = {
+        "rocket_launch": "\uec45",  # rocket
+        "bar_chart": "\uea59",  # chart-bar
+        "tune": "\uec38",  # adjustments-horizontal
+        "extension": "\ueb10",  # puzzle
+        "bolt": "\uea38",  # bolt
+        "description": "\uf028",  # file-description
+        "shield": "\ueb24",  # shield
+        "target": "\ueb35",  # target
+        "lightbulb": "\uea51",  # bulb
+        "lan": "\uf09f",  # network
+        "build": "\ueb40",  # tool
+        "menu_book": "\uea39",  # book
+        "download": "\uea96",  # download
+        "upload": "\ueb47",  # upload
+        "play_arrow": "\ued46",  # player-play
+        "open_in_new": "\uea99",  # external-link
+        "expand_more": "\uea5f",  # chevron-down
+        "check_circle": "\uea67",  # circle-check
+        "inventory_2": "\uea45",  # box
+        "refresh": "\ueb13",  # refresh
+        "backup_cloud": "\uea75",  # cloud-upload
         # Profile icons
-        "verified_user": "\ue8e8",  # Safe profile
-        "speed": "\ue3de",  # Competitive profile
-        "local_fire_department": "\uef55",  # Extreme profile
+        "verified_user": "\ueb22",  # shield-check (Safe profile)
+        "speed": "\ueab1",  # gauge (Competitive profile)
+        "local_fire_department": "\uec2c",  # flame (Extreme profile)
         # Compare / Preview
-        "compare_arrows": "\ue915",  # Compare panel toggle
-        "star": "\ue838",  # Recommended badge
-        "visibility": "\ue8f4",  # Preview button
-        "arrow_forward_ms": "\ue5c8",  # Material forward arrow (nav)
-        "arrow_back_ms": "\ue5c4",  # Material back arrow (nav)
+        "compare_arrows": "\uf1f4",  # arrows-exchange
+        "star": "\ueb2e",  # star (Recommended badge)
+        "visibility": "\uea9a",  # eye
+        "arrow_forward_ms": "\uea1f",  # arrow-right
+        "arrow_back_ms": "\uea19",  # arrow-left
         # Welcome overlay step & highlight icons
-        "waving_hand": "\ue766",  # Welcome step icon
-        "dashboard_ms": "\ue871",  # Home step icon (Material version)
-        "backup_ms": "\ue864",  # Backup step icon (Material version)
-        "restore_ms": "\ue929",  # Restore highlight icon (uses 'settings_backup_restore')
-        "history_ms": "\ue889",  # History highlight icon (Material version)
+        "waving_hand": "\uec2e",  # hand-stop
+        "dashboard_ms": "\ueac1",  # home
+        "backup_ms": "\ueb62",  # device-floppy
+        "restore_ms": "\ufafd",  # restore
+        "history_ms": "\uebea",  # history
     }
 
     # ── Merged lookup (kept for backward compat) ──────────────────────
-    ICONS: Dict[str, str] = {**SEGOE_ICONS, **MATERIAL_ICONS}
+    ICONS: Dict[str, str] = {**SEGOE_ICONS, **TABLER_ICONS}
 
-    MATERIAL_FONT = "Material Symbols Outlined"
+    TABLER_FONT = "Tabler Icons"
     SEGOE_FONT = "Segoe MDL2 Assets"
 
     def __init__(self):
         """Initialize icon provider and detect available fonts."""
         self.system = platform.system()
         self._segmdl2_available = self._check_font(self.SEGOE_FONT)
-        self._material_available = self._check_font(self.MATERIAL_FONT)
+        self._tabler_available = self._check_font(self.TABLER_FONT)
 
     def _check_font(self, family_name: str) -> bool:
         """Check if a font family is available (Windows only for Segoe)."""
@@ -160,9 +160,9 @@ class IconProvider:
         except Exception:
             return False
 
-    def _is_material_icon(self, icon_name: str) -> bool:
-        """Return True if icon_name belongs to the Material Symbols set."""
-        return icon_name in self.MATERIAL_ICONS
+    def _is_tabler_icon(self, icon_name: str) -> bool:
+        """Return True if icon_name belongs to the Tabler Icons set."""
+        return icon_name in self.TABLER_ICONS
 
     def get_icon(self, icon_name: str) -> str:
         """
@@ -180,7 +180,7 @@ class IconProvider:
         """
         Get the correct icon font family tuple for the given icon.
 
-        Returns Material Symbols Outlined for content icons,
+        Returns Tabler Icons for content icons,
         Segoe MDL2 Assets for navigation/system icons.
 
         Args:
@@ -189,11 +189,11 @@ class IconProvider:
         Returns:
             Tuple of font family name(s)
         """
-        # Material Symbols path
-        if icon_name and self._is_material_icon(icon_name):
-            if self._material_available:
-                return (self.MATERIAL_FONT,)
-            # Material font missing — fall through to generic fallback
+        # Tabler Icons path
+        if icon_name and self._is_tabler_icon(icon_name):
+            if self._tabler_available:
+                return (self.TABLER_FONT,)
+            # Tabler font missing — fall through to generic fallback
             return ("Segoe UI",)
 
         # Segoe MDL2 path (default)

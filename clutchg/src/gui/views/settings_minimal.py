@@ -13,7 +13,7 @@ from gui.components.icon_provider import get_icon
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
 
-_ICON_FONT = "Material Symbols Outlined"
+_ICON_FONT = "Tabler Icons"
 
 _SECTION_ICONS = {
     "appearance": "\ue40a",  # palette

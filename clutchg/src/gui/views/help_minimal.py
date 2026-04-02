@@ -117,7 +117,7 @@ class HelpView(ctk.CTkFrame):
         return ctk.CTkLabel(
             parent,
             text=ICON(icon_key),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=size),
+            font=ctk.CTkFont(family="Tabler Icons", size=size),
             text_color=color or COLORS["text_secondary"],
             width=size + 4,
         )
@@ -173,7 +173,7 @@ class HelpView(ctk.CTkFrame):
             icon_lbl = ctk.CTkLabel(
                 btn_frame,
                 text=ICON(topic.icon),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+                font=ctk.CTkFont(family="Tabler Icons", size=16),
                 text_color=COLORS.get("text_muted", COLORS["text_secondary"]),
                 width=20,
             )
@@ -251,7 +251,7 @@ class HelpView(ctk.CTkFrame):
         ctk.CTkLabel(
             title_frame,
             text=ICON(topic.icon),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=22),
+            font=ctk.CTkFont(family="Tabler Icons", size=22),
             text_color=COLORS.get("text_tertiary", COLORS["text_secondary"]),
         ).pack(side="left", padx=(0, 8))
 
@@ -345,7 +345,7 @@ class HelpView(ctk.CTkFrame):
                 ctk.CTkLabel(
                     tip_frame,
                     text=ICON("lightbulb"),
-                    font=ctk.CTkFont(family="Material Symbols Outlined", size=11),
+                    font=ctk.CTkFont(family="Tabler Icons", size=11),
                     text_color=COLORS["accent"],
                 ).pack(side="left", padx=(0, 4))
 
@@ -408,7 +408,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 cat_header,
                 text=ICON(category["icon"]),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+                font=ctk.CTkFont(family="Tabler Icons", size=16),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
             ctk.CTkLabel(
@@ -601,7 +601,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 problem_frame,
                 text=ICON("build"),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
+                font=ctk.CTkFont(family="Tabler Icons", size=13),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
 
@@ -719,7 +719,7 @@ class HelpView(ctk.CTkFrame):
             ctk.CTkLabel(
                 result_title,
                 text=ICON(topic.icon),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=13),
+                font=ctk.CTkFont(family="Tabler Icons", size=13),
                 text_color=COLORS["text_primary"],
             ).pack(side="left", padx=(0, 6))
 

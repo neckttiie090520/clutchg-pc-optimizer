@@ -451,7 +451,7 @@ class ScriptsView(ctk.CTkFrame):
         )
         bar.pack(side="left")
 
-        # Material Symbols Outlined codepoints
+        # Tabler Icons codepoints
         tabs = [
             ("quick_actions", "\ue929", self._ui("tab_quick_actions")),  # bolt
             ("presets", "\ue429", self._ui("tab_presets")),  # tune
@@ -498,7 +498,7 @@ class ScriptsView(ctk.CTkFrame):
         icon_lbl = ctk.CTkLabel(
             content_frame,
             text=icon,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+            font=ctk.CTkFont(family="Tabler Icons", size=16),
             text_color=text_color,
         )
         icon_lbl.pack(side="left", padx=(10, 5))
@@ -954,7 +954,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             compare_inner,
             text=ICON("compare_arrows"),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=14),
+            font=ctk.CTkFont(family="Tabler Icons", size=14),
             text_color=COLORS["text_secondary"],
         ).pack(side="left", padx=(0, 4))
 
@@ -1049,7 +1049,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_name_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
+            font=ctk.CTkFont(family="Tabler Icons", size=18),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
@@ -1068,7 +1068,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_name_row,
             text=ICON("star"),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
+            font=ctk.CTkFont(family="Tabler Icons", size=12),
             text_color=COLORS["success"],
         ).pack(side="left", padx=(0, 3))
 
@@ -1186,7 +1186,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=17),
+            font=ctk.CTkFont(family="Tabler Icons", size=17),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
@@ -1328,7 +1328,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             hdr_frame,
             text=ICON("compare_arrows"),
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+            font=ctk.CTkFont(family="Tabler Icons", size=16),
             text_color=COLORS["text_secondary"],
         ).pack(side="left", padx=(0, 8))
         ctk.CTkLabel(
@@ -1507,7 +1507,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             circle,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=22),
+            font=ctk.CTkFont(family="Tabler Icons", size=22),
             text_color=info["color"],
         ).place(relx=0.5, rely=0.5, anchor="center")
 
@@ -1949,7 +1949,7 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 header,
                 text=icon_char,
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=14),
+                font=ctk.CTkFont(family="Tabler Icons", size=14),
                 text_color=color,
             ).pack(side="left", padx=(0, SPACING["xs"]))
         ctk.CTkLabel(
@@ -2042,7 +2042,7 @@ class ScriptsView(ctk.CTkFrame):
             text="\ue88e",
             width=28,
             height=28,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=14),
+            font=ctk.CTkFont(family="Tabler Icons", size=14),
             fg_color="transparent",
             text_color=COLORS["text_tertiary"],
             hover_color=COLORS["bg_card_hover"],
@@ -2055,7 +2055,7 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row,
                 text=ICON("refresh"),
-                font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
+                font=ctk.CTkFont(family="Tabler Icons", size=12),
                 text_color=COLORS["text_tertiary"],
             ).grid(row=0, column=5, padx=(0, SPACING["sm"]))
 
@@ -2128,7 +2128,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             wrapper,
             text="\ue88e",
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=32),
+            font=ctk.CTkFont(family="Tabler Icons", size=32),
             text_color=COLORS["text_muted"],
         ).pack()
 
@@ -2540,7 +2540,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             search_container,
             text="\ue8b6",
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
+            font=ctk.CTkFont(family="Tabler Icons", size=16),
             text_color=COLORS["text_secondary"],
         ).pack(side="left", padx=(SPACING["md"], SPACING["xs"]))
 
@@ -2571,7 +2571,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             scroll_indicator,
             text="\ue5c8",  # arrow_forward (Material Symbols)
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
+            font=ctk.CTkFont(family="Tabler Icons", size=12),
             text_color=COLORS["text_muted"],
         ).pack(expand=True)
 

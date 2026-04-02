@@ -197,7 +197,7 @@ class WelcomeOverlay(ctk.CTkToplevel):
 
     def _icon_font(self, size: int) -> ctk.CTkFont:
         """Material Symbols font at given size"""
-        return ctk.CTkFont(family="Material Symbols Outlined", size=size)
+        return ctk.CTkFont(family="Tabler Icons", size=size)
 
     # ── Build UI ─────────────────────────────────────────────────────
 

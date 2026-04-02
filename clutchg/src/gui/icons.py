@@ -9,7 +9,7 @@ import customtkinter as ctk
 # ============================================================================
 # MATERIAL SYMBOLS ICON CONSTANTS
 # ============================================================================
-# Using Google Material Symbols Outlined (unicode values)
+# Using Google Tabler Icons (unicode values)
 # Reference: https://fonts.google.com/icons
 
 MATERIAL_ICONS = {
@@ -126,7 +126,7 @@ def get_material_font(size: int = 24) -> ctk.CTkFont:
     Returns:
         CTkFont configured for Material Symbols
     """
-    return ctk.CTkFont(family="Material Symbols Outlined", size=size)
+    return ctk.CTkFont(family="Tabler Icons", size=size)
 
 
 def get_icon_text(icon_name: str, fallback: str = None) -> str:

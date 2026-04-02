@@ -182,7 +182,7 @@ class ProfileCard(GlassCard):
         icon_label = ctk.CTkLabel(
             icon_circle,
             text=profile_icon,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=22),
+            font=ctk.CTkFont(family="Tabler Icons", size=22),
             text_color="#FFFFFF",
         )
         icon_label.place(relx=0.5, rely=0.5, anchor="center")
@@ -357,7 +357,7 @@ class HardwareCard(GlassCard):
         icon_label = ctk.CTkLabel(
             header_frame,
             text=icon,
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=20),
+            font=ctk.CTkFont(family="Tabler Icons", size=20),
             text_color=usage_color,
         )
         icon_label.grid(row=0, column=0, padx=(0, SPACING["sm"]))

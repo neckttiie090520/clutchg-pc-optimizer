@@ -1,6 +1,6 @@
 """
 Bundled Font Loader for ClutchG
-Loads Figtree and Material Symbols Outlined fonts from bundled TTF files
+Loads Figtree and Tabler Icons fonts from bundled TTF files
 at runtime using tkextrafont.
 
 tkextrafont registers fonts directly with Tk's font system, so they
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 _font_dir = Path(__file__).parent.parent / "fonts"
 _loaded_font_objects: list = []  # Keep references alive
 _font_family: Optional[str] = None
-_material_symbols_loaded: bool = False
+_tabler_icons_loaded: bool = False
 
 
 def get_font_path(filename: str) -> Optional[Path]:
@@ -31,7 +31,7 @@ def get_font_path(filename: str) -> Optional[Path]:
 
 def register_fonts() -> bool:
     """
-    Register bundled Figtree and Material Symbols Outlined fonts with Tk's
+    Register bundled Figtree and Tabler Icons fonts with Tk's
     font system.
 
     Uses tkextrafont to load TTF files directly into the Tk interpreter.
@@ -42,12 +42,12 @@ def register_fonts() -> bool:
     Returns:
         True if at least one font was loaded successfully
     """
-    global _loaded_font_objects, _material_symbols_loaded
+    global _loaded_font_objects, _tabler_icons_loaded
 
     fonts_to_load = [
         "Figtree-Regular.ttf",
         "Figtree-Bold.ttf",
-        "MaterialSymbolsOutlined.ttf",
+        "tabler-icons.ttf",
     ]
 
     try:
@@ -71,17 +71,17 @@ def register_fonts() -> bool:
             _loaded_font_objects.append(font_obj)
             logger.info(f"Loaded font: {filename}")
             success = True
-            if "MaterialSymbols" in filename:
-                _material_symbols_loaded = True
+            if "tabler-icons" in filename:
+                _tabler_icons_loaded = True
         except Exception as e:
             logger.error(f"Error loading font {filename}: {e}")
 
     return success
 
 
-def is_material_symbols_loaded() -> bool:
-    """Return True if Material Symbols Outlined was loaded from the bundle."""
-    return _material_symbols_loaded
+def is_tabler_icons_loaded() -> bool:
+    """Return True if Tabler Icons was loaded from the bundle."""
+    return _tabler_icons_loaded
 
 
 def is_font_available(family: str) -> bool:
@@ -135,7 +135,7 @@ def ensure_fonts_loaded() -> str:
 
 def cleanup_fonts():
     """Unload fonts (call on app exit)."""
-    global _loaded_font_objects, _font_family, _material_symbols_loaded
+    global _loaded_font_objects, _font_family, _tabler_icons_loaded
     for font_obj in _loaded_font_objects:
         try:
             font_obj.unload()
@@ -143,4 +143,4 @@ def cleanup_fonts():
             pass
     _loaded_font_objects.clear()
     _font_family = None
-    _material_symbols_loaded = False
+    _tabler_icons_loaded = False
