@@ -51,7 +51,7 @@ class ClutchGApp:
         self.window.minsize(900, 600)  # Minimum window size to prevent layout breaks
 
         # Load bundled fonts (requires Tk root to exist)
-        from gui.font_loader import register_fonts
+        from gui.font_loader import register_fonts, is_font_available
 
         register_fonts()
 
@@ -97,14 +97,19 @@ class ClutchGApp:
         return "1.0.0"
 
     def _check_material_symbols(self) -> bool:
-        """Check if Material Symbols Outlined font is installed"""
+        """Check if Material Symbols Outlined font is available (bundled or system)."""
+        from gui.font_loader import is_font_available
+
+        if is_font_available("Material Symbols Outlined"):
+            return True
+        # Fallback: try creating a CTkLabel (catches system-installed font)
         try:
             test_label = ctk.CTkLabel(
                 self.window,
                 text="\ue8b8",
                 font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
             )
-            test_label.destroy()  # Clean up test label
+            test_label.destroy()
             return True
         except Exception:
             return False
@@ -112,11 +117,13 @@ class ClutchGApp:
     def _show_font_warning(self):
         """Show non-blocking warning about missing Material Symbols font"""
         logger.warning(
-            "Material Symbols font not installed — run: python install_material_icons.py"
+            "Material Symbols font not available — icons may display as boxes. "
+            "The font should have been bundled; check tkextrafont installation."
         )
         if hasattr(self, "toast"):
             self.toast.warning(
-                "Material Symbols font not found — icons may show as boxes. Run: python install_material_icons.py"
+                "Icon font not loaded — icons may show as boxes. "
+                "Ensure tkextrafont is installed: pip install tkextrafont"
             )
 
     def _refresh_window_colors(self):

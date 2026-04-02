@@ -1026,11 +1026,11 @@ class ScriptsView(ctk.CTkFrame):
         )
         # left expands, center and right fixed
         card.grid_columnconfigure(0, weight=1)
-        card.grid_columnconfigure(1, weight=0, minsize=110)
-        card.grid_columnconfigure(2, weight=0, minsize=150)
+        card.grid_columnconfigure(1, weight=0, minsize=105)
+        card.grid_columnconfigure(2, weight=0, minsize=143)
 
-        px = 18
-        py = 14
+        px = 17
+        py = 13
 
         # ── LEFT SECTION: identity ──
         left = ctk.CTkFrame(card, fg_color="transparent")
@@ -1044,18 +1044,18 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_name_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=22),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=21),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
-            width=38,
-            height=38,
+            width=36,
+            height=36,
         ).pack(side="left", padx=(0, 10))
 
         ctk.CTkLabel(
             icon_name_row,
             text=info["title"],
-            font=self._font(16, "bold"),
+            font=self._font(15, "bold"),
             text_color=COLORS["text_primary"],
             anchor="w",
         ).pack(side="left")
@@ -1097,7 +1097,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             center,
             text=info["fps"],
-            font=self._font(22, "bold"),
+            font=self._font(21, "bold"),
             text_color=COLORS["accent"],
             anchor="center",
         ).grid(row=1, column=0)
@@ -1148,7 +1148,7 @@ class ScriptsView(ctk.CTkFrame):
             hover_color=COLORS.get("accent_hover", COLORS["accent"]),
             border_width=0,
             corner_radius=RADIUS["md"],
-            height=30,
+            height=28,
             command=lambda k=preset_key: self._apply_preset(k),
         ).grid(row=1, column=0, sticky="ew", pady=(0, 4))
 
@@ -1161,7 +1161,7 @@ class ScriptsView(ctk.CTkFrame):
             hover_color=COLORS["bg_hover"],
             border_width=0,
             corner_radius=RADIUS["sm"],
-            height=24,
+            height=23,
             command=lambda k=preset_key: self._show_preset_tweaks(k),
         ).grid(row=2, column=0, sticky="ew")
 
@@ -1197,9 +1197,9 @@ class ScriptsView(ctk.CTkFrame):
             border_color=COLORS["border"],
         )
         card.grid_columnconfigure(0, weight=1)
-        px = 16
-        py_top = 14
-        py_bot = 14
+        px = 15
+        py_top = 13
+        py_bot = 13
         gap = 6
 
         # ── Row 0: Icon label + Name + Risk badge ──
@@ -1211,19 +1211,19 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             icon_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=17),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
-            width=32,
-            height=32,
+            width=30,
+            height=30,
         ).grid(row=0, column=0, sticky="w")
 
-        # Name (14px bold)
+        # Name (13px bold)
         ctk.CTkLabel(
             icon_row,
             text=info["title"],
-            font=self._font(14, "bold"),
+            font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
         ).grid(row=0, column=1, sticky="w", padx=(8, 0))
 
@@ -1237,11 +1237,11 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["sm"],
         ).grid(row=0, column=2, sticky="e")
 
-        # ── Row 1: FPS Gain (16px bold, accent) ──
+        # ── Row 1: FPS Gain (15px bold, accent) ──
         ctk.CTkLabel(
             card,
             text=info["fps"],
-            font=self._font(16, "bold"),
+            font=self._font(15, "bold"),
             text_color=COLORS["accent"],
             anchor="w",
         ).grid(row=1, column=0, sticky="w", padx=px, pady=(0, 3))
@@ -1292,7 +1292,7 @@ class ScriptsView(ctk.CTkFrame):
             hover_color=COLORS.get("accent_hover", COLORS["accent"]),
             border_width=0,
             corner_radius=RADIUS["md"],
-            height=28,
+            height=27,
             command=lambda k=preset_key: self._apply_preset(k),
         ).grid(row=0, column=0, sticky="ew", pady=(0, 3))
 
@@ -1306,7 +1306,7 @@ class ScriptsView(ctk.CTkFrame):
             hover_color=COLORS["bg_hover"],
             border_width=0,
             corner_radius=RADIUS["sm"],
-            height=22,
+            height=21,
             command=lambda k=preset_key: self._show_preset_tweaks(k),
         ).grid(row=1, column=0, sticky="ew")
 

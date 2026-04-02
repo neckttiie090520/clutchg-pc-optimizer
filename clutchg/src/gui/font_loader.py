@@ -1,6 +1,7 @@
 """
 Bundled Font Loader for ClutchG
-Loads Figtree font from bundled TTF files at runtime using tkextrafont.
+Loads Figtree and Material Symbols Outlined fonts from bundled TTF files
+at runtime using tkextrafont.
 
 tkextrafont registers fonts directly with Tk's font system, so they
 appear in tkinter.font.families() and work with CTkFont / CTkLabel etc.
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 _font_dir = Path(__file__).parent.parent / "fonts"
 _loaded_font_objects: list = []  # Keep references alive
 _font_family: Optional[str] = None
+_material_symbols_loaded: bool = False
 
 
 def get_font_path(filename: str) -> Optional[Path]:
@@ -29,7 +31,8 @@ def get_font_path(filename: str) -> Optional[Path]:
 
 def register_fonts() -> bool:
     """
-    Register bundled Figtree fonts with Tk's font system.
+    Register bundled Figtree and Material Symbols Outlined fonts with Tk's
+    font system.
 
     Uses tkextrafont to load TTF files directly into the Tk interpreter.
     The fonts become available in tkinter.font.families() immediately.
@@ -39,18 +42,19 @@ def register_fonts() -> bool:
     Returns:
         True if at least one font was loaded successfully
     """
-    global _loaded_font_objects
+    global _loaded_font_objects, _material_symbols_loaded
 
     fonts_to_load = [
         "Figtree-Regular.ttf",
         "Figtree-Bold.ttf",
+        "MaterialSymbolsOutlined.ttf",
     ]
 
     try:
         from tkextrafont import Font
     except ImportError:
         logger.warning(
-            "tkextrafont not installed. Figtree font will not be available. "
+            "tkextrafont not installed. Bundled fonts will not be available. "
             "Install with: pip install tkextrafont"
         )
         return False
@@ -67,10 +71,17 @@ def register_fonts() -> bool:
             _loaded_font_objects.append(font_obj)
             logger.info(f"Loaded font: {filename}")
             success = True
+            if "MaterialSymbols" in filename:
+                _material_symbols_loaded = True
         except Exception as e:
             logger.error(f"Error loading font {filename}: {e}")
 
     return success
+
+
+def is_material_symbols_loaded() -> bool:
+    """Return True if Material Symbols Outlined was loaded from the bundle."""
+    return _material_symbols_loaded
 
 
 def is_font_available(family: str) -> bool:
@@ -124,7 +135,7 @@ def ensure_fonts_loaded() -> str:
 
 def cleanup_fonts():
     """Unload fonts (call on app exit)."""
-    global _loaded_font_objects, _font_family
+    global _loaded_font_objects, _font_family, _material_symbols_loaded
     for font_obj in _loaded_font_objects:
         try:
             font_obj.unload()
@@ -132,3 +143,4 @@ def cleanup_fonts():
             pass
     _loaded_font_objects.clear()
     _font_family = None
+    _material_symbols_loaded = False
