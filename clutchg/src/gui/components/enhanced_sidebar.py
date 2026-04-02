@@ -405,6 +405,11 @@ class EnhancedSidebar(ctk.CTkFrame):
                 t = 1 - (1 - t) ** 2  # Ease-out quad
                 current_width = int(start_width + (end_width - start_width) * t)
                 self.configure(width=current_width)
+                # Also update the column minsize so the grid column tracks the sidebar width
+                try:
+                    self.master.grid_columnconfigure(0, minsize=current_width)
+                except Exception:
+                    pass
                 self.after(step_delay, lambda: animate_step(step + 1))
             except Exception as e:
                 logger.debug(f"Sidebar animation error: {e}")

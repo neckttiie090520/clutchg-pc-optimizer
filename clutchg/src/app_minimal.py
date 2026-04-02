@@ -159,17 +159,21 @@ class ClutchGApp:
 
     def setup_ui(self):
         """Setup UI with enhanced sidebar and view transitions"""
-        self.window.grid_columnconfigure(1, weight=1)
         self.window.grid_rowconfigure(0, weight=1)
+        self.window.grid_columnconfigure(1, weight=1)
 
         # Enhanced Sidebar
         from gui.components.enhanced_sidebar import EnhancedSidebar
 
         self.sidebar = EnhancedSidebar(self.window, self)
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
-        self.sidebar.grid_propagate(
-            False
-        )  # Prevent children from overriding sidebar width
+        # column 0 must NOT have weight — its width is driven solely by the sidebar widget
+        self.window.grid_columnconfigure(
+            0, weight=0, minsize=self.sidebar.width_collapsed
+        )
+        self.sidebar.grid(
+            row=0, column=0, sticky="ns"
+        )  # ns only — do NOT stretch horizontally
+        self.sidebar.grid_propagate(False)  # Children must not override sidebar width
 
         # Main Area
         colors = theme_manager.get_colors()
