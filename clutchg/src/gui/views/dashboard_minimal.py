@@ -133,18 +133,33 @@ class DashboardView(ctk.CTkFrame):
         super().destroy()
 
     def create_header(self):
-        """Create modern header with status badge and scan button"""
-        header = ctk.CTkFrame(self, fg_color="transparent", height=36)
+        """Create header: title + plain subtitle (left), Scan System button (right)."""
+        header = ctk.CTkFrame(self, fg_color="transparent")
         header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
-        header.grid_columnconfigure(1, weight=1)  # Spacer
+        header.grid_columnconfigure(1, weight=1)  # Spacer pushes button right
 
-        # Dashboard Title — h1 level
+        # Title block — title + subtitle stacked
+        title_block = ctk.CTkFrame(header, fg_color="transparent")
+        title_block.grid(row=0, column=0, sticky="w")
+
         ctk.CTkLabel(
-            header,
+            title_block,
             text=self._ui("title"),
             font=self._font(22, "bold"),
             text_color=COLORS["text_primary"],
-        ).grid(row=0, column=0, sticky="w")
+        ).pack(anchor="w")
+
+        subtitle_text = (
+            self._ui("system_ready")
+            if self.app.system_profile
+            else self._ui("initializing")
+        )
+        ctk.CTkLabel(
+            title_block,
+            text=subtitle_text,
+            font=self._font(12),
+            text_color=COLORS["text_muted"],
+        ).pack(anchor="w")
 
         # Scan System button — outline style, top-right
         EnhancedButton.outline(
@@ -152,65 +167,40 @@ class DashboardView(ctk.CTkFrame):
             text=self._ui("scan_system"),
             command=self.scan_system,
             height=32,
-        ).grid(row=0, column=2, sticky="e", padx=(0, SPACING["sm"]))
-
-        # System Status Badge (Glassmorphism Pill)
-        status_container = ctk.CTkFrame(
-            header,
-            fg_color=COLORS["bg_card"],
-            corner_radius=RADIUS["full"],
-            border_width=1,
-            border_color=COLORS["success_dim"],
-        )
-        status_container.grid(row=0, column=3, sticky="e")
-
-        # Dot indicator
-        ctk.CTkLabel(
-            status_container,
-            text="\u25cf",
-            font=self._font(10),
-            text_color=COLORS["success"],
-        ).pack(side="left", padx=(SPACING["sm"], SPACING["xs"]), pady=SPACING["xs"])
-
-        # Status Text
-        ctk.CTkLabel(
-            status_container,
-            text=self._ui("system_ready")
-            if self.app.system_profile
-            else self._ui("initializing"),
-            font=self._font(11, "bold"),
-            text_color=COLORS["success"]
-            if self.app.system_profile
-            else COLORS["text_muted"],
-        ).pack(side="left", padx=(0, SPACING["sm"]), pady=SPACING["xs"])
+        ).grid(row=0, column=2, sticky="e")
 
     def create_content(self):
-        """Create main content area with score and hardware info."""
+        """Create main content area: score-section row, then hardware + activity."""
         content = ctk.CTkFrame(self, fg_color="transparent")
         content.grid(row=1, column=0, sticky="nsew")
+        content.grid_columnconfigure(0, weight=1)
+        content.grid_rowconfigure(0, weight=0)  # score section — natural height
+        content.grid_rowconfigure(1, weight=0)  # hardware section label
+        content.grid_rowconfigure(2, weight=0)  # hardware grid
+        content.grid_rowconfigure(3, weight=0)  # recent activity label
+        content.grid_rowconfigure(4, weight=1)  # recent activity content
 
-        content.grid_columnconfigure(0, weight=6)  # left panel — score + hardware
-        content.grid_columnconfigure(1, weight=4)  # right panel — actions + activity
-        content.grid_rowconfigure(0, weight=1)
+        self.create_score_section(content)
 
-        self.create_left_panel(content)
-        self.create_right_panel(content)
+        if self.app.system_profile:
+            self.create_hardware_section(content)
 
-    def create_left_panel(self, parent):
-        """Left panel: score card (top) + 2×2 hardware grid (bottom)."""
-        panel = ctk.CTkFrame(parent, fg_color="transparent")
-        panel.grid(row=0, column=0, sticky="nsew", padx=(0, SPACING["sm"]))
-        panel.grid_columnconfigure(0, weight=1)
-        panel.grid_rowconfigure(0, weight=0)  # score card — natural height
-        panel.grid_rowconfigure(1, weight=1)  # hardware grid — fills remaining
+        self.create_recent_activity_section(content)
 
-        # ── Score Card (pure pack inside) ────────────────────────────
-        score_card = GlassCard(panel, corner_radius=RADIUS["2xl"])
-        score_card.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
+    def create_score_section(self, parent):
+        """Score ring (left) + recommendation card (right) — side by side in one row."""
+        section = ctk.CTkFrame(parent, fg_color="transparent")
+        section.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        section.grid_columnconfigure(0, weight=0)  # ring — fixed width
+        section.grid_columnconfigure(1, weight=1)  # rec card — fills remaining
+        section.grid_rowconfigure(0, weight=1)
+
+        # ── Score Ring (left) ─────────────────────────────────────────
+        score_card = GlassCard(section, corner_radius=RADIUS["xl"])
+        score_card.grid(row=0, column=0, sticky="ns", padx=(0, SPACING["sm"]))
 
         score = self.app.system_profile.total_score if self.app.system_profile else 0
         theme_colors = theme_manager.get_colors()
-        badge_color = self._get_progress_color(score)
 
         if score >= 80:
             ring_colors = [theme_colors["success"], theme_colors["success"]]
@@ -219,7 +209,6 @@ class DashboardView(ctk.CTkFrame):
         else:
             ring_colors = [theme_colors["danger"], theme_colors["danger"]]
 
-        # Ring — compact 120px
         self.score_display = CircularProgress(
             score_card,
             size=120,
@@ -230,9 +219,8 @@ class DashboardView(ctk.CTkFrame):
             bg_color=theme_colors["bg_card"],
             value_font=("Figtree", 28, "bold"),
         )
-        self.score_display.pack(pady=(SPACING["sm"], 2))
+        self.score_display.pack(padx=SPACING["lg"], pady=(SPACING["md"], 2))
 
-        # "SYSTEM SCORE" — overline style: small, bold, muted
         ctk.CTkLabel(
             score_card,
             text=self._ui("system_score")
@@ -240,32 +228,47 @@ class DashboardView(ctk.CTkFrame):
             else self._ui("scanning"),
             font=self._font(10, "bold"),
             text_color=COLORS["text_muted"],
-        ).pack()
+        ).pack(pady=(0, SPACING["md"]))
 
-        # Mode badge — compact pill
-        active_profile = self._get_active_profile_name()
-        mode_badge = ctk.CTkFrame(
-            score_card,
-            fg_color="transparent",
-            border_width=1,
-            border_color=COLORS["border"],
-            corner_radius=RADIUS["full"],
-        )
-        mode_badge.pack(pady=(SPACING["xs"], SPACING["sm"]))
+        # ── Recommendation Card (right) ───────────────────────────────
+        rec_card = GlassCard(section, corner_radius=RADIUS["xl"], padding=SPACING["md"])
+        rec_card.grid(row=0, column=1, sticky="nsew")
+
+        # "Recommended" — overline label
         ctk.CTkLabel(
-            mode_badge,
-            text=active_profile,
-            font=self._font(11),
-            text_color=COLORS["text_secondary"],
-            wraplength=180,
-        ).pack(padx=SPACING["sm"], pady=2)
+            rec_card,
+            text="Recommended",
+            font=self._font(10, "bold"),
+            text_color=COLORS["text_muted"],
+        ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
 
-        # ── Hardware 2×2 Grid ─────────────────────────────────────────
+        # Recommendation text — body
+        rec_text = self._ui("rec_safe")
         if self.app.system_profile:
-            self.create_hardware_grid(panel)
+            recommended = self.app.system_detector.recommend_profile(
+                self.app.system_profile
+            )
+            rec_text = self._ui("rec_optimal").format(profile=recommended)
 
-    def create_hardware_grid(self, parent):
-        """1×3 row of hardware spec cards (CPU, GPU, RAM only)."""
+        ctk.CTkLabel(
+            rec_card,
+            text=rec_text,
+            font=self._font(13),
+            text_color=COLORS["text_secondary"],
+            wraplength=320,
+            justify="left",
+        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
+
+        # Apply Optimization button
+        EnhancedButton.primary(
+            rec_card,
+            text="Apply Optimization",
+            command=lambda: self.app.switch_view("scripts"),
+            height=36,
+        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
+
+    def create_hardware_section(self, parent):
+        """Section label + 1×3 hardware grid (CPU, GPU, RAM) — full width."""
         system = self.app.system_profile
         if not system:
             return
@@ -298,7 +301,7 @@ class DashboardView(ctk.CTkFrame):
 
         section_label = ctk.CTkFrame(parent, fg_color="transparent")
         section_label.grid(
-            row=0, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"])
+            row=1, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"])
         )
         ctk.CTkLabel(
             section_label,
@@ -314,7 +317,7 @@ class DashboardView(ctk.CTkFrame):
         ]
 
         grid = ctk.CTkFrame(parent, fg_color="transparent")
-        grid.grid(row=1, column=0, sticky="nsew")
+        grid.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["md"]))
         grid.grid_columnconfigure(0, weight=1, uniform="hw")
         grid.grid_columnconfigure(1, weight=1, uniform="hw")
         grid.grid_columnconfigure(2, weight=1, uniform="hw")
@@ -397,81 +400,24 @@ class DashboardView(ctk.CTkFrame):
         else:
             return COLORS["danger"]  # Red
 
-    def create_right_panel(self, parent):
-        """Right panel containing Actions and Hardware Stats"""
-        panel = ctk.CTkFrame(parent, fg_color="transparent")
-        panel.grid(row=0, column=1, sticky="nsew")
-        panel.grid_columnconfigure(0, weight=1)
-
-        # 1. Quick Actions Card
-        self.create_quick_actions(panel)
-
-        # 2. Recent Activity (Timeline)
-        self.create_recent_activity(panel)
-
-    def create_quick_actions(self, parent):
-        """Quick Actions Section"""
-        actions_card = GlassCard(parent, padding=SPACING["md"])
-        actions_card.pack(fill="x", pady=(0, SPACING["sm"]))
-
-        # Title inside card — section level (15px bold)
+    def create_recent_activity_section(self, parent):
+        """Recent Activity section — rows 3+4 of content grid."""
         ctk.CTkLabel(
-            actions_card,
-            text=self._ui("rec_optimization"),
-            font=self._font(15, "bold"),
-            text_color=COLORS["text_primary"],
-        ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["sm"], SPACING["xs"]))
-
-        # Dynamic recommendation text — body (13px)
-        rec_text = self._ui("rec_safe")
-        if self.app.system_profile:
-            recommended = self.app.system_detector.recommend_profile(
-                self.app.system_profile
-            )
-            rec_text = self._ui("rec_optimal").format(profile=recommended)
-
-        ctk.CTkLabel(
-            actions_card,
-            text=rec_text,
-            font=self._font(13),
-            text_color=COLORS["text_secondary"],
-        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
-
-        # Action Buttons Row
-        btn_row = ctk.CTkFrame(actions_card, fg_color="transparent")
-        btn_row.pack(fill="x", padx=SPACING["md"], pady=(0, SPACING["sm"]))
-
-        # Main Action Button — title case, not ALL CAPS
-        action_btn = EnhancedButton.primary(
-            btn_row,
-            text="Apply Optimization",
-            command=lambda: self.app.switch_view("scripts"),
-            width=180,
-            height=36,
-        )
-        action_btn.pack(side="left")
-
-    def create_recent_activity(self, parent):
-        """Recent Activity Section (Timeline Preview)"""
-        # Just a simple list for now, full timeline in Restore Center
-        container = ctk.CTkFrame(parent, fg_color="transparent")
-        container.pack(fill="x", pady=(SPACING["sm"], 0))
-
-        ctk.CTkLabel(
-            container,
+            parent,
             text=self._ui("recent_activity"),
-            font=self._font(15, "bold"),
-            text_color=COLORS["text_primary"],
-        ).pack(anchor="w", pady=(0, SPACING["sm"]))
+            font=self._font(11, "bold"),
+            text_color=COLORS["text_muted"],
+        ).grid(row=3, column=0, sticky="w", pady=(0, SPACING["xs"]))
 
-        # Try to load real activity from FlightRecorder
+        container = ctk.CTkFrame(parent, fg_color="transparent")
+        container.grid(row=4, column=0, sticky="nsew")
+
         activities = self._load_recent_activities()
 
         if activities:
             for text, time_str, color in activities:
                 self.create_activity_item(container, text, time_str, color)
         else:
-            # Empty state
             ctk.CTkLabel(
                 container,
                 text=self._ui("no_recent_activity"),
