@@ -111,6 +111,7 @@ class IconProvider:
         "local_fire_department": "\uef55",  # Extreme profile
         # Compare / Preview
         "compare_arrows": "\ue915",  # Compare panel toggle
+        "star": "\ue838",  # Recommended badge
         "visibility": "\ue8f4",  # Preview button
         "arrow_forward_ms": "\ue5c8",  # Material forward arrow (nav)
         "arrow_back_ms": "\ue5c4",  # Material back arrow (nav)
