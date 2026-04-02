@@ -784,15 +784,12 @@ class ScriptsView(ctk.CTkFrame):
             if action.kind == "tweak_pack"
             else self._ui("quick_open")
         )
-        ctk.CTkButton(
+        EnhancedButton.outline(
             card,
             text=button_text,
-            font=self._font(12, "bold"),
-            fg_color=COLORS["accent"],
-            text_color=COLORS.get("text_on_accent", "#FFFFFF"),
-            hover_color=COLORS["accent_hover"],
-            corner_radius=RADIUS["md"],
             height=38,
+            border_color=COLORS["accent"],
+            text_color=COLORS["accent"],
             command=lambda a=action: self._run_quick_action(a),
         ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
 
@@ -1612,7 +1609,12 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["sm"],
             border_width=0,
         )
-        row.grid_columnconfigure(1, weight=1)
+        row.grid_columnconfigure(0, weight=0)  # toggle
+        row.grid_columnconfigure(1, weight=1)  # name — expands
+        row.grid_columnconfigure(2, weight=0)  # risk badge
+        row.grid_columnconfigure(3, weight=0)  # gain
+        row.grid_columnconfigure(4, weight=0)  # info btn
+        row.grid_columnconfigure(5, weight=0)  # restart icon
 
         # ── Row 0: Toggle + Name + badges + buttons ──
         # Toggle
@@ -1695,12 +1697,12 @@ class ScriptsView(ctk.CTkFrame):
                 text_color=COLORS["text_tertiary"],
                 anchor="w",
                 justify="left",
-                wraplength=400,
+                wraplength=600,
             ).grid(
                 row=1,
                 column=1,
                 columnspan=4,
-                sticky="w",
+                sticky="ew",
                 pady=(0, SPACING["xs"]),
             )
 

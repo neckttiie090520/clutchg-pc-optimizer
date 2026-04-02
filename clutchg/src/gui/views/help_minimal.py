@@ -354,7 +354,7 @@ class HelpView(ctk.CTkFrame):
                     text=profile["who_should_use"],
                     font=self._font(10, "italic"),
                     text_color=COLORS["accent"],
-                    wraplength=580,
+                    wraplength=720,
                 ).pack(side="left")
 
             if profile.get("warnings"):
@@ -371,7 +371,7 @@ class HelpView(ctk.CTkFrame):
                         text=f"  • {item}",
                         font=self._font(11),
                         text_color=COLORS["text_secondary"],
-                        wraplength=620,
+                        wraplength=720,
                         justify="left",
                     ).pack(anchor="w", pady=1)
 
@@ -454,7 +454,7 @@ class HelpView(ctk.CTkFrame):
             text=script["description"],
             font=self._font(11),
             text_color=COLORS["text_secondary"],
-            wraplength=600,
+            wraplength=720,
         ).pack(anchor="w", padx=15, pady=(0, 10))
 
         if "effects" in script:
@@ -469,7 +469,7 @@ class HelpView(ctk.CTkFrame):
                 text=f"{self._ui('reversibility')} {script['reversibility']}",
                 font=self._font(10),
                 text_color=COLORS["text_tertiary"],
-                wraplength=620,
+                wraplength=720,
                 justify="left",
             ).pack(anchor="w", padx=15, pady=(8, 12))
 
@@ -508,7 +508,7 @@ class HelpView(ctk.CTkFrame):
                     text=section["content"],
                     font=self._font(12),
                     text_color=COLORS["text_secondary"],
-                    wraplength=500,
+                    wraplength=720,
                     justify="left",
                 ).pack(anchor="w", pady=(0, 10), padx=20)
 
@@ -638,7 +638,7 @@ class HelpView(ctk.CTkFrame):
             text=payload.get("description", ""),
             font=self._font(12),
             text_color=COLORS["text_secondary"],
-            wraplength=500,
+            wraplength=720,
             justify="left",
         ).pack(anchor="w", pady=(0, 20), padx=20)
 
@@ -664,7 +664,7 @@ class HelpView(ctk.CTkFrame):
             text=payload.get("disclaimer", ""),
             font=self._font(10, "italic"),
             text_color=COLORS["text_muted"],
-            wraplength=700,
+            wraplength=720,
         ).pack(anchor="w", pady=(30, 0))
 
     def on_search_change(self):
@@ -736,7 +736,7 @@ class HelpView(ctk.CTkFrame):
                 text=snippet,
                 font=self._font(11),
                 text_color=COLORS["text_secondary"],
-                wraplength=600,
+                wraplength=720,
             ).pack(anchor="w", padx=15, pady=(0, 10))
 
             EnhancedButton.outline(
