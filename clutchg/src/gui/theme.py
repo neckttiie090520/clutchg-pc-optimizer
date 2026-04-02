@@ -299,7 +299,7 @@ class ThemeManager:
 
         cache_key = f"{theme}_{accent}"
         if cache_key in self.color_cache:
-            return self.color_cache[cache_key]
+            return self.color_cache[cache_key].copy()
 
         # Start with base theme colors
         colors = THEMES[theme].copy()
