@@ -1018,15 +1018,11 @@ class ScriptsView(ctk.CTkFrame):
     ):
         """Full-width hero card for the recommended preset.
 
-        Layout (2 columns):
-          Left  — icon label + name + RECOMMENDED badge + guidance + info pills
-          Right — FPS number (dominant, 32px bold, accent) + Apply + See Details
+        Layout (2 columns, compact):
+          Left  — icon + name + ★ RECOMMENDED (1 row) + guidance + pills
+          Right — FPS (26px bold) + Apply + View Details (tight stack)
 
-        The right column is a single decision block: FPS catches the eye,
-        Apply sits right below it so users act immediately.
-
-        Card styling: 2px green border, padding 16px 20px.
-        Spacing scale: 8px / 16px / 24px.
+        Card padding: 10px 20px. Tight internal gaps (4px).
         """
         card = ctk.CTkFrame(
             parent,
@@ -1036,121 +1032,104 @@ class ScriptsView(ctk.CTkFrame):
             border_color=COLORS["success"],
         )
         card.grid_columnconfigure(0, weight=1)
-        card.grid_columnconfigure(1, weight=0, minsize=160)
+        card.grid_columnconfigure(1, weight=0, minsize=140)
 
         px = 20
-        py = 16
+        py = 10
 
         # ── LEFT SECTION: identity + context ──
         left = ctk.CTkFrame(card, fg_color="transparent")
-        left.grid(row=0, column=0, sticky="nsew", padx=(px, 16), pady=py)
+        left.grid(row=0, column=0, sticky="nsew", padx=(px, 12), pady=py)
         left.grid_columnconfigure(0, weight=1)
 
-        # Icon row: colored-bg label + name side-by-side
+        # Row 0: Icon + name + ★ RECOMMENDED (all one row)
         icon_name_row = ctk.CTkFrame(left, fg_color="transparent")
-        icon_name_row.grid(row=0, column=0, sticky="w", pady=(0, 8))
+        icon_name_row.grid(row=0, column=0, sticky="w", pady=(0, 4))
 
         ctk.CTkLabel(
             icon_name_row,
             text=info["icon"],
-            font=ctk.CTkFont(family="Material Symbols Outlined", size=21),
+            font=ctk.CTkFont(family="Material Symbols Outlined", size=18),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
-            width=36,
-            height=36,
+            width=30,
+            height=30,
         ).pack(side="left", padx=(0, 8))
 
         ctk.CTkLabel(
             icon_name_row,
             text=info["title"],
-            font=self._font(15, "bold"),
+            font=self._font(14, "bold"),
             text_color=COLORS["text_primary"],
             anchor="w",
-        ).pack(side="left")
-
-        # RECOMMENDED badge with star icon
-        badge_frame = ctk.CTkFrame(left, fg_color="transparent")
-        badge_frame.grid(row=1, column=0, sticky="w", pady=(0, 4))
+        ).pack(side="left", padx=(0, 8))
 
         ctk.CTkLabel(
-            badge_frame,
+            icon_name_row,
             text=ICON("star"),
             font=ctk.CTkFont(family="Material Symbols Outlined", size=12),
             text_color=COLORS["success"],
-        ).pack(side="left", padx=(0, 4))
+        ).pack(side="left", padx=(0, 3))
 
         ctk.CTkLabel(
-            badge_frame,
+            icon_name_row,
             text=self._ui("recommended").upper(),
-            font=self._font(10, "bold"),
+            font=self._font(9, "bold"),
             text_color=COLORS["success"],
             anchor="w",
         ).pack(side="left")
 
-        # Guidance text (11px, tertiary)
-        ctk.CTkLabel(
-            left,
-            text=self._ui("hero_guidance"),
-            font=self._font(11),
-            text_color=COLORS["text_tertiary"],
-            anchor="w",
-        ).grid(row=2, column=0, sticky="w", pady=(0, 8))
-
-        # Info pills (compact stats)
+        # Row 1: Guidance + pills (compact info line)
         restart_val = info.get("restart", "No")
-        pills_text = (
-            f"{len(tweaks)} {self._ui('stat_tweaks')}"
-            f"  \u2022  {self._ui('stat_risk')}: {info['risk']}"
-            f"  \u2022  {self._ui('stat_restart')}: {restart_val}"
+        info_line = (
+            f"{self._ui('hero_guidance')}  \u2022  "
+            f"{len(tweaks)} {self._ui('stat_tweaks')}  \u2022  "
+            f"{self._ui('stat_risk')}: {info['risk']}  \u2022  "
+            f"{self._ui('stat_restart')}: {restart_val}"
         )
         ctk.CTkLabel(
             left,
-            text=pills_text,
+            text=info_line,
             font=self._font(10),
             text_color=COLORS["text_tertiary"],
             anchor="w",
-        ).grid(row=3, column=0, sticky="w")
+        ).grid(row=1, column=0, sticky="w")
 
         # Vertical separator
         ctk.CTkFrame(card, fg_color=COLORS["border"], width=1).grid(
             row=0, column=0, sticky="nse", pady=py
         )
 
-        # ── RIGHT SECTION: decision block (FPS + CTA) ──
+        # ── RIGHT SECTION: decision block ──
         right = ctk.CTkFrame(card, fg_color="transparent")
-        right.grid(row=0, column=1, sticky="nsew", padx=(16, px), pady=py)
+        right.grid(row=0, column=1, sticky="nsew", padx=(12, px), pady=py)
         right.grid_columnconfigure(0, weight=1)
-        right.grid_rowconfigure(0, weight=1)
-        right.grid_rowconfigure(1, weight=0)
-        right.grid_rowconfigure(2, weight=0)
-        right.grid_rowconfigure(3, weight=0)
-        right.grid_rowconfigure(4, weight=1)
 
-        # FPS — dominant visual element (32px bold, accent)
+        # FPS — dominant (26px bold, accent)
         ctk.CTkLabel(
             right,
             text=info["fps"],
-            font=self._font(32, "bold"),
+            font=self._font(26, "bold"),
             text_color=COLORS["accent"],
             anchor="center",
-        ).grid(row=1, column=0)
+        ).grid(row=0, column=0)
 
-        # Apply button — tight below FPS
+        # Apply button
         ctk.CTkButton(
             right,
             text=self._ui("apply"),
-            font=self._font(12, "bold"),
+            font=self._font(11, "bold"),
             fg_color=COLORS["accent"],
             text_color=COLORS.get("text_on_accent", "#000000"),
             hover_color=COLORS.get("accent_hover", COLORS["accent"]),
             border_width=0,
             corner_radius=RADIUS["md"],
-            height=32,
+            height=28,
             command=lambda k=preset_key: self._apply_preset(k),
-        ).grid(row=2, column=0, sticky="ew", pady=(8, 4))
+        ).grid(row=1, column=0, sticky="ew", pady=(4, 2))
 
-        # See Details — accent-colored ghost button
+        # View Details — accent ghost
         ctk.CTkButton(
             right,
             text=self._ui("see_details"),
@@ -1160,9 +1139,9 @@ class ScriptsView(ctk.CTkFrame):
             hover_color=COLORS["bg_hover"],
             border_width=0,
             corner_radius=RADIUS["sm"],
-            height=24,
+            height=22,
             command=lambda k=preset_key: self._show_preset_tweaks(k),
-        ).grid(row=3, column=0, sticky="ew")
+        ).grid(row=2, column=0, sticky="ew")
 
         return card
 
