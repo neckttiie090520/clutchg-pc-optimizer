@@ -1,6 +1,7 @@
 {
     "version": "1.0.0",
-    "theme": "dark",
+    "theme": "modern",
+    "accent": "sunvalley",
     "auto_backup": true,
     "confirm_actions": true,
     "log_level": "INFO",
