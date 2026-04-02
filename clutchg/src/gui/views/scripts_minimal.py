@@ -411,14 +411,18 @@ class ScriptsView(ctk.CTkFrame):
     # TAB BAR
     # ================================================================
     def _create_tab_bar(self):
+        # Wrapper row — left-aligned so bar doesn't stretch full width
+        tab_row = ctk.CTkFrame(self, fg_color="transparent")
+        tab_row.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["md"]))
+
         bar = ctk.CTkFrame(
-            self,
+            tab_row,
             fg_color=COLORS["bg_card"],
             corner_radius=RADIUS["lg"],
             border_width=1,
             border_color=COLORS["border"],
         )
-        bar.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        bar.pack(side="left")
 
         # Material Symbols Outlined codepoints
         tabs = [
