@@ -167,6 +167,9 @@ class ClutchGApp:
 
         self.sidebar = EnhancedSidebar(self.window, self)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_propagate(
+            False
+        )  # Prevent children from overriding sidebar width
 
         # Main Area
         colors = theme_manager.get_colors()

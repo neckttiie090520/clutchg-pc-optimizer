@@ -81,7 +81,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         logo_frame.grid_columnconfigure(0, weight=0)  # icon
         logo_frame.grid_columnconfigure(1, weight=1)  # name
 
-        icon_path = Path(__file__).parent.parent / "assets" / "icon.png"
+        icon_path = Path(__file__).parent.parent.parent / "assets" / "icon.png"
         if icon_path.exists():
             self._logo_image = ctk.CTkImage(
                 light_image=Image.open(icon_path),
