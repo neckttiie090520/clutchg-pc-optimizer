@@ -1249,6 +1249,8 @@ class ScriptsView(ctk.CTkFrame):
 
         # ── Row 2: Stats grid (2x2) ──
         # Spec: profile-stats: grid 1fr 1fr, gap 6px, margin 4px 0
+        # Each stat: label (left, tertiary 11px) — value (right, primary bold 11px)
+        # Gain & Risk values use badge styling; Tweaks & Restart use plain text
         risk_c = risk_colors.get(info["risk"], risk_colors["LOW"])
         stats_frame = ctk.CTkFrame(card, fg_color="transparent")
         stats_frame.grid(row=2, column=0, sticky="ew", padx=px, pady=(4, 0))
@@ -1272,9 +1274,14 @@ class ScriptsView(ctk.CTkFrame):
             # Spec: profile-stat: flex, justify-between, 11px, padding 4px 0
             stat_cell = ctk.CTkFrame(stats_frame, fg_color="transparent")
             stat_cell.grid(
-                row=r, column=c, sticky="ew", pady=3, padx=(0, 6 if c == 0 else 0)
+                row=r,
+                column=c,
+                sticky="ew",
+                pady=3,
+                padx=(0, 10) if c == 0 else (10, 0),
             )
-            stat_cell.grid_columnconfigure(0, weight=1)
+            stat_cell.grid_columnconfigure(0, weight=0)
+            stat_cell.grid_columnconfigure(1, weight=1)
 
             ctk.CTkLabel(
                 stat_cell,
