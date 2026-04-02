@@ -65,6 +65,11 @@ PRESET_INFO = {
         "color": "#22C55E",
         "dim": "#1a2e1f",
         "desc": "Stable everyday tweaks. Zero risk of breaking anything. Good for most users.",
+        "restart": "No",
+        "risk_bar_pct": 0.15,
+        "services_disabled": "0",
+        "registry_changes": "4",
+        "bcdedit_changes": "0",
     },
     "competitive": {
         "icon": ICON("speed"),
@@ -75,6 +80,11 @@ PRESET_INFO = {
         "color": "#F59E0B",
         "dim": "#2e2510",
         "desc": "Aggressive tuning for esports. Disables some background services. May need restart.",
+        "restart": "Maybe",
+        "risk_bar_pct": 0.50,
+        "services_disabled": "6",
+        "registry_changes": "12",
+        "bcdedit_changes": "2",
     },
     "extreme": {
         "icon": ICON("local_fire_department"),
@@ -85,6 +95,11 @@ PRESET_INFO = {
         "color": "#EF4444",
         "dim": "#2e1616",
         "desc": "Max performance. Strips system to bare minimum. Requires restart. Know what you're doing.",
+        "restart": "Yes",
+        "risk_bar_pct": 0.85,
+        "services_disabled": "14",
+        "registry_changes": "22",
+        "bcdedit_changes": "5",
     },
 }
 
@@ -903,7 +918,7 @@ class ScriptsView(ctk.CTkFrame):
 
         # ── View header: "Profiles" + subtitle + Compare ghost button ──
         header = ctk.CTkFrame(self.content, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        header.grid(row=0, column=0, sticky="ew", pady=(0, 16))
         header.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
@@ -918,7 +933,7 @@ class ScriptsView(ctk.CTkFrame):
             text=self._ui("profiles_subtitle"),
             font=self._font(12),
             text_color=COLORS["text_tertiary"],
-        ).grid(row=1, column=0, sticky="w", pady=(2, 0))
+        ).grid(row=1, column=0, sticky="w", pady=(3, 0))
 
         # Compare ghost button (top-right) — text-only, no icon font mixing
         compare_btn = ctk.CTkButton(
@@ -936,7 +951,7 @@ class ScriptsView(ctk.CTkFrame):
         )
         compare_btn.grid(row=0, column=1, sticky="ne")
 
-        # ── 3-column card grid ──
+        # ── 3-column card grid (gap: 14px per spec) ──
         suggestion = self._get_spec_suggestion()
         preset_info = self._get_preset_info()
 
@@ -946,6 +961,7 @@ class ScriptsView(ctk.CTkFrame):
             card_grid.grid_columnconfigure(col_idx, weight=1, uniform="profile")
 
         col = 0
+        gap = 14  # spec: gap: 14px
         for preset_key, info in preset_info.items():
             tweaks = self.registry.get_tweaks_for_preset(preset_key)
             is_recommended = bool(suggestion and suggestion.get("preset") == preset_key)
@@ -963,8 +979,8 @@ class ScriptsView(ctk.CTkFrame):
                 column=col,
                 sticky="nsew",
                 padx=(
-                    0 if col == 0 else SPACING["sm"] // 2,
-                    0 if col == 2 else SPACING["sm"] // 2,
+                    0 if col == 0 else gap // 2,
+                    0 if col == 2 else gap // 2,
                 ),
             )
             col += 1
@@ -985,7 +1001,17 @@ class ScriptsView(ctk.CTkFrame):
             self._compare_visible = True
 
     def _build_compare_panel(self):
-        """Build and show the compare panel below the card grid."""
+        """Build and show the compare panel below the card grid.
+
+        Spec (phase3 Section A – compare-panel):
+        - Panel: bg_card, border 1px, r-lg, padding 16px 18px, margin-top 16px
+        - Header: 13px bold, mb 12px, flex gap 8px
+        - Grid: 140px | 1fr | 1fr | 1fr, gap 0, font 11px
+        - All cells: padding 8px 12px, border-bottom 1px border
+        - Header cells: weight 600, bg_secondary, text_tertiary (colored overrides)
+        - Label cells: weight 500, text_tertiary
+        - Value cells: weight 600, text_primary
+        """
         preset_info = self._get_preset_info()
 
         panel = ctk.CTkFrame(
@@ -995,27 +1021,21 @@ class ScriptsView(ctk.CTkFrame):
             border_width=1,
             border_color=COLORS["border"],
         )
-        panel.grid(row=2, column=0, sticky="ew", pady=(SPACING["md"], 0))
-        panel.grid_columnconfigure(0, weight=0)
-        for c in range(1, 4):
-            panel.grid_columnconfigure(c, weight=1)
+        panel.grid(row=2, column=0, sticky="ew", pady=(16, 0))
 
-        # Header row
-        hdr_frame = ctk.CTkFrame(panel, fg_color="transparent")
-        hdr_frame.grid(
-            row=0,
-            column=0,
-            columnspan=4,
-            sticky="ew",
-            padx=SPACING["md"],
-            pady=(SPACING["md"], SPACING["sm"]),
-        )
+        # Inner wrapper for 16px 18px padding
+        inner = ctk.CTkFrame(panel, fg_color="transparent")
+        inner.pack(fill="x", padx=18, pady=16)
+
+        # ── Header: icon + title, mb 12px ──
+        hdr_frame = ctk.CTkFrame(inner, fg_color="transparent")
+        hdr_frame.pack(fill="x", pady=(0, 12))
         ctk.CTkLabel(
             hdr_frame,
             text=ICON("compare_arrows"),
             font=ctk.CTkFont(family="Material Symbols Outlined", size=16),
             text_color=COLORS["text_secondary"],
-        ).pack(side="left", padx=(0, SPACING["sm"]))
+        ).pack(side="left", padx=(0, 8))
         ctk.CTkLabel(
             hdr_frame,
             text=self._ui("compare_title"),
@@ -1023,7 +1043,19 @@ class ScriptsView(ctk.CTkFrame):
             text_color=COLORS["text_primary"],
         ).pack(side="left")
 
-        # Column headers: empty | Safe | Competitive | Extreme
+        # ── Grid container ──
+        grid = ctk.CTkFrame(inner, fg_color="transparent")
+        grid.pack(fill="x")
+        # 140px label column + 3 equal value columns
+        grid.grid_columnconfigure(0, minsize=140, weight=0)
+        for c in range(1, 4):
+            grid.grid_columnconfigure(c, weight=1)
+
+        bg_sec = COLORS.get("bg_secondary", COLORS["bg_primary"])
+        cell_padx = 12
+        cell_pady = 8
+
+        # ── Column headers: (empty) | Safe | Competitive | Extreme ──
         headers = ["", "Safe", "Competitive", "Extreme"]
         header_colors = [
             COLORS["text_tertiary"],
@@ -1032,17 +1064,20 @@ class ScriptsView(ctk.CTkFrame):
             COLORS.get("danger", "#EF4444"),
         ]
         for c, (h, hc) in enumerate(zip(headers, header_colors)):
-            lbl = ctk.CTkLabel(
-                panel,
+            cell = ctk.CTkFrame(grid, fg_color=bg_sec, corner_radius=0)
+            cell.grid(row=0, column=c, sticky="nsew")
+            ctk.CTkLabel(
+                cell,
                 text=h,
                 font=self._font(11, "bold"),
                 text_color=hc,
-                fg_color=COLORS.get("bg_secondary", COLORS["bg_primary"]),
                 anchor="w" if c == 0 else "center",
-            )
-            lbl.grid(row=1, column=c, sticky="ew", padx=1, pady=0, ipady=6)
+            ).pack(fill="x", padx=cell_padx, pady=cell_pady)
+        # Header bottom border
+        hdr_sep = ctk.CTkFrame(grid, fg_color=COLORS["border"], height=1)
+        hdr_sep.grid(row=1, column=0, columnspan=4, sticky="ew")
 
-        # Data rows
+        # ── Data rows ──
         rows_data = [
             (self._ui("cmp_total_tweaks"), "tweaks"),
             (self._ui("cmp_fps_gain"), "fps"),
@@ -1053,59 +1088,60 @@ class ScriptsView(ctk.CTkFrame):
         ]
 
         presets = list(preset_info.values())
+        preset_keys = list(preset_info.keys())
         for r_idx, (label, key) in enumerate(rows_data):
-            grid_row = r_idx + 2
+            # Each data row occupies 2 grid rows: content + separator
+            grid_row = 2 + r_idx * 2
             is_last = r_idx == len(rows_data) - 1
 
-            # Label cell
-            lbl = ctk.CTkLabel(
-                panel,
-                text=f"  {label}",
+            # Label cell (col 0) — weight 500 = normal font
+            ctk.CTkLabel(
+                grid,
+                text=label,
                 font=self._font(11),
                 text_color=COLORS["text_tertiary"],
                 anchor="w",
-            )
-            lbl.grid(
+            ).grid(
                 row=grid_row,
                 column=0,
                 sticky="ew",
-                padx=(SPACING["md"], SPACING["sm"]),
-                pady=0,
-                ipady=7,
+                padx=(cell_padx, cell_padx),
+                pady=cell_pady,
             )
 
-            # Value cells
+            # Value cells (cols 1-3) — weight 600 = bold
             for c_idx, p_info in enumerate(presets):
                 if key == "tweaks":
-                    tweaks = self.registry.get_tweaks_for_preset(
-                        list(preset_info.keys())[c_idx]
-                    )
+                    tweaks = self.registry.get_tweaks_for_preset(preset_keys[c_idx])
                     val = str(len(tweaks))
                 elif key == "fps":
                     val = p_info["fps"]
                 else:
                     val = str(p_info.get(key, ""))
 
-                val_lbl = ctk.CTkLabel(
-                    panel,
+                ctk.CTkLabel(
+                    grid,
                     text=val,
                     font=self._font(11, "bold"),
                     text_color=COLORS["text_primary"],
                     anchor="center",
-                )
-                val_lbl.grid(
-                    row=grid_row, column=c_idx + 1, sticky="ew", pady=0, ipady=7
+                ).grid(
+                    row=grid_row,
+                    column=c_idx + 1,
+                    sticky="ew",
+                    padx=cell_padx,
+                    pady=cell_pady,
                 )
 
-            # Separator (except last row)
+            # Row separator (except after last row)
             if not is_last:
-                for c in range(4):
-                    sep = ctk.CTkFrame(panel, fg_color=COLORS["border"], height=1)
-                    sep.grid(row=grid_row, column=c, sticky="sew", padx=1)
-
-        # Bottom padding
-        spacer = ctk.CTkFrame(panel, fg_color="transparent", height=SPACING["sm"])
-        spacer.grid(row=len(rows_data) + 2, column=0, columnspan=4)
+                sep = ctk.CTkFrame(grid, fg_color=COLORS["border"], height=1)
+                sep.grid(
+                    row=grid_row + 1,
+                    column=0,
+                    columnspan=4,
+                    sticky="ew",
+                )
 
         self._compare_panel = panel
 
@@ -1134,6 +1170,12 @@ class ScriptsView(ctk.CTkFrame):
     ):
         """Create a profile card matching the Phase 3 spec:
         icon-in-colored-circle, stats grid, risk bar, colored Apply + Preview buttons.
+
+        Spec ref: phase3-profiles-settings-welcome.html Section A
+        - Card padding: 20px top/bottom, 18px sides
+        - Flex column gap: 8px between sections
+        - Safe = btn-primary (filled accent), Comp = btn-warning, Extreme = btn-danger
+        - Recommended card: 2px green border
         """
         risk_colors = self._get_risk_colors()
 
@@ -1145,11 +1187,16 @@ class ScriptsView(ctk.CTkFrame):
             border_color=COLORS["success"] if is_recommended else COLORS["border"],
         )
         card.grid_columnconfigure(0, weight=1)
-        pad = SPACING["md"]
+        # Spec: padding: 20px 18px  →  px=18, py=20
+        px = 18
+        py_top = 20
+        py_bot = 20
+        gap = 8  # spec: gap: 8px between flex children
 
         # ── Row 0: Icon circle + Name + RECOMMENDED tag ──
+        # Spec: profile-icon-row: gap 10px, margin-bottom 4px
         icon_row = ctk.CTkFrame(card, fg_color="transparent")
-        icon_row.grid(row=0, column=0, sticky="ew", padx=pad, pady=(pad, SPACING["xs"]))
+        icon_row.grid(row=0, column=0, sticky="ew", padx=px, pady=(py_top, 4))
         icon_row.grid_columnconfigure(1, weight=1)
 
         # Icon circle (40x40, rounded r-md)
@@ -1169,29 +1216,27 @@ class ScriptsView(ctk.CTkFrame):
             text_color=info["color"],
         ).place(relx=0.5, rely=0.5, anchor="center")
 
-        # Name
-        name_frame = ctk.CTkFrame(icon_row, fg_color="transparent")
-        name_frame.grid(row=0, column=1, sticky="w", padx=(SPACING["sm"], 0))
+        # Name (16px bold)
         ctk.CTkLabel(
-            name_frame,
+            icon_row,
             text=info["title"],
             font=self._font(16, "bold"),
             text_color=COLORS["text_primary"],
-        ).pack(side="left")
+        ).grid(row=0, column=1, sticky="w", padx=(10, 0))
 
-        # RECOMMENDED tag
+        # RECOMMENDED tag (auto-pushed to right via margin-left: auto)
         if is_recommended:
-            tag = ctk.CTkLabel(
+            ctk.CTkLabel(
                 icon_row,
                 text=f"  {self._ui('recommended').upper()}  ",
                 font=self._font(10, "bold"),
                 fg_color=COLORS["success_dim"],
                 text_color=COLORS["success"],
                 corner_radius=RADIUS["sm"],
-            )
-            tag.grid(row=0, column=2, sticky="e")
+            ).grid(row=0, column=2, sticky="e")
 
         # ── Row 1: Description ──
+        # Spec: profile-desc: 12px, text-secondary, line-height 1.5
         ctk.CTkLabel(
             card,
             text=info["desc"],
@@ -1200,14 +1245,13 @@ class ScriptsView(ctk.CTkFrame):
             wraplength=250,
             anchor="w",
             justify="left",
-        ).grid(row=1, column=0, sticky="ew", padx=pad, pady=(0, SPACING["xs"]))
+        ).grid(row=1, column=0, sticky="ew", padx=px, pady=(0, 0))
 
         # ── Row 2: Stats grid (2x2) ──
+        # Spec: profile-stats: grid 1fr 1fr, gap 6px, margin 4px 0
         risk_c = risk_colors.get(info["risk"], risk_colors["LOW"])
         stats_frame = ctk.CTkFrame(card, fg_color="transparent")
-        stats_frame.grid(
-            row=2, column=0, sticky="ew", padx=pad, pady=(SPACING["xs"], 0)
-        )
+        stats_frame.grid(row=2, column=0, sticky="ew", padx=px, pady=(4, 0))
         stats_frame.grid_columnconfigure(0, weight=1)
         stats_frame.grid_columnconfigure(1, weight=1)
 
@@ -1220,17 +1264,20 @@ class ScriptsView(ctk.CTkFrame):
                 COLORS.get("accent", "#57c8ff"),
             ),
             (self._ui("stat_risk"), info["risk"], risk_c["bg"], risk_c["fg"]),
-            (self._ui("stat_restart"), info["restart"], None, None),
+            (self._ui("stat_restart"), info.get("restart", "No"), None, None),
         ]
 
         for idx, (label, value, badge_bg, badge_fg) in enumerate(stats):
             r, c = divmod(idx, 2)
-            stat_row = ctk.CTkFrame(stats_frame, fg_color="transparent")
-            stat_row.grid(row=r, column=c, sticky="ew", pady=2)
-            stat_row.grid_columnconfigure(0, weight=1)
+            # Spec: profile-stat: flex, justify-between, 11px, padding 4px 0
+            stat_cell = ctk.CTkFrame(stats_frame, fg_color="transparent")
+            stat_cell.grid(
+                row=r, column=c, sticky="ew", pady=3, padx=(0, 6 if c == 0 else 0)
+            )
+            stat_cell.grid_columnconfigure(0, weight=1)
 
             ctk.CTkLabel(
-                stat_row,
+                stat_cell,
                 text=label,
                 font=self._font(11),
                 text_color=COLORS["text_tertiary"],
@@ -1239,7 +1286,7 @@ class ScriptsView(ctk.CTkFrame):
 
             if badge_bg and badge_fg:
                 ctk.CTkLabel(
-                    stat_row,
+                    stat_cell,
                     text=f" {value} ",
                     font=self._font(10, "bold"),
                     fg_color=badge_bg,
@@ -1249,7 +1296,7 @@ class ScriptsView(ctk.CTkFrame):
                 ).grid(row=0, column=1, sticky="e")
             else:
                 ctk.CTkLabel(
-                    stat_row,
+                    stat_cell,
                     text=value,
                     font=self._font(11, "bold"),
                     text_color=COLORS["text_primary"],
@@ -1257,13 +1304,14 @@ class ScriptsView(ctk.CTkFrame):
                 ).grid(row=0, column=1, sticky="e")
 
         # ── Row 3: Risk bar (3px) ──
+        # Spec: profile-risk-bar: height 3px, r-2, margin 4px 0
         bar_bg = ctk.CTkFrame(
             card,
             fg_color=COLORS["bg_hover"],
             height=3,
             corner_radius=2,
         )
-        bar_bg.grid(row=3, column=0, sticky="ew", padx=pad, pady=(SPACING["sm"], 0))
+        bar_bg.grid(row=3, column=0, sticky="ew", padx=px, pady=(4, 0))
         bar_bg.grid_propagate(False)
 
         pct = info.get("risk_bar_pct", 0.15)
@@ -1275,27 +1323,45 @@ class ScriptsView(ctk.CTkFrame):
         )
         bar_fill.place(relx=0, rely=0, relwidth=pct, relheight=1.0)
 
-        # ── Row 4: Action buttons — Apply (colored) + Preview (ghost) ──
+        # ── Row 4: Action buttons ──
+        # Spec: profile-actions: flex, gap 8px, margin-top auto, padding-top 4px
+        # Safe = btn-primary (filled accent bg, dark text)
+        # Competitive = btn-warning (outline yellow)
+        # Extreme = btn-danger (outline red)
         btn_frame = ctk.CTkFrame(card, fg_color="transparent")
-        btn_frame.grid(
-            row=4, column=0, sticky="ew", padx=pad, pady=(SPACING["sm"], pad)
-        )
+        btn_frame.grid(row=4, column=0, sticky="ew", padx=px, pady=(gap, py_bot))
 
-        # Apply button — outline style colored per risk
-        ctk.CTkButton(
-            btn_frame,
-            text=self._ui("apply"),
-            font=self._font(12, "bold"),
-            fg_color="transparent",
-            text_color=info["color"],
-            hover_color=info["dim"],
-            border_width=1,
-            border_color=info["dim"],
-            corner_radius=RADIUS["md"],
-            height=32,
-            width=90,
-            command=lambda k=preset_key: self._apply_preset(k),
-        ).pack(side="left", padx=(0, SPACING["sm"]))
+        if preset_key == "safe":
+            # btn-primary: filled accent background, dark text
+            ctk.CTkButton(
+                btn_frame,
+                text=self._ui("apply"),
+                font=self._font(12, "bold"),
+                fg_color=COLORS["accent"],
+                text_color=COLORS.get("text_on_accent", "#000000"),
+                hover_color=COLORS.get("accent_hover", COLORS["accent"]),
+                border_width=0,
+                corner_radius=RADIUS["md"],
+                height=32,
+                width=90,
+                command=lambda k=preset_key: self._apply_preset(k),
+            ).pack(side="left", padx=(0, gap))
+        else:
+            # btn-warning / btn-danger: outline style, colored text + dim border
+            ctk.CTkButton(
+                btn_frame,
+                text=self._ui("apply"),
+                font=self._font(12, "bold"),
+                fg_color="transparent",
+                text_color=info["color"],
+                hover_color=info["dim"],
+                border_width=1,
+                border_color=info["dim"],
+                corner_radius=RADIUS["md"],
+                height=32,
+                width=90,
+                command=lambda k=preset_key: self._apply_preset(k),
+            ).pack(side="left", padx=(0, gap))
 
         # Preview ghost button
         ctk.CTkButton(

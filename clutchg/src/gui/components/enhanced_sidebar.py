@@ -52,6 +52,13 @@ class EnhancedSidebar(ctk.CTkFrame):
         self.animating = False
         self.glow_animations = {}  # Track active glow animations
 
+        # CRITICAL: Prevent packed children from expanding the sidebar beyond
+        # its configured width.  Without this the logo_frame, nav_container,
+        # and toggle_button (all packed) would request their natural width and
+        # the frame would grow to fit them — ignoring the width=width_collapsed
+        # value we passed to the CTkFrame constructor.
+        self.pack_propagate(False)
+
         self.setup_layout()
         self.create_toggle_button()
         self.create_navigation()
@@ -65,11 +72,13 @@ class EnhancedSidebar(ctk.CTkFrame):
         super().destroy()
 
     def setup_layout(self):
-        """Configure grid layout"""
-        self.grid_rowconfigure(0, weight=0)  # Logo
-        self.grid_rowconfigure(1, weight=1)  # Nav items
-        self.grid_rowconfigure(2, weight=0)  # Toggle button
-        self.grid_columnconfigure(0, weight=1)
+        """Configure internal layout.
+
+        Children are packed (not gridded) inside the sidebar, so
+        grid_rowconfigure/grid_columnconfigure on *self* has no effect.
+        The method is kept as a hook for future layout changes.
+        """
+        pass
 
     def create_navigation(self):
         """Create navigation buttons with enhanced styling"""
