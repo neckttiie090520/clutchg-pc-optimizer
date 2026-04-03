@@ -187,7 +187,9 @@ class ClutchGApp:
         self.main_frame = ctk.CTkFrame(
             self.window, corner_radius=0, fg_color=colors["bg_primary"]
         )
-        self.main_frame.grid(row=0, column=1, sticky="nsew", padx=30, pady=30)
+        self.main_frame.grid(
+            row=0, column=1, sticky="nsew", padx=(12, 16), pady=(12, 16)
+        )
         self.main_frame.grid_rowconfigure(0, weight=1)
         self.main_frame.grid_columnconfigure(0, weight=1)
 

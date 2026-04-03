@@ -306,6 +306,7 @@ class ScriptsView(ctk.CTkFrame):
         self.active_tab = "quick_actions"
         self.active_quick_group = "general"
         self.active_edu_category: Optional[str] = None
+        self._custom_container = None  # dedicated frame for custom tab
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -575,6 +576,13 @@ class ScriptsView(ctk.CTkFrame):
     def _clear_content(self):
         for w in self.content.winfo_children():
             w.destroy()
+        # Destroy the custom tab's dedicated container and restore the
+        # shared scrollable content frame that other tabs use.
+        if hasattr(self, "_custom_container") and self._custom_container is not None:
+            self._custom_container.destroy()
+            self._custom_container = None
+            # Re-show the shared scrollable content frame
+            self.content._parent_frame.grid()
 
     # ================================================================
     # TAB 1: QUICK ACTIONS
@@ -1737,6 +1745,21 @@ class ScriptsView(ctk.CTkFrame):
     def _show_custom_tab(self):
         self._clear_content()
 
+        # Hide the shared scrollable content frame — the custom tab uses its
+        # own plain CTkFrame so the inner scrollable list can fill the full
+        # remaining height (a CTkScrollableFrame inside another
+        # CTkScrollableFrame cannot expand vertically because the outer
+        # canvas sizes to content, not to available space).
+        self.content._parent_frame.grid_remove()
+
+        # Dedicated non-scrollable container placed directly on the view
+        self._custom_container = ctk.CTkFrame(self, fg_color="transparent")
+        self._custom_container.grid(row=2, column=0, sticky="nsew")
+        self._custom_container.grid_columnconfigure(0, weight=1)
+        # row 0 = selection bar (fixed), row 1 = search/filter (fixed),
+        # row 2 = split pane (expands)
+        self._custom_container.grid_rowconfigure(2, weight=1)
+
         # Track which tweak detail is shown (preserve across refreshes)
         if not hasattr(self, "_detail_visible"):
             self._detail_visible = False
@@ -1748,6 +1771,8 @@ class ScriptsView(ctk.CTkFrame):
             self._search_var = ctk.StringVar(value="")
         if not hasattr(self, "_filter_risk"):
             self._filter_risk = "ALL"  # ALL, LOW, MEDIUM, HIGH
+        if not hasattr(self, "_filter_category"):
+            self._filter_category = "ALL"  # ALL or category key
 
         # Selection summary bar (full width, above split pane)
         self._create_selection_bar()
@@ -1756,8 +1781,10 @@ class ScriptsView(ctk.CTkFrame):
         self._create_search_filter_bar()
 
         # Split-pane container: left tweak list + right detail panel
-        self._custom_split = ctk.CTkFrame(self.content, fg_color="transparent")
-        self._custom_split.grid(sticky="nsew", pady=(0, 0))
+        self._custom_split = ctk.CTkFrame(
+            self._custom_container, fg_color="transparent"
+        )
+        self._custom_split.grid(row=2, column=0, sticky="nsew")
         self._custom_split.grid_columnconfigure(0, weight=1)
         self._custom_split.grid_rowconfigure(0, weight=1)
 
@@ -1765,6 +1792,7 @@ class ScriptsView(ctk.CTkFrame):
         self.custom_left = ctk.CTkScrollableFrame(
             self._custom_split,
             fg_color="transparent",
+            corner_radius=0,
             scrollbar_button_color=COLORS["bg_card"],
             scrollbar_button_hover_color=COLORS["accent"],
         )
@@ -1792,8 +1820,9 @@ class ScriptsView(ctk.CTkFrame):
 
     def _create_selection_bar(self):
         """Summary bar showing selected tweak count and apply button"""
+        parent = getattr(self, "_custom_container", None) or self.content
         bar = ctk.CTkFrame(
-            self.content,
+            parent,
             fg_color=COLORS["bg_card"],
             corner_radius=RADIUS["lg"],
             border_width=1,
@@ -1887,15 +1916,16 @@ class ScriptsView(ctk.CTkFrame):
     # Search / Filter bar
     # ----------------------------------------------------------------
     def _create_search_filter_bar(self):
-        """Search bar + risk filter chips above the tweak list"""
+        """Search bar + wrapping category filter chips above the tweak list"""
+        parent = getattr(self, "_custom_container", None) or self.content
         bar = ctk.CTkFrame(
-            self.content,
+            parent,
             fg_color="transparent",
         )
-        bar.grid(sticky="ew", pady=(0, SPACING["sm"]))
+        bar.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["sm"]))
         bar.grid_columnconfigure(0, weight=1)
 
-        # Search entry
+        # Search entry row
         search_frame = ctk.CTkFrame(bar, fg_color="transparent")
         search_frame.grid(row=0, column=0, sticky="ew")
         search_frame.grid_columnconfigure(1, weight=1)
@@ -1920,12 +1950,12 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["md"],
             height=32,
         )
-        self._search_entry.grid(row=0, column=1, sticky="ew", padx=(0, SPACING["md"]))
+        self._search_entry.grid(row=0, column=1, sticky="ew", padx=(0, SPACING["sm"]))
         self._search_var.trace_add("write", lambda *_: self._on_filter_changed())
 
-        # Risk filter chips
-        chip_frame = ctk.CTkFrame(search_frame, fg_color="transparent")
-        chip_frame.grid(row=0, column=2, sticky="e")
+        # Risk filter chips (right of search)
+        risk_frame = ctk.CTkFrame(search_frame, fg_color="transparent")
+        risk_frame.grid(row=0, column=2, sticky="e")
 
         risk_options = [
             ("ALL", "All", COLORS["text_secondary"]),
@@ -1937,7 +1967,7 @@ class ScriptsView(ctk.CTkFrame):
         for key, label, color in risk_options:
             is_active = self._filter_risk == key
             chip = ctk.CTkButton(
-                chip_frame,
+                risk_frame,
                 text=label,
                 font=ctk.CTkFont(size=11),
                 fg_color=COLORS["bg_card"] if is_active else "transparent",
@@ -1953,9 +1983,74 @@ class ScriptsView(ctk.CTkFrame):
             chip.pack(side="left", padx=2)
             self._filter_chips[key] = chip
 
+        # Category filter chips — wrapping flow layout (row below search)
+        cat_wrap = ctk.CTkFrame(bar, fg_color="transparent")
+        cat_wrap.grid(row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0))
+
+        # Build category counts from registry
+        cat_counts: dict[str, int] = {}
+        total_count = 0
+        for cat_key in TWEAK_CATEGORIES:
+            n = len(self.registry.get_tweaks_by_category(cat_key))
+            if n > 0:
+                cat_counts[cat_key] = n
+                total_count += n
+
+        # "All" chip — primary / dominant style
+        if not hasattr(self, "_filter_category"):
+            self._filter_category = "ALL"
+
+        self._cat_chips: dict[str, ctk.CTkButton] = {}
+        is_all = self._filter_category == "ALL"
+        all_chip = ctk.CTkButton(
+            cat_wrap,
+            text=f"All ({total_count})",
+            font=ctk.CTkFont(size=12, weight="bold")
+            if is_all
+            else ctk.CTkFont(size=11),
+            fg_color=COLORS["accent"] if is_all else "transparent",
+            text_color="#000000" if is_all else COLORS["text_secondary"],
+            hover_color=COLORS["accent_hover"] if is_all else COLORS["bg_card_hover"],
+            border_width=0 if is_all else 1,
+            border_color=COLORS["border"],
+            corner_radius=RADIUS["full"],
+            height=30 if is_all else 28,
+            command=lambda: self._set_category_filter("ALL"),
+        )
+        all_chip.pack(side="left", padx=(0, SPACING["xs"]), pady=2)
+        self._cat_chips["ALL"] = all_chip
+
+        # Per-category chips — text-only with colored dot prefix (no icon font mixing)
+        for cat_key, count in cat_counts.items():
+            cat_info = TWEAK_CATEGORIES[cat_key]
+            cat_color = cat_info.get("color", COLORS["text_secondary"])
+            is_active = self._filter_category == cat_key
+
+            chip_text = f"\u25cf {cat_info['label']} ({count})"
+            chip = ctk.CTkButton(
+                cat_wrap,
+                text=chip_text,
+                font=ctk.CTkFont(size=11),
+                fg_color=cat_color if is_active else "transparent",
+                text_color="#000000" if is_active else COLORS["text_tertiary"],
+                hover_color=COLORS["bg_card_hover"],
+                border_width=1,
+                border_color=cat_color if is_active else COLORS["border"],
+                corner_radius=RADIUS["full"],
+                height=28,
+                command=lambda k=cat_key: self._set_category_filter(k),
+            )
+            chip.pack(side="left", padx=(0, SPACING["xs"]), pady=2)
+            self._cat_chips[cat_key] = chip
+
     def _set_risk_filter(self, risk_level: str):
         """Set risk filter and refresh list"""
         self._filter_risk = risk_level
+        self._on_filter_changed()
+
+    def _set_category_filter(self, category: str):
+        """Set category filter and refresh list"""
+        self._filter_category = category
         self._on_filter_changed()
 
     def _on_filter_changed(self):
@@ -1979,6 +2074,33 @@ class ScriptsView(ctk.CTkFrame):
                     border_color=color if is_active else COLORS["border"],
                 )
 
+        # Update category chip styles
+        if hasattr(self, "_cat_chips"):
+            cat_filter = (
+                self._filter_category if hasattr(self, "_filter_category") else "ALL"
+            )
+            for key, chip in self._cat_chips.items():
+                is_active = cat_filter == key
+                if key == "ALL":
+                    # "All" chip — dominant accent style when active
+                    chip.configure(
+                        fg_color=COLORS["accent"] if is_active else "transparent",
+                        text_color="#000000" if is_active else COLORS["text_secondary"],
+                        border_width=0 if is_active else 1,
+                        border_color=COLORS["border"],
+                        font=ctk.CTkFont(size=12, weight="bold")
+                        if is_active
+                        else ctk.CTkFont(size=11),
+                    )
+                else:
+                    cat_info = TWEAK_CATEGORIES.get(key, {})
+                    cat_color = cat_info.get("color", COLORS["text_secondary"])
+                    chip.configure(
+                        fg_color=cat_color if is_active else "transparent",
+                        text_color="#000000" if is_active else COLORS["text_tertiary"],
+                        border_color=cat_color if is_active else COLORS["border"],
+                    )
+
     def _populate_tweak_list(self):
         """Populate tweak list with current search/filter applied"""
         if not hasattr(self, "custom_left"):
@@ -1992,9 +2114,16 @@ class ScriptsView(ctk.CTkFrame):
             else ""
         )
         risk_filter = self._filter_risk if hasattr(self, "_filter_risk") else "ALL"
+        cat_filter = (
+            self._filter_category if hasattr(self, "_filter_category") else "ALL"
+        )
 
         total_visible = 0
         for cat_key, cat_info in TWEAK_CATEGORIES.items():
+            # Category filter — skip entire category if not matching
+            if cat_filter != "ALL" and cat_key != cat_filter:
+                continue
+
             tweaks = self.registry.get_tweaks_by_category(cat_key)
             if not tweaks:
                 continue
@@ -2192,7 +2321,7 @@ class ScriptsView(ctk.CTkFrame):
 
     def _create_tweak_row(self, parent, tweak: Tweak, row_idx: int):
         """Compact single-row tweak item:
-        [Toggle] Name                     ⚡ gain  • 🟢 risk  🔄
+        [Toggle] Name                     ⚡ gain  • 🟢 risk  🔄  Learn More ›
         Click row → opens detail panel on the right.
         """
         is_selected = tweak.id in self.selected_tweaks
@@ -2223,7 +2352,7 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["sm"],
             border_width=border_w,
             border_color=border_c,
-            height=36,
+            height=38,
             cursor="hand2",
         )
         row.grid_columnconfigure(1, weight=1)  # name expands
@@ -2247,17 +2376,19 @@ class ScriptsView(ctk.CTkFrame):
         )
         toggle.grid(row=0, column=0, padx=(8, 4), pady=4)
 
-        # Name
+        # Name — slightly heavier for visual balance on the left
         name_lbl = ctk.CTkLabel(
             row,
             text=tweak.name,
-            font=font("body_bold" if is_selected else "body"),
+            font=ctk.CTkFont(size=13, weight="bold")
+            if is_selected
+            else ctk.CTkFont(size=13),
             text_color=COLORS["text_primary"],
             anchor="w",
         )
         name_lbl.grid(row=0, column=1, sticky="w", padx=(0, 4))
 
-        # Inline meta: gain + risk badge + restart icon (packed right)
+        # Inline meta: gain + risk badge + restart icon + learn more (packed right)
         meta_frame = ctk.CTkFrame(row, fg_color="transparent")
         meta_frame.grid(row=0, column=2, sticky="e", padx=(4, 8), pady=4)
 
@@ -2268,13 +2399,13 @@ class ScriptsView(ctk.CTkFrame):
                 text="\uea38",  # bolt icon
                 font=ctk.CTkFont(family="Tabler Icons", size=11),
                 text_color=COLORS["accent"],
-            ).pack(side="left", padx=(0, 2))
+            ).pack(side="left", padx=(0, 1))
             ctk.CTkLabel(
                 meta_frame,
                 text=tweak.expected_gain,
-                font=ctk.CTkFont(size=11),
+                font=ctk.CTkFont(size=10),
                 text_color=COLORS["accent"],
-            ).pack(side="left", padx=(0, 6))
+            ).pack(side="left", padx=(0, 4))
 
         # Risk badge (compact)
         ctk.CTkLabel(
@@ -2284,7 +2415,7 @@ class ScriptsView(ctk.CTkFrame):
             fg_color=risk_c["bg"],
             text_color=risk_c["fg"],
             corner_radius=4,
-        ).pack(side="left", padx=(0, 4))
+        ).pack(side="left", padx=(0, 3))
 
         # Restart indicator
         if tweak.requires_restart:
@@ -2293,7 +2424,41 @@ class ScriptsView(ctk.CTkFrame):
                 text=ICON("refresh"),
                 font=ctk.CTkFont(family="Tabler Icons", size=11),
                 text_color=COLORS["text_tertiary"],
-            ).pack(side="left", padx=(0, 2))
+            ).pack(side="left", padx=(0, 3))
+
+        # "Details ›" text link with hover effect
+        learn_lbl = ctk.CTkLabel(
+            meta_frame,
+            text="Details \u203a",
+            font=ctk.CTkFont(size=10),
+            text_color=COLORS["text_muted"],
+            cursor="hand2",
+        )
+        learn_lbl.pack(side="left", padx=(2, 0))
+        learn_lbl.bind(
+            "<Enter>",
+            lambda e, lbl=learn_lbl: lbl.configure(
+                text_color=COLORS["accent"],
+            ),
+        )
+        learn_lbl.bind(
+            "<Leave>",
+            lambda e, lbl=learn_lbl: lbl.configure(
+                text_color=COLORS["text_muted"],
+            ),
+        )
+
+        # Hover effects on row
+        def on_enter(e=None, r=row, b=bg):
+            if not is_detail_active:
+                r.configure(fg_color=COLORS["bg_card_hover"])
+
+        def on_leave(e=None, r=row, b=bg):
+            if not is_detail_active:
+                r.configure(fg_color=b)
+
+        row.bind("<Enter>", on_enter)
+        row.bind("<Leave>", on_leave)
 
         # Click entire row → open detail panel
         def on_click(e=None, t=tweak):
@@ -2301,6 +2466,7 @@ class ScriptsView(ctk.CTkFrame):
 
         row.bind("<Button-1>", on_click)
         name_lbl.bind("<Button-1>", on_click)
+        learn_lbl.bind("<Button-1>", on_click)
         for child in meta_frame.winfo_children():
             child.bind("<Button-1>", on_click)
 
@@ -2898,20 +3064,13 @@ class ScriptsView(ctk.CTkFrame):
             border_width=1,
             border_color=COLORS["border"],
         )
-        card.grid_columnconfigure(1, weight=1)
-
-        # Category color dot
-        ctk.CTkFrame(
-            card,
-            fg_color=cat_info.get("color", COLORS["text_secondary"]),
-            width=6,
-            height=6,
-            corner_radius=3,
-        ).grid(row=0, column=0, padx=(SPACING["sm"], SPACING["xs"]), pady=SPACING["sm"])
+        card.grid_columnconfigure(0, weight=1)
 
         # Name + description
         info_frame = ctk.CTkFrame(card, fg_color="transparent")
-        info_frame.grid(row=0, column=1, sticky="ew", pady=SPACING["xs"])
+        info_frame.grid(
+            row=0, column=0, sticky="ew", pady=SPACING["xs"], padx=SPACING["sm"]
+        )
 
         ctk.CTkLabel(
             info_frame,
@@ -2935,7 +3094,7 @@ class ScriptsView(ctk.CTkFrame):
             fg_color=risk_c["bg"],
             text_color=risk_c["fg"],
             corner_radius=RADIUS["sm"],
-        ).grid(row=0, column=2, padx=SPACING["xs"])
+        ).grid(row=0, column=1, padx=SPACING["xs"])
 
         # Gain
         ctk.CTkLabel(
@@ -2943,7 +3102,7 @@ class ScriptsView(ctk.CTkFrame):
             text=tweak.expected_gain,
             font=font("caption"),
             text_color=COLORS["accent"],
-        ).grid(row=0, column=3, padx=SPACING["xs"])
+        ).grid(row=0, column=2, padx=SPACING["xs"])
 
         # Detail button
         ctk.CTkButton(
@@ -2957,6 +3116,6 @@ class ScriptsView(ctk.CTkFrame):
             height=26,
             width=90,
             command=lambda t=tweak: self._show_tweak_detail(t),
-        ).grid(row=0, column=4, padx=(0, SPACING["sm"]))
+        ).grid(row=0, column=3, padx=(0, SPACING["sm"]))
 
         return card

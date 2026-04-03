@@ -138,7 +138,7 @@ class EnhancedSidebar(ctk.CTkFrame):
             height=1,
             fg_color=colors["border"],
         )
-        divider.pack(fill="x", padx=12, pady=(8, 4))
+        divider.pack(fill="x", padx=12, pady=(6, 3))
         self._settings_divider = divider
 
         # Settings nav item (below divider)
@@ -155,34 +155,40 @@ class EnhancedSidebar(ctk.CTkFrame):
         """
         colors = theme_manager.get_colors()
 
+        # Outer frame — acts as the pill-style selection highlight
         btn_frame = ctk.CTkFrame(
-            self.nav_container, fg_color="transparent", height=40
-        )  # Reduced height (Compact)
-        btn_frame.pack(fill="x", pady=2, padx=6)  # Reduced spacing
+            self.nav_container,
+            fg_color="transparent",
+            corner_radius=RADIUS["md"],
+            height=36,
+        )
+        btn_frame.pack(fill="x", pady=1, padx=6)
         btn_frame.pack_propagate(False)
         btn_frame.grid_columnconfigure(0, weight=0)  # Indicator
         btn_frame.grid_columnconfigure(1, weight=0)  # Icon button
         btn_frame.grid_columnconfigure(2, weight=1)  # Label
 
-        # Active indicator (hidden by default)
+        # Active indicator — short bar aligned to icon height (hidden by default)
         indicator = ctk.CTkFrame(
-            btn_frame, width=3, fg_color=colors["accent"], corner_radius=2
+            btn_frame,
+            width=3,
+            height=20,
+            fg_color=colors["accent"],
+            corner_radius=2,
         )
-        indicator.grid(row=0, column=0, sticky="ns", padx=(0, 8))
+        indicator.grid(row=0, column=0, padx=(2, 6))
         indicator.grid_remove()  # Hide initially
 
         # Icon button with Segoe MDL2 Assets font
         btn = ctk.CTkButton(
             btn_frame,
             text=icon,
-            font=ctk.CTkFont(
-                family="Segoe MDL2 Assets", size=18
-            ),  # Standard size for Segoe
-            width=36,  # Compact touch target
-            height=36,
+            font=ctk.CTkFont(family="Segoe MDL2 Assets", size=18),
+            width=34,
+            height=34,
             fg_color="transparent",
             text_color=colors["text_secondary"],
-            hover_color=colors["bg_hover"],
+            hover=False,  # Hover handled at frame level
             corner_radius=RADIUS["md"],
             command=lambda k=key: self.on_nav_click(k),
         )
@@ -192,7 +198,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         lbl = ctk.CTkLabel(
             btn_frame,
             text=label,
-            font=font("body_small", weight="bold"),  # Smaller font
+            font=font("body_small", weight="bold"),
             text_color=colors["text_primary"],
             anchor="w",
         )
@@ -207,25 +213,26 @@ class EnhancedSidebar(ctk.CTkFrame):
             "indicator": indicator,
         }
 
-        # Bind hover effects
-        btn.bind("<Enter>", lambda e, k=key: self.on_hover_enter(k))
-        btn.bind("<Leave>", lambda e, k=key: self.on_hover_leave(k))
+        # Bind hover effects on the entire frame
+        for widget in [btn_frame, btn]:
+            widget.bind("<Enter>", lambda e, k=key: self.on_hover_enter(k))
+            widget.bind("<Leave>", lambda e, k=key: self.on_hover_leave(k))
 
         # Add tooltip for collapsed sidebar accessibility
         self.nav_buttons[key]["tooltip"] = ToolTipBinder(btn, label)
 
     def on_hover_enter(self, key: str):
-        """Highlight non-active nav button on hover."""
+        """Highlight non-active nav button on hover (pill background)."""
         if key != self.app.active_nav:
             btn_data = self.nav_buttons[key]
             colors = theme_manager.get_colors()
-            btn_data["button"].configure(fg_color=colors["bg_hover"])
+            btn_data["frame"].configure(fg_color=colors["bg_hover"])
 
     def on_hover_leave(self, key: str):
         """Remove hover highlight from non-active nav button."""
         if key != self.app.active_nav:
             btn_data = self.nav_buttons[key]
-            btn_data["button"].configure(fg_color="transparent")
+            btn_data["frame"].configure(fg_color="transparent")
 
     def on_nav_click(self, key: str):
         """Handle navigation click"""
@@ -233,54 +240,58 @@ class EnhancedSidebar(ctk.CTkFrame):
         self.update_active_state(key)
 
     def update_active_state(self, active_key: str):
-        """Update active state for all buttons"""
+        """Update active state for all buttons — unified pill selection"""
         colors = theme_manager.get_colors()
 
         for key, data in self.nav_buttons.items():
             is_active = key == active_key
 
-            # Update button color
+            # Pill background on frame
+            data["frame"].configure(
+                fg_color=colors.get("bg_active", colors["bg_hover"])
+                if is_active
+                else "transparent"
+            )
+
+            # Icon color
             data["button"].configure(
                 text_color=colors["accent"] if is_active else colors["text_secondary"]
             )
 
-            # Show/hide indicator (if it exists)
+            # Short indicator bar
             if data["indicator"] is not None:
                 if is_active:
                     data["indicator"].grid()
                 else:
                     data["indicator"].grid_remove()
 
-            # Start or stop glow animation
+            # Start or stop glow animation on the frame
             if is_active:
                 if key not in self.glow_animations:
                     self.animate_glow(key)
             else:
-                # Stop glow animation
                 if key in self.glow_animations:
-                    self.glow_animations[key] = False  # Signal to stop
+                    self.glow_animations[key] = False
                     del self.glow_animations[key]
 
     def animate_glow(self, key: str):
         """
-        Animate glow effect on active button.
+        Animate glow effect on active button's pill frame.
 
-        Creates a smooth breathing effect by interpolating between transparent
-        and the accent_dim colour across 20 steps per half-cycle.
-        Guarded against TclError when the widget is destroyed.
+        Creates a smooth breathing effect by interpolating between the
+        active bg colour and the accent_dim colour across 20 steps per
+        half-cycle.  Guarded against TclError when the widget is destroyed.
 
         RESPECTS reduce_motion: Skip animation if user has enabled reduce motion.
         """
         # Check for reduce_motion setting (accessibility)
         if hasattr(self.app, "config") and self.app.config.get("reduce_motion", False):
-            # User prefers reduced motion - just show static active state
             if key not in self.nav_buttons:
                 return
             colors = theme_manager.get_colors()
-            btn_data = self.nav_buttons[key]
-            button = btn_data["button"]
+            frame = self.nav_buttons[key]["frame"]
             try:
-                button.configure(fg_color=colors.get("accent_dim", "transparent"))
+                frame.configure(fg_color=colors.get("bg_active", colors["bg_hover"]))
             except Exception as e:
                 logger.debug(f"Could not apply static glow state: {e}")
             return
@@ -289,10 +300,9 @@ class EnhancedSidebar(ctk.CTkFrame):
 
         colors = theme_manager.get_colors()
         btn_data = self.nav_buttons[key]
-        button = btn_data["button"]
+        frame = btn_data["frame"]
 
         # Parse accent_dim into RGB for smooth interpolation
-        # Derive fallback from accent color (50% darkened) instead of hard-coded Tokyo Night hex
         def _darken_hex(h: str, factor: float = 0.5) -> str:
             h = h.lstrip("#")
             r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
@@ -308,23 +318,23 @@ class EnhancedSidebar(ctk.CTkFrame):
         def _rgb_to_hex(r: int, g: int, b: int) -> str:
             return f"#{r:02x}{g:02x}{b:02x}"
 
-        bg_rgb = _hex_to_rgb(colors.get("bg_secondary", "#131c2e"))
+        # Breathe between bg_active and accent_dim
+        bg_rgb = _hex_to_rgb(colors.get("bg_active", colors["bg_hover"]))
         dim_rgb = _hex_to_rgb(accent_dim)
 
         duration = 2000  # ms per full breath cycle
-        steps = 20  # steps per half-cycle (bright → dim or dim → bright)
+        steps = 20  # steps per half-cycle
         step_delay = max(1, duration // (steps * 2))
 
         def glow_step(step: int, direction: int):
             """Single glow animation step."""
             if not self.glow_animations.get(key, False):
                 try:
-                    button.configure(fg_color="transparent")
+                    frame.configure(fg_color="transparent")
                 except Exception:
                     pass
                 return
 
-            # Triangle-wave brightness: 0.0 → 1.0 → 0.0
             t = step / steps  # 0..1
             r = int(bg_rgb[0] + (dim_rgb[0] - bg_rgb[0]) * t)
             g = int(bg_rgb[1] + (dim_rgb[1] - bg_rgb[1]) * t)
@@ -336,22 +346,20 @@ class EnhancedSidebar(ctk.CTkFrame):
             )
 
             try:
-                button.configure(fg_color=interp_color)
+                frame.configure(fg_color=interp_color)
             except Exception as e:
-                # Widget destroyed — stop animation
                 logger.debug(f"Glow animation stopped: {e}")
                 if key in self.glow_animations:
                     del self.glow_animations[key]
                 return
 
-            # Advance step and flip direction at boundaries
             next_step = step + 1
             next_direction = direction
             if next_step > steps:
                 next_step = 0
-                next_direction = -direction  # flip
+                next_direction = -direction
 
-            button.after(step_delay, lambda: glow_step(next_step, next_direction))
+            frame.after(step_delay, lambda: glow_step(next_step, next_direction))
 
         # Start animation
         glow_step(0, 1)
@@ -441,16 +449,22 @@ class EnhancedSidebar(ctk.CTkFrame):
         for key, data in self.nav_buttons.items():
             is_active = key == self.app.active_nav
 
-            # Update button colors
-            data["button"].configure(
-                text_color=colors["accent"] if is_active else colors["text_secondary"],
-                hover_color=colors["bg_hover"],
+            # Pill frame background
+            data["frame"].configure(
+                fg_color=colors.get("bg_active", colors["bg_hover"])
+                if is_active
+                else "transparent"
             )
 
-            # Update indicator color
+            # Icon color
+            data["button"].configure(
+                text_color=colors["accent"] if is_active else colors["text_secondary"],
+            )
+
+            # Indicator color
             data["indicator"].configure(fg_color=colors["accent"])
 
-            # Update label color
+            # Label color
             data["label"].configure(text_color=colors["text_primary"])
 
         # Update toggle button
