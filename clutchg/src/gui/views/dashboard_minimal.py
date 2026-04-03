@@ -318,8 +318,9 @@ class DashboardView(ctk.CTkFrame):
             (self._ui("ram"), "ram", ram_spec),
         ]
 
-        # Load hardware PNG images (20x20 for card header)
+        # Load hardware PNG images (28x28 for card header)
         # Source PNGs are pre-tinted #b0b0b0 for dark theme visibility
+        _hw_size = 28
         _assets = Path(__file__).parent.parent.parent / "assets"
         _hw_imgs: dict = {}
         for key, fname in [
@@ -328,9 +329,11 @@ class DashboardView(ctk.CTkFrame):
             ("ram", "hw-ram.png"),
         ]:
             try:
-                pil = Image.open(_assets / fname).resize((20, 20), Image.LANCZOS)
+                pil = Image.open(_assets / fname).resize(
+                    (_hw_size, _hw_size), Image.LANCZOS
+                )
                 _hw_imgs[key] = ctk.CTkImage(
-                    light_image=pil, dark_image=pil, size=(20, 20)
+                    light_image=pil, dark_image=pil, size=(_hw_size, _hw_size)
                 )
             except Exception:
                 _hw_imgs[key] = None
