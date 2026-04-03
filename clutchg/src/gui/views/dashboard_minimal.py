@@ -5,8 +5,10 @@ Updated: 2026-02-10 (Bug fixes: duplicate labels, missing create_content, duplic
 """
 
 import customtkinter as ctk
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Tuple
 import logging
+from PIL import Image
 from gui.theme import (
     theme_manager,
     COLORS,
@@ -311,10 +313,26 @@ class DashboardView(ctk.CTkFrame):
         ).pack(anchor="w")
 
         components = [
-            (self._ui("cpu"), NAV_ICONS.get("cpu", "\ueb87"), cpu_spec),
-            (self._ui("gpu"), NAV_ICONS.get("gpu", "\uf50d"), gpu_spec),
-            (self._ui("ram"), NAV_ICONS.get("ram", "\uefce"), ram_spec),
+            (self._ui("cpu"), "cpu", cpu_spec),
+            (self._ui("gpu"), "gpu", gpu_spec),
+            (self._ui("ram"), "ram", ram_spec),
         ]
+
+        # Load hardware PNG images (20x20 for card header)
+        _assets = Path(__file__).parent.parent.parent / "assets"
+        _hw_imgs: dict = {}
+        for key, fname in [
+            ("cpu", "hw-cpu.png"),
+            ("gpu", "hw-gpu.png"),
+            ("ram", "hw-ram.png"),
+        ]:
+            try:
+                pil = Image.open(_assets / fname).resize((20, 20), Image.LANCZOS)
+                _hw_imgs[key] = ctk.CTkImage(
+                    light_image=pil, dark_image=pil, size=(20, 20)
+                )
+            except Exception:
+                _hw_imgs[key] = None
 
         grid = ctk.CTkFrame(parent, fg_color="transparent")
         grid.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["md"]))
@@ -323,7 +341,7 @@ class DashboardView(ctk.CTkFrame):
         grid.grid_columnconfigure(2, weight=1, uniform="hw")
         grid.grid_rowconfigure(0, weight=1)
 
-        for col, (label, icon, spec) in enumerate(components):
+        for col, (label, hw_key, spec) in enumerate(components):
             card = GlassCard(grid, corner_radius=RADIUS["xl"])
             card.grid(
                 row=0,
@@ -343,12 +361,22 @@ class DashboardView(ctk.CTkFrame):
                 pady=(SPACING["sm"], 0),
             )
 
-            ctk.CTkLabel(
-                header,
-                text=icon,
-                font=ctk.CTkFont(family="Segoe MDL2 Assets", size=13),
-                text_color=COLORS["text_secondary"],
-            ).pack(side="left", padx=(0, SPACING["xs"]))
+            img = _hw_imgs.get(hw_key)
+            if img:
+                ctk.CTkLabel(
+                    header,
+                    image=img,
+                    text="",
+                ).pack(side="left", padx=(0, SPACING["xs"]))
+            else:
+                # Fallback: Tabler icon codepoint
+                _fallback = {"cpu": "\ueb87", "gpu": "\uf50d", "ram": "\uefce"}
+                ctk.CTkLabel(
+                    header,
+                    text=_fallback.get(hw_key, ""),
+                    font=ctk.CTkFont(family="Tabler Icons", size=13),
+                    text_color=COLORS["text_secondary"],
+                ).pack(side="left", padx=(0, SPACING["xs"]))
 
             ctk.CTkLabel(
                 header,
