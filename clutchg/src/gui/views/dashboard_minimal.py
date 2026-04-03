@@ -319,6 +319,7 @@ class DashboardView(ctk.CTkFrame):
         ]
 
         # Load hardware PNG images (20x20 for card header)
+        # Source PNGs are pre-tinted #b0b0b0 for dark theme visibility
         _assets = Path(__file__).parent.parent.parent / "assets"
         _hw_imgs: dict = {}
         for key, fname in [
