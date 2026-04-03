@@ -6,7 +6,7 @@ import webbrowser
 import customtkinter as ctk
 from typing import TYPE_CHECKING
 
-from gui.theme import theme_manager, COLORS, SPACING, RADIUS
+from gui.theme import COLORS, SPACING, RADIUS
 from gui.style import font
 from gui.components.icon_provider import get_icon
 
@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 _ICON_FONT = "Tabler Icons"
 
 _SECTION_ICONS = {
-    "appearance": "\uea2d",  # color-swatch (Tabler)
-    "language": "\ueb05",  # language (Tabler)
     "safety": "\ueb22",  # shield-check (Tabler)
     "about": "\ueac5",  # info-circle (Tabler)
 }
@@ -32,11 +30,6 @@ class SettingsView(ctk.CTkFrame):
         "en": {
             "title": "Settings",
             "settings_subtitle": "Customize your experience",
-            "appearance": "Appearance",
-            "appearance_desc": "Choose your preferred color scheme",
-            "theme": "Theme",
-            "language": "Language",
-            "language_desc": "Changes labels and descriptions throughout the app",
             "safety": "Safety",
             "auto_backup": "Auto Backup",
             "auto_backup_desc": "Create a restore point before applying any profile",
@@ -48,17 +41,10 @@ class SettingsView(ctk.CTkFrame):
             "about_tagline": "A Windows optimizer built for gamers who want real performance gains, not snake oil.",
             "about_version": "v1.0.0 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
-            "toast_theme": "Theme → {value}",
-            "toast_language": "Language → {value}",
         },
         "th": {
             "title": "Settings",
             "settings_subtitle": "ปรับแต่งประสบการณ์การใช้งาน",
-            "appearance": "Appearance",
-            "appearance_desc": "เลือกธีมสีที่ชอบ",
-            "theme": "Theme",
-            "language": "Language",
-            "language_desc": "เปลี่ยนภาษาข้อความทั่วทั้งแอป",
             "safety": "Safety",
             "auto_backup": "Auto Backup",
             "auto_backup_desc": "สร้าง Restore Point ก่อนใช้ Profile ทุกครั้ง",
@@ -70,8 +56,6 @@ class SettingsView(ctk.CTkFrame):
             "about_tagline": "โปรแกรม Optimize Windows สำหรับเกมเมอร์ที่ต้องการผลลัพธ์จริง ไม่ใช่ snake oil",
             "about_version": "v1.0.0 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
-            "toast_theme": "Theme → {value}",
-            "toast_language": "Language → {value}",
         },
     }
 
@@ -107,22 +91,6 @@ class SettingsView(ctk.CTkFrame):
         content = ctk.CTkScrollableFrame(self, fg_color="transparent")
         content.grid(row=1, column=0, sticky="nsew")
         content.grid_columnconfigure(0, weight=1)
-
-        # Appearance (Theme)
-        self.create_section(
-            content,
-            self._ui("appearance"),
-            [self.create_appearance_setting],
-            icon_char=_SECTION_ICONS["appearance"],
-        )
-
-        # Language
-        self.create_section(
-            content,
-            self._ui("language"),
-            [self.create_language_setting],
-            icon_char=_SECTION_ICONS["language"],
-        )
 
         # Safety
         self.create_section(
@@ -278,113 +246,6 @@ class SettingsView(ctk.CTkFrame):
             creator(section)
 
     # ------------------------------------------------------------------
-    # Appearance
-    # ------------------------------------------------------------------
-
-    def create_appearance_setting(self, parent):
-        """Theme setting using _setting_row."""
-        available_themes = theme_manager.get_available_themes()
-        current_theme = self.config.get("theme", "modern")
-        theme_display = {t: t.capitalize() for t in available_themes}
-        theme_display["modern"] = "Sun Valley"
-        display_values = [theme_display[t] for t in available_themes]
-        current_display = theme_display.get(current_theme, current_theme.capitalize())
-
-        self.theme_var = ctk.StringVar(value=current_display)
-
-        def _build_control(frame):
-            ctk.CTkOptionMenu(
-                frame,
-                values=display_values,
-                variable=self.theme_var,
-                command=self.change_theme,
-                width=140,
-                fg_color=COLORS["bg_secondary"],
-                button_color=COLORS["accent"],
-                button_hover_color=COLORS["accent_hover"],
-                corner_radius=RADIUS["md"],
-            ).pack()
-
-        self._setting_row(
-            parent,
-            label=self._ui("theme"),
-            description=self._ui("appearance_desc"),
-            control_builder=_build_control,
-            is_last=True,
-        )
-
-    def change_theme(self, value: str):
-        """Apply selected theme"""
-        display_to_key = {
-            "Sun Valley": "modern",
-            "Dark": "dark",
-            "Zinc": "zinc",
-            "Light": "light",
-        }
-        theme_key = display_to_key.get(value, value.lower())
-        theme_manager.set_theme(theme_key)
-        self.config["theme"] = theme_key
-        self.app.config["theme"] = theme_key
-        self.app.config_manager.save_config(self.config)
-        self.app.refresh_current_view()
-        if hasattr(self.app, "toast"):
-            self.app.toast.info(self._ui("toast_theme").format(value=value))
-
-    # ------------------------------------------------------------------
-    # Language
-    # ------------------------------------------------------------------
-
-    def create_language_setting(self, parent):
-        """Language setting using _setting_row."""
-        current_lang = self.config.get("language", "en")
-        lang_display = "English" if current_lang == "en" else "\u0e44\u0e17\u0e22"
-
-        self.lang_var = ctk.StringVar(value=lang_display)
-
-        def _build_control(frame):
-            ctk.CTkOptionMenu(
-                frame,
-                values=["English", "\u0e44\u0e17\u0e22"],
-                variable=self.lang_var,
-                command=self.change_language,
-                width=140,
-                fg_color=COLORS["bg_secondary"],
-                button_color=COLORS["accent"],
-                button_hover_color=COLORS["accent_hover"],
-                corner_radius=RADIUS["md"],
-            ).pack()
-
-        self._setting_row(
-            parent,
-            label=self._ui("language"),
-            description=self._ui("language_desc"),
-            control_builder=_build_control,
-            is_last=True,
-        )
-
-    def change_language(self, value):
-        """Change language"""
-        lang = "en" if value == "English" else "th"
-        self.config["language"] = lang
-        # IMPORTANT: Update app-wide config so _ui() picks it up immediately
-        self.app.config["language"] = lang
-
-        self.save_config()
-
-        # Reload help manager with new language
-        from core.help_manager import HelpManager
-
-        self.app.help_manager = HelpManager(language=lang)
-
-        # Refresh the current view to apply new language
-        self.app.refresh_current_view()
-
-        # Show toast notification
-        if hasattr(self.app, "toast"):
-            display = "\u0e44\u0e17\u0e22" if lang == "th" else value
-            self.app.toast.info(self._ui("toast_language").format(value=display))
-
-    # ------------------------------------------------------------------
     # Safety
     # ------------------------------------------------------------------
 
@@ -468,29 +329,41 @@ class SettingsView(ctk.CTkFrame):
     # ------------------------------------------------------------------
 
     def create_about(self, parent):
-        """About section with bolt icon box, name, version, tagline, and links."""
+        """About section with app logo, name, version, tagline, and links."""
+        from pathlib import Path
+        from PIL import Image
+
         frame = ctk.CTkFrame(parent, fg_color="transparent")
         frame.pack(fill="x", padx=18, pady=(SPACING["lg"], SPACING["md"]))
         frame.grid_columnconfigure(1, weight=1)
 
-        # Bolt icon in accent-dim box (48x48)
-        icon_box = ctk.CTkFrame(
-            frame,
-            width=48,
-            height=48,
-            fg_color=COLORS["accent_dim"],
-            corner_radius=RADIUS["lg"],
-        )
-        icon_box.grid(row=0, column=0, rowspan=4, sticky="nw", padx=(0, 16))
-        icon_box.grid_propagate(False)
+        # App logo (48x48)
+        logo_path = Path(__file__).parent.parent.parent / "assets" / "icon.png"
+        try:
+            pil_img = Image.open(logo_path).resize((48, 48), Image.LANCZOS)
+            logo_img = ctk.CTkImage(
+                light_image=pil_img, dark_image=pil_img, size=(48, 48)
+            )
+            logo_label = ctk.CTkLabel(frame, image=logo_img, text="")
+        except Exception:
+            # Fallback: plain frame with bolt icon if image fails
+            logo_box = ctk.CTkFrame(
+                frame,
+                width=48,
+                height=48,
+                fg_color=COLORS["accent_dim"],
+                corner_radius=RADIUS["lg"],
+            )
+            logo_box.grid_propagate(False)
+            ctk.CTkLabel(
+                logo_box,
+                text=get_icon("bolt"),
+                font=ctk.CTkFont(family=_ICON_FONT, size=24),
+                text_color=COLORS["accent"],
+            ).place(relx=0.5, rely=0.5, anchor="center")
+            logo_label = logo_box
 
-        bolt_codepoint = get_icon("bolt")
-        ctk.CTkLabel(
-            icon_box,
-            text=bolt_codepoint,
-            font=ctk.CTkFont(family=_ICON_FONT, size=24),
-            text_color=COLORS["accent"],
-        ).place(relx=0.5, rely=0.5, anchor="center")
+        logo_label.grid(row=0, column=0, rowspan=4, sticky="nw", padx=(0, 16))
 
         # App name + version on same line
         name_row = ctk.CTkFrame(frame, fg_color="transparent")

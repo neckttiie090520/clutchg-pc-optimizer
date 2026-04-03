@@ -68,7 +68,7 @@ CATEGORY_META: Dict[str, Dict[str, str]] = {
         "label": "Profiles",
     },
     "backup": {
-        "icon": "\uf91b",
+        "icon": "\uf235",
         "color": "#0EA5E9",
         "dim": "#0C2D48",
         "label": "Backup",

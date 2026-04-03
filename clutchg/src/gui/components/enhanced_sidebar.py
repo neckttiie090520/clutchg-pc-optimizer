@@ -125,7 +125,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         items = [
             ("dashboard", "Dashboard", NAV_ICONS.get("dashboard", "\ueac1")),
             ("scripts", "Optimize", NAV_ICONS.get("scripts", "\uf7fb")),
-            ("backup", "Backup", NAV_ICONS.get("backup", "\uf91b")),
+            ("backup", "Backup", NAV_ICONS.get("backup", "\uf235")),
             ("help", "Help", NAV_ICONS.get("help", "\ufa0b")),
         ]
 
@@ -142,7 +142,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         self._settings_divider = divider
 
         # Settings nav item (below divider)
-        self.create_nav_button("settings", "Settings", "\ueb51")
+        self.create_nav_button("settings", "Settings", "\ueb20")
 
     def create_nav_button(self, key: str, label: str, icon: str):
         """

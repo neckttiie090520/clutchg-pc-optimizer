@@ -479,10 +479,10 @@ NAV_ICONS = {
     "dashboard": "\ueac1",  # home
     "profiles": "\uf1f6",  # category
     "scripts": "\uf7fb",  # adjustments-bolt  (Optimize)
-    "backup": "\uf91b",  # folder-symlink
+    "backup": "\uf235",  # stack-push
     "restore": "\ufafd",  # restore
     "help": "\ufa0b",  # progress-help
-    "settings": "\ueb51",  # settings
+    "settings": "\ueb20",  # settings-2
     "cpu": "\ueb87",  # cpu
     "gpu": "\uf50d",  # device-desktop-analytics
     "ram": "\uefce",  # memory

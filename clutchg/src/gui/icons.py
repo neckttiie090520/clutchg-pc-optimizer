@@ -29,7 +29,7 @@ MATERIAL_ICONS = {
     "list": "\uea97",  # list
     "folder": "\uea83",  # folder
     # Backup & Storage
-    "backup": "\uf91b",  # folder-symlink
+    "backup": "\uf235",  # stack-push
     "cloud_upload": "\uea75",  # cloud-upload
     "restore": "\ufafd",  # restore
     "cloud_download": "\uea76",  # cloud-download
@@ -45,8 +45,8 @@ MATERIAL_ICONS = {
     "lightbulb": "\uea51",  # bulb
     "menu_book": "\uea39",  # book
     # Settings & Configuration
-    "settings": "\ueb51",  # settings
-    "settings_applications": "\ueb51",  # settings
+    "settings": "\ueb20",  # settings-2
+    "settings_applications": "\ueb20",  # settings-2
     "palette": "\uea2d",  # color-swatch
     # System & Status
     "check_circle": "\uea67",  # circle-check

@@ -33,10 +33,10 @@ class IconProvider:
         "profiles": "\uf1f6",  # category
         "scripts": "\uf7fb",  # adjustments-bolt  (Optimize)
         "optimize": "\uf7fb",  # adjustments-bolt
-        "backup": "\uf91b",  # folder-symlink
+        "backup": "\uf235",  # stack-push
         "restore": "\ufafd",  # restore
         "help": "\ufa0b",  # progress-help
-        "settings": "\ueb51",  # settings
+        "settings": "\ueb20",  # settings-2
         "docs": "\uea39",  # book
         # Actions
         "create": "\uea9e",  # plus
@@ -120,7 +120,7 @@ class IconProvider:
         # Welcome overlay step & highlight icons
         "waving_hand": "\uec2e",  # hand-stop
         "dashboard_ms": "\ueac1",  # home
-        "backup_ms": "\uf91b",  # folder-symlink  (Backup nav)
+        "backup_ms": "\uf235",  # stack-push  (Backup nav)
         "restore_ms": "\ufafd",  # restore
         "history_ms": "\uebea",  # history
     }
