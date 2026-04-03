@@ -13,11 +13,11 @@ class InlineHelpBox(ctk.CTkFrame):
 
     # Tabler Icons codepoints for each help type
     _MATERIAL_ICONS = {
-        "info": "\ue88e",  # info
-        "warning": "\ue002",  # warning
-        "danger": "\ue5c9",  # close (X mark)
-        "critical": "\ue000",  # error
-        "success": "\ue86c",  # check_circle
+        "info": "\ueac5",  # info-circle
+        "warning": "\uea35",  # alert-triangle
+        "danger": "\uea87",  # circle-x
+        "critical": "\uea87",  # circle-x
+        "success": "\uea67",  # circle-check
     }
 
     def __init__(self, parent, title: str, content: str, help_type: str = "info"):

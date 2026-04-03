@@ -37,18 +37,18 @@ class Tweak:
     preset_extreme: bool = False
 
 
-# Category display metadata
+# Category display metadata — all Tabler Icons codepoints
 TWEAK_CATEGORIES = {
-    "telemetry": {"icon": "\ue914", "color": "#8B5CF6", "label": "Telemetry & Privacy"},
-    "input": {"icon": "\ue338", "color": "#06B6D4", "label": "Input & Latency"},
-    "power": {"icon": "\ue929", "color": "#F59E0B", "label": "Power Management"},
-    "gpu": {"icon": "\ue338", "color": "#10B981", "label": "GPU & Graphics"},
-    "network": {"icon": "\ue639", "color": "#3B82F6", "label": "Network"},
-    "services": {"icon": "\ue8c3", "color": "#EF4444", "label": "Services"},
-    "memory": {"icon": "\ue326", "color": "#EC4899", "label": "Memory"},
-    "boot": {"icon": "\ue002", "color": "#F97316", "label": "Boot (BCDEdit)"},
-    "visual": {"icon": "\ue40a", "color": "#A855F7", "label": "Visual Effects"},
-    "cleanup": {"icon": "\ue872", "color": "#64748B", "label": "Cleanup & Debloat"},
+    "telemetry": {"icon": "\uebe4", "color": "#8B5CF6", "label": "Telemetry & Privacy"},
+    "input": {"icon": "\uef26", "color": "#06B6D4", "label": "Input & Latency"},
+    "power": {"icon": "\uf4a9", "color": "#F59E0B", "label": "Power Management"},
+    "gpu": {"icon": "\uf50d", "color": "#10B981", "label": "GPU & Graphics"},
+    "network": {"icon": "\uf09f", "color": "#3B82F6", "label": "Network"},
+    "services": {"icon": "\uf56e", "color": "#EF4444", "label": "Services"},
+    "memory": {"icon": "\uefce", "color": "#EC4899", "label": "Memory"},
+    "boot": {"icon": "\uebcb", "color": "#F97316", "label": "Boot (BCDEdit)"},
+    "visual": {"icon": "\uea2d", "color": "#A855F7", "label": "Visual Effects"},
+    "cleanup": {"icon": "\ueb8c", "color": "#64748B", "label": "Cleanup & Debloat"},
 }
 
 

@@ -471,26 +471,25 @@ RADIUS = {
 
 
 # ============================================================================
-# ICONS (Windows Segoe MDL2 Assets - LEGACY)
+# ICONS (Tabler Icons — bundled tabler-icons.ttf v3.41.1)
 # ============================================================================
-# See: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
-# NOTE: NAV_ICONS is kept for backward compatibility.
+# All nav/status icons migrated from Segoe MDL2 to Tabler.
 # Use IconProvider (from icon_provider.py) for new code.
 NAV_ICONS = {
-    "dashboard": "\ue80f",  # Home
-    "profiles": "\ue9e9",  # Dial/Tune (Control panel style) - or E771
-    "scripts": "\ue943",  # Document/Script
-    "backup": "\uea35",  # CloudUpload or SaveLocal E74E
-    "restore": "\ue81c",  # History
-    "help": "\ue897",  # Help
-    "settings": "\ue713",  # Settings
-    "cpu": "\ue950",  # Processor
-    "gpu": "\ue7fd",  # Gaming/GPU
-    "ram": "\ue964",  # Memory
-    "storage": "\ue8b7",  # HardDrive
-    "safe": "\ue81e",  # Shield
-    "competitive": "\ue76e",  # Lightning
-    "extreme": "\ue7c5",  # Flame/Fire warning
+    "dashboard": "\ueac1",  # home
+    "profiles": "\uf1f6",  # category
+    "scripts": "\uf7fb",  # adjustments-bolt  (Optimize)
+    "backup": "\uf91b",  # folder-symlink
+    "restore": "\ufafd",  # restore
+    "help": "\ufa0b",  # progress-help
+    "settings": "\ueb51",  # settings
+    "cpu": "\ueb87",  # cpu
+    "gpu": "\uf50d",  # device-desktop-analytics
+    "ram": "\uefce",  # memory
+    "storage": "\ueb2b",  # server
+    "safe": "\ueb22",  # shield-check
+    "competitive": "\ueab1",  # gauge
+    "extreme": "\uec2c",  # flame
 }
 
 # ============================================================================

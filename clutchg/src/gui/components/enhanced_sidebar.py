@@ -123,10 +123,10 @@ class EnhancedSidebar(ctk.CTkFrame):
         # Navigation items with labels
         # Profiles page removed as per user request (duplicates Optimization Center)
         items = [
-            ("dashboard", "Dashboard", NAV_ICONS.get("dashboard", "\ue8b0")),
-            ("scripts", "Optimize", NAV_ICONS.get("scripts", "\ue86f")),
-            ("backup", "Backup", NAV_ICONS.get("backup", "\ue1d7")),
-            ("help", "Help", NAV_ICONS.get("help", "\ue88b")),
+            ("dashboard", "Dashboard", NAV_ICONS.get("dashboard", "\ueac1")),
+            ("scripts", "Optimize", NAV_ICONS.get("scripts", "\uf7fb")),
+            ("backup", "Backup", NAV_ICONS.get("backup", "\uf91b")),
+            ("help", "Help", NAV_ICONS.get("help", "\ufa0b")),
         ]
 
         for key, label, icon in items:
@@ -142,7 +142,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         self._settings_divider = divider
 
         # Settings nav item (below divider)
-        self.create_nav_button("settings", "Settings", "\ue713")
+        self.create_nav_button("settings", "Settings", "\ueb51")
 
     def create_nav_button(self, key: str, label: str, icon: str):
         """

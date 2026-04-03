@@ -1,12 +1,13 @@
 """
 Icon Provider - Centralized Icon Management
 
-Two icon font systems:
-  1. Segoe MDL2 Assets  — navigation & system icons (ships with Win 10/11)
-  2. Tabler Icons       — content / topic icons (bundled with app, tabler-icons.ttf)
+Single icon font system: Tabler Icons (bundled tabler-icons.ttf, v3.41.1)
+All codepoints are in the Tabler range (ea00+).
 
-get_icon_font(icon_name) returns the correct font for each icon.
-Fallback chain per font: Segoe MDL2 > Segoe UI Symbol > text labels.
+Segoe MDL2 Assets kept only for chevron/arrow navigation glyphs that are
+rendered by the OS title-bar / window chrome (not our app labels).
+
+get_icon_font(icon_name) always returns "Tabler Icons" for content icons.
 """
 
 import platform
@@ -17,69 +18,70 @@ class IconProvider:
     """
     Centralized icon management for ClutchG.
 
-    Icons are split into two font families:
-      - SEGOE_ICONS:  Segoe MDL2 Assets codepoints (nav, actions, status, system)
-      - TABLER_ICONS: Tabler Icons codepoints (content / topic icons, bundled TTF)
+    All icons use the bundled Tabler Icons font (tabler-icons.ttf).
+    SEGOE_ICONS kept for backward-compat key lookups only; codepoints
+    are now Tabler so the font family returned is always "Tabler Icons".
 
     Use get_icon_with_fallback() for graceful degradation on non-Windows.
     """
 
-    # ── Segoe MDL2 Assets codepoints ──────────────────────────────────
+    # ── Navigation / action icons — all Tabler codepoints ─────────────
     SEGOE_ICONS: Dict[str, str] = {
         # Navigation
-        "dashboard": "\ue80f",  # Home
-        "home": "\ue80f",  # Home
-        "profiles": "\ue713",  # Settings (gear)
-        "scripts": "\ue756",  # CommandPrompt
-        "backup": "\ue74e",  # Save
-        "restore": "\ue777",  # Sync
-        "help": "\ue897",  # Help
-        "settings": "\ue713",  # Settings (gear)
-        "docs": "\ue8a5",  # Library
+        "dashboard": "\ueac1",  # home
+        "home": "\ueac1",  # home
+        "profiles": "\uf1f6",  # category
+        "scripts": "\uf7fb",  # adjustments-bolt  (Optimize)
+        "optimize": "\uf7fb",  # adjustments-bolt
+        "backup": "\uf91b",  # folder-symlink
+        "restore": "\ufafd",  # restore
+        "help": "\ufa0b",  # progress-help
+        "settings": "\ueb51",  # settings
+        "docs": "\uea39",  # book
         # Actions
-        "create": "\ue710",  # Add
-        "add": "\ue710",  # Add
-        "delete": "\ue74d",  # Delete
-        "edit": "\ue70f",  # Edit
-        "save": "\ue74e",  # Save
-        "cancel": "\ue711",  # Cancel
-        "confirm": "\ue73e",  # CheckMark
-        "apply": "\ue73e",  # CheckMark
+        "create": "\uea9e",  # plus
+        "add": "\uea9e",  # plus
+        "delete": "\ueb55",  # trash
+        "edit": "\uec9b",  # pencil
+        "save": "\ueb62",  # device-floppy
+        "cancel": "\ueb55",  # trash (fallback)
+        "confirm": "\uea67",  # circle-check
+        "apply": "\uea67",  # circle-check
         # Status
-        "success": "\ue73e",  # CheckMark
-        "error": "\ue711",  # Cancel
-        "warning": "\ue7ba",  # Warning
-        "info": "\ue946",  # Info
-        "loading": "\ue72c",  # Refresh
+        "success": "\uea67",  # circle-check
+        "error": "\uea87",  # circle-x
+        "warning": "\uea35",  # alert-triangle
+        "info": "\ueac5",  # info-circle
+        "loading": "\ueb13",  # refresh
         # States
-        "check": "\ue73e",  # CheckMark
-        "close": "\ue711",  # Cancel
-        "expand": "\ue70d",  # ChevronDown
-        "collapse": "\ue70e",  # ChevronUp
-        "arrow_right": "\ue76c",  # ChevronRight
-        "arrow_left": "\ue76b",  # ChevronLeft
-        "arrow_down": "\ue70d",  # ChevronDown
-        "arrow_up": "\ue70e",  # ChevronUp
-        # System
-        "cpu": "\ue7f4",  # Processing
-        "gpu": "\ue7f8",  # TVMonitor
-        "ram": "\ue964",  # DeviceLaptopNoPic (memory analogy)
-        "storage": "\ue74e",  # Save / HardDrive
-        "network": "\ue839",  # NetworkTower
+        "check": "\uea67",  # circle-check
+        "close": "\ueb55",  # x
+        "expand": "\uea5f",  # chevron-down
+        "collapse": "\uea61",  # chevron-up
+        "arrow_right": "\uea1f",  # arrow-right
+        "arrow_left": "\uea19",  # arrow-left
+        "arrow_down": "\uea5f",  # chevron-down
+        "arrow_up": "\uea61",  # chevron-up
+        # System hardware
+        "cpu": "\ueb87",  # cpu
+        "gpu": "\uf50d",  # device-desktop-analytics
+        "ram": "\uefce",  # memory
+        "storage": "\ueb2b",  # server
+        "network": "\uf09f",  # network
         # UI Elements
-        "search": "\ue721",  # Search
-        "filter": "\ue71c",  # Filter
-        "sort": "\ue8cb",  # Sort
-        "more": "\ue712",  # More
-        "menu": "\ue700",  # GlobalNavigationButton
+        "search": "\ueb1c",  # search
+        "filter": "\uea5a",  # filter
+        "sort": "\ueb73",  # arrows-sort
+        "more": "\uea37",  # dots
+        "menu": "\uead0",  # menu-2
         # Backup/Restore specific
-        "history": "\ue81c",  # History
-        "backup_restore": "\ue777",  # Sync
-        "system_snapshot": "\ue7c1",  # Shield
+        "history": "\uebea",  # history
+        "backup_restore": "\ufafd",  # restore
+        "system_snapshot": "\ueb24",  # shield
         # Files/Folders
-        "folder": "\ue8b7",  # FolderOpen
-        "file": "\ue8a5",  # Page
-        "document": "\ue8a5",  # Page
+        "folder": "\uea83",  # folder
+        "file": "\uea78",  # file
+        "document": "\uf028",  # file-description
     }
 
     # ── Tabler Icons codepoints (tabler-icons.ttf, v3.41.1) ──────────
@@ -118,7 +120,7 @@ class IconProvider:
         # Welcome overlay step & highlight icons
         "waving_hand": "\uec2e",  # hand-stop
         "dashboard_ms": "\ueac1",  # home
-        "backup_ms": "\ueb62",  # device-floppy
+        "backup_ms": "\uf91b",  # folder-symlink  (Backup nav)
         "restore_ms": "\ufafd",  # restore
         "history_ms": "\uebea",  # history
     }
@@ -127,13 +129,14 @@ class IconProvider:
     ICONS: Dict[str, str] = {**SEGOE_ICONS, **TABLER_ICONS}
 
     TABLER_FONT = "Tabler Icons"
-    SEGOE_FONT = "Segoe MDL2 Assets"
+    SEGOE_FONT = "Segoe MDL2 Assets"  # kept for reference; no longer used for icons
 
     def __init__(self):
         """Initialize icon provider and detect available fonts."""
         self.system = platform.system()
-        self._segmdl2_available = self._check_font(self.SEGOE_FONT)
         self._tabler_available = self._check_font(self.TABLER_FONT)
+        # Segoe presence check kept for future use but not critical
+        self._segmdl2_available = self._check_font(self.SEGOE_FONT)
 
     def _check_font(self, family_name: str) -> bool:
         """Check if a font family is available (Windows only for Segoe)."""
@@ -161,8 +164,8 @@ class IconProvider:
             return False
 
     def _is_tabler_icon(self, icon_name: str) -> bool:
-        """Return True if icon_name belongs to the Tabler Icons set."""
-        return icon_name in self.TABLER_ICONS
+        """All icons now use Tabler — return True for any known icon."""
+        return icon_name in self.ICONS
 
     def get_icon(self, icon_name: str) -> str:
         """
@@ -180,33 +183,19 @@ class IconProvider:
         """
         Get the correct icon font family tuple for the given icon.
 
-        Returns Tabler Icons for content icons,
-        Segoe MDL2 Assets for navigation/system icons.
+        All icons now use Tabler Icons (bundled TTF). Segoe MDL2 no longer
+        used for app content icons.
 
         Args:
-            icon_name: Name of the icon. If None, defaults to Segoe MDL2.
+            icon_name: Name of the icon (unused — kept for API compat).
 
         Returns:
             Tuple of font family name(s)
         """
-        # Tabler Icons path
-        if icon_name and self._is_tabler_icon(icon_name):
-            if self._tabler_available:
-                return (self.TABLER_FONT,)
-            # Tabler font missing — fall through to generic fallback
-            return ("Segoe UI",)
-
-        # Segoe MDL2 path (default)
-        if self._segmdl2_available:
-            return (self.SEGOE_FONT,)
-
-        # Fallback chain per platform
-        if self.system == "Windows":
-            return ("Segoe UI Symbol",)
-        elif self.system == "Darwin":
-            return ("Apple Color Emoji", "Arial Unicode MS")
-        else:
-            return ("Noto Color Emoji", "DejaVu Sans")
+        if self._tabler_available:
+            return (self.TABLER_FONT,)
+        # Fallback if font not loaded yet
+        return ("Segoe UI",)
 
     def get_icon_with_fallback(self, icon_name: str, fallback_text: str = "") -> tuple:
         """

@@ -106,7 +106,7 @@ class ClutchGApp:
         try:
             test_label = ctk.CTkLabel(
                 self.window,
-                text="\ue8b8",
+                text="\uea38",
                 font=ctk.CTkFont(family="Tabler Icons", size=12),
             )
             test_label.destroy()

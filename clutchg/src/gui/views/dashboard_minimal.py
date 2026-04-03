@@ -311,9 +311,9 @@ class DashboardView(ctk.CTkFrame):
         ).pack(anchor="w")
 
         components = [
-            (self._ui("cpu"), NAV_ICONS.get("cpu", "\ue950"), cpu_spec),
-            (self._ui("gpu"), NAV_ICONS.get("gpu", "\ue7fd"), gpu_spec),
-            (self._ui("ram"), NAV_ICONS.get("ram", "\ue964"), ram_spec),
+            (self._ui("cpu"), NAV_ICONS.get("cpu", "\ueb87"), cpu_spec),
+            (self._ui("gpu"), NAV_ICONS.get("gpu", "\uf50d"), gpu_spec),
+            (self._ui("ram"), NAV_ICONS.get("ram", "\uefce"), ram_spec),
         ]
 
         grid = ctk.CTkFrame(parent, fg_color="transparent")

@@ -1,102 +1,101 @@
 """
-Google Material Symbols Integration for ClutchG
-Provides Material Design icons using Google Material Symbols font
+Tabler Icons constants for ClutchG
+All codepoints use the bundled Tabler Icons font (tabler-icons.ttf, v3.41.1)
 """
 
 import customtkinter as ctk
 
 
 # ============================================================================
-# MATERIAL SYMBOLS ICON CONSTANTS
+# TABLER ICON CONSTANTS
 # ============================================================================
-# Using Google Tabler Icons (unicode values)
-# Reference: https://fonts.google.com/icons
+# All codepoints are Tabler Icons (ea00+)
 
 MATERIAL_ICONS = {
     # Navigation & Layout
-    "dashboard": "\ue8b0",  # Dashboard icon
-    "grid_view": "\ue8d4",  # Grid view
-    "view_module": "\ue8d5",  # Module view
+    "dashboard": "\ueac1",  # home
+    "grid_view": "\ueb0b",  # layout-grid
+    "view_module": "\ueb0b",  # layout-grid
     # Profiles & Optimization
-    "speed": "\ue3de",  # Speed/Performance
-    "tune": "\ue429",  # Tune/Settings
-    "bolt": "\ue929",  # Lightning bolt (Extreme)
-    "shield": "\ue914",  # Shield (Safe)
-    "balance": "\uec0e",  # Balance (Competitive)
+    "speed": "\ueab1",  # gauge
+    "tune": "\uec38",  # adjustments-horizontal
+    "bolt": "\uea38",  # bolt
+    "shield": "\ueb24",  # shield
+    "balance": "\uf1f4",  # arrows-exchange
     # Scripts & Code
-    "code": "\ue86f",  # Code
-    "terminal": "\ue8c9",  # Terminal
-    "play_arrow": "\ue037",  # Play/Run
-    "list": "\ue896",  # List
-    "folder": "\ue92c",  # Folder
+    "code": "\uea86",  # code
+    "terminal": "\ueb55",  # terminal-2
+    "play_arrow": "\ued46",  # player-play
+    "list": "\uea97",  # list
+    "folder": "\uea83",  # folder
     # Backup & Storage
-    "backup": "\ue860",  # Backup (cloud_upload alternative)
-    "cloud_upload": "\ue8c5",  # Cloud upload
-    "restore": "\ue855",  # Restore (cloud_download)
-    "cloud_download": "\ue8c4",  # Cloud download
-    "schedule": "\ue8b5",  # Schedule/Timeline
-    "history": "\ue8b1",  # History
-    "inventory_2": "\ue1d7",  # Stack/Layers (for backup)
+    "backup": "\uf91b",  # folder-symlink
+    "cloud_upload": "\uea75",  # cloud-upload
+    "restore": "\ufafd",  # restore
+    "cloud_download": "\uea76",  # cloud-download
+    "schedule": "\ueb65",  # calendar-time
+    "history": "\uebea",  # history
+    "inventory_2": "\uea45",  # box
     # Help & Info
-    "help": "\ue88a",  # Help
-    "help_outline": "\ue88b",  # Help outline
-    "info": "\ue88e",  # Info
-    "info_outline": "\ue88f",  # Info outline
-    "question_mark": "\ue8b6",  # Question mark
-    "lightbulb": "\ue0a3",  # Lightbulb/Tips
-    "menu_book": "\ue8ca",  # Book/Documentation
+    "help": "\ufa0b",  # progress-help
+    "help_outline": "\ufa0b",  # progress-help
+    "info": "\ueac5",  # info-circle
+    "info_outline": "\ueac5",  # info-circle
+    "question_mark": "\ueac5",  # info-circle
+    "lightbulb": "\uea51",  # bulb
+    "menu_book": "\uea39",  # book
     # Settings & Configuration
-    "settings": "\ue8b8",  # Settings
-    "settings_applications": "\ue8c3",  # App settings
-    "palette": "\ue40a",  # Palette/Theme
+    "settings": "\ueb51",  # settings
+    "settings_applications": "\ueb51",  # settings
+    "palette": "\uea2d",  # color-swatch
     # System & Status
-    "check_circle": "\ue86c",  # Check circle (success)
-    "error": "\ue000",  # Error
-    "warning": "\ue002",  # Warning
-    "cancel": "\ue5c9",  # Cancel/Close
-    "close": "\ue5cd",  # Close
-    "delete": "\ue872",  # Delete
+    "check_circle": "\uea67",  # circle-check
+    "error": "\uea87",  # circle-x
+    "warning": "\uea35",  # alert-triangle
+    "cancel": "\uea87",  # circle-x
+    "close": "\ueb55",  # x
+    "delete": "\ueb55",  # trash
     # Actions
-    "add": "\ue145",  # Add
-    "remove": "\ue15b",  # Remove
-    "edit": "\ue3c9",  # Edit
-    "save": "\ue161",  # Save
-    "refresh": "\ue5d5",  # Refresh
+    "add": "\uea9e",  # plus
+    "remove": "\uec8e",  # minus
+    "edit": "\uec9b",  # pencil
+    "save": "\ueb62",  # device-floppy
+    "refresh": "\ueb13",  # refresh
     # Search & Filter
-    "search": "\ue8b6",  # Search
-    "filter_list": "\ue152",  # Filter
-    "sort": "\ue164",  # Sort
+    "search": "\ueb1c",  # search
+    "filter_list": "\uea5a",  # filter
+    "sort": "\ueb73",  # arrows-sort
     # System Hardware
-    "memory": "\ue326",  # RAM/Memory
-    "storage": "\ue1db",  # Storage
-    "cpu": "\ue331",  # CPU (developer_board)
-    "developer_board": "\ue331",  # Developer board (CPU)
-    "videogame_asset": "\ue338",  # Game/GPU
-    "monitor": "\ue314",  # Monitor
+    "memory": "\uefce",  # memory
+    "storage": "\ueb2b",  # server
+    "cpu": "\ueb87",  # cpu
+    "developer_board": "\ueb87",  # cpu
+    "videogame_asset": "\uf50d",  # device-desktop-analytics
+    "monitor": "\ueb2a",  # device-desktop
     # Arrows & Navigation
-    "arrow_back": "\ue5c4",  # Arrow back
-    "arrow_forward": "\ue5c8",  # Arrow forward
-    "home": "\ue88a",  # Home
-    "exit_to_app": "\ue905",  # Exit
+    "arrow_back": "\uea19",  # arrow-left
+    "arrow_forward": "\uea1f",  # arrow-right
+    "home": "\ueac1",  # home
+    "exit_to_app": "\uea0a",  # door-exit
     # Misc
-    "star": "\ue838",  # Star
-    "favorite": "\ue87d",  # Favorite
-    "visibility": "\ue8f4",  # Visibility
-    "visibility_off": "\ue8f5",  # Visibility off
-    "expand_more": "\ue5ce",  # Expand more (chevron down)
-    "expand_less": "\ue5cf",  # Expand less (chevron up)
-    "more_vert": "\ue5d4",  # More vertical (kebab menu)
+    "star": "\ueb2e",  # star
+    "favorite": "\ueb2e",  # star
+    "visibility": "\uea9a",  # eye
+    "visibility_off": "\ueba3",  # eye-off
+    "expand_more": "\uea5f",  # chevron-down
+    "expand_less": "\uea61",  # chevron-up
+    "more_vert": "\uea37",  # dots-vertical
     # Help topic & Phase 2 icons
-    "rocket_launch": "\ue559",  # Getting Started
-    "bar_chart": "\ue26b",  # Dashboard topic
-    "extension": "\ue87b",  # Optimization topic
-    "description": "\ue873",  # Scripts/description
-    "target": "\uf2c4",  # Profile recommendations
-    "lan": "\ue639",  # Network category
-    "build": "\ue869",  # Troubleshooting / Custom tab
-    "download": "\ue2c4",  # Import/Download
-    "upload": "\ue2c6",  # Export/Upload
-    "open_in_new": "\ue89e",  # External link
+    "rocket_launch": "\uec45",  # rocket
+    "bar_chart": "\uea59",  # chart-bar
+    "extension": "\ueb10",  # puzzle
+    "description": "\uf028",  # file-description
+    "target": "\ueb35",  # target
+    "lan": "\uf09f",  # network
+    "build": "\ueb40",  # tool
+    "download": "\uea96",  # download
+    "upload": "\ueb47",  # upload
+    "open_in_new": "\uea99",  # external-link
 }
 
 
@@ -118,13 +117,13 @@ NAV_ICONS_LEGACY = {
 # ============================================================================
 def get_material_font(size: int = 24) -> ctk.CTkFont:
     """
-    Get Material Symbols font for use in CustomTkinter widgets
+    Get Tabler Icons font for use in CustomTkinter widgets
 
     Args:
         size: Font size
 
     Returns:
-        CTkFont configured for Material Symbols
+        CTkFont configured for Tabler Icons
     """
     return ctk.CTkFont(family="Tabler Icons", size=size)
 
@@ -147,7 +146,7 @@ def create_icon_label(
     parent, icon_name: str, size: int = 24, color: str = None, **kwargs
 ) -> ctk.CTkLabel:
     """
-    Create a CTkLabel with a Material Symbol icon
+    Create a CTkLabel with a Tabler Icon
 
     Args:
         parent: Parent widget
@@ -157,7 +156,7 @@ def create_icon_label(
         **kwargs: Additional CTkLabel arguments
 
     Returns:
-        CTkLabel configured with Material Symbol icon
+        CTkLabel configured with Tabler Icon
     """
     from gui.theme import COLORS
 
@@ -177,7 +176,7 @@ def create_icon_button(
     parent, icon_name: str, size: int = 40, command=None, **kwargs
 ) -> ctk.CTkButton:
     """
-    Create a CTkButton with a Material Symbol icon
+    Create a CTkButton with a Tabler Icon
 
     Args:
         parent: Parent widget
@@ -187,7 +186,7 @@ def create_icon_button(
         **kwargs: Additional CTkButton arguments
 
     Returns:
-        CTkButton configured with Material Symbol icon
+        CTkButton configured with Tabler Icon
     """
     from gui.theme import COLORS
 

@@ -115,7 +115,7 @@ class ScriptsView(ctk.CTkFrame):
             # Tab names
             "tab_presets": "Profiles",
             "tab_custom": "Custom",
-            "tab_education": "Glossary",
+            "tab_education": "Info",
             # Preset info
             "safe_title": "Safe",
             "safe_subtitle": "Evidence-based, fully reversible",
@@ -169,7 +169,7 @@ class ScriptsView(ctk.CTkFrame):
             # Tab names
             "tab_presets": "Profiles",
             "tab_custom": "Custom",
-            "tab_education": "Glossary",
+            "tab_education": "Info",
             # Preset info
             "safe_title": "Safe",
             "safe_subtitle": "ยืนยันได้จากหลักฐาน สามารถย้อนกลับได้",
@@ -451,12 +451,12 @@ class ScriptsView(ctk.CTkFrame):
         )
         bar.pack(side="left")
 
-        # Tabler Icons codepoints
+        # Tabler Icons codepoints (v3.41.1)
         tabs = [
-            ("quick_actions", "\ue929", self._ui("tab_quick_actions")),  # bolt
-            ("presets", "\ue429", self._ui("tab_presets")),  # tune
-            ("custom", "\ue869", self._ui("tab_custom")),  # build
-            ("education", "\ue8ca", self._ui("tab_education")),  # menu_book
+            ("quick_actions", "\uea38", self._ui("tab_quick_actions")),  # bolt
+            ("presets", "\uf1f6", self._ui("tab_presets")),  # category
+            ("custom", "\uebca", self._ui("tab_custom")),  # tools
+            ("education", "\ueac5", self._ui("tab_education")),  # info-circle
         ]
 
         self.tab_buttons = {}
@@ -2039,7 +2039,7 @@ class ScriptsView(ctk.CTkFrame):
         # Info button
         ctk.CTkButton(
             row,
-            text="\ue88e",
+            text="\ueac5",
             width=28,
             height=28,
             font=ctk.CTkFont(family="Tabler Icons", size=14),
@@ -2127,7 +2127,7 @@ class ScriptsView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             wrapper,
-            text="\ue88e",
+            text="\ueac5",
             font=ctk.CTkFont(family="Tabler Icons", size=32),
             text_color=COLORS["text_muted"],
         ).pack()
@@ -2539,7 +2539,7 @@ class ScriptsView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             search_container,
-            text="\ue8b6",
+            text="\ueb1c",
             font=ctk.CTkFont(family="Tabler Icons", size=16),
             text_color=COLORS["text_secondary"],
         ).pack(side="left", padx=(SPACING["md"], SPACING["xs"]))
@@ -2570,7 +2570,7 @@ class ScriptsView(ctk.CTkFrame):
         scroll_indicator.grid(row=0, column=1, sticky="ns")
         ctk.CTkLabel(
             scroll_indicator,
-            text="\ue5c8",  # arrow_forward (Material Symbols)
+            text="\uea1f",  # arrow-right (Tabler)
             font=ctk.CTkFont(family="Tabler Icons", size=12),
             text_color=COLORS["text_muted"],
         ).pack(expand=True)

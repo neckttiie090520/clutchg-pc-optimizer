@@ -16,10 +16,10 @@ if TYPE_CHECKING:
 _ICON_FONT = "Tabler Icons"
 
 _SECTION_ICONS = {
-    "appearance": "\ue40a",  # palette
-    "language": "\ue8e2",  # translate
-    "safety": "\ue914",  # shield
-    "about": "\ue88e",  # info
+    "appearance": "\uea2d",  # color-swatch (Tabler)
+    "language": "\ueb05",  # language (Tabler)
+    "safety": "\ueb22",  # shield-check (Tabler)
+    "about": "\ueac5",  # info-circle (Tabler)
 }
 
 _GITHUB_URL = "https://github.com/neckttiie090520/clutchg-pc-optimizer"
