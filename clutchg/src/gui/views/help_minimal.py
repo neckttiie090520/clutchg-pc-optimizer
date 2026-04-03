@@ -35,6 +35,11 @@ class HelpView(ctk.CTkFrame):
             "warnings": "Warnings:",
             "category_risk": "Category Risk:",
             "reversibility": "Reversibility:",
+            "tweaks_count": "Tweaks:",
+            "credits": "Credits",
+            "answer": "Answer:",
+            "never_touched": "Never Touched",
+            "never_touched_desc": "These protections are never disabled by ClutchG:",
         },
         "th": {
             "help_header": "Docs",
@@ -51,6 +56,11 @@ class HelpView(ctk.CTkFrame):
             "warnings": "คำเตือน:",
             "category_risk": "ความเสี่ยงของหมวด:",
             "reversibility": "การย้อนกลับ:",
+            "tweaks_count": "จำนวน Tweaks:",
+            "credits": "เครดิต",
+            "answer": "คำตอบ:",
+            "never_touched": "ไม่แตะเด็ดขาด",
+            "never_touched_desc": "ระบบป้องกันเหล่านี้ ClutchG ไม่ปิดเลย:",
         },
     }
 
@@ -278,11 +288,26 @@ class HelpView(ctk.CTkFrame):
             self._render_troubleshooting(topic.content)
         elif topic_id == "about":
             self._render_about(topic.content)
+        elif topic_id == "faq":
+            self._render_faq(topic.content)
+        elif topic_id == "custom_tweaks":
+            self._render_sections(topic.content.get("sections", []))
         else:
             self._render_sections(topic.content.get("sections", []))
 
     def _render_profiles(self, profiles_data: dict):
         """Render profiles explanation"""
+        # Overview paragraph
+        if "overview" in profiles_data:
+            ctk.CTkLabel(
+                self.content_frame,
+                text=profiles_data["overview"],
+                font=self._font(12),
+                text_color=COLORS["text_secondary"],
+                wraplength=720,
+                justify="left",
+            ).pack(anchor="w", pady=(0, 15), padx=20)
+
         profiles = profiles_data.get("profiles", {})
 
         for profile_name, profile in profiles.items():
@@ -319,6 +344,14 @@ class HelpView(ctk.CTkFrame):
                     self._add_detail_row(
                         details_frame, key.replace("_", " ").title(), profile[key]
                     )
+
+            # Tweaks count
+            if "tweaks_count" in profile:
+                self._add_detail_row(
+                    details_frame,
+                    self._ui("tweaks_count"),
+                    profile["tweaks_count"],
+                )
 
             # What it does
             if "what_it_does" in profile:
@@ -399,6 +432,17 @@ class HelpView(ctk.CTkFrame):
 
     def _render_scripts(self, scripts_data: dict):
         """Render script reference"""
+        # Overview paragraph
+        if "overview" in scripts_data:
+            ctk.CTkLabel(
+                self.content_frame,
+                text=scripts_data["overview"],
+                font=self._font(12),
+                text_color=COLORS["text_secondary"],
+                wraplength=720,
+                justify="left",
+            ).pack(anchor="w", pady=(0, 15), padx=20)
+
         categories = scripts_data.get("categories", {})
 
         for cat_name, category in categories.items():
@@ -541,6 +585,26 @@ class HelpView(ctk.CTkFrame):
 
     def _render_safety(self, safety_data: dict):
         """Render safety information"""
+        # Intro sections (policy paragraph)
+        for section in safety_data.get("sections", []):
+            ctk.CTkLabel(
+                self.content_frame,
+                text=section.get("heading", ""),
+                font=self._font(16, "bold"),
+                text_color=COLORS["text_primary"],
+            ).pack(anchor="w", pady=(0, 8))
+
+            if "content" in section:
+                ctk.CTkLabel(
+                    self.content_frame,
+                    text=section["content"],
+                    font=self._font(12),
+                    text_color=COLORS["text_secondary"],
+                    wraplength=720,
+                    justify="left",
+                ).pack(anchor="w", pady=(0, 15), padx=20)
+
+        # Warning boxes
         warnings = safety_data.get("warnings", [])
 
         for warning in warnings:
@@ -551,6 +615,41 @@ class HelpView(ctk.CTkFrame):
                 help_type=warning["level"],
             )
             box.pack(fill="x", pady=10)
+
+        # Never touched list
+        never_touched = safety_data.get("never_touched", [])
+        if never_touched:
+            ctk.CTkLabel(
+                self.content_frame,
+                text=self._ui("never_touched"),
+                font=self._font(16, "bold"),
+                text_color=COLORS["text_primary"],
+            ).pack(anchor="w", pady=(25, 5))
+
+            ctk.CTkLabel(
+                self.content_frame,
+                text=self._ui("never_touched_desc"),
+                font=self._font(11),
+                text_color=COLORS["text_secondary"],
+            ).pack(anchor="w", pady=(0, 10), padx=20)
+
+            for item in never_touched:
+                item_row = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+                item_row.pack(anchor="w", padx=20, pady=2)
+
+                ctk.CTkLabel(
+                    item_row,
+                    text=ICON("shield"),
+                    font=ctk.CTkFont(family="Tabler Icons", size=12),
+                    text_color=COLORS["success"],
+                ).pack(side="left", padx=(0, 6))
+
+                ctk.CTkLabel(
+                    item_row,
+                    text=item,
+                    font=self._font(11),
+                    text_color=COLORS["text_primary"],
+                ).pack(side="left")
 
         # Myths section
         ctk.CTkLabel(
@@ -666,6 +765,61 @@ class HelpView(ctk.CTkFrame):
             text_color=COLORS["text_muted"],
             wraplength=720,
         ).pack(anchor="w", pady=(30, 0))
+
+        # Credits
+        if "credits" in payload:
+            ctk.CTkLabel(
+                self.content_frame,
+                text=self._ui("credits"),
+                font=self._font(14, "bold"),
+                text_color=COLORS["text_primary"],
+            ).pack(anchor="w", pady=(20, 5), padx=20)
+
+            ctk.CTkLabel(
+                self.content_frame,
+                text=payload["credits"],
+                font=self._font(11),
+                text_color=COLORS["text_secondary"],
+            ).pack(anchor="w", padx=20)
+
+    def _render_faq(self, faq_data: dict):
+        """Render FAQ topic as Q&A cards"""
+        questions = faq_data.get("questions", [])
+
+        for i, qa in enumerate(questions):
+            card = GlassCard(self.content_frame, corner_radius=RADIUS["lg"])
+            card.pack(fill="x", pady=SPACING["sm"])
+
+            # Question row (icon + text)
+            q_frame = ctk.CTkFrame(card, fg_color="transparent")
+            q_frame.pack(fill="x", padx=15, pady=(12, 8))
+
+            ctk.CTkLabel(
+                q_frame,
+                text=ICON("help"),
+                font=ctk.CTkFont(family="Tabler Icons", size=14),
+                text_color=COLORS["accent"],
+            ).pack(side="left", padx=(0, 8))
+
+            ctk.CTkLabel(
+                q_frame,
+                text=qa["question"],
+                font=self._font(13, "bold"),
+                text_color=COLORS["text_primary"],
+                wraplength=680,
+                justify="left",
+                anchor="w",
+            ).pack(side="left", fill="x", expand=True)
+
+            # Answer
+            ctk.CTkLabel(
+                card,
+                text=qa["answer"],
+                font=self._font(11),
+                text_color=COLORS["text_secondary"],
+                wraplength=700,
+                justify="left",
+            ).pack(anchor="w", padx=15, pady=(0, 12))
 
     def on_search_change(self):
         """Handle help search."""

@@ -9,33 +9,38 @@
         "sections": [
           {
             "heading": "What is ClutchG?",
-            "content": "A Windows optimizer for gamers. Applies reversible tweaks to cut latency, smooth out frame times, and kill unnecessary background noise — without touching Defender, UAC, or Windows Update."
+            "content": "ClutchG is a Windows optimizer built for gamers. It applies reversible system tweaks to reduce input latency, stabilize frame times, and cut unnecessary background processes — without ever touching Windows Defender, UAC, or Windows Update."
           },
           {
             "heading": "Quick Start",
             "steps": [
-              "1. Go to Tweaks → Profiles and pick one (Safe is a good start).",
-              "2. ClutchG auto-creates a backup before applying.",
-              "3. Restart if prompted.",
-              "4. Check Home for your updated score."
+              "1. Launch ClutchG as Administrator.",
+              "2. Go to Tweaks → Profiles and pick a preset (Safe is a good start).",
+              "3. ClutchG auto-creates a backup before applying.",
+              "4. Click Apply, then restart when prompted.",
+              "5. Check Home for your updated optimization score."
             ]
           },
           {
             "heading": "Key Points",
             "key_points": [
-              "Everything is logged and reversible via Backup.",
-              "Defender, UAC, and Windows Update are never touched.",
-              "Risk levels: LOW = safe for everyone · MEDIUM = read first · HIGH = advanced only."
+              "Every change is logged and reversible through Backup & Restore.",
+              "Windows Defender, UAC, and Windows Update are never touched.",
+              "Risk levels: LOW = safe for everyone · MEDIUM = read before applying · HIGH = advanced users only."
             ]
           },
           {
-            "heading": "Before You Apply Anything",
+            "heading": "Before You Start",
             "key_points": [
-              "Run the app as Administrator for real system changes.",
-              "Review the risk level before confirming a profile or action.",
-              "Keep auto-backup enabled unless you have a specific reason to turn it off.",
-              "Start with Safe when testing on a new or important machine."
+              "Run the app as Administrator — system changes require elevated rights.",
+              "Review the risk level before confirming any profile or tweak.",
+              "Keep auto-backup enabled (on by default) so you can always roll back.",
+              "Start with Safe profile when testing on a new or important machine."
             ]
+          },
+          {
+            "heading": "How the App Is Organized",
+            "content": "Home shows your system overview and optimization score. Tweaks is where you apply profiles, quick fixes, or build custom tweak sets. Backup & Restore manages snapshots so you can undo changes. Docs (this page) explains everything. Settings lets you configure preferences."
           }
         ]
       },
@@ -45,33 +50,38 @@
         "sections": [
           {
             "heading": "ClutchG คืออะไร?",
-            "content": "ตัวจูน Windows สำหรับเกมเมอร์ ใช้ tweak แบบย้อนกลับได้เพื่อลด latency ทำ frame time ให้นิ่งขึ้น และตัด background noise ที่ไม่จำเป็น — โดยไม่แตะ Defender, UAC หรือ Windows Update"
+            "content": "ClutchG เป็นเครื่องมือจูน Windows สำหรับเกมเมอร์ ใช้ tweak แบบย้อนกลับได้เพื่อลด input latency ทำ frame time ให้นิ่งขึ้น และตัด process เบื้องหลังที่ไม่จำเป็น — โดยไม่แตะ Windows Defender, UAC หรือ Windows Update เลย"
           },
           {
             "heading": "เริ่มต้นเร็ว",
             "steps": [
-              "1. ไป Tweaks → Profiles แล้วเลือกโปรไฟล์ (Safe เริ่มได้เลย)",
-              "2. ClutchG จะสร้าง backup ให้อัตโนมัติก่อน apply",
-              "3. รีสตาร์ตถ้าแอปบอก",
-              "4. กลับมาดูคะแนนใหม่ที่ Home"
+              "1. เปิด ClutchG ในโหมด Administrator",
+              "2. ไปที่ Tweaks → Profiles แล้วเลือก preset (เริ่มจาก Safe ได้เลย)",
+              "3. ClutchG จะสร้าง backup ให้อัตโนมัติก่อน apply",
+              "4. กด Apply แล้วรีสตาร์ตตามที่แอปแจ้ง",
+              "5. กลับมาดูคะแนน optimization ใหม่ที่ Home"
             ]
           },
           {
             "heading": "จุดสำคัญ",
             "key_points": [
-              "ทุกอย่าง log ไว้หมด ย้อนกลับได้ผ่าน Backup",
-              "Defender, UAC และ Windows Update ไม่ถูกแตะเลย",
-              "ระดับความเสี่ยง: LOW = ปลอดภัยสำหรับทุกคน · MEDIUM = อ่านก่อน · HIGH = ขั้นสูงเท่านั้น"
+              "ทุกการเปลี่ยนแปลงถูก log ไว้ และย้อนกลับได้ผ่าน Backup & Restore",
+              "Windows Defender, UAC และ Windows Update ไม่ถูกแตะเลย",
+              "ระดับความเสี่ยง: LOW = ปลอดภัยทุกคน · MEDIUM = อ่านก่อน apply · HIGH = สำหรับผู้ใช้ขั้นสูง"
             ]
           },
           {
-            "heading": "ก่อนเริ่มใช้การปรับแต่ง",
+            "heading": "ก่อนเริ่มใช้งาน",
             "key_points": [
-              "ควรรันแอปเป็น Administrator เมื่อต้องการเปลี่ยนค่าระบบจริง",
-              "ดูระดับความเสี่ยงก่อนยืนยันโปรไฟล์หรือ action",
-              "เปิด auto-backup ไว้ เว้นแต่มีเหตุผลเฉพาะที่ต้องปิด",
-              "เริ่มจาก Safe หากกำลังทดลองกับเครื่องใหม่หรือเครื่องสำคัญ"
+              "รันแอปเป็น Administrator — การแก้ค่าระบบต้องใช้สิทธิ์ยกระดับ",
+              "ดูระดับความเสี่ยงก่อนยืนยันโปรไฟล์หรือ tweak ทุกครั้ง",
+              "เปิด auto-backup ไว้ (เปิดอยู่แล้วโดยค่าเริ่มต้น) จะได้ย้อนกลับได้เสมอ",
+              "เริ่มจาก Safe เมื่อทดลองกับเครื่องใหม่หรือเครื่องสำคัญ"
             ]
+          },
+          {
+            "heading": "แอปจัดโครงสร้างยังไง",
+            "content": "Home แสดงภาพรวมระบบและคะแนน optimization Tweaks เป็นที่ apply profiles, quick fix หรือสร้างชุด tweak เอง Backup & Restore จัดการ snapshot เพื่อย้อนกลับ Docs (หน้านี้) อธิบายทุกอย่าง Settings ตั้งค่าแอป"
           }
         ]
       }
@@ -80,582 +90,762 @@
       "en": {
         "title": "Profiles",
         "icon": "tune",
+        "overview": "Profiles are preset optimization bundles. Each one applies a specific set of tweaks at a defined risk level. You can preview what each profile does before applying.",
         "profiles": {
           "SAFE": {
             "name": "Safe Mode",
-            "description": "Minimal optimizations with maximum safety",
+            "description": "Minimal optimizations with maximum safety — best starting point for most users.",
             "best_for": "Beginners, laptops, daily-use PCs",
-            "fps_gain": "2-5% expected improvement",
+            "fps_gain": "2–5% expected improvement",
+            "tweaks_count": "14 tweaks (all LOW risk)",
             "risk_level": "LOW",
             "risk_color": "#22c55e",
             "warnings": [
-              "ClutchG may attempt an automatic backup before applying changes when auto-backup is enabled",
-              "A restart is recommended after larger changes"
+              "Auto-backup runs before applying when enabled (on by default).",
+              "A restart is recommended after applying."
             ],
             "what_it_does": [
               "Applies conservative power and responsiveness tweaks",
-              "Uses only low-risk changes that are easy to reverse",
-              "Keeps security-related Windows protections intact"
+              "Disables mouse acceleration and reduces menu delay",
+              "Turns off non-essential visual effects",
+              "Keeps all security protections intact"
             ],
-            "who_should_use": "Best starting point for most users and the safest option for everyday systems."
+            "who_should_use": "Best starting point for most users. Safe for everyday systems, laptops, and machines you can't afford to break."
           },
           "COMPETITIVE": {
             "name": "Competitive Mode",
-            "description": "Balanced gaming-focused optimizations",
+            "description": "Balanced gaming optimizations — more performance with moderate trade-offs.",
             "best_for": "Most gamers and performance-focused users",
-            "fps_gain": "5-10% expected improvement",
+            "fps_gain": "5–10% expected improvement",
+            "tweaks_count": "39 tweaks (LOW + MEDIUM risk)",
             "risk_level": "MEDIUM",
             "risk_color": "#f59e0b",
             "warnings": [
-              "ClutchG may attempt an automatic backup before applying changes when auto-backup is enabled",
-              "Some services and network settings may be adjusted",
-              "A restart is usually required"
+              "Auto-backup runs before applying when enabled (on by default).",
+              "Some services and network settings will be adjusted.",
+              "A restart is required after applying."
             ],
             "what_it_does": [
-              "Builds on Safe optimizations",
-              "Adds stronger input, network, and service tuning",
-              "Targets lower latency and better gaming responsiveness"
+              "Builds on everything in Safe",
+              "Disables Nagle's algorithm and tunes TCP for lower latency",
+              "Stops telemetry services and Xbox background processes",
+              "Enables MMCSS priority for gaming audio/input"
             ],
-            "who_should_use": "Recommended for users who want more performance and accept moderate trade-offs."
+            "who_should_use": "Recommended for gamers who want noticeable improvement and are comfortable with moderate system changes."
           },
           "EXTREME": {
             "name": "Extreme Mode",
-            "description": "Aggressive optimization set for advanced users",
-            "best_for": "Advanced users on well-understood systems",
-            "fps_gain": "10-15% expected improvement",
+            "description": "Maximum performance — aggressive tweaks for advanced users who can troubleshoot.",
+            "best_for": "Advanced users who understand their system well",
+            "fps_gain": "10–15% expected improvement",
+            "tweaks_count": "56 tweaks (all risk levels including HIGH)",
             "risk_level": "HIGH",
             "risk_color": "#ef4444",
             "warnings": [
-              "ClutchG may attempt an automatic backup before applying changes when auto-backup is enabled",
-              "May reduce stability on some systems",
-              "Includes BCDEdit and more aggressive service changes",
-              "Recommended only for advanced users who can troubleshoot Windows"
+              "Auto-backup runs before applying when enabled (on by default).",
+              "May reduce stability on some hardware configurations.",
+              "Includes BCDEdit boot-level changes that require restart.",
+              "Recommended only for advanced users who can troubleshoot Windows."
             ],
             "what_it_does": [
-              "Builds on Competitive optimizations",
-              "Adds advanced boot and latency-oriented tweaks",
-              "Uses the highest-risk reversible changes in the project"
+              "Builds on everything in Competitive",
+              "Applies BCDEdit tweaks (dynamic tick, TSC sync, x2APIC)",
+              "Disables Spectre/Meltdown mitigations for raw speed",
+              "Removes pre-installed bloatware and disables OneDrive startup"
             ],
-            "who_should_use": "Use only if you understand rollback steps and can recover from unstable settings."
+            "who_should_use": "Use only if you understand rollback procedures and can recover from unstable settings. Always have a backup ready."
           }
         }
       },
       "th": {
         "title": "โปรไฟล์",
         "icon": "tune",
+        "overview": "Profiles คือชุด optimization สำเร็จรูป แต่ละชุดใช้ tweaks ในระดับความเสี่ยงที่กำหนดไว้ สามารถดูก่อนว่าแต่ละโปรไฟล์ทำอะไรบ้างก่อน apply",
         "profiles": {
           "SAFE": {
             "name": "Safe Mode",
-            "description": "ปรับแต่งให้น้อยที่สุดแต่ปลอดภัยสูงสุด",
-            "best_for": "ผู้เริ่มต้น แล็ปท็อป และเครื่องใช้งานประจำวัน",
-            "fps_gain": "คาดหวังการปรับปรุง 2-5%",
+            "description": "ปรับแต่งน้อยที่สุดแต่ปลอดภัยสูงสุด — จุดเริ่มต้นที่ดีที่สุดสำหรับคนส่วนใหญ่",
+            "best_for": "ผู้เริ่มต้น แล็ปท็อป เครื่องใช้งานประจำวัน",
+            "fps_gain": "คาดหวังปรับปรุง 2–5%",
+            "tweaks_count": "14 tweaks (ทั้งหมด LOW risk)",
             "risk_level": "LOW",
             "risk_color": "#22c55e",
             "warnings": [
-              "แนะนำให้รีสตาร์ตหลังใช้การเปลี่ยนแปลงบางชุด"
+              "Auto-backup จะรันก่อน apply เมื่อเปิดใช้งาน (เปิดอยู่โดยค่าเริ่มต้น)",
+              "แนะนำให้รีสตาร์ตหลัง apply"
             ],
             "what_it_does": [
-              "ใช้การปรับแต่งด้านพลังงานและ responsiveness แบบอนุรักษ์นิยม",
-              "เลือกเฉพาะการเปลี่ยนแปลงความเสี่ยงต่ำที่ย้อนกลับได้ง่าย",
-              "คงการป้องกันความปลอดภัยของ Windows ไว้"
+              "ใช้การปรับ power และ responsiveness แบบอนุรักษ์นิยม",
+              "ปิด mouse acceleration และลด menu delay",
+              "ปิด visual effects ที่ไม่จำเป็น",
+              "คงระบบป้องกันความปลอดภัยทั้งหมดไว้"
             ],
-            "who_should_use": "เหมาะที่สุดสำหรับผู้ใช้ส่วนใหญ่ที่ต้องการเริ่มต้นอย่างปลอดภัย"
+            "who_should_use": "จุดเริ่มต้นที่ดีที่สุดสำหรับผู้ใช้ส่วนใหญ่ ปลอดภัยสำหรับเครื่องใช้งานทั่วไป แล็ปท็อป และเครื่องที่ห้ามพัง"
           },
           "COMPETITIVE": {
             "name": "Competitive Mode",
-            "description": "สมดุลระหว่างเกมมิงและความปลอดภัย",
+            "description": "สมดุลระหว่างเกมมิงและความปลอดภัย — ประสิทธิภาพดีขึ้นด้วย trade-off ระดับกลาง",
             "best_for": "เกมเมอร์และผู้ใช้ที่เน้นประสิทธิภาพ",
-            "fps_gain": "คาดหวังการปรับปรุง 5-10%",
+            "fps_gain": "คาดหวังปรับปรุง 5–10%",
+            "tweaks_count": "39 tweaks (LOW + MEDIUM risk)",
             "risk_level": "MEDIUM",
             "risk_color": "#f59e0b",
             "warnings": [
-              "อาจมีการปรับ services และ network settings บางส่วน",
-              "โดยมากต้องรีสตาร์ต"
+              "Auto-backup จะรันก่อน apply เมื่อเปิดใช้งาน (เปิดอยู่โดยค่าเริ่มต้น)",
+              "จะมีการปรับ services และ network settings บางส่วน",
+              "ต้องรีสตาร์ตหลัง apply"
             ],
             "what_it_does": [
-              "ต่อยอดจาก Safe",
-              "เพิ่มการจูน input, network และ services",
-              "เน้นลด latency และเพิ่มความลื่นไหลในการเล่นเกม"
+              "ต่อยอดจากทุกอย่างใน Safe",
+              "ปิด Nagle's algorithm และจูน TCP เพื่อ latency ต่ำลง",
+              "หยุด telemetry services และ Xbox background processes",
+              "เปิด MMCSS priority สำหรับ gaming audio/input"
             ],
-            "who_should_use": "แนะนำสำหรับผู้ใช้ที่ต้องการประสิทธิภาพเพิ่มขึ้นและรับ trade-off ระดับกลางได้"
+            "who_should_use": "แนะนำสำหรับเกมเมอร์ที่ต้องการเห็นผลชัด และรับการเปลี่ยนแปลงระบบระดับกลางได้"
           },
           "EXTREME": {
             "name": "Extreme Mode",
-            "description": "ชุดปรับแต่งเชิงรุกสำหรับผู้ใช้ขั้นสูง",
+            "description": "ประสิทธิภาพสูงสุด — tweak เชิงรุกสำหรับผู้ใช้ขั้นสูงที่แก้ปัญหาได้",
             "best_for": "ผู้ใช้ขั้นสูงที่เข้าใจระบบของตนเองดี",
-            "fps_gain": "คาดหวังการปรับปรุง 10-15%",
+            "fps_gain": "คาดหวังปรับปรุง 10–15%",
+            "tweaks_count": "56 tweaks (ทุกระดับความเสี่ยงรวม HIGH)",
             "risk_level": "HIGH",
             "risk_color": "#ef4444",
             "warnings": [
-              "อาจทำให้บางระบบไม่เสถียร",
-              "มีการใช้ BCDEdit และการเปลี่ยน services ที่เข้มขึ้น",
-              "เหมาะเฉพาะผู้ใช้ที่แก้ปัญหา Windows ได้"
+              "Auto-backup จะรันก่อน apply เมื่อเปิดใช้งาน (เปิดอยู่โดยค่าเริ่มต้น)",
+              "อาจทำให้บางฮาร์ดแวร์ไม่เสถียร",
+              "มี BCDEdit tweaks ระดับ boot ที่ต้องรีสตาร์ต",
+              "เหมาะเฉพาะผู้ใช้ขั้นสูงที่แก้ปัญหา Windows ได้"
             ],
             "what_it_does": [
-              "ต่อยอดจาก Competitive",
-              "เพิ่ม boot tweaks และ latency tweaks ขั้นสูง",
-              "ใช้การเปลี่ยนแปลงที่ย้อนกลับได้แต่มีความเสี่ยงสูงสุดในโครงการ"
+              "ต่อยอดจากทุกอย่างใน Competitive",
+              "ใช้ BCDEdit tweaks (dynamic tick, TSC sync, x2APIC)",
+              "ปิด Spectre/Meltdown mitigations เพื่อความเร็วดิบ",
+              "ลบ bloatware และปิด OneDrive startup"
             ],
-            "who_should_use": "ใช้เมื่อคุณเข้าใจวิธีย้อนกลับและกู้ระบบหากค่าที่ปรับทำให้เกิดปัญหา"
+            "who_should_use": "ใช้เมื่อคุณเข้าใจวิธีย้อนกลับและกู้ระบบจากค่าที่ไม่เสถียรได้ ต้องมี backup พร้อมเสมอ"
           }
         }
+      }
+    },
+    "custom_tweaks": {
+      "en": {
+        "title": "Custom Tweaks",
+        "icon": "extension",
+        "sections": [
+          {
+            "heading": "What Are Custom Tweaks?",
+            "content": "The Custom tab lets you build your own optimization set by toggling individual tweaks on or off. Unlike profiles (which apply a fixed bundle), custom mode gives you full control over exactly which changes are made to your system."
+          },
+          {
+            "heading": "Tweak Categories",
+            "content": "Tweaks are organized into 10 categories: Telemetry & Privacy, Input & Latency, Power Management, GPU & Graphics, Network, Services, Memory, Boot (BCDEdit), Visual Effects, and Cleanup & Debloat. Use the category filter chips to browse by group."
+          },
+          {
+            "heading": "Risk Levels Explained",
+            "key_points": [
+              "LOW (green) — Safe for all systems. Easy to reverse. No stability concerns.",
+              "MEDIUM (amber) — Requires understanding. May affect some Windows features. Test after applying.",
+              "HIGH (red) — Advanced only. May impact stability, boot config, or remove apps permanently. Always backup first."
+            ]
+          },
+          {
+            "heading": "How to Use Custom Tweaks",
+            "steps": [
+              "1. Go to Tweaks → Custom tab.",
+              "2. Browse or search for tweaks. Use category chips to filter.",
+              "3. Click any tweak to see details: what it does, risk level, and reversibility.",
+              "4. Toggle tweaks on/off using the switch.",
+              "5. Review your selection, then click Apply."
+            ]
+          },
+          {
+            "heading": "Tips",
+            "key_points": [
+              "Start with LOW risk tweaks and test before adding MEDIUM or HIGH.",
+              "The search bar filters by name, description, and category.",
+              "Each tweak shows its expected performance gain (e.g. +1–3% FPS).",
+              "You can combine custom tweaks with a profile — custom overrides profile for overlapping tweaks."
+            ]
+          }
+        ]
+      },
+      "th": {
+        "title": "Custom Tweaks",
+        "icon": "extension",
+        "sections": [
+          {
+            "heading": "Custom Tweaks คืออะไร?",
+            "content": "แท็บ Custom ให้คุณสร้างชุด optimization เองโดยเปิด/ปิด tweak ทีละตัว ต่างจาก profiles (ที่ apply ชุดสำเร็จรูป) โหมด custom ให้คุณควบคุมได้เต็มที่ว่าจะเปลี่ยนอะไรบ้างในระบบ"
+          },
+          {
+            "heading": "หมวดหมู่ Tweak",
+            "content": "Tweaks แบ่งเป็น 10 หมวดหมู่: Telemetry & Privacy, Input & Latency, Power Management, GPU & Graphics, Network, Services, Memory, Boot (BCDEdit), Visual Effects และ Cleanup & Debloat ใช้ตัวกรองหมวดหมู่เพื่อเรียกดูตามกลุ่ม"
+          },
+          {
+            "heading": "ระดับความเสี่ยง",
+            "key_points": [
+              "LOW (เขียว) — ปลอดภัยสำหรับทุกระบบ ย้อนกลับง่าย ไม่มีปัญหาเสถียรภาพ",
+              "MEDIUM (เหลือง) — ต้องเข้าใจก่อนใช้ อาจกระทบ Windows features บางอย่าง ทดสอบหลัง apply",
+              "HIGH (แดง) — ผู้ใช้ขั้นสูงเท่านั้น อาจกระทบเสถียรภาพ boot config หรือลบแอปถาวร ต้อง backup ก่อนเสมอ"
+            ]
+          },
+          {
+            "heading": "วิธีใช้ Custom Tweaks",
+            "steps": [
+              "1. ไปที่ Tweaks → แท็บ Custom",
+              "2. เลื่อนดูหรือค้นหา tweak ใช้ chip หมวดหมู่เพื่อกรอง",
+              "3. คลิก tweak เพื่อดูรายละเอียด: ทำอะไร ระดับเสี่ยง และการย้อนกลับ",
+              "4. เปิด/ปิด tweak ด้วย switch",
+              "5. ตรวจสอบที่เลือกแล้วกด Apply"
+            ]
+          },
+          {
+            "heading": "เคล็ดลับ",
+            "key_points": [
+              "เริ่มจาก LOW risk tweaks ทดสอบก่อนค่อยเพิ่ม MEDIUM หรือ HIGH",
+              "ช่องค้นหากรองได้ทั้งชื่อ คำอธิบาย และหมวดหมู่",
+              "แต่ละ tweak แสดงค่า performance gain ที่คาดหวัง (เช่น +1–3% FPS)",
+              "ใช้ custom tweaks ร่วมกับ profile ได้ — custom จะ override profile สำหรับ tweak ที่ซ้ำกัน"
+            ]
+          }
+        ]
       }
     },
     "safety": {
       "en": {
         "title": "Safety",
         "icon": "shield",
+        "sections": [
+          {
+            "heading": "Our Safety Policy",
+            "content": "ClutchG is designed around reversibility and transparency. Every optimization is logged, and the most critical system protections are never disabled. The goal is real performance gains without compromising your system's security or stability."
+          }
+        ],
         "warnings": [
           {
             "level": "critical",
             "title": "Always create a backup first",
-            "content": "Backups and restore paths are part of the intended workflow, especially before Competitive, Extreme, or custom high-risk changes."
+            "content": "Backups are part of the intended workflow. ClutchG auto-creates one before every profile apply (when enabled). For custom tweaks, create a manual backup before experimenting with HIGH risk changes."
           },
           {
             "level": "warning",
             "title": "Administrator rights are required",
-            "content": "Most optimizations touch system settings, services, registry keys, or boot configuration, so elevated rights are required."
+            "content": "Most optimizations modify system services, registry keys, or boot configuration. The app needs elevated rights to make these changes. Run as Administrator for full functionality."
           },
           {
             "level": "info",
-            "title": "Security protections are not meant to be disabled",
-            "content": "ClutchG never disables Windows Defender, UAC, DEP, ASLR, CFG, or Windows Update as part of normal optimization workflows."
+            "title": "Security protections are never disabled",
+            "content": "ClutchG never touches Windows Defender, UAC, DEP, ASLR, CFG, or Windows Update. These protections exist for good reasons — disabling them provides negligible performance benefit and opens serious security risks."
           }
+        ],
+        "never_touched": [
+          "Windows Defender (real-time protection)",
+          "User Account Control (UAC)",
+          "Data Execution Prevention (DEP)",
+          "Address Space Layout Randomization (ASLR)",
+          "Control Flow Guard (CFG)",
+          "Windows Update"
         ],
         "myths": [
           {
-            "myth": "Disabling Defender improves gaming performance",
-            "fact": "Defender's real-world FPS impact is under 1%. Disabling it opens you up to malware. ClutchG never touches it."
+            "myth": "Disabling Defender improves gaming performance.",
+            "fact": "Defender's real-world FPS impact is under 1% in benchmarks. Disabling it exposes your system to malware. ClutchG never touches it."
           },
           {
-            "myth": "More RAM = faster games",
-            "fact": "RAM speed matters more than capacity above 16 GB. ClutchG tunes timing settings where safe."
+            "myth": "More RAM always means faster games.",
+            "fact": "Above 16 GB, RAM speed and timings matter more than capacity. ClutchG tunes memory-related settings where it's safe to do so."
           },
           {
-            "myth": "BCDEdit /set useplatformtick yes always helps",
-            "fact": "Helps some Intel CPUs, can hurt AMD Ryzen. ClutchG checks your CPU vendor first."
+            "myth": "Disabling all Windows services boosts FPS.",
+            "fact": "Only a handful of services have measurable impact. Disabling the wrong ones breaks Windows features. ClutchG uses a curated whitelist."
+          },
+          {
+            "myth": "BCDEdit /set useplatformtick yes always helps.",
+            "fact": "This tweak can help some Intel CPUs but may hurt AMD Ryzen systems. Results vary by hardware — test and verify."
           }
         ]
       },
       "th": {
         "title": "ความปลอดภัย",
         "icon": "shield",
+        "sections": [
+          {
+            "heading": "นโยบายความปลอดภัยของเรา",
+            "content": "ClutchG ออกแบบมาให้ย้อนกลับได้และโปร่งใส ทุกการ optimization ถูก log ไว้ และระบบป้องกันหลักจะไม่ถูกปิดเลย เป้าหมายคือเพิ่ม performance จริงโดยไม่ทำลายความปลอดภัยหรือเสถียรภาพของระบบ"
+          }
+        ],
         "warnings": [
           {
             "level": "critical",
             "title": "สร้าง backup ก่อนเสมอ",
-            "content": "backup และเส้นทางการ restore เป็นส่วนหนึ่งของ workflow ที่ตั้งใจไว้ โดยเฉพาะก่อนใช้ Competitive, Extreme หรือ custom tweak ที่มีความเสี่ยงสูง"
+            "content": "Backup เป็นส่วนหนึ่งของ workflow ที่ตั้งใจไว้ ClutchG สร้าง backup อัตโนมัติก่อนทุกครั้งที่ apply profile (เมื่อเปิดใช้งาน) สำหรับ custom tweaks ให้สร้าง backup เองก่อนทดลองกับ HIGH risk"
           },
           {
             "level": "warning",
             "title": "ต้องใช้สิทธิ์ Administrator",
-            "content": "optimization ส่วนใหญ่แตะการตั้งค่าระบบ services registry หรือ boot configuration จึงต้องใช้สิทธิ์ระดับสูง"
+            "content": "optimization ส่วนใหญ่แก้ไข system services, registry keys หรือ boot configuration แอปต้องใช้สิทธิ์ยกระดับ รันเป็น Administrator เพื่อใช้งานเต็มรูปแบบ"
           },
           {
             "level": "info",
-            "title": "ไม่ควรปิดระบบป้องกันหลักของ Windows",
-            "content": "ClutchG ไม่เคยปิด Windows Defender, UAC, DEP, ASLR, CFG หรือ Windows Update ใน flow การ optimize ปกติ"
+            "title": "ระบบป้องกันหลักจะไม่ถูกปิด",
+            "content": "ClutchG ไม่เคยแตะ Windows Defender, UAC, DEP, ASLR, CFG หรือ Windows Update ระบบเหล่านี้มีเหตุผลที่ต้องเปิด — ปิดแล้วได้ performance เพิ่มน้อยมากแต่เปิดช่องโหว่ความปลอดภัยร้ายแรง"
           }
+        ],
+        "never_touched": [
+          "Windows Defender (real-time protection)",
+          "User Account Control (UAC)",
+          "Data Execution Prevention (DEP)",
+          "Address Space Layout Randomization (ASLR)",
+          "Control Flow Guard (CFG)",
+          "Windows Update"
         ],
         "myths": [
           {
             "myth": "ปิด Defender แล้วเกมจะลื่นขึ้น",
-            "fact": "Defender กระทบ FPS จริงไม่ถึง 1% แต่การปิดเปิดทางให้มัลแวร์ ClutchG ไม่แตะ Defender เลย"
+            "fact": "Defender กระทบ FPS จริงไม่ถึง 1% ในการ benchmark ปิดแล้วเปิดทางให้มัลแวร์ ClutchG ไม่แตะ Defender เลย"
           },
           {
-            "myth": "RAM เยอะ = เกมเร็วกว่า",
-            "fact": "ความเร็ว RAM สำคัญกว่าขนาดเมื่อเกิน 16 GB ClutchG จูน timing settings เท่าที่ปลอดภัย"
+            "myth": "RAM เยอะ = เกมเร็วกว่าเสมอ",
+            "fact": "เกิน 16 GB แล้วความเร็วและ timings ของ RAM สำคัญกว่าขนาด ClutchG จูน memory settings ที่ปลอดภัย"
+          },
+          {
+            "myth": "ปิด Windows services ทั้งหมดช่วยเพิ่ม FPS",
+            "fact": "มีแค่บาง services ที่กระทบ performance จริง ปิดผิดตัวทำ Windows เสียฟีเจอร์ ClutchG ใช้ whitelist ที่คัดสรรแล้ว"
           },
           {
             "myth": "BCDEdit /set useplatformtick yes ช่วยเสมอ",
-            "fact": "ช่วยบาง Intel CPU แต่อาจเสีย AMD Ryzen ClutchG เช็ก vendor ก่อน"
+            "fact": "tweak นี้อาจช่วย Intel CPU บางรุ่น แต่อาจเสีย AMD Ryzen ผลแตกต่างตามฮาร์ดแวร์ — ต้องทดสอบดู"
           }
         ]
       }
     },
     "scripts": {
       "en": {
-        "title": "Scripts",
+        "title": "Script Reference",
         "icon": "description",
+        "overview": "ClutchG uses batch scripts under the hood to apply system changes. Each script targets a specific area. You don't need to run these manually — the app handles everything — but this reference explains what each one does.",
         "categories": {
           "power": {
             "name": "Power Management",
             "icon": "bolt",
-            "description": "Power and performance-plan related scripts for responsiveness and stable frame times.",
+            "description": "Tunes power plans and CPU power management for lower latency and stable frame delivery.",
             "risk": "Low to Medium",
             "scripts": {
-              "power-manager.bat": {
-                "name": "Power Manager",
-                "description": "Applies core power-plan and power-saving adjustments.",
-                "effects": [
-                  "Reduces throttling-related stutter",
-                  "Improves responsiveness",
-                  "Usually does not require manual rollback complexity"
-                ],
-                "reversibility": "Reversible through backup or Windows power settings."
-              },
               "power-manager-enhanced.bat": {
-                "name": "Enhanced Power Manager",
-                "description": "Extended power tuning for more aggressive performance-oriented setups.",
+                "name": "Power Manager",
+                "description": "Applies power plan optimizations: Ultimate Performance plan, AMD CPPC, EPP tuning, GPU P-State, and processor throttling adjustments.",
                 "effects": [
-                  "Targets stronger responsiveness",
-                  "More suitable for advanced or gaming-focused scenarios"
+                  "Activates Ultimate Performance power plan",
+                  "Configures CPU-specific power settings (AMD CPPC, Intel EPP)",
+                  "Reduces throttling-related stutter"
                 ],
-                "reversibility": "Reversible through backup and standard power configuration changes."
+                "reversibility": "Reversible through backup or Windows power settings reset."
               }
             }
           },
           "input": {
             "name": "Input & Latency",
             "icon": "build",
-            "description": "Improves mouse, keyboard, and scheduler responsiveness.",
+            "description": "Optimizes mouse, keyboard, and Windows scheduler for faster input response.",
             "risk": "Low to Medium",
             "scripts": {
               "input-optimizer.bat": {
                 "name": "Input Optimizer",
-                "description": "Applies lower-latency input and responsiveness tweaks.",
+                "description": "Removes mouse acceleration, reduces keyboard repeat delay, increases data queue size, adjusts MMCSS priority, and lowers menu show delay.",
                 "effects": [
-                  "Improves input consistency",
-                  "Helps reduce perceived latency",
-                  "Useful for competitive gaming"
+                  "Disables mouse acceleration for 1:1 tracking",
+                  "Reduces keyboard repeat delay",
+                  "Increases scheduler priority for multimedia tasks"
                 ],
-                "reversibility": "Reversible through backup and related input settings."
+                "reversibility": "Reversible through backup or registry restore."
               }
             }
           },
           "gpu": {
             "name": "GPU & Graphics",
             "icon": "play_arrow",
-            "description": "Graphics scheduling and GPU behavior optimizations.",
+            "description": "Configures graphics scheduling, GPU power states, and vendor-specific optimizations.",
             "risk": "Low to Medium",
             "scripts": {
               "gpu-optimizer.bat": {
                 "name": "GPU Optimizer",
-                "description": "Applies baseline graphics and GPU-related performance tweaks.",
+                "description": "Enables Hardware Accelerated GPU Scheduling (HAGS), adjusts GPU power management, and configures DirectX preferences.",
                 "effects": [
-                  "May improve frame pacing",
-                  "Targets gaming responsiveness"
+                  "Enables HAGS if supported",
+                  "Improves frame pacing through GPU scheduling",
+                  "Configures fullscreen optimization"
                 ],
-                "reversibility": "Reversible through backup or graphics-setting rollback."
+                "reversibility": "Reversible through backup or graphics settings."
               },
               "gpu-optimizer-enhanced.bat": {
                 "name": "Enhanced GPU Optimizer",
-                "description": "Adds more advanced GPU tuning for supported systems.",
+                "description": "Applies vendor-specific registry tweaks for NVIDIA, AMD, and Intel GPUs including power state overrides and telemetry disabling.",
                 "effects": [
-                  "Extends baseline GPU optimization",
-                  "May require closer testing after apply"
+                  "NVIDIA: Disables GPU telemetry and forces P-State 0",
+                  "AMD/Intel: Applies vendor-specific performance registry keys",
+                  "May enable MSI mode for lower interrupt latency"
                 ],
-                "reversibility": "Reversible through backup and driver-related settings rollback."
+                "reversibility": "Reversible through backup and driver settings rollback."
               }
             }
           },
           "network": {
             "name": "Network",
             "icon": "lan",
-            "description": "Latency-focused network tuning for gaming and responsiveness.",
+            "description": "Tunes TCP/IP stack and network adapter settings for lower online gaming latency.",
             "risk": "Medium",
             "scripts": {
               "network-manager.bat": {
                 "name": "Network Manager",
-                "description": "Applies conservative network optimizations.",
+                "description": "Applies conservative network optimizations for stability and latency consistency.",
                 "effects": [
-                  "Can improve stability and latency consistency",
-                  "Useful for online gaming"
+                  "Improves network stability for online gaming",
+                  "Adjusts TCP global parameters"
                 ],
-                "reversibility": "Reversible through backup or network reset procedures."
+                "reversibility": "Reversible through backup or 'netsh int tcp reset'."
               },
               "network-optimizer-enhanced.bat": {
                 "name": "Enhanced Network Optimizer",
-                "description": "Applies stronger network tuning for advanced users.",
+                "description": "Disables Nagle's algorithm, tunes TCP window size, configures MMCSS for network tasks, and sets custom DNS.",
                 "effects": [
-                  "Targets lower latency",
-                  "Should be tested after applying"
+                  "Disables Nagle's algorithm for lower packet delay",
+                  "Optimizes TCP receive/send buffer sizes",
+                  "Enables network throttling index for gaming"
                 ],
-                "reversibility": "Reversible through backup or network reset procedures."
+                "reversibility": "Reversible through backup or network reset."
               }
             }
           },
           "services": {
             "name": "Services & Telemetry",
             "icon": "build",
-            "description": "Service, telemetry, and background-process reduction scripts.",
+            "description": "Manages background services, telemetry collection, and privacy-related processes.",
             "risk": "Medium to High",
             "scripts": {
               "service-manager.bat": {
                 "name": "Service Manager",
-                "description": "Adjusts selected background services for performance.",
+                "description": "Disables selected background services using a safety whitelist. Critical services (Defender, Update, Audio, Networking) are never touched.",
                 "effects": [
-                  "Reduces background overhead",
-                  "May affect non-essential Windows features"
+                  "Stops non-essential background services",
+                  "Reduces memory and CPU usage from idle processes",
+                  "Uses whitelist to protect critical services"
                 ],
-                "reversibility": "Reversible through backup or service re-enablement."
+                "reversibility": "Reversible through backup or manual service re-enablement."
               },
               "telemetry-blocker.bat": {
                 "name": "Telemetry Blocker",
-                "description": "Reduces telemetry and privacy-related background activity.",
+                "description": "Disables Windows telemetry, advertising ID, Cortana, activity history, Xbox DVR, and Copilot suggestions.",
                 "effects": [
-                  "Improves privacy",
-                  "Can reduce minor background load"
+                  "Stops diagnostic data collection",
+                  "Disables advertising and suggestions",
+                  "Reduces background network and CPU activity"
                 ],
-                "reversibility": "Reversible through backup or privacy-setting restore."
+                "reversibility": "Reversible through backup or privacy settings restore."
+              }
+            }
+          },
+          "boot": {
+            "name": "Boot Configuration",
+            "icon": "terminal",
+            "description": "BCDEdit-level tweaks that modify Windows boot behavior. Higher risk — require restart and careful testing.",
+            "risk": "Medium to High",
+            "scripts": {
+              "bcdedit-manager.bat": {
+                "name": "BCDEdit Manager",
+                "description": "Applies boot configuration tweaks: dynamic tick, TSC synchronization, x2APIC, and optionally disables Hyper-V scheduler overhead.",
+                "effects": [
+                  "Reduces timer interrupt overhead",
+                  "Improves timestamp counter precision",
+                  "Can lower DPC latency on supported hardware"
+                ],
+                "reversibility": "Reversible through backup or 'bcdedit /deletevalue' commands."
               }
             }
           },
           "cleanup": {
-            "name": "Cleanup & Maintenance",
+            "name": "Cleanup & Debloat",
             "icon": "delete",
-            "description": "Storage cleanup, maintenance, debloat, and support utilities.",
-            "risk": "Low to Medium",
+            "description": "Removes bloatware, cleans temporary files, and performs storage maintenance.",
+            "risk": "Low to High (varies by script)",
             "scripts": {
               "storage-optimizer.bat": {
                 "name": "Storage Optimizer",
-                "description": "Frees storage and improves general housekeeping.",
+                "description": "Enables Storage Sense, cleans temp files, and configures SysMain (Superfetch) behavior.",
                 "effects": [
-                  "Can reduce clutter and free disk space"
+                  "Frees disk space from temporary files",
+                  "Configures automatic storage cleanup"
                 ],
-                "reversibility": "Mostly reversible through standard Windows settings and backup."
+                "reversibility": "Low risk. Reversible through standard Windows settings."
               },
               "maintenance-manager.bat": {
                 "name": "Maintenance Manager",
-                "description": "Runs maintenance-oriented cleanup and support steps.",
+                "description": "Runs TRIM for SSDs, disk cleanup, and system health checks.",
                 "effects": [
-                  "Helps long-term system hygiene"
+                  "Optimizes SSD performance with TRIM",
+                  "Removes leftover system files"
                 ],
-                "reversibility": "Low-risk maintenance flow; use backup if needed."
+                "reversibility": "Low risk maintenance. No rollback needed for most operations."
               },
               "debloater.bat": {
                 "name": "Debloater",
-                "description": "Targets optional Windows extras and background clutter.",
+                "description": "Removes pre-installed Windows apps (30+ apps), disables OneDrive startup, and removes Copilot. App removal is permanent — use backup.",
                 "effects": [
-                  "Can reduce startup and background overhead"
+                  "Removes bloatware apps (can be reinstalled from Store)",
+                  "Disables OneDrive auto-start",
+                  "Reduces startup time and background resource usage"
                 ],
-                "reversibility": "Use backup or re-enable removed optional components manually."
-              },
-              "registry-utils.bat": {
-                "name": "Registry Utilities",
-                "description": "Shared registry helper operations used by multiple tweak flows.",
-                "effects": [
-                  "Supports safe application and rollback of registry changes"
-                ],
-                "reversibility": "Designed to work with backup and rollback tooling."
-              },
+                "reversibility": "App removal is permanent but most apps can be reinstalled from Microsoft Store. Use backup for registry changes."
+              }
+            }
+          },
+          "utility": {
+            "name": "Utilities & Detection",
+            "icon": "search",
+            "description": "Read-only scripts that detect hardware and system configuration. These don't make changes — they gather information for ClutchG's decision-making.",
+            "risk": "None (read-only)",
+            "scripts": {
               "system-detect.bat": {
                 "name": "System Detect",
-                "description": "Collects baseline system information for compatibility and decisions.",
+                "description": "Detects OS version, CPU vendor/model, GPU, and system type (desktop/laptop).",
                 "effects": [
-                  "Read-oriented detection script",
-                  "Used for compatibility checks"
+                  "Read-only — collects system information",
+                  "Used by ClutchG to choose compatible tweaks"
                 ],
-                "reversibility": "No persistent changes expected."
+                "reversibility": "No changes made. No rollback needed."
               },
               "system-detect-enhanced.bat": {
                 "name": "Enhanced System Detect",
-                "description": "Extended system detection for richer hardware-aware behavior.",
+                "description": "Extended detection: RAM speed, storage type (SSD/HDD), network adapter, cooling profile, and performance score.",
                 "effects": [
-                  "Supports deeper detection and compatibility logic"
+                  "Read-only — collects detailed hardware data",
+                  "Enables hardware-aware profile recommendations"
                 ],
-                "reversibility": "No persistent changes expected."
+                "reversibility": "No changes made. No rollback needed."
               },
-              "bcdedit-manager.bat": {
-                "name": "BCDEdit Manager",
-                "description": "Applies boot-level tweaks used in higher-risk workflows.",
+              "registry-utils.bat": {
+                "name": "Registry Utilities",
+                "description": "Shared utility that applies registry-based optimizations for telemetry, gaming, visual effects, and kernel settings. Called by other scripts.",
                 "effects": [
-                  "Can improve latency-focused scenarios",
-                  "Requires careful testing and restart"
+                  "Applies batched registry changes efficiently",
+                  "Centralizes registry operations for consistency"
                 ],
-                "reversibility": "Rollback through backup or boot-setting restore steps."
+                "reversibility": "Reversible through registry backup restore."
               }
             }
           }
         }
       },
       "th": {
-        "title": "สคริปต์",
+        "title": "รายละเอียดสคริปต์",
         "icon": "description",
+        "overview": "ClutchG ใช้ batch scripts เบื้องหลังเพื่อ apply การเปลี่ยนแปลงระบบ แต่ละสคริปต์เน้นเรื่องเฉพาะ ไม่ต้องรันเอง — แอปจัดการให้ทั้งหมด — แต่หน้านี้อธิบายว่าแต่ละตัวทำอะไร",
         "categories": {
           "power": {
             "name": "การจัดการพลังงาน",
             "icon": "bolt",
-            "description": "สคริปต์ด้าน power plan และประสิทธิภาพเพื่อความลื่นไหลและ frame time ที่เสถียร",
+            "description": "จูน power plan และ CPU power management เพื่อ latency ต่ำลงและ frame delivery ที่เสถียร",
             "risk": "Low to Medium",
             "scripts": {
-              "power-manager.bat": {
-                "name": "Power Manager",
-                "description": "ใช้การปรับ power plan และการจัดการพลังงานพื้นฐาน",
-                "effects": [
-                  "ลดอาการหน่วงจากการ throttling",
-                  "เพิ่ม responsiveness"
-                ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือการตั้งค่าพลังงานของ Windows"
-              },
               "power-manager-enhanced.bat": {
-                "name": "Enhanced Power Manager",
-                "description": "จูนด้านพลังงานเพิ่มเติมสำหรับชุดการใช้งานที่เน้นประสิทธิภาพมากขึ้น",
+                "name": "Power Manager",
+                "description": "ปรับ power plan: เปิด Ultimate Performance, จูน AMD CPPC, EPP, GPU P-State และลด processor throttling",
                 "effects": [
-                  "เพิ่ม responsiveness มากขึ้น",
-                  "เหมาะกับผู้ใช้ที่เน้นเกมหรือการจูนขั้นสูง"
+                  "เปิดใช้ Ultimate Performance power plan",
+                  "ตั้งค่า power เฉพาะ CPU (AMD CPPC, Intel EPP)",
+                  "ลดอาการหน่วงจาก throttling"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup และการตั้งค่าพลังงานมาตรฐาน"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ reset power settings"
               }
             }
           },
           "input": {
             "name": "Input & Latency",
             "icon": "build",
-            "description": "ปรับการตอบสนองของเมาส์ คีย์บอร์ด และ scheduler",
+            "description": "ปรับ mouse, keyboard และ Windows scheduler ให้ตอบสนองเร็วขึ้น",
             "risk": "Low to Medium",
             "scripts": {
               "input-optimizer.bat": {
                 "name": "Input Optimizer",
-                "description": "ใช้การปรับแต่งด้าน input และ latency",
+                "description": "ปิด mouse acceleration, ลด keyboard repeat delay, เพิ่ม data queue, ปรับ MMCSS priority และลด menu delay",
                 "effects": [
-                  "ช่วยให้การควบคุมสม่ำเสมอขึ้น",
-                  "ลดความรู้สึกหน่วงของอินพุต"
+                  "ปิด mouse acceleration ให้ tracking 1:1",
+                  "ลด keyboard repeat delay",
+                  "เพิ่ม scheduler priority สำหรับ multimedia"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup และการตั้งค่าที่เกี่ยวข้อง"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ registry restore"
               }
             }
           },
           "gpu": {
             "name": "GPU & Graphics",
             "icon": "play_arrow",
-            "description": "การปรับ scheduler และพฤติกรรมของ GPU/graphics",
+            "description": "ตั้งค่า graphics scheduling, GPU power states และ optimization เฉพาะค่าย",
             "risk": "Low to Medium",
             "scripts": {
               "gpu-optimizer.bat": {
                 "name": "GPU Optimizer",
-                "description": "ใช้การปรับ GPU และ graphics ระดับพื้นฐาน",
+                "description": "เปิด HAGS, ปรับ GPU power management และตั้งค่า DirectX",
                 "effects": [
-                  "อาจช่วยเรื่อง frame pacing",
-                  "เน้นความลื่นไหลในการเล่นเกม"
+                  "เปิด HAGS หากรองรับ",
+                  "ปรับ frame pacing ผ่าน GPU scheduling",
+                  "ตั้งค่า fullscreen optimization"
                 ],
                 "reversibility": "ย้อนกลับได้ผ่าน backup หรือการตั้งค่ากราฟิก"
               },
               "gpu-optimizer-enhanced.bat": {
                 "name": "Enhanced GPU Optimizer",
-                "description": "เพิ่มการจูน GPU ขั้นสูงสำหรับระบบที่รองรับ",
+                "description": "ใช้ registry tweaks เฉพาะค่ายสำหรับ NVIDIA, AMD และ Intel: power state override และปิด telemetry",
                 "effects": [
-                  "ต่อยอดจากการจูนพื้นฐาน",
-                  "ควรทดสอบหลังใช้งาน"
+                  "NVIDIA: ปิด GPU telemetry และบังคับ P-State 0",
+                  "AMD/Intel: ใช้ registry keys เฉพาะค่าย",
+                  "อาจเปิด MSI mode เพื่อลด interrupt latency"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup และการตั้งค่าไดรเวอร์/กราฟิก"
+                "reversibility": "ย้อนกลับได้ผ่าน backup และ driver settings"
               }
             }
           },
           "network": {
             "name": "เครือข่าย",
             "icon": "lan",
-            "description": "การจูนเครือข่ายที่เน้น latency สำหรับเกมและความลื่นไหล",
+            "description": "จูน TCP/IP stack และ network adapter เพื่อ latency ต่ำลงในเกมออนไลน์",
             "risk": "Medium",
             "scripts": {
               "network-manager.bat": {
                 "name": "Network Manager",
-                "description": "ใช้การปรับเครือข่ายแบบอนุรักษ์นิยม",
+                "description": "ปรับเครือข่ายแบบอนุรักษ์นิยมเพื่อเสถียรภาพและ latency ที่สม่ำเสมอ",
                 "effects": [
-                  "อาจช่วยเรื่องเสถียรภาพและความสม่ำเสมอของ latency"
+                  "เพิ่มเสถียรภาพเครือข่ายสำหรับเกมออนไลน์",
+                  "ปรับ TCP global parameters"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือขั้นตอน reset network"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ 'netsh int tcp reset'"
               },
               "network-optimizer-enhanced.bat": {
                 "name": "Enhanced Network Optimizer",
-                "description": "ใช้การจูนเครือข่ายที่เข้มขึ้นสำหรับผู้ใช้ขั้นสูง",
+                "description": "ปิด Nagle's algorithm, จูน TCP window size, ตั้ง MMCSS สำหรับ network tasks และ custom DNS",
                 "effects": [
-                  "เน้นลด latency",
-                  "ควรทดสอบหลังใช้งาน"
+                  "ปิด Nagle's algorithm เพื่อลด packet delay",
+                  "ปรับ TCP receive/send buffer sizes",
+                  "เปิด network throttling index สำหรับเกม"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือขั้นตอน reset network"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ network reset"
               }
             }
           },
           "services": {
             "name": "Services & Telemetry",
             "icon": "build",
-            "description": "สคริปต์จัดการ service, telemetry และ background process",
+            "description": "จัดการ background services, การเก็บ telemetry และ process ด้าน privacy",
             "risk": "Medium to High",
             "scripts": {
               "service-manager.bat": {
                 "name": "Service Manager",
-                "description": "ปรับ services บางส่วนเพื่อประสิทธิภาพ",
+                "description": "ปิด services เบื้องหลังที่ไม่จำเป็นโดยใช้ safety whitelist Services สำคัญ (Defender, Update, Audio, Network) ไม่ถูกแตะ",
                 "effects": [
-                  "ลดภาระงานเบื้องหลัง",
-                  "อาจมีผลต่อฟีเจอร์ที่ไม่จำเป็นบางอย่าง"
+                  "หยุด services เบื้องหลังที่ไม่จำเป็น",
+                  "ลด memory และ CPU ที่ถูกใช้โดย idle processes",
+                  "ใช้ whitelist ปกป้อง services สำคัญ"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือการเปิด service กลับ"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือเปิด service กลับเอง"
               },
               "telemetry-blocker.bat": {
                 "name": "Telemetry Blocker",
-                "description": "ลด telemetry และกิจกรรมเบื้องหลังด้าน privacy",
+                "description": "ปิด Windows telemetry, advertising ID, Cortana, activity history, Xbox DVR และ Copilot",
                 "effects": [
-                  "เพิ่มความเป็นส่วนตัว",
-                  "ลดภาระงานเบื้องหลังเล็กน้อย"
+                  "หยุดการเก็บ diagnostic data",
+                  "ปิด advertising และ suggestions",
+                  "ลดกิจกรรม network และ CPU เบื้องหลัง"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ restore การตั้งค่า privacy"
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ restore privacy settings"
+              }
+            }
+          },
+          "boot": {
+            "name": "Boot Configuration",
+            "icon": "terminal",
+            "description": "BCDEdit tweaks ที่แก้ไขพฤติกรรม boot ของ Windows ความเสี่ยงสูงกว่า — ต้องรีสตาร์ตและทดสอบ",
+            "risk": "Medium to High",
+            "scripts": {
+              "bcdedit-manager.bat": {
+                "name": "BCDEdit Manager",
+                "description": "ใช้ boot config tweaks: dynamic tick, TSC sync, x2APIC และอาจปิด Hyper-V scheduler overhead",
+                "effects": [
+                  "ลด timer interrupt overhead",
+                  "เพิ่มความแม่นยำของ timestamp counter",
+                  "อาจลด DPC latency บนฮาร์ดแวร์ที่รองรับ"
+                ],
+                "reversibility": "ย้อนกลับได้ผ่าน backup หรือ 'bcdedit /deletevalue'"
               }
             }
           },
           "cleanup": {
-            "name": "Cleanup & Maintenance",
+            "name": "Cleanup & Debloat",
             "icon": "delete",
-            "description": "การล้างข้อมูล บำรุงรักษา debloat และ utility ที่เกี่ยวข้อง",
-            "risk": "Low to Medium",
+            "description": "ลบ bloatware ล้างไฟล์ชั่วคราว และบำรุงรักษา storage",
+            "risk": "Low to High (แตกต่างตามสคริปต์)",
             "scripts": {
               "storage-optimizer.bat": {
                 "name": "Storage Optimizer",
-                "description": "ช่วยเคลียร์พื้นที่และดูแลระบบด้าน storage",
+                "description": "เปิด Storage Sense, ล้าง temp files และตั้งค่า SysMain",
                 "effects": [
-                  "ช่วยลดความรกและเพิ่มพื้นที่ดิสก์"
+                  "เพิ่มพื้นที่ดิสก์จาก temporary files",
+                  "ตั้งค่า automatic storage cleanup"
                 ],
-                "reversibility": "ส่วนใหญ่ย้อนกลับได้ผ่านการตั้งค่ามาตรฐานและ backup"
+                "reversibility": "ความเสี่ยงต่ำ ย้อนกลับได้ผ่าน Windows settings"
               },
               "maintenance-manager.bat": {
                 "name": "Maintenance Manager",
-                "description": "รันงานบำรุงรักษาและ cleanup ที่เกี่ยวข้อง",
+                "description": "รัน TRIM สำหรับ SSD, disk cleanup และ health checks",
                 "effects": [
-                  "ช่วยดูแลสุขภาพระบบในระยะยาว"
+                  "เพิ่มประสิทธิภาพ SSD ด้วย TRIM",
+                  "ลบ system files ที่เหลือค้าง"
                 ],
-                "reversibility": "เป็น flow ความเสี่ยงต่ำ ใช้ backup ได้หากจำเป็น"
+                "reversibility": "บำรุงรักษาความเสี่ยงต่ำ ส่วนใหญ่ไม่ต้อง rollback"
               },
               "debloater.bat": {
                 "name": "Debloater",
-                "description": "จัดการ optional extras และสิ่งรบกวนเบื้องหลังของ Windows",
+                "description": "ลบแอป Windows สำเร็จรูป (30+ แอป), ปิด OneDrive startup และลบ Copilot การลบแอปถาวร — ใช้ backup",
                 "effects": [
-                  "อาจช่วยลด startup และ background overhead"
+                  "ลบ bloatware (ติดตั้งกลับได้จาก Store)",
+                  "ปิด OneDrive auto-start",
+                  "ลดเวลา startup และ resource เบื้องหลัง"
                 ],
-                "reversibility": "ใช้ backup หรือเปิด component กลับด้วยตนเอง"
-              },
-              "registry-utils.bat": {
-                "name": "Registry Utilities",
-                "description": "utility สำหรับงาน registry ที่หลาย tweak ใช้ร่วมกัน",
-                "effects": [
-                  "ช่วยให้การ apply และ rollback registry ปลอดภัยขึ้น"
-                ],
-                "reversibility": "ออกแบบมาให้ทำงานร่วมกับ backup และ rollback"
-              },
+                "reversibility": "การลบแอปถาวรแต่ส่วนใหญ่ติดตั้งกลับได้จาก Microsoft Store ใช้ backup สำหรับ registry"
+              }
+            }
+          },
+          "utility": {
+            "name": "Utilities & Detection",
+            "icon": "search",
+            "description": "สคริปต์แบบอ่านอย่างเดียวที่ตรวจจับฮาร์ดแวร์และการตั้งค่าระบบ ไม่เปลี่ยนแปลงอะไร — เก็บข้อมูลให้ ClutchG ตัดสินใจ",
+            "risk": "ไม่มี (อ่านอย่างเดียว)",
+            "scripts": {
               "system-detect.bat": {
                 "name": "System Detect",
-                "description": "เก็บข้อมูลระบบพื้นฐานเพื่อเช็กความเข้ากันได้",
+                "description": "ตรวจจับ OS, CPU vendor/model, GPU และประเภทเครื่อง (desktop/laptop)",
                 "effects": [
-                  "เป็นสคริปต์เชิงตรวจสอบ",
-                  "ใช้เพื่อช่วยการตัดสินใจของแอป"
+                  "อ่านอย่างเดียว — เก็บข้อมูลระบบ",
+                  "ClutchG ใช้เลือก tweak ที่เข้ากันได้"
                 ],
-                "reversibility": "โดยทั่วไปไม่มีการเปลี่ยนแปลงถาวร"
+                "reversibility": "ไม่มีการเปลี่ยนแปลง ไม่ต้อง rollback"
               },
               "system-detect-enhanced.bat": {
                 "name": "Enhanced System Detect",
-                "description": "การตรวจสอบระบบแบบละเอียดขึ้นสำหรับฮาร์ดแวร์ที่รองรับ",
+                "description": "ตรวจจับขั้นสูง: RAM speed, ประเภท storage (SSD/HDD), network adapter, cooling profile และ performance score",
                 "effects": [
-                  "ช่วยการตรวจจับและความเข้ากันได้ที่ลึกขึ้น"
+                  "อ่านอย่างเดียว — เก็บข้อมูลฮาร์ดแวร์ละเอียด",
+                  "ช่วยให้แนะนำ profile ตามฮาร์ดแวร์ได้"
                 ],
-                "reversibility": "โดยทั่วไปไม่มีการเปลี่ยนแปลงถาวร"
+                "reversibility": "ไม่มีการเปลี่ยนแปลง ไม่ต้อง rollback"
               },
-              "bcdedit-manager.bat": {
-                "name": "BCDEdit Manager",
-                "description": "ใช้ boot-level tweaks สำหรับ flow ที่มีความเสี่ยงสูงกว่า",
+              "registry-utils.bat": {
+                "name": "Registry Utilities",
+                "description": "utility ที่ apply registry optimizations สำหรับ telemetry, gaming, visual effects และ kernel ถูกเรียกใช้โดยสคริปต์อื่น",
                 "effects": [
-                  "อาจช่วยในงานที่เน้น latency",
-                  "ต้องทดสอบและรีสตาร์ต"
+                  "Apply registry changes แบบ batch อย่างมีประสิทธิภาพ",
+                  "รวมศูนย์ registry operations เพื่อความสม่ำเสมอ"
                 ],
-                "reversibility": "ย้อนกลับได้ผ่าน backup หรือขั้นตอนคืนค่า boot settings"
+                "reversibility": "ย้อนกลับได้ผ่าน registry backup restore"
               }
             }
           }
@@ -664,58 +854,160 @@
     },
     "backup": {
       "en": {
-        "title": "Backup",
+        "title": "Backup & Restore",
         "icon": "backup",
         "sections": [
           {
             "heading": "How Backup Works",
-            "content": "ClutchG manages named backups you can create, restore, and delete. Backups may include a Windows restore point and registry backup data depending on what was created successfully."
+            "content": "ClutchG creates named backups that capture your current system state before optimization. Each backup may include a Windows System Restore point and registry export data. You can create, restore, and delete backups at any time."
           },
           {
-            "heading": "What You Can Do",
+            "heading": "Auto-Backup",
+            "content": "When auto-backup is enabled (on by default), ClutchG automatically creates a backup before every profile apply. This means you always have a rollback point even if you forget to create one manually."
+          },
+          {
+            "heading": "What Gets Backed Up",
             "key_points": [
-              "Create manual backups before making changes",
-              "Restore earlier saved states with one click",
-              "Delete obsolete backups when no longer needed",
-              "Auto-backup runs before every profile apply when enabled"
+              "Windows System Restore point (captures system files, drivers, registry)",
+              "Registry key exports for areas that ClutchG modifies",
+              "Backup metadata (timestamp, profile used, tweak list)"
             ]
           },
           {
-            "heading": "Recommended Restore Flow",
+            "heading": "How to Restore",
             "steps": [
-              "1. Open Backup.",
+              "1. Open Backup & Restore from the sidebar.",
               "2. Find the backup you want to restore.",
-              "3. Click Restore and confirm.",
-              "4. Restart Windows if ClutchG tells you it is required."
+              "3. Click Restore and confirm the action.",
+              "4. Restart Windows when prompted — some changes only take effect after reboot."
+            ]
+          },
+          {
+            "heading": "Tips",
+            "key_points": [
+              "Create a manual backup before experimenting with HIGH risk custom tweaks.",
+              "Delete old backups periodically to save disk space.",
+              "If a restore doesn't fully fix the issue, use Windows System Restore from Settings → Recovery.",
+              "Backup names include the date and profile used for easy identification."
             ]
           }
         ]
       },
       "th": {
-        "title": "Backup",
+        "title": "Backup & Restore",
         "icon": "backup",
         "sections": [
           {
             "heading": "Backup ทำงานยังไง",
-            "content": "ClutchG จัดการ backup แบบตั้งชื่อเอง สามารถสร้าง กู้คืน และลบได้ โดย backup อาจมีทั้ง restore point ของ Windows และข้อมูล registry ตามที่สร้างสำเร็จ"
+            "content": "ClutchG สร้าง backup แบบตั้งชื่อที่จับสถานะระบบปัจจุบันก่อน optimization แต่ละ backup อาจมี Windows System Restore point และข้อมูล registry export สร้าง กู้คืน และลบ backup ได้ตลอด"
           },
           {
-            "heading": "สิ่งที่ทำได้",
+            "heading": "Auto-Backup",
+            "content": "เมื่อเปิด auto-backup (เปิดอยู่โดยค่าเริ่มต้น) ClutchG จะสร้าง backup อัตโนมัติก่อนทุกครั้งที่ apply profile คุณจะมีจุดย้อนกลับเสมอแม้ลืมสร้างเอง"
+          },
+          {
+            "heading": "อะไรถูก Backup บ้าง",
             "key_points": [
-              "สร้าง backup ด้วยตนเองก่อนเปลี่ยนแปลง",
-              "กู้คืนสถานะที่บันทึกไว้ด้วยคลิกเดียว",
-              "ลบ backup ที่ไม่ต้องการแล้วได้",
-              "Auto-backup จะรันก่อนทุกครั้งที่ apply โปรไฟล์เมื่อเปิดใช้งาน"
+              "Windows System Restore point (จับ system files, drivers, registry)",
+              "Registry key exports สำหรับส่วนที่ ClutchG แก้ไข",
+              "ข้อมูล backup (เวลา, profile ที่ใช้, รายการ tweak)"
             ]
           },
           {
-            "heading": "ขั้นตอนแนะนำในการกู้คืน",
+            "heading": "วิธี Restore",
             "steps": [
-              "1. เปิด Backup",
+              "1. เปิด Backup & Restore จาก sidebar",
               "2. หา backup ที่ต้องการกู้คืน",
               "3. กด Restore แล้วยืนยัน",
-              "4. รีสตาร์ต Windows หากแอปแจ้งว่าจำเป็น"
+              "4. รีสตาร์ต Windows เมื่อแอปแจ้ง — บางการเปลี่ยนแปลงมีผลหลัง reboot เท่านั้น"
             ]
+          },
+          {
+            "heading": "เคล็ดลับ",
+            "key_points": [
+              "สร้าง backup เองก่อนทดลองกับ custom tweaks ที่เป็น HIGH risk",
+              "ลบ backup เก่าเป็นระยะเพื่อประหยัดพื้นที่",
+              "ถ้า restore แล้วยังไม่ปกติ ใช้ Windows System Restore จาก Settings → Recovery",
+              "ชื่อ backup มีวันที่และ profile ที่ใช้เพื่อให้หาง่าย"
+            ]
+          }
+        ]
+      }
+    },
+    "faq": {
+      "en": {
+        "title": "FAQ",
+        "icon": "help",
+        "questions": [
+          {
+            "question": "Is ClutchG safe to use?",
+            "answer": "Yes. All changes are reversible through the backup system. ClutchG never disables critical security features (Defender, UAC, DEP, ASLR, CFG, Windows Update). Start with Safe profile if you're unsure."
+          },
+          {
+            "question": "Do I need to run as Administrator?",
+            "answer": "Yes, for most features. System tweaks require elevated rights to modify registry keys, services, and boot configuration. Without admin rights, the app can show information but can't apply changes."
+          },
+          {
+            "question": "Will this break my games or apps?",
+            "answer": "Safe and Competitive profiles are tested to work with common games and apps. If you experience issues, use Backup & Restore to roll back. Extreme profile carries higher risk — test carefully."
+          },
+          {
+            "question": "How do I undo everything?",
+            "answer": "Go to Backup & Restore, find your most recent backup, and click Restore. If ClutchG's restore doesn't fully fix the issue, use Windows System Restore from Settings → System → Recovery."
+          },
+          {
+            "question": "What's the difference between profiles and custom tweaks?",
+            "answer": "Profiles apply a curated set of tweaks at once (Safe = 14 tweaks, Competitive = 39, Extreme = 56). Custom mode lets you pick individual tweaks. You can use both — custom settings override profile defaults for overlapping tweaks."
+          },
+          {
+            "question": "Does ClutchG work on laptops?",
+            "answer": "Yes. Safe profile is specifically designed for laptops. Be cautious with power-related tweaks on battery — some may increase power consumption. The app detects your system type automatically."
+          },
+          {
+            "question": "How much FPS improvement can I expect?",
+            "answer": "Results vary by hardware and games. Typical ranges: Safe 2–5%, Competitive 5–10%, Extreme 10–15%. Gains come mainly from reduced input latency, smoother frame pacing, and less background interference."
+          },
+          {
+            "question": "Can I use ClutchG alongside other optimizers?",
+            "answer": "Not recommended. Multiple optimizers can conflict with each other, applying contradictory settings. If you've used another optimizer before, restore defaults first, then use ClutchG."
+          }
+        ]
+      },
+      "th": {
+        "title": "FAQ",
+        "icon": "help",
+        "questions": [
+          {
+            "question": "ClutchG ปลอดภัยไหม?",
+            "answer": "ปลอดภัย ทุกการเปลี่ยนแปลงย้อนกลับได้ผ่าน backup ClutchG ไม่ปิดระบบป้องกันหลัก (Defender, UAC, DEP, ASLR, CFG, Windows Update) เริ่มจาก Safe profile หากไม่มั่นใจ"
+          },
+          {
+            "question": "ต้องรันเป็น Administrator ไหม?",
+            "answer": "ต้อง สำหรับฟีเจอร์ส่วนใหญ่ การแก้ระบบต้องใช้สิทธิ์ยกระดับเพื่อแก้ registry, services และ boot configuration ไม่มีสิทธิ์ admin แอปแสดงข้อมูลได้แต่ apply ไม่ได้"
+          },
+          {
+            "question": "จะทำเกมหรือแอปพังไหม?",
+            "answer": "Safe และ Competitive ถูกทดสอบแล้วว่าใช้ได้กับเกมและแอปทั่วไป ถ้ามีปัญหาใช้ Backup & Restore ย้อนกลับ Extreme มีความเสี่ยงสูงกว่า — ทดสอบอย่างระมัดระวัง"
+          },
+          {
+            "question": "ย้อนกลับทุกอย่างยังไง?",
+            "answer": "ไปที่ Backup & Restore หา backup ล่าสุด แล้วกด Restore ถ้า restore ของ ClutchG แก้ไม่หมด ใช้ Windows System Restore จาก Settings → System → Recovery"
+          },
+          {
+            "question": "Profiles กับ Custom Tweaks ต่างกันยังไง?",
+            "answer": "Profiles apply ชุด tweaks สำเร็จรูป (Safe = 14, Competitive = 39, Extreme = 56) Custom mode ให้เลือก tweak ทีละตัว ใช้ร่วมกันได้ — custom override profile สำหรับ tweak ที่ซ้ำกัน"
+          },
+          {
+            "question": "ใช้กับแล็ปท็อปได้ไหม?",
+            "answer": "ได้ Safe profile ออกแบบมาสำหรับแล็ปท็อปโดยเฉพาะ ระวังเรื่อง power tweaks ตอนใช้แบตเตอรี่ — บางอันอาจเพิ่มการใช้พลังงาน แอปตรวจจับประเภทเครื่องอัตโนมัติ"
+          },
+          {
+            "question": "คาดหวัง FPS เพิ่มเท่าไหร่?",
+            "answer": "ผลแตกต่างตามฮาร์ดแวร์และเกม ช่วงปกติ: Safe 2–5%, Competitive 5–10%, Extreme 10–15% ผลลัพธ์มาจากลด input latency, frame pacing ดีขึ้น และลด background interference"
+          },
+          {
+            "question": "ใช้ ClutchG คู่กับ optimizer ตัวอื่นได้ไหม?",
+            "answer": "ไม่แนะนำ หลาย optimizer ใช้พร้อมกันอาจขัดแย้งกัน apply ค่าที่ตรงข้าม ถ้าเคยใช้ optimizer อื่นมาก่อน restore ค่าเดิมก่อนแล้วค่อยใช้ ClutchG"
           }
         ]
       }
@@ -726,31 +1018,53 @@
         "icon": "build",
         "issues": [
           {
-            "problem": "A profile or quick action failed",
+            "problem": "A profile or tweak failed to apply",
             "solutions": [
-              "Verify the app is running as Administrator.",
-              "Check whether the batch script path is available.",
-              "Review execution output or logs.",
-              "Try Safe profile or a smaller action pack first.",
-              "Check whether auto-backup failed before execution started."
+              "Make sure the app is running as Administrator.",
+              "Check if the batch script files exist in the expected path.",
+              "Review the execution log for specific error messages.",
+              "Try Safe profile first — if Safe works, the issue is profile-specific.",
+              "Verify that auto-backup didn't fail before the execution started."
             ]
           },
           {
-            "problem": "The system feels worse after optimization",
+            "problem": "System feels slower after optimization",
             "solutions": [
-              "Restore from the latest backup.",
-              "Move to a lower-risk profile.",
-              "Check if a restart is still pending.",
-              "Use Backup to inspect what was changed."
+              "Restore from the latest backup in Backup & Restore.",
+              "Switch to a lower-risk profile (Competitive → Safe).",
+              "Check if a restart is still pending — many tweaks only take effect after reboot.",
+              "Open Task Manager and check for unusual CPU/memory usage.",
+              "If using Extreme, try Competitive instead — some aggressive tweaks may not suit your hardware."
             ]
           },
           {
-            "problem": "A specific app or game behaves incorrectly",
+            "problem": "A specific game or app behaves incorrectly",
             "solutions": [
-              "Roll back recent changes via Backup.",
-              "Test with Safe settings only.",
-              "Update drivers and reboot.",
-              "Avoid Extreme tweaks until the issue is understood."
+              "Roll back recent changes using Backup & Restore.",
+              "Test with only Safe profile applied.",
+              "Update your GPU drivers and restart.",
+              "Check if the issue is related to network tweaks (try disabling Nagle changes).",
+              "Avoid Extreme tweaks until the specific cause is identified."
+            ]
+          },
+          {
+            "problem": "App won't start or crashes on launch",
+            "solutions": [
+              "Make sure Python 3.10+ is installed if running from source.",
+              "Check if the fonts folder (tabler-icons.ttf) is present.",
+              "Try running from command line to see error messages: python src/main.py",
+              "Delete the config file and restart to reset settings.",
+              "If using the .exe build, try re-building with: python build.py"
+            ]
+          },
+          {
+            "problem": "Backup restore didn't fully fix the issue",
+            "solutions": [
+              "Some changes require a full restart to take effect after restore.",
+              "Use Windows System Restore from Settings → System → Recovery for deeper rollback.",
+              "Check if the original backup was created before or after the problematic change.",
+              "For BCDEdit changes, manually run: bcdedit /deletevalue {current} <setting_name>",
+              "As a last resort, run 'sfc /scannow' and 'DISM /Online /Cleanup-Image /RestoreHealth' from an admin command prompt."
             ]
           }
         ]
@@ -760,31 +1074,53 @@
         "icon": "build",
         "issues": [
           {
-            "problem": "โปรไฟล์หรือ quick action ใช้งานไม่สำเร็จ",
+            "problem": "Profile หรือ tweak apply ไม่สำเร็จ",
             "solutions": [
               "ตรวจสอบว่าแอปรันเป็น Administrator",
-              "ตรวจสอบว่า path ของ batch script ใช้งานได้",
-              "ดู execution output หรือ logs",
-              "ลองเริ่มจาก Safe หรือ action pack ขนาดเล็กก่อน",
-              "ตรวจสอบว่าการสร้าง auto-backup ล้มเหลวก่อนเริ่ม execute หรือไม่"
+              "เช็คว่าไฟล์ batch script อยู่ใน path ที่ถูกต้อง",
+              "ดู execution log เพื่อหา error messages",
+              "ลอง Safe profile ก่อน — ถ้า Safe ใช้ได้แสดงว่าปัญหาเฉพาะ profile",
+              "ตรวจสอบว่า auto-backup ไม่ได้ fail ก่อนเริ่ม execute"
             ]
           },
           {
-            "problem": "ระบบรู้สึกแย่ลงหลัง optimize",
+            "problem": "ระบบช้าลงหลัง optimization",
             "solutions": [
-              "กู้คืนจาก backup ล่าสุด",
-              "เปลี่ยนไปใช้โปรไฟล์ที่เสี่ยงต่ำกว่า",
-              "ตรวจสอบว่ายังมี restart ที่ค้างอยู่หรือไม่",
-              "ใช้ Backup ดูว่ามีอะไรถูกเปลี่ยน"
+              "Restore จาก backup ล่าสุดใน Backup & Restore",
+              "เปลี่ยนไปใช้ profile ที่เสี่ยงต่ำกว่า (Competitive → Safe)",
+              "เช็คว่ายังมี restart ที่ค้างอยู่ไหม — หลาย tweaks มีผลหลัง reboot เท่านั้น",
+              "เปิด Task Manager ดู CPU/memory usage ที่ผิดปกติ",
+              "ถ้าใช้ Extreme ลองเปลี่ยนเป็น Competitive — tweak บางตัวอาจไม่เหมาะกับฮาร์ดแวร์"
             ]
           },
           {
-            "problem": "แอปหรือเกมบางตัวทำงานผิดปกติ",
+            "problem": "เกมหรือแอปบางตัวทำงานผิดปกติ",
             "solutions": [
-              "ย้อนกลับการเปลี่ยนแปลงล่าสุดผ่าน Backup",
-              "ทดสอบด้วย Safe เท่านั้นก่อน",
-              "อัปเดตไดรเวอร์และรีบูต",
-              "หลีกเลี่ยง Extreme จนกว่าจะเข้าใจสาเหตุของปัญหา"
+              "ย้อนกลับการเปลี่ยนแปลงล่าสุดผ่าน Backup & Restore",
+              "ทดสอบกับ Safe profile อย่างเดียว",
+              "อัปเดต GPU drivers แล้วรีสตาร์ต",
+              "เช็คว่าปัญหาเกี่ยวกับ network tweaks หรือไม่ (ลองปิด Nagle changes)",
+              "หลีกเลี่ยง Extreme จนกว่าจะหาสาเหตุได้"
+            ]
+          },
+          {
+            "problem": "แอปเปิดไม่ได้หรือ crash ตอนเปิด",
+            "solutions": [
+              "ต้องมี Python 3.10+ หากรันจาก source",
+              "เช็คว่าโฟลเดอร์ fonts (tabler-icons.ttf) อยู่ครบ",
+              "ลองรันจาก command line เพื่อดู error: python src/main.py",
+              "ลบ config file แล้วรีสตาร์ตเพื่อ reset การตั้งค่า",
+              "ถ้าใช้ .exe build ลอง build ใหม่ด้วย: python build.py"
+            ]
+          },
+          {
+            "problem": "Restore แล้วยังไม่ปกติ",
+            "solutions": [
+              "บางการเปลี่ยนแปลงต้องรีสตาร์ตเต็มรูปแบบหลัง restore",
+              "ใช้ Windows System Restore จาก Settings → System → Recovery สำหรับ rollback ที่ลึกกว่า",
+              "เช็คว่า backup เดิมถูกสร้างก่อนหรือหลังการเปลี่ยนแปลงที่มีปัญหา",
+              "สำหรับ BCDEdit changes รันเอง: bcdedit /deletevalue {current} <ชื่อค่า>",
+              "ทางเลือกสุดท้าย รัน 'sfc /scannow' และ 'DISM /Online /Cleanup-Image /RestoreHealth' จาก admin command prompt"
             ]
           }
         ]
@@ -795,32 +1131,38 @@
         "title": "About ClutchG",
         "icon": "info",
         "content": {
-          "version": "1.0.0",
-          "description": "ClutchG is a Windows optimizer for gamers. It combines hardware-aware recommendations, profile-based workflows, quick fix packs, a custom tweak builder, and backup/restore tooling.",
+          "version": "2.0.0",
+          "description": "ClutchG is a Windows optimization tool built for gamers. It combines hardware-aware profile recommendations, a custom tweak builder with 56 individual tweaks across 10 categories, and a full backup/restore system — all with evidence-based registry and service changes.",
           "features": [
-            "Hardware-based profile recommendations",
-            "Tweaks view with Quick Fix, Profiles, Custom builder, and Glossary",
-            "Backup center with auto-backup before every apply",
-            "Evidence-based tweak registry with risk labels",
-            "Searchable in-app docs"
+            "3 optimization profiles: Safe, Competitive, Extreme",
+            "56 individual tweaks across 10 categories with risk labels",
+            "Hardware detection for compatible tweak recommendations",
+            "Auto-backup before every profile apply",
+            "Full backup & restore system with named snapshots",
+            "Searchable in-app documentation (this page)",
+            "Bilingual interface (English and Thai)"
           ],
-          "disclaimer": "Use the app carefully, review risks before applying changes, and keep a recent backup available."
+          "disclaimer": "ClutchG applies system-level changes that can affect performance and stability. Always review risk levels before applying, keep auto-backup enabled, and maintain a recent backup. Use at your own discretion.",
+          "credits": "Built as part of a software engineering thesis project."
         }
       },
       "th": {
         "title": "เกี่ยวกับ ClutchG",
         "icon": "info",
         "content": {
-          "version": "1.0.0",
-          "description": "ClutchG คือตัวจูน Windows สำหรับเกมเมอร์ รวมคำแนะนำตามฮาร์ดแวร์ workflow แบบ profile, quick fix pack, custom tweak builder และเครื่องมือ backup/restore ไว้ด้วยกัน",
+          "version": "2.0.0",
+          "description": "ClutchG เป็นเครื่องมือ optimization สำหรับ Windows ที่สร้างมาเพื่อเกมเมอร์ รวมคำแนะนำ profile ตามฮาร์ดแวร์, custom tweak builder ที่มี 56 tweaks ใน 10 หมวดหมู่ และระบบ backup/restore เต็มรูปแบบ — ทั้งหมดบนพื้นฐานของ registry และ service changes ที่มีหลักฐานรองรับ",
           "features": [
-            "คำแนะนำโปรไฟล์ตามฮาร์ดแวร์",
-            "Tweaks view ที่มี Quick Fix, Profiles, Custom builder และ Glossary",
-            "Backup center ที่สร้าง backup อัตโนมัติก่อนทุก apply",
-            "tweak registry ที่มีระดับความเสี่ยงและคำอธิบายชัดเจน",
-            "เอกสารค้นหาได้ภายในแอป"
+            "3 optimization profiles: Safe, Competitive, Extreme",
+            "56 tweaks ใน 10 หมวดหมู่ พร้อมระดับความเสี่ยง",
+            "ตรวจจับฮาร์ดแวร์เพื่อแนะนำ tweak ที่เข้ากันได้",
+            "Auto-backup ก่อนทุกครั้งที่ apply profile",
+            "ระบบ backup & restore เต็มรูปแบบพร้อม named snapshots",
+            "เอกสารค้นหาได้ภายในแอป (หน้านี้)",
+            "อินเทอร์เฟซ 2 ภาษา (อังกฤษ และ ไทย)"
           ],
-          "disclaimer": "ใช้งานอย่างระมัดระวัง ตรวจสอบความเสี่ยงก่อนใช้ และควรมี backup ล่าสุดเสมอ"
+          "disclaimer": "ClutchG แก้ไขค่าระดับระบบที่อาจกระทบ performance และเสถียรภาพ ตรวจสอบระดับความเสี่ยงก่อน apply เสมอ เปิด auto-backup ไว้ และมี backup ล่าสุดพร้อม ใช้งานตามดุลยพินิจของตนเอง",
+          "credits": "สร้างเป็นส่วนหนึ่งของโปรเจกต์วิทยานิพนธ์ด้านวิศวกรรมซอฟต์แวร์"
         }
       }
     }
