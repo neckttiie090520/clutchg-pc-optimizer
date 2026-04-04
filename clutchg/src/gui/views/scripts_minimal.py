@@ -4,7 +4,6 @@ Scripts View — Presets, Custom Builder, and Education Encyclopedia
 Updated: 2026-02-11
 """
 
-import tkinter as tk
 import customtkinter as ctk
 from typing import TYPE_CHECKING, List, Optional, Dict, Set
 import threading
@@ -1984,43 +1983,9 @@ class ScriptsView(ctk.CTkFrame):
             chip.pack(side="left", padx=2)
             self._filter_chips[key] = chip
 
-        # Category filter chips — horizontally scrollable row (chips never compress)
-        chip_scroll_container = ctk.CTkFrame(bar, fg_color="transparent", height=38)
-        chip_scroll_container.grid(
-            row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0)
-        )
-        chip_scroll_container.grid_propagate(False)
-        chip_scroll_container.grid_columnconfigure(0, weight=1)
-        chip_scroll_container.grid_rowconfigure(0, weight=1)
-
-        chip_canvas = tk.Canvas(
-            chip_scroll_container,
-            bg=COLORS["bg_primary"],
-            height=38,
-            highlightthickness=0,
-            bd=0,
-            xscrollincrement=1,
-        )
-        chip_canvas.grid(row=0, column=0, sticky="nsew")
-
-        # Inner frame — expands to fit all chips without compression
-        cat_wrap = ctk.CTkFrame(chip_canvas, fg_color="transparent")
-        cat_wrap_window = chip_canvas.create_window(
-            (0, 0), window=cat_wrap, anchor="nw"
-        )
-
-        def _update_chip_scroll_region(event=None):
-            chip_canvas.configure(scrollregion=chip_canvas.bbox("all"))
-
-        cat_wrap.bind("<Configure>", _update_chip_scroll_region)
-
-        # Horizontal mouse-wheel scroll (Shift+wheel or plain wheel on this row)
-        def _on_chip_wheel(event):
-            direction = -1 if event.delta > 0 else 1
-            chip_canvas.xview_scroll(direction * 3, "units")
-
-        chip_canvas.bind("<MouseWheel>", _on_chip_wheel)
-        cat_wrap.bind("<MouseWheel>", _on_chip_wheel)
+        # Category filter chips — responsive wrapping flow (multi-row when needed)
+        self._cat_chip_bar = ctk.CTkFrame(bar, fg_color="transparent")
+        self._cat_chip_bar.grid(row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0))
 
         # Build category counts from registry
         cat_counts: dict[str, int] = {}
@@ -2036,9 +2001,13 @@ class ScriptsView(ctk.CTkFrame):
             self._filter_category = "ALL"
 
         self._cat_chips: dict[str, ctk.CTkButton] = {}
+
+        # Collect all chip definitions (key, widget) for flow layout
+        chip_defs: list[tuple[str, ctk.CTkButton]] = []
+
         is_all = self._filter_category == "ALL"
         all_chip = ctk.CTkButton(
-            cat_wrap,
+            self._cat_chip_bar,
             text=f"All ({total_count})",
             font=ctk.CTkFont(size=12, weight="bold")
             if is_all
@@ -2052,10 +2021,10 @@ class ScriptsView(ctk.CTkFrame):
             height=30 if is_all else 28,
             command=lambda: self._set_category_filter("ALL"),
         )
-        all_chip.pack(side="left", padx=(0, SPACING["xs"]), pady=4)
         self._cat_chips["ALL"] = all_chip
+        chip_defs.append(("ALL", all_chip))
 
-        # Per-category chips — text-only with colored dot prefix (no icon font mixing)
+        # Per-category chips
         for cat_key, count in cat_counts.items():
             cat_info = TWEAK_CATEGORIES[cat_key]
             cat_color = cat_info.get("color", COLORS["text_secondary"])
@@ -2063,7 +2032,7 @@ class ScriptsView(ctk.CTkFrame):
 
             chip_text = f"\u25cf {cat_info['label']} ({count})"
             chip = ctk.CTkButton(
-                cat_wrap,
+                self._cat_chip_bar,
                 text=chip_text,
                 font=ctk.CTkFont(size=11),
                 fg_color=cat_color if is_active else "transparent",
@@ -2075,15 +2044,50 @@ class ScriptsView(ctk.CTkFrame):
                 height=28,
                 command=lambda k=cat_key: self._set_category_filter(k),
             )
-            chip.pack(side="left", padx=(0, SPACING["xs"]), pady=4)
             self._cat_chips[cat_key] = chip
+            chip_defs.append((cat_key, chip))
 
-        # Propagate mouse-wheel from each chip button to the canvas
-        def _bind_chip_wheel(widget):
-            widget.bind("<MouseWheel>", _on_chip_wheel)
+        # Flow-layout: place chips using .place() and reflow on resize
+        self._cat_chip_defs = chip_defs
+        self._cat_chip_bar_last_width = 0
 
-        for chip_widget in self._cat_chips.values():
-            _bind_chip_wheel(chip_widget)
+        def _reflow_chips(event=None):
+            container_w = self._cat_chip_bar.winfo_width()
+            if container_w <= 1:
+                return
+            # Avoid redundant reflows for the same width
+            if container_w == self._cat_chip_bar_last_width:
+                return
+            self._cat_chip_bar_last_width = container_w
+
+            pad_x = SPACING["xs"]
+            pad_y = 3
+            x = 0
+            y = 0
+            row_h = 0
+
+            for _key, chip_w in self._cat_chip_defs:
+                chip_w.update_idletasks()
+                cw = chip_w.winfo_reqwidth()
+                ch = chip_w.winfo_reqheight()
+
+                # Wrap to next row if this chip exceeds container width
+                if x > 0 and (x + cw) > container_w:
+                    x = 0
+                    y += row_h + pad_y
+                    row_h = 0
+
+                chip_w.place(x=x, y=y, width=cw, height=ch)
+                x += cw + pad_x
+                row_h = max(row_h, ch)
+
+            # Update container height to fit all rows
+            total_h = y + row_h + pad_y
+            self._cat_chip_bar.configure(height=max(total_h, 34))
+
+        self._cat_chip_bar.bind("<Configure>", _reflow_chips)
+        # Initial layout after idle
+        self._cat_chip_bar.after(50, _reflow_chips)
 
     def _set_risk_filter(self, risk_level: str):
         """Set risk filter and refresh list"""
@@ -2597,7 +2601,8 @@ class ScriptsView(ctk.CTkFrame):
         inner.grid(row=0, column=0, sticky="nsew", padx=(0, self._DETAIL_PAD_X))
         inner.grid_columnconfigure(0, weight=1)
 
-        # Labels whose wraplength must track the inner frame width
+        # Dynamic wraplength: use the detail_panel width as the source of truth
+        # and subtract scrollbar + padding to get the actual content width
         _wrap_labels: list[ctk.CTkLabel] = []
 
         def _make_wrapping_label(parent, **kwargs) -> ctk.CTkLabel:
@@ -2606,15 +2611,29 @@ class ScriptsView(ctk.CTkFrame):
             return lbl
 
         def _update_wraplengths(event=None):
-            w = inner.winfo_width()
-            if w > 10:
-                for lbl in _wrap_labels:
-                    try:
-                        lbl.configure(wraplength=w)
-                    except Exception:
-                        pass
+            # Use the panel width as source of truth (it has grid_propagate=False)
+            panel_w = self.detail_panel.winfo_width()
+            if panel_w <= 20:
+                return
+            # Subtract: left pad + scrollbar + right pad + internal border/padding
+            usable = (
+                panel_w
+                - self._DETAIL_PAD_X
+                - self._DETAIL_SCROLLBAR_WIDTH
+                - self._DETAIL_PAD_X
+                - 8
+            )
+            if usable < 80:
+                return
+            for lbl in _wrap_labels:
+                try:
+                    lbl.configure(wraplength=usable)
+                except Exception:
+                    pass
 
-        inner.bind("<Configure>", _update_wraplengths)
+        self.detail_panel.bind("<Configure>", _update_wraplengths)
+        # Schedule initial update after layout settles
+        self.detail_panel.after(80, _update_wraplengths)
 
         risk_colors = self._get_risk_colors()
         risk_c = risk_colors.get(tweak.risk_level.upper(), risk_colors["LOW"])
@@ -2631,8 +2650,9 @@ class ScriptsView(ctk.CTkFrame):
         ).grid(row=r, column=0, sticky="ew")
         r += 1
 
+        # Badges row — wrapped using a flow frame so tags don't clip
         badge_f = ctk.CTkFrame(inner, fg_color="transparent")
-        badge_f.grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], SPACING["xs"]))
+        badge_f.grid(row=r, column=0, sticky="ew", pady=(SPACING["xs"], SPACING["xs"]))
         r += 1
 
         cat_info = TWEAK_CATEGORIES.get(tweak.category, {})
