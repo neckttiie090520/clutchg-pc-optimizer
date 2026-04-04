@@ -4,6 +4,7 @@ Scripts View — Presets, Custom Builder, and Education Encyclopedia
 Updated: 2026-02-11
 """
 
+import tkinter as tk
 import customtkinter as ctk
 from typing import TYPE_CHECKING, List, Optional, Dict, Set
 import threading
@@ -1983,9 +1984,43 @@ class ScriptsView(ctk.CTkFrame):
             chip.pack(side="left", padx=2)
             self._filter_chips[key] = chip
 
-        # Category filter chips — wrapping flow layout (row below search)
-        cat_wrap = ctk.CTkFrame(bar, fg_color="transparent")
-        cat_wrap.grid(row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0))
+        # Category filter chips — horizontally scrollable row (chips never compress)
+        chip_scroll_container = ctk.CTkFrame(bar, fg_color="transparent", height=38)
+        chip_scroll_container.grid(
+            row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0)
+        )
+        chip_scroll_container.grid_propagate(False)
+        chip_scroll_container.grid_columnconfigure(0, weight=1)
+        chip_scroll_container.grid_rowconfigure(0, weight=1)
+
+        chip_canvas = tk.Canvas(
+            chip_scroll_container,
+            bg=COLORS["bg_primary"],
+            height=38,
+            highlightthickness=0,
+            bd=0,
+            xscrollincrement=1,
+        )
+        chip_canvas.grid(row=0, column=0, sticky="nsew")
+
+        # Inner frame — expands to fit all chips without compression
+        cat_wrap = ctk.CTkFrame(chip_canvas, fg_color="transparent")
+        cat_wrap_window = chip_canvas.create_window(
+            (0, 0), window=cat_wrap, anchor="nw"
+        )
+
+        def _update_chip_scroll_region(event=None):
+            chip_canvas.configure(scrollregion=chip_canvas.bbox("all"))
+
+        cat_wrap.bind("<Configure>", _update_chip_scroll_region)
+
+        # Horizontal mouse-wheel scroll (Shift+wheel or plain wheel on this row)
+        def _on_chip_wheel(event):
+            direction = -1 if event.delta > 0 else 1
+            chip_canvas.xview_scroll(direction * 3, "units")
+
+        chip_canvas.bind("<MouseWheel>", _on_chip_wheel)
+        cat_wrap.bind("<MouseWheel>", _on_chip_wheel)
 
         # Build category counts from registry
         cat_counts: dict[str, int] = {}
@@ -2017,7 +2052,7 @@ class ScriptsView(ctk.CTkFrame):
             height=30 if is_all else 28,
             command=lambda: self._set_category_filter("ALL"),
         )
-        all_chip.pack(side="left", padx=(0, SPACING["xs"]), pady=2)
+        all_chip.pack(side="left", padx=(0, SPACING["xs"]), pady=4)
         self._cat_chips["ALL"] = all_chip
 
         # Per-category chips — text-only with colored dot prefix (no icon font mixing)
@@ -2040,8 +2075,15 @@ class ScriptsView(ctk.CTkFrame):
                 height=28,
                 command=lambda k=cat_key: self._set_category_filter(k),
             )
-            chip.pack(side="left", padx=(0, SPACING["xs"]), pady=2)
+            chip.pack(side="left", padx=(0, SPACING["xs"]), pady=4)
             self._cat_chips[cat_key] = chip
+
+        # Propagate mouse-wheel from each chip button to the canvas
+        def _bind_chip_wheel(widget):
+            widget.bind("<MouseWheel>", _on_chip_wheel)
+
+        for chip_widget in self._cat_chips.values():
+            _bind_chip_wheel(chip_widget)
 
     def _set_risk_filter(self, risk_level: str):
         """Set risk filter and refresh list"""
