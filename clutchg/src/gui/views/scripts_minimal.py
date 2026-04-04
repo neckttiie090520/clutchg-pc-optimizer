@@ -1027,7 +1027,7 @@ class ScriptsView(ctk.CTkFrame):
         """Full-width hero card for the recommended preset.
 
         Layout (2 columns, compact):
-          Left  — icon + name + ★ RECOMMENDED (1 row) + guidance + pills
+          Left  — icon + name + RECOMMENDED badge (1 row) + guidance + pills
           Right — FPS (26px bold) + Apply + View Details (tight stack)
 
         Card padding: 10px 20px. Tight internal gaps (4px).
@@ -1050,7 +1050,7 @@ class ScriptsView(ctk.CTkFrame):
         left.grid(row=0, column=0, sticky="nsew", padx=(px, 12), pady=py)
         left.grid_columnconfigure(0, weight=1)
 
-        # Row 0: Icon + name + ★ RECOMMENDED (all one row)
+        # Row 0: Icon + name + RECOMMENDED badge (all one row)
         icon_name_row = ctk.CTkFrame(left, fg_color="transparent")
         icon_name_row.grid(row=0, column=0, sticky="w", pady=(0, 4))
 
@@ -1806,7 +1806,7 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["lg"],
             border_width=1,
             border_color=COLORS["border"],
-            width=340,
+            width=360,
         )
         self.detail_panel.grid_propagate(False)
         self.detail_panel.grid_columnconfigure(0, weight=1)
@@ -2321,7 +2321,7 @@ class ScriptsView(ctk.CTkFrame):
 
     def _create_tweak_row(self, parent, tweak: Tweak, row_idx: int):
         """Compact single-row tweak item:
-        [Toggle] Name                     ⚡ gain  • 🟢 risk  🔄  Learn More ›
+        [Toggle] Name                     Gain  -  Risk  -  Restart  Learn More >
         Click row → opens detail panel on the right.
         """
         is_selected = tweak.id in self.selected_tweaks
@@ -2511,23 +2511,27 @@ class ScriptsView(ctk.CTkFrame):
         # Refresh list to update row highlights
         self._populate_tweak_list()
 
+    _DETAIL_SCROLLBAR_WIDTH = 14
+    _DETAIL_PAD_X = 12
+    _DETAIL_WRAP = 320
+
     def _show_inline_detail(self, tweak: Tweak):
-        """Populate the right-side detail panel with tweak info"""
         if not hasattr(self, "detail_panel"):
             return
         for w in self.detail_panel.winfo_children():
             w.destroy()
 
-        # Close button header
-        close_bar = ctk.CTkFrame(self.detail_panel, fg_color="transparent", height=28)
-        close_bar.pack(fill="x", padx=(SPACING["sm"], 4), pady=(4, 0))
+        wrap = self._DETAIL_WRAP
+
+        close_bar = ctk.CTkFrame(self.detail_panel, fg_color="transparent", height=26)
+        close_bar.pack(fill="x", padx=(SPACING["sm"], 4), pady=(3, 0))
         close_bar.pack_propagate(False)
         ctk.CTkButton(
             close_bar,
             text=ICON("close"),
-            width=24,
-            height=24,
-            font=ctk.CTkFont(family="Tabler Icons", size=14),
+            width=22,
+            height=22,
+            font=ctk.CTkFont(family="Tabler Icons", size=13),
             fg_color="transparent",
             text_color=COLORS["text_tertiary"],
             hover_color=COLORS["bg_card_hover"],
@@ -2535,7 +2539,6 @@ class ScriptsView(ctk.CTkFrame):
             command=self._close_detail_panel,
         ).pack(side="right")
 
-        # Scrollable content inside the fixed-width panel
         scroll = ctk.CTkScrollableFrame(
             self.detail_panel,
             fg_color="transparent",
@@ -2543,29 +2546,34 @@ class ScriptsView(ctk.CTkFrame):
             scrollbar_button_hover_color=COLORS["accent"],
         )
         scroll.pack(
-            fill="both", expand=True, padx=SPACING["sm"], pady=(0, SPACING["sm"])
+            fill="both",
+            expand=True,
+            padx=(self._DETAIL_PAD_X, 0),
+            pady=(0, SPACING["sm"]),
         )
         scroll.grid_columnconfigure(0, weight=1)
+
+        inner = ctk.CTkFrame(scroll, fg_color="transparent")
+        inner.grid(row=0, column=0, sticky="nsew", padx=(0, self._DETAIL_PAD_X))
+        inner.grid_columnconfigure(0, weight=1)
 
         risk_colors = self._get_risk_colors()
         risk_c = risk_colors.get(tweak.risk_level.upper(), risk_colors["LOW"])
         r = 0
 
-        # Title
         ctk.CTkLabel(
-            scroll,
+            inner,
             text=tweak.name,
-            font=font("h3"),
+            font=font("h4"),
             text_color=COLORS["text_primary"],
-            wraplength=280,
+            wraplength=wrap,
             anchor="w",
             justify="left",
         ).grid(row=r, column=0, sticky="w")
         r += 1
 
-        # Category + type badge row
-        badge_f = ctk.CTkFrame(scroll, fg_color="transparent")
-        badge_f.grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], SPACING["sm"]))
+        badge_f = ctk.CTkFrame(inner, fg_color="transparent")
+        badge_f.grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], SPACING["xs"]))
         r += 1
 
         cat_info = TWEAK_CATEGORIES.get(tweak.category, {})
@@ -2573,7 +2581,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             badge_f,
             text=f"  {cat_label}  ",
-            font=ctk.CTkFont(size=10),
+            font=ctk.CTkFont(size=9),
             fg_color=COLORS["bg_tertiary"],
             text_color=cat_info.get("color", COLORS["text_secondary"]),
             corner_radius=RADIUS["sm"],
@@ -2582,7 +2590,7 @@ class ScriptsView(ctk.CTkFrame):
         ctk.CTkLabel(
             badge_f,
             text=f"  {risk_c['label']}  ",
-            font=ctk.CTkFont(size=10),
+            font=ctk.CTkFont(size=9),
             fg_color=risk_c["bg"],
             text_color=risk_c["fg"],
             corner_radius=RADIUS["sm"],
@@ -2592,21 +2600,17 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 badge_f,
                 text="  Restart  ",
-                font=ctk.CTkFont(size=10),
+                font=ctk.CTkFont(size=9),
                 fg_color=COLORS["bg_tertiary"],
                 text_color=COLORS["text_tertiary"],
                 corner_radius=RADIUS["sm"],
             ).pack(side="left")
 
-        # Separator
-        ctk.CTkFrame(
-            scroll,
-            fg_color=COLORS["border"],
-            height=1,
-        ).grid(row=r, column=0, sticky="ew", pady=SPACING["xs"])
+        ctk.CTkFrame(inner, fg_color=COLORS["border"], height=1).grid(
+            row=r, column=0, sticky="ew", pady=(SPACING["xs"], SPACING["xs"])
+        )
         r += 1
 
-        # Content sections
         sections = [
             ("What it does", tweak.what_it_does),
             ("Why it helps", tweak.why_it_helps),
@@ -2618,83 +2622,77 @@ class ScriptsView(ctk.CTkFrame):
             if not content:
                 continue
             ctk.CTkLabel(
-                scroll,
+                inner,
                 text=title,
-                font=font("caption"),
+                font=font("micro"),
                 text_color=COLORS["text_tertiary"],
-            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
             r += 1
             ctk.CTkLabel(
-                scroll,
+                inner,
                 text=content,
-                font=font("body"),
+                font=font("body_small"),
                 text_color=COLORS["text_secondary"],
-                wraplength=280,
+                wraplength=wrap,
                 anchor="w",
                 justify="left",
             ).grid(row=r, column=0, sticky="ew")
             r += 1
 
-        # Warnings
         if tweak.warnings:
             ctk.CTkLabel(
-                scroll,
+                inner,
                 text="Warnings",
-                font=font("caption"),
+                font=font("micro"),
                 text_color=COLORS.get("warning", "#F59E0B"),
-            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
             r += 1
             for w in tweak.warnings:
                 ctk.CTkLabel(
-                    scroll,
+                    inner,
                     text=f"  - {w}",
-                    font=font("caption"),
+                    font=font("micro"),
                     text_color=COLORS.get("warning", "#FBBF24"),
-                    wraplength=280,
+                    wraplength=wrap,
                     anchor="w",
                     justify="left",
                 ).grid(row=r, column=0, sticky="ew")
                 r += 1
 
-        # Separator before technical info
-        ctk.CTkFrame(
-            scroll,
-            fg_color=COLORS["border"],
-            height=1,
-        ).grid(row=r, column=0, sticky="ew", pady=SPACING["sm"])
+        ctk.CTkFrame(inner, fg_color=COLORS["border"], height=1).grid(
+            row=r, column=0, sticky="ew", pady=SPACING["sm"]
+        )
         r += 1
 
-        # Registry/command paths
         if tweak.registry_keys:
             ctk.CTkLabel(
-                scroll,
+                inner,
                 text="Registry keys",
-                font=font("caption"),
+                font=font("micro"),
                 text_color=COLORS["text_muted"],
-            ).grid(row=r, column=0, sticky="w", pady=(0, 2))
+            ).grid(row=r, column=0, sticky="w", pady=(0, 1))
             r += 1
             for key in tweak.registry_keys:
                 ctk.CTkLabel(
-                    scroll,
+                    inner,
                     text=key,
-                    font=ctk.CTkFont(size=10, family="Consolas"),
+                    font=ctk.CTkFont(size=9, family="Consolas"),
                     text_color=COLORS["text_muted"],
-                    wraplength=280,
+                    wraplength=wrap,
                     anchor="w",
                     justify="left",
                 ).grid(row=r, column=0, sticky="ew")
                 r += 1
 
-        # Meta line
         meta_parts = []
         meta_parts.append("Reversible" if tweak.reversible else "Not reversible")
         meta_parts.append(f"OS: Win {', '.join(tweak.compatible_os)}")
         if tweak.requires_admin:
             meta_parts.append("Admin required")
         ctk.CTkLabel(
-            scroll,
+            inner,
             text="  |  ".join(meta_parts),
-            font=ctk.CTkFont(size=10),
+            font=ctk.CTkFont(size=9),
             text_color=COLORS["text_muted"],
         ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 0))
 
@@ -2878,7 +2876,7 @@ class ScriptsView(ctk.CTkFrame):
                 r += 1
 
         # Meta info
-        meta = f"Reversible: {'Yes ✓' if tweak.reversible else 'No ✗'}  |  OS: Windows {', '.join(tweak.compatible_os)}  |  Admin: {'Required' if tweak.requires_admin else 'No'}"
+        meta = f"Reversible: {'Yes' if tweak.reversible else 'No'}  |  OS: Windows {', '.join(tweak.compatible_os)}  |  Admin: {'Required' if tweak.requires_admin else 'No'}"
         ctk.CTkLabel(
             scroll, text=meta, font=font("caption"), text_color=COLORS["text_tertiary"]
         ).grid(row=r, column=0, sticky="w", pady=(SPACING["md"], 0))
