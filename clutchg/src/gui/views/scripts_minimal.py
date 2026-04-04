@@ -1807,7 +1807,7 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["lg"],
             border_width=1,
             border_color=COLORS["border"],
-            width=360,
+            width=380,
         )
         self.detail_panel.grid_propagate(False)
         self.detail_panel.grid_columnconfigure(0, weight=1)
@@ -2563,8 +2563,6 @@ class ScriptsView(ctk.CTkFrame):
         for w in self.detail_panel.winfo_children():
             w.destroy()
 
-        wrap = self._DETAIL_WRAP
-
         close_bar = ctk.CTkFrame(self.detail_panel, fg_color="transparent", height=26)
         close_bar.pack(fill="x", padx=(SPACING["sm"], 4), pady=(3, 0))
         close_bar.pack_propagate(False)
@@ -2599,19 +2597,38 @@ class ScriptsView(ctk.CTkFrame):
         inner.grid(row=0, column=0, sticky="nsew", padx=(0, self._DETAIL_PAD_X))
         inner.grid_columnconfigure(0, weight=1)
 
+        # Labels whose wraplength must track the inner frame width
+        _wrap_labels: list[ctk.CTkLabel] = []
+
+        def _make_wrapping_label(parent, **kwargs) -> ctk.CTkLabel:
+            lbl = ctk.CTkLabel(parent, **kwargs)
+            _wrap_labels.append(lbl)
+            return lbl
+
+        def _update_wraplengths(event=None):
+            w = inner.winfo_width()
+            if w > 10:
+                for lbl in _wrap_labels:
+                    try:
+                        lbl.configure(wraplength=w)
+                    except Exception:
+                        pass
+
+        inner.bind("<Configure>", _update_wraplengths)
+
         risk_colors = self._get_risk_colors()
         risk_c = risk_colors.get(tweak.risk_level.upper(), risk_colors["LOW"])
         r = 0
 
-        ctk.CTkLabel(
+        _make_wrapping_label(
             inner,
             text=tweak.name,
             font=font("h4"),
             text_color=COLORS["text_primary"],
-            wraplength=wrap,
+            wraplength=self._DETAIL_WRAP,
             anchor="w",
             justify="left",
-        ).grid(row=r, column=0, sticky="w")
+        ).grid(row=r, column=0, sticky="ew")
         r += 1
 
         badge_f = ctk.CTkFrame(inner, fg_color="transparent")
@@ -2670,12 +2687,12 @@ class ScriptsView(ctk.CTkFrame):
                 text_color=COLORS["text_tertiary"],
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
             r += 1
-            ctk.CTkLabel(
+            _make_wrapping_label(
                 inner,
                 text=content,
                 font=font("body_small"),
                 text_color=COLORS["text_secondary"],
-                wraplength=wrap,
+                wraplength=self._DETAIL_WRAP,
                 anchor="w",
                 justify="left",
             ).grid(row=r, column=0, sticky="ew")
@@ -2689,13 +2706,13 @@ class ScriptsView(ctk.CTkFrame):
                 text_color=COLORS.get("warning", "#F59E0B"),
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
             r += 1
-            for w in tweak.warnings:
-                ctk.CTkLabel(
+            for warn in tweak.warnings:
+                _make_wrapping_label(
                     inner,
-                    text=f"  - {w}",
+                    text=f"  - {warn}",
                     font=font("micro"),
                     text_color=COLORS.get("warning", "#FBBF24"),
-                    wraplength=wrap,
+                    wraplength=self._DETAIL_WRAP,
                     anchor="w",
                     justify="left",
                 ).grid(row=r, column=0, sticky="ew")
@@ -2715,12 +2732,12 @@ class ScriptsView(ctk.CTkFrame):
             ).grid(row=r, column=0, sticky="w", pady=(0, 1))
             r += 1
             for key in tweak.registry_keys:
-                ctk.CTkLabel(
+                _make_wrapping_label(
                     inner,
                     text=key,
                     font=ctk.CTkFont(size=9, family="Consolas"),
                     text_color=COLORS["text_muted"],
-                    wraplength=wrap,
+                    wraplength=self._DETAIL_WRAP,
                     anchor="w",
                     justify="left",
                 ).grid(row=r, column=0, sticky="ew")
