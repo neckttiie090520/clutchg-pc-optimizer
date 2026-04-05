@@ -85,7 +85,7 @@ docs/iso29110-clutchg/README.md
 # ============================================================
 
 # Research repos (~1 GB third-party clones)
-windows-optimizer-research/repos/
+research/
 
 # Cloned third-party repo
 awesome-ai-research-writing-main/
@@ -93,22 +93,35 @@ awesome-ai-research-writing-main/
 # Raw Notion export (binary Office docs)
 notion/
 
-# Research notes (PDFs + duplicates)
+# Reference notes (PDFs + duplicates)
 Ideas and research/
 
-# Reference screenshots
-UI-research-idea/
-img/
+# UX working files (keep Redesign/ and UI captured/ tracked)
+UX/design-reference/
+UX/live/
+UX/3/
+UX/capture_*.py
+UX/test*.png
+UX/INDEX.md
+UX/[0-9][0-9]-*.png
 
 # ============================================================
 # AI Tool Configs (auto-generated, machine-specific)
 # ============================================================
 .agents/
-.claude/skills/
+.claude/
 .opencode/
 .codex/
 .kilocode/
 .kilocodemodes
+.factory/
+.windsurf/
+.bug-hunter/
+.letta/
+skills/
+psi/
+opencode.json
+CLAUDE.md
 
 # ============================================================
 # ClutchG App Runtime

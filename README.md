@@ -1,247 +1,284 @@
-# Windows PC Optimization Research Project
+<h1 align="center">
+  <br>
+  <img src="img/C.GG-Photoroom.png" alt="ClutchG" width="120">
+  <br>
+  ClutchG PC Optimizer
+  <br>
+</h1>
 
-> **A comprehensive research, analysis, and reconstruction of Windows PC optimization techniques.**
+<p align="center">
+  <strong>Evidence-based Windows optimization for competitive gaming</strong>
+</p>
 
-## Table of Contents
+<p align="center">
+  <a href="#features">Features</a> &middot;
+  <a href="#screenshots">Screenshots</a> &middot;
+  <a href="#quick-start">Quick Start</a> &middot;
+  <a href="#profiles">Profiles</a> &middot;
+  <a href="#research">Research</a> &middot;
+  <a href="README-TH.md">ภาษาไทย</a>
+</p>
 
-1. [Overview](#overview)
-2. [Project Structure](#project-structure)
-3. [Documentation](#documentation)
-4. [Optimizer Tool](#optimizer-tool)
-5. [Key Findings](#key-findings)
-6. [Quick Start](#quick-start)
-7. [Safety & Ethics](#safety--ethics)
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows" alt="Platform">
+  <img src="https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/tests-445%20passed-2ea44f" alt="Tests">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+  <img src="https://github.com/neckttiie090520/clutchg-pc-optimizer/actions/workflows/ci.yml/badge.svg" alt="CI">
+</p>
 
 ---
 
-## Overview
+## What is ClutchG?
 
-This project represents a deep-dive analysis of 27+ Windows optimization repositories, guides, and tools. The goal was to:
+ClutchG is a Windows PC optimization tool built from real research, not myths. We analyzed **28 open-source optimizer repos** (50,000+ lines of code), classified **48 tweaks** into 10 categories, and built a risk framework to separate what actually works from what's placebo.
 
-1. **Research** existing Windows optimization techniques
-2. **Analyze** each tweak for technical validity
-3. **Classify** risks and side effects
-4. **Synthesize** a unified taxonomy of tweaks
-5. **Design** a professional-grade, safe optimizer
+The result: a modular batch optimizer with a modern GUI that applies only evidence-backed tweaks -- safely, transparently, and reversibly.
 
 ### Key Principles
 
-| Principle | Description |
-|-----------|-------------|
-| **Evidence-Based** | Every tweak backed by technical explanation |
-| **Safety First** | Never compromise security for marginal gains |
-| **Transparency** | All changes documented and visible |
-| **Reversibility** | Every modification can be undone |
-| **Modern Focus** | Targeted at Windows 10 22H2+ and Windows 11 |
+| | Principle | What it means |
+|---|-----------|--------------|
+| **Evidence** | Every tweak backed by technical documentation | No "trust me bro" optimizations |
+| **Safety** | Never disables Defender, UAC, DEP, or Windows Update | Security is non-negotiable |
+| **Reversible** | Auto-backup before every change, per-tweak rollback | Undo anything, anytime |
+| **Transparent** | All actions logged to flight recorder | Full audit trail |
+| **Honest** | Realistic 5-15% gains, not 200% | We don't exaggerate |
+
+---
+
+## Features
+
+- **3 Optimization Profiles** -- SAFE, COMPETITIVE, EXTREME with risk-appropriate tweaks
+- **48 Vetted Tweaks** across power, GPU, services, network, storage, BCDEdit, and more
+- **Auto Hardware Detection** -- identifies CPU, GPU, RAM and recommends the right profile
+- **Flight Recorder** -- logs every change with before/after values
+- **Restore Center** -- visual timeline of all changes with per-tweak rollback
+- **Bilingual UI** -- English and Thai throughout
+- **Modern Dark Theme** -- Windows 11 / Sun Valley aesthetic
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="UX/Redesign/redesign_01_dashboard_1774511141433.png" width="720" alt="Dashboard">
+  <br><em>Dashboard with hardware detection and profile recommendation</em>
+</p>
+
+<p align="center">
+  <img src="UX/Redesign/redesign_05_encyclopedia_1774511249597.png" width="720" alt="Tweak Encyclopedia">
+  <br><em>Tweak encyclopedia with risk levels, categories, and detailed explanations</em>
+</p>
+
+<p align="center">
+  <img src="UX/Redesign/redesign_07_backup_timeline_1774511287576.png" width="720" alt="Backup Timeline">
+  <br><em>Restore center with timeline view and per-tweak rollback</em>
+</p>
+
+<p align="center">
+  <img src="UX/Redesign/redesign_08_help_doc_1774511305329.png" width="720" alt="Help & Documentation">
+  <br><em>Built-in help system with bilingual content</em>
+</p>
+
+---
+
+## Quick Start
+
+### Option A: Use the GUI (Recommended)
+
+```powershell
+# Clone the repository
+git clone https://github.com/neckttiie090520/clutchg-pc-optimizer.git
+cd clutchg-pc-optimizer
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate
+
+# Install dependencies
+pip install -r clutchg\requirements.txt
+
+# Run ClutchG
+python clutchg\src\main.py
+```
+
+### Option B: Use Batch Scripts Directly
+
+```batch
+:: Open Command Prompt as Administrator
+cd src
+optimizer.bat
+```
+
+### Build Standalone Executable
+
+```powershell
+cd clutchg
+python build.py
+# Output: clutchg\dist\ClutchG.exe
+```
+
+---
+
+## Profiles
+
+| | Profile | Risk | Target User | Expected Gain |
+|---|---------|------|-------------|---------------|
+| | **SAFE** | Minimal | Everyone | 2-5% FPS |
+| | **COMPETITIVE** | Low | Gamers | 5-10% FPS |
+| | **EXTREME** | Medium | Experts only | 10-15% FPS |
+
+### SAFE
+
+Power plan optimization, HAGS, Storage Sense, telemetry services only. Nothing that can break functionality.
+
+### COMPETITIVE
+
+Adds network stack tuning (Nagle's Algorithm, TCP optimization), Xbox/telemetry service management, GPU power management. Still protected by safety whitelist.
+
+### EXTREME
+
+Aggressive service management, BCDEdit boot configuration tweaks, full network stack optimization. Some Windows features may stop working. Understand the tradeoffs before using.
 
 ---
 
 ## Project Structure
 
 ```
-/bat
-├── README.md                    # This file
+clutchg-pc-optimizer/
+├── src/                              # Batch Optimizer Engine
+│   ├── optimizer.bat                 # Entry point (v2.0, requires admin)
+│   ├── core/                         # 17 optimization modules
+│   ├── profiles/                     # SAFE / COMPETITIVE / EXTREME
+│   ├── safety/                       # Validator, rollback, flight recorder
+│   ├── backup/                       # Registry backup, restore points
+│   └── logging/                      # Structured logging
 │
-├── /docs                        # Research & Documentation
-│   ├── 01-research-overview.md  # Project scope and methodology
-│   ├── 02-repo-analysis/        # Individual repository analyses
-│   │   ├── quickboost.md
-│   │   ├── terabytetweaker.md
-│   │   ├── bcdedit-tweaks.md
-│   │   ├── winutil.md
-│   │   ├── fr33thy-guide.md
-│   │   ├── windows-11-latency-optimization.md
-│   │   ├── windows10-mining-tweaks.md
-│   │   └── multi-repo-analysis.md
-│   ├── 03-tweak-taxonomy.md     # Unified tweak classification
-│   ├── 04-risk-classification.md # Risk assessment matrix
-│   ├── 05-windows-internals.md  # Technical deep-dive
-│   ├── 06-performance-impact.md # Realistic performance expectations
-│   ├── 07-best-practices.md     # Recommendations
-│   ├── 08-design-your-own-optimizer.md # Design guide
-│   └── 09-final-architecture.md # Complete architecture spec
+├── clutchg/                          # Python GUI Application
+│   ├── src/
+│   │   ├── main.py                   # Entry point
+│   │   ├── core/                     # Business logic (13 modules)
+│   │   ├── gui/views/               # 8 view screens
+│   │   ├── gui/components/          # 12 reusable components
+│   │   └── gui/theme.py             # Dark theme system
+│   ├── tests/                        # 445 tests (unit + integration + E2E)
+│   └── build.py                      # PyInstaller build script
 │
-└── /src                         # Optimizer Source Code
-    ├── optimizer.bat            # Main entry point
-    ├── /core                    # Core modules
-    │   ├── system-detect.bat
-    │   ├── power-manager.bat
-    │   ├── bcdedit-manager.bat
-    │   ├── service-manager.bat
-    │   ├── registry-utils.bat
-    │   └── network-manager.bat
-    ├── /profiles                # Profile configurations
-    │   ├── safe-profile.bat
-    │   ├── competitive-profile.bat
-    │   └── extreme-profile.bat
-    ├── /safety                  # Safety systems
-    │   ├── validator.bat
-    │   └── rollback.bat
-    ├── /backup                  # Backup systems
-    │   ├── backup-registry.bat
-    │   └── restore-point.bat
-    └── /logging                 # Logging
-        └── logger.bat
+├── docs/                             # Research & Documentation
+│   ├── 01-research-overview.md       # Methodology
+│   ├── 02-repo-analysis/             # 28 individual repo analyses
+│   ├── 03-tweak-taxonomy.md          # Complete tweak classification
+│   ├── 04-risk-classification.md     # Risk assessment matrix
+│   ├── 05-windows-internals.md       # Technical deep-dive
+│   ├── 06-performance-impact.md      # Realistic benchmarks
+│   └── iso29110-clutchg/             # ISO 29110 work products
+│
+└── .github/workflows/ci.yml         # CI pipeline
 ```
 
 ---
 
-## Documentation
+## Research
 
-### Research Documents
-
-| Document | Description |
-|----------|-------------|
-| [01-research-overview.md](docs/01-research-overview.md) | Project scope, methodology, and goals |
-| [03-tweak-taxonomy.md](docs/03-tweak-taxonomy.md) | Complete classification of all tweaks |
-| [04-risk-classification.md](docs/04-risk-classification.md) | Risk assessment for every tweak type |
-| [05-windows-internals.md](docs/05-windows-internals.md) | Technical explanation of Windows behavior |
-| [06-performance-impact.md](docs/06-performance-impact.md) | Realistic performance expectations |
-| [07-best-practices.md](docs/07-best-practices.md) | Recommended optimization approach |
-
-### Repository Analyses
-
-| Repository | Rating | Key Focus |
-|------------|--------|-----------|
-| [WinUtil](docs/02-repo-analysis/winutil.md) | 9.5/10 | Safety-first utility |
-| [BCDEditTweaks](docs/02-repo-analysis/bcdedit-tweaks.md) | 9/10 | Boot configuration |
-| [Windows-11-Latency-Optimization](docs/02-repo-analysis/windows-11-latency-optimization.md) | 8/10 | Latency focus |
-| [FR33THY Guide](docs/02-repo-analysis/fr33thy-guide.md) | 7.5/10 | Educational approach |
-| [QuickBoost](docs/02-repo-analysis/quickboost.md) | 6/10 | Mixed quality |
-| [TerabyteTweaker](docs/02-repo-analysis/terabytetweaker.md) | 5.5/10 | Low-end focus |
-
-### Design Documents
-
-| Document | Description |
-|----------|-------------|
-| [08-design-your-own-optimizer.md](docs/08-design-your-own-optimizer.md) | How to build an optimizer |
-| [09-final-architecture.md](docs/09-final-architecture.md) | Complete technical specification |
-
----
-
-## Optimizer Tool
-
-### Features
-
-- **Profile-Based**: SAFE, COMPETITIVE, and EXTREME profiles
-- **Modular Design**: Independent, maintainable modules
-- **Safety First**: Automatic backups and restore points
-- **Logged**: All changes recorded for audit
-- **Reversible**: Full rollback capability
-
-### Running the Optimizer
-
-```batch
-:: Navigate to src folder
-cd src
-
-:: Run as Administrator
-optimizer.bat
-```
-
-### Profile Comparison
-
-| Profile | Power | BCDEdit | Services | Network | Risk |
-|---------|-------|---------|----------|---------|------|
-| SAFE | ✅ | Safe only | Telemetry only | ❌ | Minimal |
-| COMPETITIVE | ✅ | Safe | Xbox, Telemetry | ✅ | Low |
-| EXTREME | ✅ | All | Aggressive | ✅ | Medium |
-
----
-
-## Key Findings
+This project started as research. We analyzed 28 Windows optimization repositories and guides to build an evidence-based understanding of what works.
 
 ### What Actually Works
 
-1. **GPU Driver Settings** (2-15% FPS improvement)
-2. **Power Plan Optimization** (2-5% improvement)
-3. **Safe BCDEdit Tweaks** (1-4% improvement)
-4. **Background App Reduction** (1-3% improvement)
+| Technique | Impact | Evidence |
+|-----------|--------|----------|
+| GPU driver settings | 2-15% FPS | Vendor-documented, game-dependent |
+| Power plan optimization | 2-5% | P-state/C-state management |
+| Safe BCDEdit tweaks | 1-4% | Latency-sensitive games |
+| Background app reduction | 1-3% | CPU/RAM contention reduction |
 
 ### Common Myths Debunked
 
 | Myth | Reality |
 |------|---------|
-| "Windows reserves 20% bandwidth for QoS" | FALSE - Only affects tagged traffic |
-| "Timer resolution services boost FPS" | OBSOLETE - Per-process since Win10 2004 |
-| "Disabling 100 services = faster" | RISKY - Breaks functionality |
-| "Network registry tweaks reduce ping" | PLACEBO - Minimal real impact |
+| "Windows reserves 20% bandwidth for QoS" | Only affects tagged traffic, not games |
+| "Timer resolution services boost FPS" | Per-process since Windows 10 2004 |
+| "Disabling 100 services = faster" | Breaks features, minimal actual gain |
+| "Network registry tweaks reduce ping" | ISP and routing matter, not registry |
 
 ### Never Do These
 
-- ❌ Disable Windows Defender
-- ❌ Disable DEP (Data Execution Prevention)
-- ❌ Disable Driver Signature Enforcement
-- ❌ Disable Windows Update permanently
-- ❌ Disable UAC
+These are **not included** in any ClutchG profile because they compromise security without worthwhile gains:
+
+- Disable Windows Defender
+- Disable DEP / ASLR / CFG
+- Disable Driver Signature Enforcement
+- Disable Windows Update permanently
+- Disable UAC
+
+Full research documents are in [`docs/`](docs/).
 
 ---
 
-## Quick Start
+## Testing
 
-### For Users
+```powershell
+cd clutchg
 
-1. Read [07-best-practices.md](docs/07-best-practices.md) first
-2. Create a System Restore point manually
-3. Run `src/optimizer.bat` as Administrator
-4. Start with the SAFE profile
-5. Measure performance before and after
+# Install test dependencies
+pip install -r requirements-test.txt
 
-### For Developers
+# Run full suite
+pytest
 
-1. Read [08-design-your-own-optimizer.md](docs/08-design-your-own-optimizer.md)
-2. Study the modular architecture in [09-final-architecture.md](docs/09-final-architecture.md)
-3. Review the tweak taxonomy in [03-tweak-taxonomy.md](docs/03-tweak-taxonomy.md)
-4. Fork and customize the source code
+# Unit tests only
+pytest tests\unit -m unit
 
----
+# Integration tests only
+pytest tests\integration -m integration
 
-## Safety & Ethics
-
-### Our Commitments
-
-1. **No security compromise** - We never disable protection features
-2. **No placebo tweaks** - Every optimization has technical basis
-3. **No exaggerated claims** - Honest about 5-15% realistic improvement
-4. **No data collection** - The optimizer collects nothing
-5. **Full transparency** - All code is readable batch scripts
-
-### Disclaimer
-
+# With coverage
+pytest --cov=src tests/
 ```
-This software modifies Windows system settings. While extensively
-researched and tested, results may vary. Always:
+
+**Current baseline:** 445 passed, 64 skipped (E2E tests skip without display).
+
+CI runs unit and integration tests automatically on `windows-latest` via GitHub Actions.
+
+---
+
+## System Requirements
+
+- **OS:** Windows 10 22H2+ or Windows 11
+- **Python:** 3.11+ (for GUI)
+- **Admin rights** required for optimization
+- **Dependencies:** customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Research Overview](docs/01-research-overview.md) | Methodology and scope |
+| [Repo Analysis](docs/02-repo-analysis/) | 28 individual tool analyses |
+| [Tweak Taxonomy](docs/03-tweak-taxonomy.md) | Complete classification system |
+| [Risk Classification](docs/04-risk-classification.md) | Risk assessment matrix |
+| [Windows Internals](docs/05-windows-internals.md) | Technical deep-dive |
+| [Performance Impact](docs/06-performance-impact.md) | Realistic expectations |
+| [Best Practices](docs/07-best-practices.md) | Recommended approach |
+| [ISO 29110 Work Products](docs/iso29110-clutchg/) | Software lifecycle documents |
+
+---
+
+## Disclaimer
+
+This software modifies Windows system settings. While extensively researched and tested, results vary by hardware and configuration. Always:
 
 1. Create backups before making changes
-2. Understand what each tweak does
-3. Accept responsibility for your system
-4. Test changes before daily use
+2. Start with the SAFE profile
+3. Measure performance before and after
+4. Understand what each tweak does before enabling it
 
-The authors are not liable for any system issues.
-```
-
----
-
-## Research Sources
-
-This project analyzed 27+ repositories and guides including:
-
-- ChrisTitusTech/winutil
-- SanGraphic/QuickBoost
-- Kawwabi/TerabyteTweaker
-- dubbyOW/BCDEditTweaks
-- FR33THYFR33THY/Ultimate-Windows-Optimization-Guide
-- NicholasBly/Windows-11-Latency-Optimization
-- And many more...
-
-See individual analysis documents in `/docs/02-repo-analysis/` for details.
+The authors are not liable for any system issues resulting from use of this software.
 
 ---
 
 ## License
 
-MIT License - See LICENSE for details.
-
----
-
-*This research project was conducted to understand, validate, and improve Windows optimization techniques. The goal is safer, more effective system tuning based on evidence rather than myths.*
+[MIT](LICENSE)
