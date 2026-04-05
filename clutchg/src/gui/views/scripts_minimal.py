@@ -648,6 +648,7 @@ class ScriptsView(ctk.CTkFrame):
             text_color=COLORS["text_secondary"],
             wraplength=600,
             justify="left",
+            anchor="w",
         )
         qa_subtitle.grid(row=0, column=0, sticky="ew")
         bind_dynamic_wraplength(header, qa_subtitle)
@@ -669,6 +670,7 @@ class ScriptsView(ctk.CTkFrame):
                 text_color=COLORS["text_secondary"],
                 wraplength=600,
                 justify="left",
+                anchor="w",
             )
             err_details.pack(
                 anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["xs"])
@@ -798,6 +800,7 @@ class ScriptsView(ctk.CTkFrame):
                 text="No actions available for this group on current system.",
                 font=self._font(12),
                 text_color=COLORS["text_tertiary"],
+                anchor="w",
             ).grid(row=0, column=0, sticky="w", pady=SPACING["md"])
             return
 
@@ -843,6 +846,7 @@ class ScriptsView(ctk.CTkFrame):
             font=self._font(12),
             text_color=COLORS["text_secondary"],
             justify="left",
+            anchor="w",
         )
         desc_lbl.pack(anchor="w", padx=SPACING["md"], fill="x")
         bind_dynamic_wraplength(card, desc_lbl)
@@ -1648,6 +1652,7 @@ class ScriptsView(ctk.CTkFrame):
             text=info["title"],
             font=self._font(16, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).grid(row=0, column=1, sticky="w", padx=(10, 0))
 
         # RECOMMENDED tag (auto-pushed to right via margin-left: auto)
@@ -3133,7 +3138,7 @@ class ScriptsView(ctk.CTkFrame):
             font=font("h2"),
             text_color=COLORS["text_primary"],
             anchor="w",
-        ).grid(row=r, column=0, sticky="w")
+        ).grid(row=r, column=0, sticky="ew")
         r += 1
 
         # Risk + Category badges
@@ -3251,7 +3256,7 @@ class ScriptsView(ctk.CTkFrame):
             font=font("caption"),
             text_color=COLORS["text_tertiary"],
             anchor="w",
-        ).grid(row=r, column=0, sticky="w", pady=(SPACING["md"], 0))
+        ).grid(row=r, column=0, sticky="ew", pady=(SPACING["md"], 0))
 
         # Close button
         ctk.CTkButton(
@@ -3448,15 +3453,18 @@ class ScriptsView(ctk.CTkFrame):
             font=font("body_bold"),
             text_color=COLORS["text_primary"],
             anchor="w",
-        ).pack(anchor="w")
+        ).pack(anchor="w", fill="x")
 
-        ctk.CTkLabel(
+        edu_desc_lbl = ctk.CTkLabel(
             info_frame,
             text=tweak.description,
             font=font("caption"),
             text_color=COLORS["text_secondary"],
             anchor="w",
-        ).pack(anchor="w")
+            justify="left",
+        )
+        edu_desc_lbl.pack(anchor="w", fill="x")
+        bind_dynamic_wraplength(info_frame, edu_desc_lbl)
 
         # Risk badge
         ctk.CTkLabel(
