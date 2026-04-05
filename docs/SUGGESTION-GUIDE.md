@@ -414,17 +414,19 @@ If you know what you're doing, you can override suggestions. But the warnings ex
 
 ```
 bat/
-├── simple-suggest.bat                    # Main suggestion engine
 ├── src/
-│   └── core/
-│       └── system-detect-enhanced.bat    # Enhanced detection module
-├── src/profiles/
-│   ├── safe-profile.bat                  # SAFE profile
-│   ├── competitive-profile.bat           # COMPETITIVE profile
-│   └── extreme-profile.bat               # EXTREME profile
-├── extreme-rollback.bat                  # Rollback script
-├── EXTREME-TWEAKS.md                     # EXTREME documentation
-└── SUGGESTION-GUIDE.md                   # This file
+│   ├── simple-suggest.bat                # Main suggestion engine
+│   ├── core/
+│   │   └── system-detect-enhanced.bat    # Enhanced detection module
+│   ├── profiles/
+│   │   ├── safe-profile.bat              # SAFE profile
+│   │   ├── competitive-profile.bat       # COMPETITIVE profile
+│   │   └── extreme-profile.bat           # EXTREME profile
+│   └── safety/
+│       └── extreme-rollback.bat          # Rollback script
+├── docs/
+│   ├── EXTREME-TWEAKS.md                 # EXTREME documentation
+│   └── SUGGESTION-GUIDE.md              # This file
 ```
 
 ---
@@ -493,6 +495,6 @@ The suggestion engine provides **safe, evidence-based recommendations** based on
 ---
 
 *For more details, see:*
-- `EXTREME-TWEAKS.md` - Complete tweak documentation
+- `docs/EXTREME-TWEAKS.md` - Complete tweak documentation
 - `docs/06-performance-impact.md` - Realistic expectations
 - `docs/07-best-practices.md` - Safety guidelines

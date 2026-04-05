@@ -403,8 +403,8 @@ python app_minimal.py
 ## Documentation References
 
 ### Key Documents
-- `HANDOFF.md` - Full project handoff with Phase 9 details
-- `ARCHITECTURE.md` - Technical architecture
+- `docs/HANDOFF.md` - Full project handoff with Phase 9 details
+- `docs/ARCHITECTURE.md` - Technical architecture
 - `CLAUDE.md` - Development guidelines
 - `docs/phase10-handoff.md` - Testing strategy & next steps
 - `docs/10-complete-repo-ranking.md` - Research analysis of 28 tools

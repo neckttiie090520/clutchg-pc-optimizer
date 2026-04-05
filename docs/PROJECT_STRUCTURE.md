@@ -177,7 +177,7 @@ bat/                                    # Root Directory
 │   ├── 04-risk-classification.md       # Risk Levels
 │   └── ... (12 more docs)
 │
-├── 📂 THESIS_DOCS/                     # 🎓 Thesis Documentation
+├── 📂 thesis/THESIS_DOCS/              # 🎓 Thesis Documentation
 │   ├── 03-SYSTEM-ANALYSIS/             # System Analysis
 │   ├── 05-ARCHITECTURE-DESIGN/         # Architecture
 │   ├── 07-TESTING-QUALITY/             # Testing
@@ -651,7 +651,7 @@ USER clicks "Rollback"
 | `src/safety/` | Safety | Validation, rollback | 3 safety files |
 | `src/backup/` | Data Protection | Backup/restore | 2 backup files |
 | `docs/` | Documentation | Research docs | 16+ markdown files |
-| `THESIS_DOCS/` | Thesis | Academic documentation | 10 chapters |
+| `thesis/THESIS_DOCS/` | Thesis | Academic documentation | 10 chapters |
 
 ### Module Dependencies
 
@@ -843,12 +843,12 @@ call logging/logger.bat "SUCCESS" "GAMING profile applied"
 
 | เอกสาร | ที่อยู่ | วัตถุประสงค์ |
 |---------|--------|--------------|
-| Thesis Overview | [`THESIS_DOCS/README.md`](../THESIS_DOCS/README.md) | ภาพรวมวิทยานิพนธ์ |
-| Architecture Design | [`THESIS_DOCS/05-ARCHITECTURE-DESIGN/`](../THESIS_DOCS/05-ARCHITECTURE-DESIGN/README.md) | การออกแบบสถาปัตยกรรม |
-| Testing & Quality | [`THESIS_DOCS/07-TESTING-QUALITY/`](../THESIS_DOCS/07-TESTING-QUALITY/README.md) | การทดสอบ |
-| Developer Guide | [`THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md`](../THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md) | คู่มือนักพัฒนา |
-| User Guide | [`THESIS_DOCS/CLUTCHG_USER_GUIDE.md`](../THESIS_DOCS/CLUTCHG_USER_GUIDE.md) | คู่มือผู้ใช้ |
-| Safety & Rollback | [`THESIS_DOCS/SAFETY_AND_ROLLBACK.md`](../THESIS_DOCS/SAFETY_AND_ROLLBACK.md) | ความปลอดภัย |
+| Thesis Overview | [`thesis/THESIS_DOCS/README.md`](../thesis/THESIS_DOCS/README.md) | ภาพรวมวิทยานิพนธ์ |
+| Architecture Design | [`thesis/THESIS_DOCS/05-ARCHITECTURE-DESIGN/`](../thesis/THESIS_DOCS/05-ARCHITECTURE-DESIGN/README.md) | การออกแบบสถาปัตยกรรม |
+| Testing & Quality | [`thesis/THESIS_DOCS/07-TESTING-QUALITY/`](../thesis/THESIS_DOCS/07-TESTING-QUALITY/README.md) | การทดสอบ |
+| Developer Guide | [`thesis/THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md`](../thesis/THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md) | คู่มือนักพัฒนา |
+| User Guide | [`thesis/THESIS_DOCS/CLUTCHG_USER_GUIDE.md`](../thesis/THESIS_DOCS/CLUTCHG_USER_GUIDE.md) | คู่มือผู้ใช้ |
+| Safety & Rollback | [`thesis/THESIS_DOCS/SAFETY_AND_ROLLBACK.md`](../thesis/THESIS_DOCS/SAFETY_AND_ROLLBACK.md) | ความปลอดภัย |
 | Risk Classification | [`docs/04-risk-classification.md`](04-risk-classification.md) | ระดับความเสี่ยง |
 | Tweak Taxonomy | [`docs/03-tweak-taxonomy.md`](03-tweak-taxonomy.md) | หมวดหมู่ Tweaks |
 

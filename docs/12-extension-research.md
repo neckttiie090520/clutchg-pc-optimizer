@@ -1,6 +1,6 @@
 ﻿# Extension Research – Synthesis & Actionable Plan
 วันที่: 2 กุมภาพันธ์ 2026
-แหล่งข้อมูล: Ideas and research\research.md
+แหล่งข้อมูล: research/Ideas and research/research.md
 
 ## วัตถุประสงค์
 สรุปและจัดระเบียบข้อเสนอจาก research.md ให้ใช้งานได้จริง โดยคงหลักการ:

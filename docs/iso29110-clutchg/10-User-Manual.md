@@ -127,6 +127,6 @@ python install_material_icons.py
 ## 6. ข้อมูลเพิ่มเติม
 
 - **Quick Start Guide**: `clutchg/QUICKSTART.md`
-- **Developer Guide**: `THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md`
-- **Safety Documentation**: `THESIS_DOCS/SAFETY_AND_ROLLBACK.md`
-- **Testing**: `THESIS_DOCS/TESTING_AND_VALIDATION.md`
+- **Developer Guide**: `thesis/THESIS_DOCS/CLUTCHG_DEVELOPER_GUIDE.md`
+- **Safety Documentation**: `thesis/THESIS_DOCS/SAFETY_AND_ROLLBACK.md`
+- **Testing**: `thesis/THESIS_DOCS/TESTING_AND_VALIDATION.md`

@@ -2,9 +2,10 @@
 
 ## Purpose
 - `src/`: Windows batch optimizer scripts.
-- `clutchg/`: Python GUI app that discovers, validates, and runs those scripts.
-- `windows-optimizer-research/`: Reference material only (not editable product code).
-- `docs/`: Design, architecture, and implementation notes for risky behavior changes.
+- `clutchg/`: Python GUI app (CustomTkinter) that discovers, validates, and runs those scripts.
+- `windows-optimizer-research/`: Reference material only — not editable product code.
+- `docs/`: Design, architecture, and implementation notes.
+- `scripts/`: Standalone Python tooling for document import.
 
 ## Project Structure
 **Batch (`src/`):**
@@ -17,81 +18,66 @@
 
 **Python GUI (`clutchg/`):**
 - `src/main.py` - launcher
-- `src/core/` - non-UI business logic (batch_parser, action_catalog, profile_manager, etc.)
-- `src/gui/` - views, widgets, theme, UI composition
+- `src/core/` - non-UI business logic (batch_parser, action_catalog, profile_manager, help_manager, etc.)
+- `src/gui/` - views (minimal.py), components, theme, icons, style
+- `src/data/` - JSON content files (help_content.json, risk_explanations.json)
 - `src/utils/` - shared helpers (logger, admin checks)
 - `tests/` - `unit/`, `integration/`, `e2e/` with page objects in `tests/e2e/pages/`
 
-**Other:**
-- `scripts/` - standalone Python tooling for Notion/document import
-
-## Setup Commands
+## Setup
 ```bash
 python -m venv venv
 venv\Scripts\activate
 pip install -r clutchg\requirements.txt        # GUI runtime deps
 pip install -r clutchg\requirements-test.txt   # Test deps (pytest, pywinauto)
-pip install -r scripts\requirements.txt        # Document tools (when working in scripts/)
 ```
 
-## Run Commands
+## Run & Build
 ```bash
-src\optimizer.bat                    # Batch optimizer directly
-python clutchg\src\main.py           # GUI from repo root
-python src\main.py                   # GUI from inside clutchg/
-python src\main.py --test-mode       # GUI in test-friendly mode
-python test_core.py                  # Legacy ad-hoc core smoke test
+python clutchg\src\main.py              # GUI from repo root
+python clutchg\src\main.py --test-mode  # GUI in test-friendly mode
+cd clutchg && python build.py           # Builds to clutchg\dist\ClutchG.exe
 ```
-
-## Build Commands
-```bash
-cd clutchg && python build.py        # Builds to clutchg\dist\ClutchG.exe
-```
-`build.py` auto-installs PyInstaller if missing. Output includes batch scripts copied to `dist\batch_scripts\`.
 
 ## Test Commands
-Pytest config: `clutchg\pytest.ini`. Coverage config: `clutchg\.coveragerc`.
+Pytest config: `clutchg\pytest.ini`. Coverage config: `clutchg\.coveragerc`. All test commands run from inside `clutchg/`.
 
 ```bash
-cd clutchg
-pytest                                    # Full suite with coverage
-pytest --cov=src tests/                   # Explicit coverage
-pytest tests\unit -m unit                  # Unit tests only
-pytest tests\integration -m integration    # Integration tests only
-pytest tests\e2e -m e2e --app-path src\main.py  # E2E tests
-pytest --skip-slow                        # Skip slow tests
-pytest --skip-e2e                         # Skip E2E tests
-pytest -n auto                            # Parallel execution (pytest-xdist)
+pytest                                              # Full suite with coverage
+pytest tests\unit -m unit                            # Unit tests only
+pytest tests\integration -m integration              # Integration tests only
+pytest tests\e2e -m e2e --app-path src\main.py       # E2E tests
+pytest --skip-slow --skip-e2e                        # Skip slow/e2e tests
+pytest -n auto                                      # Parallel (pytest-xdist)
 
-# Run a single test file
+# Single test file
 pytest tests\unit\test_action_catalog.py -v
 
-# Run tests matching a pattern
+# Pattern match
 pytest tests\unit\test_action_catalog.py -k test_risk_aggregation -v
 
-# Run a single test node
+# Single test node
 pytest tests\unit\test_action_catalog.py::TestActionCatalog::test_risk_aggregation_for_memory_pack -v
 ```
 
 HTML coverage output: `clutchg\htmlcov\`.
 
-## Lint And Validation
-No repo-managed lint configuration for Ruff, Black, Flake8, isort, Pylint, or mypy. Match surrounding style instead.
+## Lint & Validation
+No Ruff, Black, Flake8, isort, Pylint, or mypy config. Match surrounding style.
 
-When asked to "lint," use project-native checks:
 ```bash
 pytest                                    # Primary validation
-python -m compileall clutchg\src          # Python syntax sanity
-python test_core.py                       # Runtime smoke test
+python -m compileall clutchg/src          # Python syntax sanity
 ```
-Batch scripts: validate by reading call flow; test on Windows with admin rights when safe.
 
-## Python Style Guidelines
-- PEP 8 with 4-space indentation.
+Batch scripts: validate by reading call flow; test on Windows with admin rights.
+
+## Python Style
+- PEP 8, 4-space indent. No inline comments unless requested.
 - Triple-quoted docstrings for modules, classes, and public functions.
 - Type hints on public functions, methods, fixtures, and dataclass fields.
-- Use `from __future__ import annotations` at top of modules with complex types.
-- Prefer `Path` over raw string path concatenation.
+- Use `from __future__ import annotations` in modules with complex types.
+- Prefer `Path` over raw string concatenation.
 - Prefer dataclasses and enums for structured data.
 
 **Imports:**
@@ -102,56 +88,36 @@ from typing import List, Dict, Optional
 from core.batch_parser import BatchParser    # Absolute imports from clutchg/src
 from utils.logger import get_logger
 ```
-Order: standard library, third-party, local modules. One import per line.
+Order: stdlib → third-party → local. One import per line.
 
-**Naming:**
-- `snake_case` for functions, methods, variables, filenames
-- `PascalCase` for classes
-- `UPPER_SNAKE_CASE` for constants and enum-like identifiers
-- Preserve domain naming where values are intentionally uppercase (`SAFE`, `COMPETITIVE`, `EXTREME`)
+**Naming:** `snake_case` (functions/vars/files), `PascalCase` (classes), `UPPER_SNAKE_CASE` (constants/enum values). Preserve domain naming where intentionally uppercase (`SAFE`, `COMPETITIVE`, `EXTREME`).
 
-**JSON:** Use `indent=2` for human readability unless file uses another format.
+**JSON:** `indent=2` unless file uses another format.
 
-## Python Error Handling
+**Error Handling:**
 ```python
 logger = get_logger(__name__)
-
-# Prefer specific exceptions
-try:
-    result = risky_operation()
-except FileNotFoundError:
-    logger.error("Config not found")
-    return None
-
-# Return None/False/structured result for expected failures
-# Raise only when caller should handle
-
-# Silent except only for cleanup/teardown
+# Specific exceptions. Return None/False for expected failures.
+# Raise only when caller should handle. Silent except only for cleanup.
 ```
-For Windows subprocess: capture output when diagnosis matters; include timeouts.
 
 ## Testing Conventions
 - Fixtures and CLI flags in `clutchg\tests\conftest.py`.
 - Markers: `unit`, `integration`, `e2e`, `slow`, `admin`, `requires_network`.
-- Keep unit tests isolated; use `tmp_path`, temp dirs, mocks.
-- Mark Windows/admin-sensitive tests explicitly.
+- Unit tests: isolated with `tmp_path`, temp dirs, mocks.
 - E2E tests use page objects in `tests\e2e\pages\`.
 
-## Batch Script Style Guidelines
+## Batch Script Style
 ```batch
 @echo off
 setlocal EnableDelayedExpansion
-
 set "VAR=value"          # Quote assignments
 "%VAR%"                  # Quote usage
-
 call "file.bat" :label   # Label dispatch
 goto :eof
 ```
-- Filenames: kebab-case (`system-detect.bat`).
-- Uppercase env vars for shared state.
-- Section banners: `:: =====`.
-- Log via `src\logging\logger.bat`.
+- Kebab-case filenames (`system-detect.bat`). Uppercase env vars for shared state.
+- Section banners: `:: =====`. Log via `src\logging\logger.bat`.
 - Always check admin rights before privileged operations.
 
 ## Safety Rules
@@ -159,26 +125,17 @@ goto :eof
 - No placebo tweaks without documented technical justification.
 - Prefer evidence-based, reversible changes with visible logging.
 - Validate OS/hardware compatibility before version/vendor-specific changes.
-- Document risk and rollback impact for BCDEdit, services, registry, restore points.
 
-## Change Strategy For Agents
-- Keep GUI code in `clutchg/src/gui/`, non-UI logic in `clutchg/src/core/`.
-- Don't mix UI rendering with execution/business logic.
-- Edit tests: smallest suite first, broaden if needed.
-- Edit batch scripts: inspect all callers and called labels before renaming.
-- Keep research artifacts and production code separate.
+## Agent Change Strategy
+- GUI code in `clutchg/src/gui/`, non-UI logic in `clutchg/src/core/`. Don't mix UI rendering with business logic.
+- Tests: narrowest suite first, broaden if needed.
+- Batch scripts: inspect all callers and called labels before renaming.
 - Prefer small, reviewable changes over broad refactors.
 
-## Verification Expectations
-- Python changes: run narrowest meaningful pytest command first (single file or test).
-- Shared logic changes: follow with marker group or full `pytest` run.
+## Verification
+- Python changes: run single-file pytest first, then broader suite if shared logic changed.
 - GUI-only changes: note if verification limited by desktop/admin constraints.
-- Batch changes: provide manual verification steps if cannot safely execute.
+- Batch changes: provide manual verification steps.
 
-## Commit Guidance
-Use concise imperative messages: `Add backup validation before profile apply`.
-
-Include in PR descriptions when relevant:
-- Risk level
-- Affected modules
-- Manual verification notes
+## Commit Style
+Concise, casual Thai/English mixed: `เขียนหน้า Help ใหม่: 9 topics, แก้ข้อมูลผิด + เพิ่ม FAQ`

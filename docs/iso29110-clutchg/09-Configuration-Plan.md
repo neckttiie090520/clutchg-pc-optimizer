@@ -53,7 +53,7 @@
 | CI-ID | ประเภท | ที่ตั้ง | Pages | ความสำคัญ |
 |-------|--------|-------|-------|----------|
 | CI-DOC-01 | ISO29110 WPs | `docs/iso29110-clutchg/` | 10 documents | สูง |
-| CI-DOC-02 | Thesis | `THESIS_DOCS/` | 7 chapters | สูงมาก |
+| CI-DOC-02 | Thesis | `thesis/THESIS_DOCS/` | 7 chapters | สูงมาก |
 | CI-DOC-03 | Research | `docs/` | 15+ documents | ปานกลาง |
 | CI-DOC-04 | User Guides | `clutchg/README.md`, `QUICKSTART.md` | 2 files | ปานกลาง |
 
@@ -85,8 +85,10 @@ bat/ (Git root)
 │   └── requirements.txt
 ├── src/                        # Batch optimizer scripts
 ├── docs/                       # Research + ISO29110 docs
-├── THESIS_DOCS/                # Thesis chapters
-├── notion/                     # Notion export (reference)
+├── thesis/                     # Thesis writing
+│   └── THESIS_DOCS/            # Thesis chapters
+├── research/                   # Research material
+│   └── notion/                 # Notion export (reference)
 └── .gitignore
 ```
 
