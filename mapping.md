@@ -452,20 +452,15 @@ Plus: `images/`, README, structure guide, overview/developer/user docs.
 
 ---
 
-## `UX/` — UI/UX Design Assets (24 entries)
+## `UX/` — UI/UX Design Assets
 
 | Path | Content |
 |------|---------|
-| `01-dashboard-home.png` through `11-settings.png` | Current UI screenshots (numbered by view) |
-| `design-reference/` | 13 reference screenshots from other apps |
-| `Redesign/` | 14 redesign mockup PNGs + `redesign_guideline.md` |
-| `live/` | Live-captured screenshots + `manifest.json` + `current/` + phase mockups |
-| `UI captured/` | Previously captured UI states |
-| `3/` | Date-based capture subfolder |
-| `capture_all.py` | Script to capture all views automatically |
-| `capture_views.py` | View-specific capture script |
-| `INDEX.md` | UX asset index |
-| `test_shot.png`, `test_visible.png`, `test2.png` | Test screenshots |
+| `UI design/latest/` | 8 latest UI screenshots (01-dashboard through 08-settings) |
+| `UI design/redesign-v1/` | 14 redesign mockup PNGs + `redesign_guideline.md` |
+| `UI design/archive/captured-v1/` | Previously captured UI states + `clutchg_ui_code_map.md` |
+| `UI design/docs/` | UX documentation |
+| `UI design/reference/` | Design reference images |
 
 ---
 
@@ -500,9 +495,11 @@ Plus: `images/`, README, structure guide, overview/developer/user docs.
 
 ---
 
-## `img/` — Miscellaneous Images (gitignored)
+## `img/` — Miscellaneous Images
 
-12 PNG files: UUID-named screenshots, `C.GG-Photoroom.png` (logo), `image.png`.
+| Path | Content |
+|------|---------|
+| `C.GG-Photoroom.png` | ClutchG logo (referenced by READMEs) |
 
 ---
 

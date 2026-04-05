@@ -62,23 +62,43 @@ The result: a modular batch optimizer with a modern GUI that applies only eviden
 ## Screenshots
 
 <p align="center">
-  <img src="UX/Redesign/redesign_01_dashboard_1774511141433.png" width="720" alt="Dashboard">
+  <img src="UX/UI design/latest/01-dashboard.png" width="720" alt="Dashboard">
   <br><em>Dashboard with hardware detection and profile recommendation</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_05_encyclopedia_1774511249597.png" width="720" alt="Tweak Encyclopedia">
+  <img src="UX/UI design/latest/02-tweaks-quick-fix.png" width="720" alt="Tweaks - Quick Fix">
+  <br><em>Quick Fix tab with one-click optimization actions</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/03-tweaks-profiles.png" width="720" alt="Tweaks - Profiles">
+  <br><em>Profile-based optimization with SAFE, COMPETITIVE, and EXTREME presets</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/04-tweaks-custom.png" width="720" alt="Tweaks - Custom">
+  <br><em>Custom tweak builder with per-tweak risk levels and controls</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/05-tweaks-education.png" width="720" alt="Tweaks - Education">
   <br><em>Tweak encyclopedia with risk levels, categories, and detailed explanations</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_07_backup_timeline_1774511287576.png" width="720" alt="Backup Timeline">
-  <br><em>Restore center with timeline view and per-tweak rollback</em>
+  <img src="UX/UI design/latest/06-backup.png" width="720" alt="Backup">
+  <br><em>Backup and restore center with timeline view</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_08_help_doc_1774511305329.png" width="720" alt="Help & Documentation">
+  <img src="UX/UI design/latest/07-docs.png" width="720" alt="Documentation">
   <br><em>Built-in help system with bilingual content</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/08-settings.png" width="720" alt="Settings">
+  <br><em>Settings with language, theme, and profile configuration</em>
 </p>
 
 ---

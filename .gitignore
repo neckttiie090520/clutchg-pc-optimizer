@@ -96,14 +96,18 @@ notion/
 # Reference notes (PDFs + duplicates)
 Ideas and research/
 
-# UX working files (keep Redesign/ and UI captured/ tracked)
+# UX working files (keep UI design/ tracked)
 UX/design-reference/
 UX/live/
 UX/3/
+UX/lasted UI/
 UX/capture_*.py
 UX/test*.png
 UX/INDEX.md
 UX/[0-9][0-9]-*.png
+
+# Untracked GUID images in img/
+img/{*.png
 
 # ============================================================
 # AI Tool Configs (auto-generated, machine-specific)

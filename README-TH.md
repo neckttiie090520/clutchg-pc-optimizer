@@ -62,23 +62,43 @@ ClutchG เป็นเครื่องมือปรับแต่ง Windo
 ## ภาพหน้าจอ
 
 <p align="center">
-  <img src="UX/Redesign/redesign_01_dashboard_1774511141433.png" width="720" alt="Dashboard">
+  <img src="UX/UI design/latest/01-dashboard.png" width="720" alt="Dashboard">
   <br><em>หน้า Dashboard แสดงข้อมูลฮาร์ดแวร์และแนะนำโปรไฟล์</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_05_encyclopedia_1774511249597.png" width="720" alt="Tweak Encyclopedia">
+  <img src="UX/UI design/latest/02-tweaks-quick-fix.png" width="720" alt="Tweaks - Quick Fix">
+  <br><em>Quick Fix ปรับแต่งอย่างรวดเร็วด้วยคลิกเดียว</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/03-tweaks-profiles.png" width="720" alt="Tweaks - Profiles">
+  <br><em>เลือกโปรไฟล์ SAFE, COMPETITIVE หรือ EXTREME ตามระดับความเสี่ยง</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/04-tweaks-custom.png" width="720" alt="Tweaks - Custom">
+  <br><em>สร้างชุดปรับแต่งเอง เลือกเทคนิคทีละตัวพร้อมดูระดับความเสี่ยง</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/05-tweaks-education.png" width="720" alt="Tweaks - Education">
   <br><em>สารานุกรมเทคนิค แสดงระดับความเสี่ยง หมวดหมู่ และคำอธิบายละเอียด</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_07_backup_timeline_1774511287576.png" width="720" alt="Backup Timeline">
-  <br><em>ศูนย์ย้อนกลับ แสดง timeline พร้อมย้อนกลับทีละรายการได้</em>
+  <img src="UX/UI design/latest/06-backup.png" width="720" alt="Backup">
+  <br><em>ศูนย์สำรองข้อมูลและย้อนกลับ พร้อม timeline</em>
 </p>
 
 <p align="center">
-  <img src="UX/Redesign/redesign_08_help_doc_1774511305329.png" width="720" alt="Help">
+  <img src="UX/UI design/latest/07-docs.png" width="720" alt="Documentation">
   <br><em>ระบบช่วยเหลือในตัว รองรับทั้งไทยและอังกฤษ</em>
+</p>
+
+<p align="center">
+  <img src="UX/UI design/latest/08-settings.png" width="720" alt="Settings">
+  <br><em>ตั้งค่าภาษา ธีม และโปรไฟล์</em>
 </p>
 
 ---
