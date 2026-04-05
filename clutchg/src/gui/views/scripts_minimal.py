@@ -660,6 +660,7 @@ class ScriptsView(ctk.CTkFrame):
                 text=self._ui("quick_catalog_error"),
                 font=self._font(14, "bold"),
                 text_color=COLORS["danger"],
+                anchor="w",
             ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
             err_details = ctk.CTkLabel(
                 err_card,
@@ -680,6 +681,7 @@ class ScriptsView(ctk.CTkFrame):
                 text_color=COLORS["text_tertiary"],
                 wraplength=600,
                 justify="left",
+                anchor="w",
             )
             err_preview.pack(
                 anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["md"])
@@ -832,6 +834,7 @@ class ScriptsView(ctk.CTkFrame):
             text=action.title,
             font=self._font(16, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
 
         desc_lbl = ctk.CTkLabel(
@@ -854,6 +857,7 @@ class ScriptsView(ctk.CTkFrame):
             text=helper_text,
             font=self._font(11),
             text_color=COLORS["text_tertiary"],
+            anchor="w",
         ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["xs"], SPACING["sm"]))
 
         meta = ctk.CTkFrame(card, fg_color="transparent")
@@ -1005,6 +1009,7 @@ class ScriptsView(ctk.CTkFrame):
             text=self._ui("tab_presets"),
             font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).grid(row=0, column=0, sticky="w")
 
         ctk.CTkLabel(
@@ -1012,6 +1017,7 @@ class ScriptsView(ctk.CTkFrame):
             text=self._ui("profiles_subtitle"),
             font=self._font(12),
             text_color=COLORS["text_tertiary"],
+            anchor="w",
         ).grid(row=1, column=0, sticky="w", pady=(3, 0))
 
         # Compare button (top-right) — icon + text, more discoverable
@@ -1169,9 +1175,7 @@ class ScriptsView(ctk.CTkFrame):
         # ── Row 1: Recommendation reason ──
         if reason:
             if score and int(score) > 0:
-                reason_text = self._ui("rec_reason").format(
-                    score=int(score), reason=reason
-                )
+                reason_text = self._ui("rec_reason", score=int(score), reason=reason)
             else:
                 reason_text = reason
             ctk.CTkLabel(
@@ -1324,6 +1328,7 @@ class ScriptsView(ctk.CTkFrame):
             text=info["title"],
             font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).grid(row=0, column=1, sticky="w", padx=(8, 0))
 
         ctk.CTkLabel(
@@ -1961,6 +1966,7 @@ class ScriptsView(ctk.CTkFrame):
             text=label_text,
             font=font("body_bold"),
             text_color=COLORS["accent"] if count > 0 else COLORS["text_tertiary"],
+            anchor="w",
         )
         self.selection_label.grid(
             row=0, column=0, sticky="w", padx=SPACING["md"], pady=SPACING["sm"]
@@ -2054,7 +2060,7 @@ class ScriptsView(ctk.CTkFrame):
             text=ICON("search"),
             font=ctk.CTkFont(family="Tabler Icons", size=14),
             text_color=COLORS["text_tertiary"],
-        ).grid(row=0, column=0, padx=(SPACING["sm"], SPACING["xs"]))
+        ).grid(row=0, column=0, sticky="w", padx=(SPACING["sm"], SPACING["xs"]))
 
         self._search_entry = ctk.CTkEntry(
             search_frame,
@@ -2581,6 +2587,7 @@ class ScriptsView(ctk.CTkFrame):
             text=f"{cat_info['label']}  ({len(tweaks)})",
             font=font("body_bold"),
             text_color=color,
+            anchor="w",
         ).pack(side="left")
 
         # Click handler on header
@@ -2656,7 +2663,7 @@ class ScriptsView(ctk.CTkFrame):
             button_hover_color=COLORS["text_primary"],  # knob hover
             command=lambda tid=tweak.id, v=var: self._toggle_tweak(tid, v),
         )
-        toggle.grid(row=0, column=0, padx=(8, 4), pady=4)
+        toggle.grid(row=0, column=0, sticky="w", padx=(8, 4), pady=4)
 
         # Name — slightly heavier for visual balance on the left
         name_lbl = ctk.CTkLabel(
@@ -2810,7 +2817,7 @@ class ScriptsView(ctk.CTkFrame):
             w.destroy()
 
         close_bar = ctk.CTkFrame(self.detail_panel, fg_color="transparent", height=26)
-        close_bar.pack(fill="x", padx=(SPACING["sm"], 4), pady=(3, 0))
+        close_bar.pack(fill="x", padx=SPACING["sm"], pady=(3, 0))
         close_bar.pack_propagate(False)
         ctk.CTkButton(
             close_bar,
@@ -2975,6 +2982,7 @@ class ScriptsView(ctk.CTkFrame):
                 text=title,
                 font=ctk.CTkFont(size=10, weight="normal"),
                 text_color=COLORS["text_tertiary"],
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], 1))
             r += 1
             _make_wrapping_label(
@@ -2994,6 +3002,7 @@ class ScriptsView(ctk.CTkFrame):
                 text="Warnings",
                 font=ctk.CTkFont(size=10, weight="normal"),
                 text_color=COLORS.get("warning", "#F59E0B"),
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], 1))
             r += 1
             for warn in tweak.warnings:
@@ -3019,6 +3028,7 @@ class ScriptsView(ctk.CTkFrame):
                 text="Registry keys",
                 font=font("micro"),
                 text_color=COLORS["text_muted"],
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(0, 1))
             r += 1
             for key in tweak.registry_keys:
@@ -3043,6 +3053,7 @@ class ScriptsView(ctk.CTkFrame):
             text="  |  ".join(meta_parts),
             font=ctk.CTkFont(size=9),
             text_color=COLORS["text_muted"],
+            anchor="w",
         ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 0))
 
     def _apply_selected_tweaks(self):
@@ -3117,7 +3128,11 @@ class ScriptsView(ctk.CTkFrame):
 
         # Title
         ctk.CTkLabel(
-            scroll, text=tweak.name, font=font("h2"), text_color=COLORS["text_primary"]
+            scroll,
+            text=tweak.name,
+            font=font("h2"),
+            text_color=COLORS["text_primary"],
+            anchor="w",
         ).grid(row=r, column=0, sticky="w")
         r += 1
 
@@ -3170,6 +3185,7 @@ class ScriptsView(ctk.CTkFrame):
                 text=title,
                 font=font("body_bold"),
                 text_color=COLORS["text_primary"],
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
             r += 1
             ctk.CTkLabel(
@@ -3190,6 +3206,7 @@ class ScriptsView(ctk.CTkFrame):
                 text="Warnings",
                 font=font("body_bold"),
                 text_color=COLORS.get("risk_high", COLORS.get("danger", "#F87171")),
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
             r += 1
             for w in tweak.warnings:
@@ -3202,6 +3219,7 @@ class ScriptsView(ctk.CTkFrame):
                     ),
                     wraplength=520,
                     anchor="w",
+                    justify="left",
                 ).grid(row=r, column=0, sticky="ew")
                 r += 1
 
@@ -3212,6 +3230,7 @@ class ScriptsView(ctk.CTkFrame):
                 text="Registry Keys Modified",
                 font=font("body_bold"),
                 text_color=COLORS["text_tertiary"],
+                anchor="w",
             ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 2))
             r += 1
             for key in tweak.registry_keys:
@@ -3227,7 +3246,11 @@ class ScriptsView(ctk.CTkFrame):
         # Meta info
         meta = f"Reversible: {'Yes' if tweak.reversible else 'No'}  |  OS: Windows {', '.join(tweak.compatible_os)}  |  Admin: {'Required' if tweak.requires_admin else 'No'}"
         ctk.CTkLabel(
-            scroll, text=meta, font=font("caption"), text_color=COLORS["text_tertiary"]
+            scroll,
+            text=meta,
+            font=font("caption"),
+            text_color=COLORS["text_tertiary"],
+            anchor="w",
         ).grid(row=r, column=0, sticky="w", pady=(SPACING["md"], 0))
 
         # Close button
@@ -3424,6 +3447,7 @@ class ScriptsView(ctk.CTkFrame):
             text=tweak.name,
             font=font("body_bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(anchor="w")
 
         ctk.CTkLabel(
@@ -3431,6 +3455,7 @@ class ScriptsView(ctk.CTkFrame):
             text=tweak.description,
             font=font("caption"),
             text_color=COLORS["text_secondary"],
+            anchor="w",
         ).pack(anchor="w")
 
         # Risk badge
@@ -3449,6 +3474,7 @@ class ScriptsView(ctk.CTkFrame):
             text=tweak.expected_gain,
             font=font("caption"),
             text_color=COLORS["accent"],
+            anchor="w",
         ).grid(row=0, column=2, padx=SPACING["xs"])
 
         # Detail button

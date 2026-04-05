@@ -154,6 +154,7 @@ class ProfilesView(ctk.CTkFrame):
             text=self._ui("title"),
             font=self._font(24, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(side="left")
 
     def create_hero_section(self):
@@ -166,14 +167,16 @@ class ProfilesView(ctk.CTkFrame):
             text=self._ui("hero_title"),
             font=self._font(15, "bold"),
             text_color=COLORS["text_primary"],
-        ).pack(anchor="w")
+            anchor="w",
+        ).pack(anchor="w", fill="x")
 
         ctk.CTkLabel(
             hero,
             text=self._ui("hero_subtitle"),
             font=self._font(13),
             text_color=COLORS["text_secondary"],
-        ).pack(anchor="w", pady=(SPACING["xs"], 0))
+            anchor="w",
+        ).pack(anchor="w", fill="x", pady=(SPACING["xs"], 0))
 
     def create_profile_cards(self):
         """Create responsive grid of profile cards"""
@@ -314,12 +317,13 @@ class ProfilesView(ctk.CTkFrame):
                 text=h,
                 font=ctk.CTkFont(family="Figtree", size=12, weight="bold"),
                 text_color=COLORS["text_primary"],
+                anchor="w",
             ).grid(
                 row=0,
                 column=c,
                 padx=4,
                 pady=(0, SPACING["xs"]),
-                sticky="w" if c == 0 else "",
+                sticky="w",
             )
 
         # Data rows
@@ -330,6 +334,7 @@ class ProfilesView(ctk.CTkFrame):
                 text=self._ui(label_key),
                 font=ctk.CTkFont(family="Figtree", size=12),
                 text_color=COLORS["text_secondary"],
+                anchor="w",
             ).grid(row=r, column=0, padx=4, pady=2, sticky="w")
 
             for c, pk in enumerate(profile_keys, start=1):
@@ -344,7 +349,8 @@ class ProfilesView(ctk.CTkFrame):
                     text=val,
                     font=ctk.CTkFont(family="Figtree", size=12),
                     text_color=text_color,
-                ).grid(row=r, column=c, padx=4, pady=2)
+                    anchor="w",
+                ).grid(row=r, column=c, padx=4, pady=2, sticky="w")
 
     # ------------------------------------------------------------------
     # Apply profile logic

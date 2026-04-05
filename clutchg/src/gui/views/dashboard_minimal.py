@@ -137,7 +137,7 @@ class DashboardView(ctk.CTkFrame):
     def create_header(self):
         """Create header: title + plain subtitle (left), Scan System button (right)."""
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
+        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["md"]))
         header.grid_columnconfigure(1, weight=1)  # Spacer pushes button right
 
         # Title block — title + subtitle stacked
@@ -192,7 +192,7 @@ class DashboardView(ctk.CTkFrame):
     def create_score_section(self, parent):
         """Score ring (left) + recommendation card (right) — side by side in one row."""
         section = ctk.CTkFrame(parent, fg_color="transparent")
-        section.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        section.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["lg"]))
         section.grid_columnconfigure(0, weight=0)  # ring — fixed width
         section.grid_columnconfigure(1, weight=1)  # rec card — fills remaining
         section.grid_rowconfigure(0, weight=1)
@@ -258,6 +258,7 @@ class DashboardView(ctk.CTkFrame):
             font=self._font(13),
             text_color=COLORS["text_secondary"],
             justify="left",
+            anchor="w",
         )
         _rec_desc.pack(
             anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["md"])
@@ -305,14 +306,13 @@ class DashboardView(ctk.CTkFrame):
             ram_spec += f" {system.ram.speed}MHz"
 
         section_label = ctk.CTkFrame(parent, fg_color="transparent")
-        section_label.grid(
-            row=1, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"])
-        )
+        section_label.grid(row=1, column=0, sticky="ew", pady=(0, SPACING["sm"]))
         ctk.CTkLabel(
             section_label,
             text="SYSTEM HARDWARE",
             font=self._font(11, "bold"),
             text_color=COLORS["text_muted"],
+            anchor="w",
         ).pack(anchor="w")
 
         components = [
@@ -342,7 +342,7 @@ class DashboardView(ctk.CTkFrame):
                 _hw_imgs[key] = None
 
         grid = ctk.CTkFrame(parent, fg_color="transparent")
-        grid.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["md"]))
+        grid.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["lg"]))
         grid.grid_columnconfigure(0, weight=1, uniform="hw")
         grid.grid_columnconfigure(1, weight=1, uniform="hw")
         grid.grid_columnconfigure(2, weight=1, uniform="hw")
@@ -354,7 +354,7 @@ class DashboardView(ctk.CTkFrame):
                 row=0,
                 column=col,
                 sticky="nsew",
-                padx=(0 if col == 0 else SPACING["xs"], 0),
+                padx=(0 if col == 0 else SPACING["sm"], 0),
             )
             card.grid_columnconfigure(0, weight=1)
             card.grid_rowconfigure(2, weight=1)
@@ -364,8 +364,8 @@ class DashboardView(ctk.CTkFrame):
                 row=0,
                 column=0,
                 sticky="ew",
-                padx=SPACING["sm"],
-                pady=(SPACING["sm"], 0),
+                padx=SPACING["md"],
+                pady=(SPACING["lg"], 0),
             )
 
             img = _hw_imgs.get(hw_key)
@@ -398,13 +398,14 @@ class DashboardView(ctk.CTkFrame):
                 font=self._font(14, "bold"),
                 text_color=COLORS["text_primary"],
                 justify="left",
+                anchor="w",
             )
             _spec_lbl.grid(
                 row=1,
                 column=0,
                 sticky="ew",
-                padx=SPACING["sm"],
-                pady=(SPACING["xs"], SPACING["sm"]),
+                padx=SPACING["md"],
+                pady=(SPACING["sm"], SPACING["lg"]),
             )
             bind_dynamic_wraplength(card, _spec_lbl)
 
@@ -443,9 +444,10 @@ class DashboardView(ctk.CTkFrame):
             text=self._ui("recent_activity"),
             font=self._font(11, "bold"),
             text_color=COLORS["text_muted"],
-        ).grid(row=3, column=0, sticky="w", pady=(0, SPACING["xs"]))
+            anchor="w",
+        ).grid(row=3, column=0, sticky="w", pady=(0, SPACING["sm"]))
 
-        container = ctk.CTkFrame(parent, fg_color="transparent")
+        container = GlassCard(parent, corner_radius=RADIUS["lg"])
         container.grid(row=4, column=0, sticky="nsew")
 
         activities = self._load_recent_activities()
@@ -454,12 +456,16 @@ class DashboardView(ctk.CTkFrame):
             for text, time_str, color in activities:
                 self.create_activity_item(container, text, time_str, color)
         else:
+            # Styled empty state — intentional, not broken-looking
+            empty_frame = ctk.CTkFrame(container, fg_color="transparent")
+            empty_frame.pack(fill="both", expand=True)
+
             ctk.CTkLabel(
-                container,
-                text=self._ui("no_recent_activity"),
+                empty_frame,
+                text="\u2014 " + self._ui("no_recent_activity") + " \u2014",
                 font=self._font(12),
                 text_color=COLORS["text_muted"],
-            ).pack(anchor="w")
+            ).pack(expand=True, pady=SPACING["xl"])
 
     def _load_recent_activities(self):
         """Load recent activities from FlightRecorder if available"""
@@ -482,7 +488,7 @@ class DashboardView(ctk.CTkFrame):
 
     def create_activity_item(self, parent, text, time_str, dot_color):
         item = ctk.CTkFrame(parent, fg_color="transparent")
-        item.pack(fill="x", pady=(0, SPACING["xs"]))
+        item.pack(fill="x", padx=SPACING["md"], pady=(SPACING["sm"], 0))
 
         # Colored dot
         ctk.CTkLabel(

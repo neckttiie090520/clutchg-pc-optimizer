@@ -50,6 +50,7 @@ class InlineHelpBox(ctk.CTkFrame):
             text=title,
             font=font("body_bold", size=12, weight="bold"),
             text_color=self._get_text_color(help_type),
+            anchor="w",
         ).pack(anchor="w")
 
         content_lbl = ctk.CTkLabel(
@@ -57,6 +58,8 @@ class InlineHelpBox(ctk.CTkFrame):
             text=content,
             font=font("caption", size=11),
             text_color=self._get_text_color(help_type),
+            anchor="w",
+            justify="left",
         )
         content_lbl.pack(anchor="w", pady=(5, 0), fill="x")
         bind_dynamic_wraplength(content_frame, content_lbl)

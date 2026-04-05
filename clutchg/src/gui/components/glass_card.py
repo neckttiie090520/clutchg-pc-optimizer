@@ -194,6 +194,7 @@ class ProfileCard(GlassCard):
             text=profile_name,
             font=ctk.CTkFont(family="Figtree", size=20, weight="bold"),
             text_color=colors["text_primary"],
+            anchor="w",
         ).grid(row=1, column=0, sticky="ew", pady=(0, SPACING["xs"]))
 
         # --- Row 2: Description ---
@@ -204,6 +205,7 @@ class ProfileCard(GlassCard):
             text_color=colors["text_secondary"],
             wraplength=220,
             justify="left",
+            anchor="w",
         )
         desc_label.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["md"]))
 
@@ -374,6 +376,7 @@ class HardwareCard(GlassCard):
             text=subtitle,
             font=ctk.CTkFont(family="Figtree", size=12),
             text_color=colors["text_secondary"],
+            anchor="w",
         )
         subtitle_label.grid(
             row=1, column=0, sticky="w", padx=SPACING["md"], pady=(0, SPACING["sm"])

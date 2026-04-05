@@ -91,6 +91,7 @@ class Timeline(ctk.CTkFrame):
             text="Backup Timeline",
             font=font("section", size=16, weight="bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).grid(row=0, column=0, sticky="w")
 
         # Legend

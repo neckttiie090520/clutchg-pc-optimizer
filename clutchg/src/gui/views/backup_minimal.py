@@ -142,9 +142,7 @@ class BackupView(ctk.CTkFrame):
             header,
             text=f"{ICON('add')} {self._ui('create_btn')}",
             width=140,
-            font=ctk.CTkFont(
-                family="Tabler Icons", size=13, weight="bold"
-            ),
+            font=ctk.CTkFont(family="Tabler Icons", size=13, weight="bold"),
             command=self.create_backup,
         ).grid(row=0, column=1, sticky="e")
 
@@ -183,6 +181,7 @@ class BackupView(ctk.CTkFrame):
             text_color=COLORS["text_secondary"],
             wraplength=800,
             justify="left",
+            anchor="w",
         ).pack(anchor="w", pady=(SPACING["xs"], 0))
 
     def create_backup_list(self):
@@ -262,9 +261,7 @@ class BackupView(ctk.CTkFrame):
             text=f"{ICON('add')} {self._ui('empty_cta')}",
             height=44,
             width=200,
-            font=ctk.CTkFont(
-                family="Tabler Icons", size=13, weight="bold"
-            ),
+            font=ctk.CTkFont(family="Tabler Icons", size=13, weight="bold"),
             command=self.create_backup,
         ).pack()
 
@@ -380,6 +377,7 @@ class BackupView(ctk.CTkFrame):
             text=self._ui("created", date=date_str),
             font=self._font(11),
             text_color=COLORS["text_muted"],
+            anchor="w",
         ).pack(anchor="w", pady=(4, 0))
 
         # Actions

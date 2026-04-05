@@ -55,6 +55,7 @@ class ToastNotification(ctk.CTkToplevel):
             pady=15,
             wraplength=_TOAST_WIDTH - 40,
             justify="left",
+            anchor="w",
         ).pack(side="left", fill="both", expand=True)
 
         # Initial position — will be adjusted after layout

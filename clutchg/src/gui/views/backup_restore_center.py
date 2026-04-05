@@ -166,6 +166,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text=self._ui("title"),
             font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(anchor="w")
 
         self._subtitle_label = ctk.CTkLabel(
@@ -173,6 +174,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text=self._ui("subtitle_empty"),
             font=self._font(11),
             text_color=COLORS["text_tertiary"],
+            anchor="w",
         )
         self._subtitle_label.pack(anchor="w", pady=(2, 0))
 
@@ -245,6 +247,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text=self._ui("info_banner_title"),
             font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(anchor="w")
 
         ctk.CTkLabel(
@@ -254,6 +257,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text_color=COLORS["text_secondary"],
             wraplength=500,
             justify="left",
+            anchor="w",
         ).pack(anchor="w", pady=(4, 0))
 
     # ========================================================================
@@ -377,6 +381,8 @@ class BackupRestoreCenter(ctk.CTkFrame):
             font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
             wraplength=280,
+            anchor="w",
+            justify="left",
         ).pack(side="left")
 
         # Badges
@@ -424,6 +430,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             text=date_str,
             font=self._font(10),
             text_color=COLORS["text_muted"],
+            anchor="w",
         ).pack(anchor="w", pady=(3, 0))
 
         # Action buttons (right side)
@@ -552,6 +559,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
             font=self._font(13),
             text_color=COLORS.get("text_muted", "#6B7280"),
             wraplength=400,
+            justify="left",
         ).pack(pady=(4, 0))
 
         EnhancedButton.primary(

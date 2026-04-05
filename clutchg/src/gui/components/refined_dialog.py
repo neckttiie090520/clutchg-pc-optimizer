@@ -138,6 +138,7 @@ class RefinedDialog(ctk.CTkToplevel):
             text=title,
             font=ctk.CTkFont(family="Figtree", size=16, weight="bold"),
             text_color=colors["text_primary"],
+            anchor="w",
         )
         title_label.grid(row=0, column=1, sticky="w")
 

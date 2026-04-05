@@ -61,6 +61,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             text=f"Running {self.job_title}",
             font=font("body_bold", size=14, weight="bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         )
         title_label.pack(side="left", padx=20, pady=15)
 
@@ -116,8 +117,9 @@ class ExecutionDialog(ctk.CTkToplevel):
             text="Preparing...",
             font=font("micro", size=10),
             text_color=COLORS["text_muted"],
+            anchor="w",
         )
-        self.progress_label.grid(row=1, column=0)
+        self.progress_label.grid(row=1, column=0, sticky="w")
 
         # Output scrollable frame
         output_frame = ctk.CTkScrollableFrame(

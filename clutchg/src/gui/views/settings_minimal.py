@@ -71,13 +71,14 @@ class SettingsView(ctk.CTkFrame):
 
         # Header — 20px title + subtitle
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="w", pady=(0, SPACING["lg"]))
+        header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["lg"]))
 
         ctk.CTkLabel(
             header,
             text=self._ui("title"),
             font=self._font(20, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(anchor="w")
 
         ctk.CTkLabel(
@@ -85,6 +86,7 @@ class SettingsView(ctk.CTkFrame):
             text=self._ui("settings_subtitle"),
             font=self._font(12),
             text_color=COLORS["text_secondary"],
+            anchor="w",
         ).pack(anchor="w", pady=(2, 0))
 
         # Settings content
@@ -228,6 +230,7 @@ class SettingsView(ctk.CTkFrame):
                 text=icon_char,
                 font=ctk.CTkFont(family=_ICON_FONT, size=18),
                 text_color=COLORS["text_tertiary"],
+                anchor="w",
             ).pack(side="left", padx=(0, 10))
 
         ctk.CTkLabel(
@@ -235,6 +238,7 @@ class SettingsView(ctk.CTkFrame):
             text=title.upper(),
             font=self._font(13, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(side="left")
 
         # Separator line after header
@@ -374,6 +378,7 @@ class SettingsView(ctk.CTkFrame):
             text=self._ui("app_name"),
             font=self._font(15, "bold"),
             text_color=COLORS["text_primary"],
+            anchor="w",
         ).pack(side="left")
 
         ctk.CTkLabel(
