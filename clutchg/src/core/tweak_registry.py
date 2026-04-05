@@ -1177,6 +1177,7 @@ class TweakRegistry:
         return {
             "preset": preset,
             "reason": reason,
+            "total_score": total_score,
             "tweak_count": len(self.get_tweaks_for_preset(preset)),
             "compatible_count": len(self.get_compatible_tweaks(system_profile)),
         }

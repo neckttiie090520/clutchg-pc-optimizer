@@ -7,7 +7,7 @@ import customtkinter as ctk
 from typing import TYPE_CHECKING
 
 from gui.theme import COLORS, SPACING, RADIUS
-from gui.style import font
+from gui.style import font, bind_dynamic_wraplength
 from gui.components.icon_provider import get_icon
 
 if TYPE_CHECKING:
@@ -385,15 +385,16 @@ class SettingsView(ctk.CTkFrame):
         ).grid(row=1, column=1, sticky="w", pady=(2, 0))
 
         # Tagline
-        ctk.CTkLabel(
+        _tagline_lbl = ctk.CTkLabel(
             frame,
             text=self._ui("about_tagline"),
             font=self._font(11),
             text_color=COLORS["text_secondary"],
             anchor="w",
-            wraplength=400,
             justify="left",
-        ).grid(row=2, column=1, sticky="w", pady=(4, 0))
+        )
+        _tagline_lbl.grid(row=2, column=1, sticky="ew", pady=(4, 0))
+        bind_dynamic_wraplength(frame, _tagline_lbl)
 
         # Link buttons row
         btn_row = ctk.CTkFrame(frame, fg_color="transparent")

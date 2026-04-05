@@ -5,6 +5,7 @@ Purpose: Replace tkinter.messagebox with modern, glassmorphism dialogs
 
 import customtkinter as ctk
 from gui.theme import theme_manager, SPACING, RADIUS, COLORS
+from gui.style import bind_dynamic_wraplength
 from typing import Optional, Union
 
 
@@ -24,7 +25,7 @@ class RefinedDialog(ctk.CTkToplevel):
         confirm_text: str = "Confirm",
         cancel_text: str = "Cancel",
         risk_level: str = "LOW",
-        **kwargs
+        **kwargs,
     ):
         """
         Create a refined confirmation dialog
@@ -60,13 +61,10 @@ class RefinedDialog(ctk.CTkToplevel):
             self,
             corner_radius=RADIUS["xl"],
             border_width=0,
-            fg_color=colors["bg_tertiary"]  # Darker shadow color
+            fg_color=colors["bg_tertiary"],  # Darker shadow color
         )
         shadow_frame.place(
-            x=shadow_offset,
-            y=shadow_offset,
-            relwidth=1.0,
-            relheight=1.0
+            x=shadow_offset, y=shadow_offset, relwidth=1.0, relheight=1.0
         )
 
         # Main dialog frame (glassmorphism)
@@ -75,7 +73,7 @@ class RefinedDialog(ctk.CTkToplevel):
             corner_radius=RADIUS["xl"],
             border_width=1,
             border_color=colors.get("border_subtle", colors["border"]),
-            fg_color=colors.get("bg_card", colors["bg_secondary"])
+            fg_color=colors.get("bg_card", colors["bg_secondary"]),
         )
         self.dialog_frame.place(relwidth=1.0, relheight=1.0)
 
@@ -95,7 +93,9 @@ class RefinedDialog(ctk.CTkToplevel):
         # Set dialog size and center
         self.update_idletasks()
         width = 450
-        height = 200 + self._get_message_lines(message) * 20  # Dynamic height based on message
+        height = (
+            200 + self._get_message_lines(message) * 20
+        )  # Dynamic height based on message
         self.geometry(f"{width}x{height}")
         self._center_dialog()
 
@@ -110,22 +110,25 @@ class RefinedDialog(ctk.CTkToplevel):
         colors = theme_manager.get_colors()
 
         title_frame = ctk.CTkFrame(self.dialog_frame, fg_color="transparent")
-        title_frame.grid(row=0, column=0, sticky="ew", padx=SPACING["lg"], pady=(SPACING["lg"], SPACING["md"]))
+        title_frame.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            padx=SPACING["lg"],
+            pady=(SPACING["lg"], SPACING["md"]),
+        )
         title_frame.grid_columnconfigure(1, weight=1)
 
         # Risk indicator dot
         risk_colors = {
             "LOW": colors["success"],
             "MEDIUM": colors["warning"],
-            "HIGH": colors["danger"]
+            "HIGH": colors["danger"],
         }
         risk_color = risk_colors.get(risk_level.upper(), colors["success"])
 
         risk_dot = ctk.CTkLabel(
-            title_frame,
-            text="●",
-            font=ctk.CTkFont(size=12),
-            text_color=risk_color
+            title_frame, text="●", font=ctk.CTkFont(size=12), text_color=risk_color
         )
         risk_dot.grid(row=0, column=0, padx=(0, SPACING["sm"]))
 
@@ -134,7 +137,7 @@ class RefinedDialog(ctk.CTkToplevel):
             title_frame,
             text=title,
             font=ctk.CTkFont(family="Figtree", size=16, weight="bold"),
-            text_color=colors["text_primary"]
+            text_color=colors["text_primary"],
         )
         title_label.grid(row=0, column=1, sticky="w")
 
@@ -143,25 +146,35 @@ class RefinedDialog(ctk.CTkToplevel):
         colors = theme_manager.get_colors()
 
         message_frame = ctk.CTkFrame(self.dialog_frame, fg_color="transparent")
-        message_frame.grid(row=1, column=0, sticky="nsew", padx=SPACING["lg"], pady=SPACING["md"])
+        message_frame.grid(
+            row=1, column=0, sticky="nsew", padx=SPACING["lg"], pady=SPACING["md"]
+        )
 
         message_label = ctk.CTkLabel(
             message_frame,
             text=message,
             font=ctk.CTkFont(family="Figtree", size=13),
             text_color=colors["text_secondary"],
-            wraplength=400,
             justify="left",
-            anchor="nw"
+            anchor="nw",
         )
         message_label.pack(expand=True, fill="both")
+        bind_dynamic_wraplength(message_frame, message_label)
 
-    def _create_buttons(self, confirm_text: str, cancel_text: str, risk_level: str = "LOW"):
+    def _create_buttons(
+        self, confirm_text: str, cancel_text: str, risk_level: str = "LOW"
+    ):
         """Create button row — confirm button color reflects risk_level"""
         colors = theme_manager.get_colors()
 
         button_frame = ctk.CTkFrame(self.dialog_frame, fg_color="transparent")
-        button_frame.grid(row=2, column=0, sticky="ew", padx=SPACING["lg"], pady=(SPACING["md"], SPACING["lg"]))
+        button_frame.grid(
+            row=2,
+            column=0,
+            sticky="ew",
+            padx=SPACING["lg"],
+            pady=(SPACING["md"], SPACING["lg"]),
+        )
         button_frame.grid_columnconfigure(0, weight=1)
         button_frame.grid_columnconfigure(1, weight=1)
 
@@ -171,13 +184,17 @@ class RefinedDialog(ctk.CTkToplevel):
                 button_frame,
                 text=cancel_text,
                 font=ctk.CTkFont(family="Figtree", size=13, weight="bold"),
-                fg_color=colors.get("bg_tertiary", colors.get("bg_active", colors["bg_secondary"])),
-                hover_color=colors.get("bg_hover", colors.get("bg_active", colors["bg_secondary"])),
+                fg_color=colors.get(
+                    "bg_tertiary", colors.get("bg_active", colors["bg_secondary"])
+                ),
+                hover_color=colors.get(
+                    "bg_hover", colors.get("bg_active", colors["bg_secondary"])
+                ),
                 text_color=colors["text_secondary"],
                 corner_radius=RADIUS["md"],
                 height=36,
                 command=self._on_cancel,
-                width=150
+                width=150,
             )
             cancel_btn.grid(row=0, column=0, padx=(0, SPACING["sm"]))
 
@@ -204,13 +221,13 @@ class RefinedDialog(ctk.CTkToplevel):
             corner_radius=RADIUS["md"],
             height=36,
             command=self._on_confirm,
-            width=150
+            width=150,
         )
         confirm_btn.grid(row=0, column=1, padx=(SPACING["sm"], 0))
 
     def _get_message_lines(self, message: str) -> int:
         """Estimate number of lines in message for height calculation"""
-        # Rough estimate: ~60 characters per line at wraplength 400
+        # Rough estimate: ~60 characters per line at dialog width
         return max(1, (len(message) // 60) + 1)
 
     def _center_dialog(self):
@@ -259,7 +276,10 @@ class InputDialog(RefinedDialog):
     """
     Dialog with text input field
     """
-    def __init__(self, parent, title: str, message: str, placeholder: str = "", **kwargs):
+
+    def __init__(
+        self, parent, title: str, message: str, placeholder: str = "", **kwargs
+    ):
         self.input_value = None
         self.placeholder = placeholder
         super().__init__(parent, title, message, **kwargs)
@@ -269,18 +289,21 @@ class InputDialog(RefinedDialog):
         colors = theme_manager.get_colors()
 
         content_frame = ctk.CTkFrame(self.dialog_frame, fg_color="transparent")
-        content_frame.grid(row=1, column=0, sticky="nsew", padx=SPACING["lg"], pady=SPACING["md"])
+        content_frame.grid(
+            row=1, column=0, sticky="nsew", padx=SPACING["lg"], pady=SPACING["md"]
+        )
 
         # Message
-        ctk.CTkLabel(
+        input_msg_lbl = ctk.CTkLabel(
             content_frame,
             text=message,
             font=ctk.CTkFont(family="Figtree", size=13),
             text_color=colors["text_secondary"],
-            wraplength=400,
             justify="left",
-            anchor="nw"
-        ).pack(fill="x", pady=(0, SPACING["md"]))
+            anchor="nw",
+        )
+        input_msg_lbl.pack(fill="x", pady=(0, SPACING["md"]))
+        bind_dynamic_wraplength(content_frame, input_msg_lbl)
 
         # Input field
         self.entry = ctk.CTkEntry(
@@ -290,7 +313,7 @@ class InputDialog(RefinedDialog):
             font=ctk.CTkFont(family="Figtree", size=13),
             fg_color=colors["bg_tertiary"],
             border_color=colors["border"],
-            text_color=colors["text_primary"]
+            text_color=colors["text_primary"],
         )
         self.entry.pack(fill="x")
         if self.placeholder:
@@ -315,7 +338,7 @@ def show_confirmation(
     message: str,
     confirm_text: str = "Confirm",
     cancel_text: str = "Cancel",
-    risk_level: str = "LOW"
+    risk_level: str = "LOW",
 ) -> bool:
     """
     Convenience function to show a confirmation dialog
@@ -337,16 +360,12 @@ def show_confirmation(
         message=message,
         confirm_text=confirm_text,
         cancel_text=cancel_text,
-        risk_level=risk_level
+        risk_level=risk_level,
     )
     return dialog.show()
 
 
-def show_info(
-    parent,
-    title: str,
-    message: str
-) -> bool:
+def show_info(parent, title: str, message: str) -> bool:
     """
     Convenience function to show an info dialog (OK button only)
 
@@ -364,16 +383,13 @@ def show_info(
         message=message,
         confirm_text="OK",
         cancel_text="",  # Empty = no cancel button
-        risk_level="LOW"
+        risk_level="LOW",
     )
     return dialog.show()
 
 
 def show_input(
-    parent,
-    title: str,
-    message: str,
-    placeholder: str = ""
+    parent, title: str, message: str, placeholder: str = ""
 ) -> Optional[str]:
     """
     Show an input dialog
@@ -387,10 +403,5 @@ def show_input(
     Returns:
         Entered string or None if cancelled
     """
-    dialog = InputDialog(
-        parent,
-        title=title,
-        message=message,
-        placeholder=placeholder
-    )
+    dialog = InputDialog(parent, title=title, message=message, placeholder=placeholder)
     return dialog.show()

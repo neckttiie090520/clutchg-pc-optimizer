@@ -52,16 +52,15 @@ class ExecutionDialog(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
 
         # Header frame
-        header = ctk.CTkFrame(self, fg_color=COLORS["bg_card"], height=60)
+        header = ctk.CTkFrame(self, fg_color=COLORS["bg_card"])
         header.grid(row=0, column=0, sticky="ew")
-        header.grid_propagate(False)
 
         # Title
         title_label = ctk.CTkLabel(
             header,
             text=f"Running {self.job_title}",
             font=font("body_bold", size=14, weight="bold"),
-            text_color=COLORS["text_primary"]
+            text_color=COLORS["text_primary"],
         )
         title_label.pack(side="left", padx=20, pady=15)
 
@@ -76,7 +75,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             text_color=COLORS["text_secondary"],
             hover_color=COLORS["bg_hover"],
             command=self.on_close,
-            state="disabled"
+            state="disabled",
         )
         style_ghost_button(self.close_btn, small=True)
         self.close_btn.pack(side="right", padx=(0, 15))
@@ -106,7 +105,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             progress_frame,
             height=8,
             fg_color=COLORS["bg_card"],
-            progress_color=COLORS["accent"]
+            progress_color=COLORS["accent"],
         )
         self.progress_bar.grid(row=0, column=0, sticky="ew", pady=(8, 12))
         self.progress_bar.set(0)
@@ -116,7 +115,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             progress_frame,
             text="Preparing...",
             font=font("micro", size=10),
-            text_color=COLORS["text_muted"]
+            text_color=COLORS["text_muted"],
         )
         self.progress_label.grid(row=1, column=0)
 
@@ -126,7 +125,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             fg_color="transparent",
             label_text="Execution Output",
             label_font=font("micro", size=10),
-            label_text_color=COLORS["text_muted"]
+            label_text_color=COLORS["text_muted"],
         )
         output_frame.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 10))
         output_frame.grid_rowconfigure(0, weight=1)
@@ -139,7 +138,7 @@ class ExecutionDialog(ctk.CTkToplevel):
             fg_color=COLORS["bg_card"],
             text_color=COLORS["text_secondary"],
             wrap="word",
-            height=350
+            height=350,
         )
         self.output_text.pack(fill="both", expand=True)
         self.output_text.configure(state="disabled")
@@ -186,7 +185,9 @@ class ExecutionDialog(ctk.CTkToplevel):
         # Update label with tweak counts if available
         total_done = self._tweak_ok + self._tweak_fail
         if total_done > 0:
-            self.progress_label.configure(text=f"{total_done} tweaks processed ({percent}%)")
+            self.progress_label.configure(
+                text=f"{total_done} tweaks processed ({percent}%)"
+            )
         elif percent == 0:
             self.progress_label.configure(text="Preparing...")
         elif percent < 25:
@@ -228,20 +229,28 @@ class ExecutionDialog(ctk.CTkToplevel):
         if result is None:
             self.add_output("")
             self.add_output("[WARN] Execution completed (no result data)")
-            self.progress_label.configure(text="Done", text_color=COLORS["text_secondary"])
+            self.progress_label.configure(
+                text="Done", text_color=COLORS["text_secondary"]
+            )
             self.set_progress(100)
         elif result.success:
             self.add_output("")
             self.add_output("[SUCCESS] Profile applied successfully!")
             if self._tweak_ok > 0:
-                self.add_output(f"   {self._tweak_ok} tweak(s) applied, {self._tweak_fail} failed")
-            self.progress_label.configure(text="Complete!", text_color=COLORS["success"])
+                self.add_output(
+                    f"   {self._tweak_ok} tweak(s) applied, {self._tweak_fail} failed"
+                )
+            self.progress_label.configure(
+                text="Complete!", text_color=COLORS["success"]
+            )
             self.progress_bar.configure(progress_color=COLORS["success"])
         else:
             self.add_output("")
             self.add_output("[ERROR] Profile application failed!")
             if self._tweak_ok + self._tweak_fail > 0:
-                self.add_output(f"   {self._tweak_ok} succeeded, {self._tweak_fail} failed")
+                self.add_output(
+                    f"   {self._tweak_ok} succeeded, {self._tweak_fail} failed"
+                )
             if result.errors:
                 self.add_output(f"Errors: {result.errors}")
             self.progress_label.configure(text="Failed", text_color=COLORS["danger"])
@@ -256,7 +265,7 @@ class ExecutionDialog(ctk.CTkToplevel):
         if threading.current_thread() is not threading.main_thread():
             self.after(0, lambda: self.show_diff(diff))
             return
-        
+
         self.add_output("")
         self.add_output("[snap] Before/After Comparison:")
         for line in diff.summary_lines:

@@ -5,6 +5,7 @@ Updated: 2026-02-11
 """
 
 import customtkinter as ctk
+import tkinter
 from typing import TYPE_CHECKING, List, Optional, Dict, Set
 import threading
 from gui.theme import (
@@ -18,7 +19,7 @@ from gui.theme import (
     ICON_FONT,
     theme_manager,
 )
-from gui.style import font
+from gui.style import font, bind_dynamic_wraplength
 from gui.components.glass_card import GlassCard
 from gui.components.enhanced_button import EnhancedButton
 from gui.components.execution_dialog import ExecutionDialog
@@ -155,13 +156,27 @@ class ScriptsView(ctk.CTkFrame):
             "see_details": "View Details",
             "view_tweaks": "View Tweaks",
             "recommended": "Recommended",
-            "rec_reason": "Recommendation based on your system: {reason}",
+            "rec_reason": "Recommended for your system (Score: {score}) — {reason}",
             "tweaks_count": "{count} tweaks",
             "hero_guidance": "Best balance of FPS and stability",
             # Actionable desc (1-line versions for secondary cards)
             "safe_short": "No risk. Ideal for daily use.",
             "comp_short": "Best FPS without sacrificing stability.",
             "ext_short": "Maximum performance. May cause instability.",
+            # Hero card benefits (max 4 per profile)
+            "safe_b1": "No risk of system instability",
+            "safe_b2": "Safe for everyday use",
+            "safe_b3": "All changes fully reversible",
+            "safe_b4": "No restart required",
+            "comp_b1": "Better FPS without major risks",
+            "comp_b2": "Reduces background CPU usage",
+            "comp_b3": "Optimized for gaming performance",
+            "comp_b4": "Balanced risk-to-gain ratio",
+            "ext_b1": "Maximum FPS boost",
+            "ext_b2": "Aggressive system optimization",
+            "ext_b3": "Disables non-essential services",
+            "ext_b4": "Strips OS to bare minimum",
+            "benefits_heading": "What You Get",
         },
         "th": {
             "title": "Tweaks",
@@ -209,13 +224,27 @@ class ScriptsView(ctk.CTkFrame):
             "see_details": "ดูรายละเอียด",
             "view_tweaks": "ดู Tweaks",
             "recommended": "แนะนำ",
-            "rec_reason": "แนะนำจากสเปคของคุณ: {reason}",
+            "rec_reason": "แนะนำสำหรับเครื่องของคุณ (คะแนน: {score}) — {reason}",
             "tweaks_count": "{count} tweaks",
             "hero_guidance": "สมดุล FPS และความเสถียรที่ดีที่สุด",
             # Actionable desc (1-line versions for secondary cards)
             "safe_short": "ไม่มีความเสี่ยง เหมาะสำหรับการใช้ทุกวัน",
             "comp_short": "FPS ดีที่สุดโดยไม่เสียเสถียรภาพ",
             "ext_short": "ประสิทธิภาพสูงสุด อาจมีความไม่เสถียร",
+            # Hero card benefits (max 4 per profile)
+            "safe_b1": "ไม่มีความเสี่ยงต่อเสถียรภาพของระบบ",
+            "safe_b2": "ปลอดภัยสำหรับการใช้งานทุกวัน",
+            "safe_b3": "ย้อนกลับการเปลี่ยนแปลงทั้งหมดได้",
+            "safe_b4": "ไม่ต้อง Restart",
+            "comp_b1": "FPS ดีขึ้นโดยไม่เสี่ยงมาก",
+            "comp_b2": "ลดการใช้ CPU พื้นหลัง",
+            "comp_b3": "ปรับแต่งเพื่อประสิทธิภาพเกม",
+            "comp_b4": "สมดุลระหว่างความเสี่ยงและประสิทธิภาพ",
+            "ext_b1": "เพิ่ม FPS สูงสุด",
+            "ext_b2": "ปรับแต่งระบบแบบจัดหนัก",
+            "ext_b3": "ปิด Services ที่ไม่จำเป็น",
+            "ext_b4": "ลดทุกอย่างใน OS ให้เหลือน้อยที่สุด",
+            "benefits_heading": "สิ่งที่คุณจะได้",
         },
     }
 
@@ -352,6 +381,12 @@ class ScriptsView(ctk.CTkFrame):
                 "desc": self._ui("safe_desc"),
                 "restart": self._ui("restart_no"),
                 "risk_bar_pct": 0.15,
+                "benefits": [
+                    self._ui("safe_b1"),
+                    self._ui("safe_b2"),
+                    self._ui("safe_b3"),
+                    self._ui("safe_b4"),
+                ],
                 # Compare data
                 "services_disabled": 0,
                 "registry_changes": 4,
@@ -368,6 +403,12 @@ class ScriptsView(ctk.CTkFrame):
                 "desc": self._ui("comp_desc"),
                 "restart": self._ui("restart_maybe"),
                 "risk_bar_pct": 0.50,
+                "benefits": [
+                    self._ui("comp_b1"),
+                    self._ui("comp_b2"),
+                    self._ui("comp_b3"),
+                    self._ui("comp_b4"),
+                ],
                 "services_disabled": 6,
                 "registry_changes": 12,
                 "bcdedit_changes": 2,
@@ -383,6 +424,12 @@ class ScriptsView(ctk.CTkFrame):
                 "desc": self._ui("ext_desc"),
                 "restart": self._ui("restart_yes"),
                 "risk_bar_pct": 0.85,
+                "benefits": [
+                    self._ui("ext_b1"),
+                    self._ui("ext_b2"),
+                    self._ui("ext_b3"),
+                    self._ui("ext_b4"),
+                ],
                 "services_disabled": 14,
                 "registry_changes": 22,
                 "bcdedit_changes": 5,
@@ -594,14 +641,16 @@ class ScriptsView(ctk.CTkFrame):
         header.grid(row=0, column=0, sticky="ew", pady=(0, SPACING["sm"]))
         header.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(
+        qa_subtitle = ctk.CTkLabel(
             header,
             text=self._ui("quick_actions_subtitle"),
             font=self._font(12),
             text_color=COLORS["text_secondary"],
-            wraplength=900,
+            wraplength=600,
             justify="left",
-        ).grid(row=0, column=0, sticky="w")
+        )
+        qa_subtitle.grid(row=0, column=0, sticky="ew")
+        bind_dynamic_wraplength(header, qa_subtitle)
 
         if self.quick_actions_errors:
             err_card = GlassCard(self.content, glow_color=COLORS["danger"])
@@ -612,23 +661,32 @@ class ScriptsView(ctk.CTkFrame):
                 font=self._font(14, "bold"),
                 text_color=COLORS["danger"],
             ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
-            ctk.CTkLabel(
+            err_details = ctk.CTkLabel(
                 err_card,
                 text=self._ui("quick_catalog_details"),
                 font=self._font(12),
                 text_color=COLORS["text_secondary"],
-                wraplength=860,
+                wraplength=600,
                 justify="left",
-            ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["xs"]))
+            )
+            err_details.pack(
+                anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["xs"])
+            )
             preview = "\n".join(f"- {e}" for e in self.quick_actions_errors[:5])
-            ctk.CTkLabel(
+            err_preview = ctk.CTkLabel(
                 err_card,
                 text=preview,
                 font=self._font(11),
                 text_color=COLORS["text_tertiary"],
-                wraplength=860,
+                wraplength=600,
                 justify="left",
-            ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
+            )
+            err_preview.pack(
+                anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["md"])
+            )
+            bind_dynamic_wraplength(
+                err_card, [err_details, err_preview], padding=SPACING["md"] * 2 + 8
+            )
             return
 
         groups_frame = ctk.CTkFrame(self.content, fg_color="transparent")
@@ -776,14 +834,15 @@ class ScriptsView(ctk.CTkFrame):
             text_color=COLORS["text_primary"],
         ).pack(anchor="w", padx=SPACING["md"], pady=(SPACING["md"], SPACING["xs"]))
 
-        ctk.CTkLabel(
+        desc_lbl = ctk.CTkLabel(
             card,
             text=action.description,
             font=self._font(12),
             text_color=COLORS["text_secondary"],
-            wraplength=420,
             justify="left",
-        ).pack(anchor="w", padx=SPACING["md"])
+        )
+        desc_lbl.pack(anchor="w", padx=SPACING["md"], fill="x")
+        bind_dynamic_wraplength(card, desc_lbl)
 
         helper_text = action.helper_text or (
             f"{summary.tweak_count} tweaks"
@@ -985,13 +1044,14 @@ class ScriptsView(ctk.CTkFrame):
         preset_info = self._get_preset_info()
         rec_key = suggestion.get("preset", "safe") if suggestion else "safe"
         rec_reason = suggestion.get("reason", "") if suggestion else ""
+        rec_score = suggestion.get("total_score", 0) if suggestion else 0
 
         # Row 1: Hero card (recommended preset — full width)
         if rec_key in preset_info:
             hero_info = preset_info[rec_key]
             hero_tweaks = self.registry.get_tweaks_for_preset(rec_key)
             hero_card = self._create_hero_card(
-                self.content, hero_info, hero_tweaks, rec_key, rec_reason
+                self.content, hero_info, hero_tweaks, rec_key, rec_reason, rec_score
             )
             hero_card.grid(row=1, column=0, sticky="ew", pady=(0, 16))
 
@@ -1023,41 +1083,44 @@ class ScriptsView(ctk.CTkFrame):
         tweaks: List[Tweak],
         preset_key: str,
         reason: str,
+        score: int = 0,
     ):
-        """Full-width hero card for the recommended preset.
+        """Compact hero card for the recommended preset.
 
-        Layout (2 columns, compact):
-          Left  — icon + name + RECOMMENDED badge (1 row) + guidance + pills
-          Right — FPS (26px bold) + Apply + View Details (tight stack)
+        Designed for a *selection screen* — must stay small enough that all
+        three profile options are visible without scrolling.
 
-        Card padding: 10px 20px. Tight internal gaps (4px).
+        Layout (single column, tight):
+          Row 0 — Icon + Name + Recommended pill badge
+          Row 1 — Recommendation reason line (system score + rationale)
+          Row 2 — FPS + inline stats  (e.g. "+8-15 FPS  ·  Medium Risk  ·  44 tweaks")
+          Row 3 — 2-3 benefit bullets (single column, no heading)
+          Row 4 — Apply + View Details buttons
         """
+        profile_color = info["color"]
+        risk_colors = self._get_risk_colors()
+        risk_c = risk_colors.get(info["risk"], risk_colors["LOW"])
+
         card = ctk.CTkFrame(
             parent,
             fg_color=COLORS["bg_card"],
             corner_radius=RADIUS["lg"],
             border_width=2,
-            border_color=COLORS["success"],
+            border_color=profile_color,
         )
         card.grid_columnconfigure(0, weight=1)
-        card.grid_columnconfigure(1, weight=0, minsize=140)
 
-        px = 20
-        py = 10
+        px = 16
+        py = 12
 
-        # ── LEFT SECTION: identity + context ──
-        left = ctk.CTkFrame(card, fg_color="transparent")
-        left.grid(row=0, column=0, sticky="nsew", padx=(px, 12), pady=py)
-        left.grid_columnconfigure(0, weight=1)
-
-        # Row 0: Icon + name + RECOMMENDED badge (all one row)
-        icon_name_row = ctk.CTkFrame(left, fg_color="transparent")
-        icon_name_row.grid(row=0, column=0, sticky="w", pady=(0, 4))
+        # ── Row 0: Icon + Name + Recommended badge ──
+        header = ctk.CTkFrame(card, fg_color="transparent")
+        header.grid(row=0, column=0, sticky="ew", padx=px, pady=(py, 4))
 
         ctk.CTkLabel(
-            icon_name_row,
+            header,
             text=info["icon"],
-            font=ctk.CTkFont(family="Tabler Icons", size=18),
+            font=ctk.CTkFont(family="Tabler Icons", size=17),
             text_color=info["color"],
             fg_color=info["dim"],
             corner_radius=RADIUS["md"],
@@ -1066,66 +1129,119 @@ class ScriptsView(ctk.CTkFrame):
         ).pack(side="left", padx=(0, 8))
 
         ctk.CTkLabel(
-            icon_name_row,
+            header,
             text=info["title"],
             font=self._font(14, "bold"),
             text_color=COLORS["text_primary"],
             anchor="w",
         ).pack(side="left", padx=(0, 8))
 
+        # Recommended pill
+        pill = ctk.CTkFrame(
+            header,
+            fg_color=profile_color,
+            corner_radius=RADIUS["full"],
+        )
+        pill.pack(side="left")
         ctk.CTkLabel(
-            icon_name_row,
+            pill,
             text=ICON("star"),
-            font=ctk.CTkFont(family="Tabler Icons", size=12),
-            text_color=COLORS["success"],
-        ).pack(side="left", padx=(0, 3))
+            font=ctk.CTkFont(family="Tabler Icons", size=10),
+            text_color=COLORS.get("text_on_accent", "#000000"),
+        ).pack(side="left", padx=(6, 2), pady=1)
+        ctk.CTkLabel(
+            pill,
+            text=self._ui("recommended"),
+            font=self._font(9, "bold"),
+            text_color=COLORS.get("text_on_accent", "#000000"),
+        ).pack(side="left", padx=(0, 6), pady=1)
+
+        # Risk badge (right-aligned)
+        ctk.CTkLabel(
+            header,
+            text=f" {risk_c['label']} ",
+            font=self._font(9, "bold"),
+            fg_color=risk_c["bg"],
+            text_color=risk_c["fg"],
+            corner_radius=RADIUS["sm"],
+        ).pack(side="right")
+
+        # ── Row 1: Recommendation reason ──
+        if reason:
+            if score and int(score) > 0:
+                reason_text = self._ui("rec_reason").format(
+                    score=int(score), reason=reason
+                )
+            else:
+                reason_text = reason
+            ctk.CTkLabel(
+                card,
+                text=reason_text,
+                font=self._font(10),
+                text_color=COLORS["text_tertiary"],
+                anchor="w",
+            ).grid(row=1, column=0, sticky="w", padx=px, pady=(0, 2))
+
+        # ── Row 2: FPS + inline stats ──
+        stats_row = ctk.CTkFrame(card, fg_color="transparent")
+        stats_row.grid(row=2, column=0, sticky="ew", padx=px, pady=(0, 6))
 
         ctk.CTkLabel(
-            icon_name_row,
-            text=self._ui("recommended").upper(),
-            font=self._font(9, "bold"),
-            text_color=COLORS["success"],
+            stats_row,
+            text=info["fps"],
+            font=self._font(18, "bold"),
+            text_color=COLORS["accent"],
             anchor="w",
-        ).pack(side="left")
+        ).pack(side="left", padx=(0, 10))
 
-        # Row 1: Guidance + pills (compact info line)
         restart_val = info.get("restart", "No")
-        info_line = (
-            f"{self._ui('hero_guidance')}  \u2022  "
+        inline_stats = (
+            f"{info['risk']}  \u2022  "
             f"{len(tweaks)} {self._ui('stat_tweaks')}  \u2022  "
-            f"{self._ui('stat_risk')}: {info['risk']}  \u2022  "
             f"{self._ui('stat_restart')}: {restart_val}"
         )
         ctk.CTkLabel(
-            left,
-            text=info_line,
+            stats_row,
+            text=inline_stats,
             font=self._font(10),
             text_color=COLORS["text_tertiary"],
             anchor="w",
-        ).grid(row=1, column=0, sticky="w")
+        ).pack(side="left")
 
-        # Vertical separator
-        ctk.CTkFrame(card, fg_color=COLORS["border"], width=1).grid(
-            row=0, column=0, sticky="nse", pady=py
-        )
+        # ── Row 3: Benefit bullets (max 3, single column, no heading) ──
+        check_icon = ICON("check_circle")
+        benefits = info.get("benefits", [])
+        if benefits:
+            bullets = ctk.CTkFrame(card, fg_color="transparent")
+            bullets.grid(row=3, column=0, sticky="ew", padx=px, pady=(0, 8))
 
-        # ── RIGHT SECTION: decision block ──
-        right = ctk.CTkFrame(card, fg_color="transparent")
-        right.grid(row=0, column=1, sticky="nsew", padx=(12, px), pady=py)
-        right.grid_columnconfigure(0, weight=1)
+            for benefit in benefits[:3]:
+                line = ctk.CTkFrame(bullets, fg_color="transparent")
+                line.pack(anchor="w", pady=1)
 
-        # FPS — dominant (26px bold, accent)
-        ctk.CTkLabel(
-            right,
-            text=info["fps"],
-            font=self._font(26, "bold"),
-            text_color=COLORS["accent"],
-            anchor="center",
-        ).grid(row=0, column=0)
+                ctk.CTkLabel(
+                    line,
+                    text=check_icon,
+                    font=ctk.CTkFont(family="Tabler Icons", size=12),
+                    text_color=profile_color,
+                ).pack(side="left", padx=(0, 5))
 
-        # Apply button
+                ctk.CTkLabel(
+                    line,
+                    text=benefit,
+                    font=self._font(11),
+                    text_color=COLORS["text_secondary"],
+                    anchor="w",
+                ).pack(side="left")
+
+        # ── Row 4: Buttons ──
+        btn_frame = ctk.CTkFrame(card, fg_color="transparent")
+        btn_frame.grid(row=4, column=0, sticky="ew", padx=px, pady=(0, py))
+        btn_frame.grid_columnconfigure(0, weight=1)
+        btn_frame.grid_columnconfigure(1, weight=0)
+
         ctk.CTkButton(
-            right,
+            btn_frame,
             text=self._ui("apply"),
             font=self._font(11, "bold"),
             fg_color=COLORS["accent"],
@@ -1135,21 +1251,22 @@ class ScriptsView(ctk.CTkFrame):
             corner_radius=RADIUS["md"],
             height=28,
             command=lambda k=preset_key: self._apply_preset(k),
-        ).grid(row=1, column=0, sticky="ew", pady=(4, 2))
+        ).grid(row=0, column=0, sticky="ew", padx=(0, 8))
 
-        # View Details — accent ghost
         ctk.CTkButton(
-            right,
+            btn_frame,
             text=self._ui("see_details"),
             font=self._font(10),
             fg_color="transparent",
             text_color=COLORS["accent"],
             hover_color=COLORS["bg_hover"],
-            border_width=0,
-            corner_radius=RADIUS["sm"],
-            height=22,
+            border_width=1,
+            border_color=COLORS["border"],
+            corner_radius=RADIUS["md"],
+            height=28,
+            width=100,
             command=lambda k=preset_key: self._show_preset_tweaks(k),
-        ).grid(row=2, column=0, sticky="ew")
+        ).grid(row=0, column=1, sticky="e")
 
         return card
 
@@ -1234,15 +1351,16 @@ class ScriptsView(ctk.CTkFrame):
             if self._ui(short_key) != short_key
             else info.get("desc", "")
         )
-        ctk.CTkLabel(
+        short_desc_lbl = ctk.CTkLabel(
             card,
             text=short_desc,
             font=self._font(11),
             text_color=COLORS["text_secondary"],
             anchor="w",
-            wraplength=220,
             justify="left",
-        ).grid(row=2, column=0, sticky="ew", padx=px, pady=(0, gap))
+        )
+        short_desc_lbl.grid(row=2, column=0, sticky="ew", padx=px, pady=(0, gap))
+        bind_dynamic_wraplength(card, short_desc_lbl)
 
         # ── Row 3: Quick info line ──
         restart_val = info.get("restart", "No")
@@ -1540,15 +1658,16 @@ class ScriptsView(ctk.CTkFrame):
 
         # ── Row 1: Description ──
         # Spec: profile-desc: 12px, text-secondary, line-height 1.5
-        ctk.CTkLabel(
+        legacy_desc_lbl = ctk.CTkLabel(
             card,
             text=info["desc"],
             font=self._font(12),
             text_color=COLORS["text_secondary"],
-            wraplength=250,
             anchor="w",
             justify="left",
-        ).grid(row=1, column=0, sticky="ew", padx=px, pady=(0, 0))
+        )
+        legacy_desc_lbl.grid(row=1, column=0, sticky="ew", padx=px, pady=(0, 0))
+        bind_dynamic_wraplength(card, legacy_desc_lbl)
 
         # ── Row 2: Stats grid (2x2) ──
         # Spec: profile-stats: grid 1fr 1fr, gap 6px, margin 4px 0
@@ -1983,11 +2102,7 @@ class ScriptsView(ctk.CTkFrame):
             chip.pack(side="left", padx=2)
             self._filter_chips[key] = chip
 
-        # Category filter chips — responsive wrapping flow (multi-row when needed)
-        self._cat_chip_bar = ctk.CTkFrame(bar, fg_color="transparent")
-        self._cat_chip_bar.grid(row=1, column=0, sticky="ew", pady=(SPACING["sm"], 0))
-
-        # Build category counts from registry
+        # Category filter dropdown — compact replacement for chip row
         cat_counts: dict[str, int] = {}
         total_count = 0
         for cat_key in TWEAK_CATEGORIES:
@@ -1996,98 +2111,76 @@ class ScriptsView(ctk.CTkFrame):
                 cat_counts[cat_key] = n
                 total_count += n
 
-        # "All" chip — primary / dominant style
         if not hasattr(self, "_filter_category"):
             self._filter_category = "ALL"
 
-        self._cat_chips: dict[str, ctk.CTkButton] = {}
+        # Build dropdown values and key mapping
+        self._cat_dropdown_map: dict[str, str] = {}
+        dropdown_values: list[str] = []
 
-        # Collect all chip definitions (key, widget) for flow layout
-        chip_defs: list[tuple[str, ctk.CTkButton]] = []
+        all_label = f"All Categories ({total_count})"
+        dropdown_values.append(all_label)
+        self._cat_dropdown_map[all_label] = "ALL"
 
-        is_all = self._filter_category == "ALL"
-        all_chip = ctk.CTkButton(
-            self._cat_chip_bar,
-            text=f"All ({total_count})",
-            font=ctk.CTkFont(size=12, weight="bold")
-            if is_all
-            else ctk.CTkFont(size=11),
-            fg_color=COLORS["accent"] if is_all else "transparent",
-            text_color="#000000" if is_all else COLORS["text_secondary"],
-            hover_color=COLORS["accent_hover"] if is_all else COLORS["bg_card_hover"],
-            border_width=0 if is_all else 1,
-            border_color=COLORS["border"],
-            corner_radius=RADIUS["full"],
-            height=30 if is_all else 28,
-            command=lambda: self._set_category_filter("ALL"),
-        )
-        self._cat_chips["ALL"] = all_chip
-        chip_defs.append(("ALL", all_chip))
-
-        # Per-category chips
         for cat_key, count in cat_counts.items():
             cat_info = TWEAK_CATEGORIES[cat_key]
-            cat_color = cat_info.get("color", COLORS["text_secondary"])
-            is_active = self._filter_category == cat_key
+            label = f"\u25cf {cat_info['label']} ({count})"
+            dropdown_values.append(label)
+            self._cat_dropdown_map[label] = cat_key
 
-            chip_text = f"\u25cf {cat_info['label']} ({count})"
-            chip = ctk.CTkButton(
-                self._cat_chip_bar,
-                text=chip_text,
-                font=ctk.CTkFont(size=11),
-                fg_color=cat_color if is_active else "transparent",
-                text_color="#000000" if is_active else COLORS["text_tertiary"],
-                hover_color=COLORS["bg_card_hover"],
-                border_width=1,
-                border_color=cat_color if is_active else COLORS["border"],
-                corner_radius=RADIUS["full"],
-                height=28,
-                command=lambda k=cat_key: self._set_category_filter(k),
-            )
-            self._cat_chips[cat_key] = chip
-            chip_defs.append((cat_key, chip))
+        # Reverse map for setting dropdown value from key
+        self._cat_key_to_label: dict[str, str] = {
+            v: k for k, v in self._cat_dropdown_map.items()
+        }
 
-        # Flow-layout: place chips using .place() and reflow on resize
-        self._cat_chip_defs = chip_defs
-        self._cat_chip_bar_last_width = 0
+        current_label = self._cat_key_to_label.get(self._filter_category, all_label)
 
-        def _reflow_chips(event=None):
-            container_w = self._cat_chip_bar.winfo_width()
-            if container_w <= 1:
-                return
-            # Avoid redundant reflows for the same width
-            if container_w == self._cat_chip_bar_last_width:
-                return
-            self._cat_chip_bar_last_width = container_w
+        cat_row = ctk.CTkFrame(bar, fg_color="transparent")
+        cat_row.grid(row=1, column=0, sticky="w", pady=(SPACING["sm"], 0))
 
-            pad_x = SPACING["xs"]
-            pad_y = 3
-            x = 0
-            y = 0
-            row_h = 0
+        ctk.CTkLabel(
+            cat_row,
+            text="Category:",
+            font=font("caption"),
+            text_color=COLORS["text_tertiary"],
+        ).pack(side="left", padx=(SPACING["sm"], SPACING["xs"]))
 
-            for _key, chip_w in self._cat_chip_defs:
-                chip_w.update_idletasks()
-                cw = chip_w.winfo_reqwidth()
-                ch = chip_w.winfo_reqheight()
+        # Custom toggle dropdown — CTkButton trigger + floating CTkFrame list
+        self._cat_dropdown_open = False
+        self._cat_dropdown_panel: tkinter.Toplevel | None = None
 
-                # Wrap to next row if this chip exceeds container width
-                if x > 0 and (x + cw) > container_w:
-                    x = 0
-                    y += row_h + pad_y
-                    row_h = 0
+        self._cat_dropdown_btn = ctk.CTkButton(
+            cat_row,
+            text=current_label,
+            font=ctk.CTkFont(size=12),
+            fg_color=COLORS["bg_card"],
+            text_color=COLORS["text_primary"],
+            hover_color=COLORS["bg_card_hover"],
+            border_width=1,
+            border_color=COLORS["border"],
+            corner_radius=RADIUS["md"],
+            height=28,
+            width=200,
+            anchor="w",
+            command=self._toggle_cat_dropdown,
+        )
+        self._cat_dropdown_btn.pack(side="left")
 
-                chip_w.place(x=x, y=y, width=cw, height=ch)
-                x += cw + pad_x
-                row_h = max(row_h, ch)
+        # Tabler chevron-down icon after button text
+        self._cat_dropdown_icon = ctk.CTkLabel(
+            cat_row,
+            text=ICON("expand_more"),
+            font=ctk.CTkFont(family="Tabler Icons", size=14),
+            text_color=COLORS["text_tertiary"],
+            width=16,
+        )
+        self._cat_dropdown_icon.pack(side="left", padx=(0, SPACING["xs"]))
+        self._cat_dropdown_icon.bind(
+            "<Button-1>", lambda e: self._toggle_cat_dropdown()
+        )
 
-            # Update container height to fit all rows
-            total_h = y + row_h + pad_y
-            self._cat_chip_bar.configure(height=max(total_h, 34))
-
-        self._cat_chip_bar.bind("<Configure>", _reflow_chips)
-        # Initial layout after idle
-        self._cat_chip_bar.after(50, _reflow_chips)
+        # Store values for the panel builder
+        self._cat_dropdown_values = dropdown_values
 
     def _set_risk_filter(self, risk_level: str):
         """Set risk filter and refresh list"""
@@ -2098,6 +2191,166 @@ class ScriptsView(ctk.CTkFrame):
         """Set category filter and refresh list"""
         self._filter_category = category
         self._on_filter_changed()
+
+    def _on_cat_dropdown_changed(self, selected_label: str):
+        """Handle category dropdown selection"""
+        cat_key = self._cat_dropdown_map.get(selected_label, "ALL")
+        self._close_cat_dropdown()
+        self._set_category_filter(cat_key)
+
+    def _toggle_cat_dropdown(self):
+        """Open or close the custom category dropdown panel"""
+        if self._cat_dropdown_open:
+            self._close_cat_dropdown()
+        else:
+            self._open_cat_dropdown()
+
+    def _open_cat_dropdown(self):
+        """Build a Toplevel dropdown anchored directly below the trigger button"""
+        if self._cat_dropdown_panel is not None:
+            return
+        self._cat_dropdown_open = True
+
+        btn = self._cat_dropdown_btn
+        btn.update_idletasks()
+
+        # Absolute screen coordinates of the button
+        abs_x = btn.winfo_rootx()
+        abs_y = btn.winfo_rooty() + btn.winfo_height() + 2
+        btn_w = btn.winfo_width()
+
+        item_height = 26
+        max_visible = 11
+        panel_w = max(btn_w, 200)
+        n_items = min(len(self._cat_dropdown_values), max_visible)
+        panel_h = n_items * item_height + SPACING["xs"] * 2 + 4  # +4 for border
+
+        # Use a raw Toplevel for pixel-perfect screen positioning
+        top = self.winfo_toplevel()
+        popup = tkinter.Toplevel(top)
+        popup.withdraw()  # hide while building
+        popup.overrideredirect(True)  # borderless
+        popup.geometry(f"{panel_w}x{panel_h}+{abs_x}+{abs_y}")
+        popup.configure(bg=COLORS["bg_card"])
+
+        # Inner frame for themed content
+        panel = ctk.CTkFrame(
+            popup,
+            fg_color=COLORS["bg_card"],
+            border_color=COLORS["border"],
+            border_width=1,
+            corner_radius=RADIUS["md"],
+        )
+        panel.pack(fill="both", expand=True)
+
+        self._cat_dropdown_panel = popup
+
+        current_label = self._cat_key_to_label.get(
+            getattr(self, "_filter_category", "ALL"), ""
+        )
+
+        for label in self._cat_dropdown_values:
+            is_sel = label == current_label
+            item = ctk.CTkButton(
+                panel,
+                text=label,
+                font=ctk.CTkFont(size=11, weight="bold" if is_sel else "normal"),
+                fg_color=COLORS["accent"] if is_sel else "transparent",
+                text_color="#000000" if is_sel else COLORS["text_primary"],
+                hover_color=COLORS["bg_card_hover"],
+                corner_radius=RADIUS["sm"],
+                height=item_height - 2,
+                anchor="w",
+                command=lambda lbl=label: self._on_cat_dropdown_changed(lbl),
+            )
+            item.pack(fill="x", padx=SPACING["xs"], pady=0)
+
+        popup.deiconify()  # show after building
+
+        # Close when the popup loses focus
+        popup.bind(
+            "<FocusOut>",
+            lambda e: self.after(80, self._close_cat_dropdown_if_unfocused),
+        )
+        # Close on any click in the main window
+        self._cat_dropdown_outside_id = top.bind(
+            "<Button-1>",
+            self._close_cat_dropdown_if_outside,
+            add="+",
+        )
+
+    def _close_cat_dropdown_if_unfocused(self):
+        """Close dropdown if focus has left the popup entirely"""
+        if not self._cat_dropdown_open or self._cat_dropdown_panel is None:
+            return
+        try:
+            focused = self.focus_get()
+            # If focus went to a widget inside the popup, keep it open
+            popup = self._cat_dropdown_panel
+            if focused and str(focused).startswith(str(popup)):
+                return
+        except Exception:
+            pass
+        self._close_cat_dropdown()
+
+    def _close_cat_dropdown_if_outside(self, event):
+        """Close the dropdown if the click is outside the panel and button"""
+        if not self._cat_dropdown_open or self._cat_dropdown_panel is None:
+            return
+
+        ex, ey = event.x_root, event.y_root
+
+        # Check trigger button and icon
+        for widget in (
+            self._cat_dropdown_btn,
+            getattr(self, "_cat_dropdown_icon", None),
+        ):
+            if widget is None:
+                continue
+            try:
+                wx = widget.winfo_rootx()
+                wy = widget.winfo_rooty()
+                if (
+                    wx <= ex <= wx + widget.winfo_width()
+                    and wy <= ey <= wy + widget.winfo_height()
+                ):
+                    return
+            except Exception:
+                pass
+
+        # Check popup window bounds
+        try:
+            popup = self._cat_dropdown_panel
+            px = popup.winfo_rootx()
+            py = popup.winfo_rooty()
+            if (
+                px <= ex <= px + popup.winfo_width()
+                and py <= ey <= py + popup.winfo_height()
+            ):
+                return
+        except Exception:
+            pass
+
+        self._close_cat_dropdown()
+
+    def _close_cat_dropdown(self):
+        """Hide and destroy the dropdown Toplevel"""
+        self._cat_dropdown_open = False
+        if self._cat_dropdown_panel is not None:
+            try:
+                self._cat_dropdown_panel.destroy()
+            except Exception:
+                pass
+            self._cat_dropdown_panel = None
+        # Unbind the global click handler
+        if hasattr(self, "_cat_dropdown_outside_id") and self._cat_dropdown_outside_id:
+            try:
+                self._cat_dropdown_btn.winfo_toplevel().unbind(
+                    "<Button-1>", self._cat_dropdown_outside_id
+                )
+            except Exception:
+                pass
+            self._cat_dropdown_outside_id = None
 
     def _on_filter_changed(self):
         """Re-populate tweak list based on search/filter"""
@@ -2120,32 +2373,15 @@ class ScriptsView(ctk.CTkFrame):
                     border_color=color if is_active else COLORS["border"],
                 )
 
-        # Update category chip styles
-        if hasattr(self, "_cat_chips"):
+        # Sync category dropdown display if present
+        # Sync category dropdown button label
+        if hasattr(self, "_cat_dropdown_btn") and hasattr(self, "_cat_key_to_label"):
             cat_filter = (
                 self._filter_category if hasattr(self, "_filter_category") else "ALL"
             )
-            for key, chip in self._cat_chips.items():
-                is_active = cat_filter == key
-                if key == "ALL":
-                    # "All" chip — dominant accent style when active
-                    chip.configure(
-                        fg_color=COLORS["accent"] if is_active else "transparent",
-                        text_color="#000000" if is_active else COLORS["text_secondary"],
-                        border_width=0 if is_active else 1,
-                        border_color=COLORS["border"],
-                        font=ctk.CTkFont(size=12, weight="bold")
-                        if is_active
-                        else ctk.CTkFont(size=11),
-                    )
-                else:
-                    cat_info = TWEAK_CATEGORIES.get(key, {})
-                    cat_color = cat_info.get("color", COLORS["text_secondary"])
-                    chip.configure(
-                        fg_color=cat_color if is_active else "transparent",
-                        text_color="#000000" if is_active else COLORS["text_tertiary"],
-                        border_color=cat_color if is_active else COLORS["border"],
-                    )
+            label = self._cat_key_to_label.get(cat_filter)
+            if label:
+                self._cat_dropdown_btn.configure(text=label)
 
     def _populate_tweak_list(self):
         """Populate tweak list with current search/filter applied"""
@@ -2557,9 +2793,15 @@ class ScriptsView(ctk.CTkFrame):
         # Refresh list to update row highlights
         self._populate_tweak_list()
 
-    _DETAIL_SCROLLBAR_WIDTH = 14
-    _DETAIL_PAD_X = 12
-    _DETAIL_WRAP = 320
+    _DETAIL_SCROLLBAR_WIDTH = 16  # actual CTkScrollbar default width
+    _DETAIL_PAD_X = 10  # left padding on scroll frame
+    _DETAIL_PAD_RIGHT = (
+        6  # right padding on scroll frame (small — scrollbar is separate column)
+    )
+    _DETAIL_INNER_PAD_RIGHT = 4  # tiny inner safety margin
+    _DETAIL_WRAP = (
+        180  # conservative initial fallback in logical px (overridden dynamically)
+    )
 
     def _show_inline_detail(self, tweak: Tweak):
         if not hasattr(self, "detail_panel"):
@@ -2592,13 +2834,15 @@ class ScriptsView(ctk.CTkFrame):
         scroll.pack(
             fill="both",
             expand=True,
-            padx=(self._DETAIL_PAD_X, 0),
-            pady=(0, SPACING["sm"]),
+            padx=(self._DETAIL_PAD_X, self._DETAIL_PAD_RIGHT),
+            pady=(0, SPACING["xs"]),
         )
         scroll.grid_columnconfigure(0, weight=1)
 
         inner = ctk.CTkFrame(scroll, fg_color="transparent")
-        inner.grid(row=0, column=0, sticky="nsew", padx=(0, self._DETAIL_PAD_X))
+        inner.grid(
+            row=0, column=0, sticky="nsew", padx=(0, self._DETAIL_INNER_PAD_RIGHT)
+        )
         inner.grid_columnconfigure(0, weight=1)
 
         # Dynamic wraplength: use the detail_panel width as the source of truth
@@ -2611,19 +2855,22 @@ class ScriptsView(ctk.CTkFrame):
             return lbl
 
         def _update_wraplengths(event=None):
-            # Use the panel width as source of truth (it has grid_propagate=False)
-            panel_w = self.detail_panel.winfo_width()
-            if panel_w <= 20:
+            # Read the inner frame's actual width (in screen/tk pixels).
+            # CTkLabel.configure(wraplength=N) internally multiplies N by the
+            # DPI scaling factor, so we must convert screen pixels back to
+            # logical (unscaled) pixels before passing to wraplength.
+            iw = inner.winfo_width()
+            if iw <= 20:
                 return
-            # Subtract: left pad + scrollbar + right pad + internal border/padding
-            usable = (
-                panel_w
-                - self._DETAIL_PAD_X
-                - self._DETAIL_SCROLLBAR_WIDTH
-                - self._DETAIL_PAD_X
-                - 8
-            )
-            if usable < 80:
+            try:
+                scaling = ctk.ScalingTracker.get_widget_scaling(inner)
+            except Exception:
+                scaling = 1.0
+            if scaling <= 0:
+                scaling = 1.0
+            # Convert screen px → logical px, subtract safety margin
+            usable = int(iw / scaling) - 8
+            if usable < 60:
                 return
             for lbl in _wrap_labels:
                 try:
@@ -2631,9 +2878,12 @@ class ScriptsView(ctk.CTkFrame):
                 except Exception:
                     pass
 
+        # Bind to inner frame's Configure event (fires when it gets its real size)
+        inner.bind("<Configure>", _update_wraplengths)
         self.detail_panel.bind("<Configure>", _update_wraplengths)
-        # Schedule initial update after layout settles
-        self.detail_panel.after(80, _update_wraplengths)
+        # Schedule updates at multiple intervals to catch late layout passes
+        for _delay in (50, 150, 400):
+            self.detail_panel.after(_delay, _update_wraplengths)
 
         risk_colors = self._get_risk_colors()
         risk_c = risk_colors.get(tweak.risk_level.upper(), risk_colors["LOW"])
@@ -2642,7 +2892,7 @@ class ScriptsView(ctk.CTkFrame):
         _make_wrapping_label(
             inner,
             text=tweak.name,
-            font=font("h4"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color=COLORS["text_primary"],
             wraplength=self._DETAIL_WRAP,
             anchor="w",
@@ -2650,43 +2900,63 @@ class ScriptsView(ctk.CTkFrame):
         ).grid(row=r, column=0, sticky="ew")
         r += 1
 
-        # Badges row — wrapped using a flow frame so tags don't clip
+        # Badges — flow-wrap grid so tags wrap to new lines when long
         badge_f = ctk.CTkFrame(inner, fg_color="transparent")
-        badge_f.grid(row=r, column=0, sticky="ew", pady=(SPACING["xs"], SPACING["xs"]))
+        badge_f.grid(row=r, column=0, sticky="ew", pady=(SPACING["xs"], 2))
         r += 1
 
+        _badges: list[ctk.CTkLabel] = []
         cat_info = TWEAK_CATEGORIES.get(tweak.category, {})
         cat_label = cat_info.get("label", tweak.category)
-        ctk.CTkLabel(
-            badge_f,
-            text=f"  {cat_label}  ",
-            font=ctk.CTkFont(size=9),
-            fg_color=COLORS["bg_tertiary"],
-            text_color=cat_info.get("color", COLORS["text_secondary"]),
-            corner_radius=RADIUS["sm"],
-        ).pack(side="left", padx=(0, SPACING["xs"]))
-
-        ctk.CTkLabel(
-            badge_f,
-            text=f"  {risk_c['label']}  ",
-            font=ctk.CTkFont(size=9),
-            fg_color=risk_c["bg"],
-            text_color=risk_c["fg"],
-            corner_radius=RADIUS["sm"],
-        ).pack(side="left", padx=(0, SPACING["xs"]))
-
-        if tweak.requires_restart:
+        _badges.append(
             ctk.CTkLabel(
                 badge_f,
-                text="  Restart  ",
+                text=f"  {cat_label}  ",
                 font=ctk.CTkFont(size=9),
                 fg_color=COLORS["bg_tertiary"],
-                text_color=COLORS["text_tertiary"],
+                text_color=cat_info.get("color", COLORS["text_secondary"]),
                 corner_radius=RADIUS["sm"],
-            ).pack(side="left")
+            )
+        )
+
+        _badges.append(
+            ctk.CTkLabel(
+                badge_f,
+                text=f"  {risk_c['label']}  ",
+                font=ctk.CTkFont(size=9),
+                fg_color=risk_c["bg"],
+                text_color=risk_c["fg"],
+                corner_radius=RADIUS["sm"],
+            )
+        )
+
+        if tweak.requires_restart:
+            _badges.append(
+                ctk.CTkLabel(
+                    badge_f,
+                    text="  Restart  ",
+                    font=ctk.CTkFont(size=9),
+                    fg_color=COLORS["bg_tertiary"],
+                    text_color=COLORS["text_tertiary"],
+                    corner_radius=RADIUS["sm"],
+                )
+            )
+
+        # Layout badges in a wrapping grid (max 2 per row)
+        _BADGE_COLS = 2
+        for i, badge in enumerate(_badges):
+            br = i // _BADGE_COLS
+            bc = i % _BADGE_COLS
+            badge.grid(
+                row=br,
+                column=bc,
+                sticky="w",
+                padx=(0, SPACING["xs"]),
+                pady=(0, 3),
+            )
 
         ctk.CTkFrame(inner, fg_color=COLORS["border"], height=1).grid(
-            row=r, column=0, sticky="ew", pady=(SPACING["xs"], SPACING["xs"])
+            row=r, column=0, sticky="ew", pady=(SPACING["xs"], 2)
         )
         r += 1
 
@@ -2703,14 +2973,14 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 inner,
                 text=title,
-                font=font("micro"),
+                font=ctk.CTkFont(size=10, weight="normal"),
                 text_color=COLORS["text_tertiary"],
-            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], 1))
             r += 1
             _make_wrapping_label(
                 inner,
                 text=content,
-                font=font("body_small"),
+                font=ctk.CTkFont(size=11),
                 text_color=COLORS["text_secondary"],
                 wraplength=self._DETAIL_WRAP,
                 anchor="w",
@@ -2722,15 +2992,15 @@ class ScriptsView(ctk.CTkFrame):
             ctk.CTkLabel(
                 inner,
                 text="Warnings",
-                font=font("micro"),
+                font=ctk.CTkFont(size=10, weight="normal"),
                 text_color=COLORS.get("warning", "#F59E0B"),
-            ).grid(row=r, column=0, sticky="w", pady=(SPACING["sm"], 1))
+            ).grid(row=r, column=0, sticky="w", pady=(SPACING["xs"], 1))
             r += 1
             for warn in tweak.warnings:
                 _make_wrapping_label(
                     inner,
                     text=f"  - {warn}",
-                    font=font("micro"),
+                    font=ctk.CTkFont(size=10),
                     text_color=COLORS.get("warning", "#FBBF24"),
                     wraplength=self._DETAIL_WRAP,
                     anchor="w",
@@ -2739,7 +3009,7 @@ class ScriptsView(ctk.CTkFrame):
                 r += 1
 
         ctk.CTkFrame(inner, fg_color=COLORS["border"], height=1).grid(
-            row=r, column=0, sticky="ew", pady=SPACING["sm"]
+            row=r, column=0, sticky="ew", pady=SPACING["xs"]
         )
         r += 1
 

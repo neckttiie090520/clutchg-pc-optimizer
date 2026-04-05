@@ -5,7 +5,7 @@ Info/warning box displayed within views
 
 import customtkinter as ctk
 from gui.theme import COLORS, SIZES
-from gui.style import font
+from gui.style import font, bind_dynamic_wraplength
 
 
 class InlineHelpBox(ctk.CTkFrame):
@@ -52,13 +52,14 @@ class InlineHelpBox(ctk.CTkFrame):
             text_color=self._get_text_color(help_type),
         ).pack(anchor="w")
 
-        ctk.CTkLabel(
+        content_lbl = ctk.CTkLabel(
             content_frame,
             text=content,
             font=font("caption", size=11),
             text_color=self._get_text_color(help_type),
-            wraplength=600,
-        ).pack(anchor="w", pady=(5, 0))
+        )
+        content_lbl.pack(anchor="w", pady=(5, 0), fill="x")
+        bind_dynamic_wraplength(content_frame, content_lbl)
 
     def _get_bg_color(self, help_type: str) -> str:
         colors = {

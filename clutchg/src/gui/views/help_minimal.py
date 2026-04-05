@@ -7,7 +7,7 @@ import customtkinter as ctk
 import re
 from typing import TYPE_CHECKING
 from gui.theme import COLORS, SIZES, SPACING, RADIUS, ICON, ICON_FONT
-from gui.style import font
+from gui.style import font, bind_dynamic_wraplength
 from gui.components.inline_help import InlineHelpBox
 from gui.components.glass_card import GlassCard
 from gui.components.enhanced_button import EnhancedButton
@@ -299,14 +299,15 @@ class HelpView(ctk.CTkFrame):
         """Render profiles explanation"""
         # Overview paragraph
         if "overview" in profiles_data:
-            ctk.CTkLabel(
+            _profiles_overview = ctk.CTkLabel(
                 self.content_frame,
                 text=profiles_data["overview"],
                 font=self._font(12),
                 text_color=COLORS["text_secondary"],
-                wraplength=720,
                 justify="left",
-            ).pack(anchor="w", pady=(0, 15), padx=20)
+            )
+            _profiles_overview.pack(anchor="w", fill="x", pady=(0, 15), padx=20)
+            bind_dynamic_wraplength(self.content_frame, _profiles_overview)
 
         profiles = profiles_data.get("profiles", {})
 
@@ -382,13 +383,14 @@ class HelpView(ctk.CTkFrame):
                     text_color=COLORS["accent"],
                 ).pack(side="left", padx=(0, 4))
 
-                ctk.CTkLabel(
+                _tip_lbl = ctk.CTkLabel(
                     tip_frame,
                     text=profile["who_should_use"],
                     font=self._font(10, "italic"),
                     text_color=COLORS["accent"],
-                    wraplength=720,
-                ).pack(side="left")
+                )
+                _tip_lbl.pack(side="left", fill="x", expand=True)
+                bind_dynamic_wraplength(tip_frame, _tip_lbl)
 
             if profile.get("warnings"):
                 ctk.CTkLabel(
@@ -399,14 +401,15 @@ class HelpView(ctk.CTkFrame):
                 ).pack(anchor="w", pady=(10, 5))
 
                 for item in profile["warnings"]:
-                    ctk.CTkLabel(
+                    _warn_lbl = ctk.CTkLabel(
                         details_frame,
-                        text=f"  • {item}",
+                        text=f"  \u2022 {item}",
                         font=self._font(11),
                         text_color=COLORS["text_secondary"],
-                        wraplength=720,
                         justify="left",
-                    ).pack(anchor="w", pady=1)
+                    )
+                    _warn_lbl.pack(anchor="w", fill="x", pady=1)
+                    bind_dynamic_wraplength(details_frame, _warn_lbl)
 
     def _add_detail_row(self, parent, label: str, value: str):
         """Add a detail row"""
@@ -434,14 +437,15 @@ class HelpView(ctk.CTkFrame):
         """Render script reference"""
         # Overview paragraph
         if "overview" in scripts_data:
-            ctk.CTkLabel(
+            _scripts_ov = ctk.CTkLabel(
                 self.content_frame,
                 text=scripts_data["overview"],
                 font=self._font(12),
                 text_color=COLORS["text_secondary"],
-                wraplength=720,
                 justify="left",
-            ).pack(anchor="w", pady=(0, 15), padx=20)
+            )
+            _scripts_ov.pack(anchor="w", fill="x", pady=(0, 15), padx=20)
+            bind_dynamic_wraplength(self.content_frame, _scripts_ov)
 
         categories = scripts_data.get("categories", {})
 
@@ -493,13 +497,14 @@ class HelpView(ctk.CTkFrame):
             text_color=COLORS["text_primary"],
         ).pack(anchor="w", padx=15, pady=(12, 5))
 
-        ctk.CTkLabel(
+        _script_desc = ctk.CTkLabel(
             card,
             text=script["description"],
             font=self._font(11),
             text_color=COLORS["text_secondary"],
-            wraplength=720,
-        ).pack(anchor="w", padx=15, pady=(0, 10))
+        )
+        _script_desc.pack(anchor="w", fill="x", padx=15, pady=(0, 10))
+        bind_dynamic_wraplength(card, _script_desc)
 
         if "effects" in script:
             for effect in script["effects"]:
@@ -508,14 +513,15 @@ class HelpView(ctk.CTkFrame):
                 ).pack(anchor="w", padx=15, pady=2)
 
         if "reversibility" in script:
-            ctk.CTkLabel(
+            _rev_lbl = ctk.CTkLabel(
                 card,
                 text=f"{self._ui('reversibility')} {script['reversibility']}",
                 font=self._font(10),
                 text_color=COLORS["text_tertiary"],
-                wraplength=720,
                 justify="left",
-            ).pack(anchor="w", padx=15, pady=(8, 12))
+            )
+            _rev_lbl.pack(anchor="w", fill="x", padx=15, pady=(8, 12))
+            bind_dynamic_wraplength(card, _rev_lbl)
 
     def _resolve_view_link(self, text: str) -> str | None:
         """Return a view key if a key_point text references a navigable app area."""
@@ -547,14 +553,15 @@ class HelpView(ctk.CTkFrame):
             ).pack(anchor="w", pady=(20, 10), padx=20)
 
             if "content" in section:
-                ctk.CTkLabel(
+                _sec_content = ctk.CTkLabel(
                     self.content_frame,
                     text=section["content"],
                     font=self._font(12),
                     text_color=COLORS["text_secondary"],
-                    wraplength=720,
                     justify="left",
-                ).pack(anchor="w", pady=(0, 10), padx=20)
+                )
+                _sec_content.pack(anchor="w", fill="x", pady=(0, 10), padx=20)
+                bind_dynamic_wraplength(self.content_frame, _sec_content)
 
             if "steps" in section:
                 for step in section["steps"]:
@@ -595,14 +602,15 @@ class HelpView(ctk.CTkFrame):
             ).pack(anchor="w", pady=(0, 8))
 
             if "content" in section:
-                ctk.CTkLabel(
+                _safety_lbl = ctk.CTkLabel(
                     self.content_frame,
                     text=section["content"],
                     font=self._font(12),
                     text_color=COLORS["text_secondary"],
-                    wraplength=720,
                     justify="left",
-                ).pack(anchor="w", pady=(0, 15), padx=20)
+                )
+                _safety_lbl.pack(anchor="w", fill="x", pady=(0, 15), padx=20)
+                bind_dynamic_wraplength(self.content_frame, _safety_lbl)
 
         # Warning boxes
         warnings = safety_data.get("warnings", [])
@@ -732,14 +740,15 @@ class HelpView(ctk.CTkFrame):
         ).pack(anchor="w", pady=(0, 15))
 
         # Description
-        ctk.CTkLabel(
+        _about_desc = ctk.CTkLabel(
             self.content_frame,
             text=payload.get("description", ""),
             font=self._font(12),
             text_color=COLORS["text_secondary"],
-            wraplength=720,
             justify="left",
-        ).pack(anchor="w", pady=(0, 20), padx=20)
+        )
+        _about_desc.pack(anchor="w", fill="x", pady=(0, 20), padx=20)
+        bind_dynamic_wraplength(self.content_frame, _about_desc)
 
         # Features
         ctk.CTkLabel(
@@ -758,13 +767,14 @@ class HelpView(ctk.CTkFrame):
             ).pack(anchor="w", padx=20, pady=3)
 
         # Disclaimer
-        ctk.CTkLabel(
+        _discl_lbl = ctk.CTkLabel(
             self.content_frame,
             text=payload.get("disclaimer", ""),
             font=self._font(10, "italic"),
             text_color=COLORS["text_muted"],
-            wraplength=720,
-        ).pack(anchor="w", pady=(30, 0))
+        )
+        _discl_lbl.pack(anchor="w", fill="x", pady=(30, 0))
+        bind_dynamic_wraplength(self.content_frame, _discl_lbl)
 
         # Credits
         if "credits" in payload:
@@ -801,25 +811,27 @@ class HelpView(ctk.CTkFrame):
                 text_color=COLORS["accent"],
             ).pack(side="left", padx=(0, 8))
 
-            ctk.CTkLabel(
+            _q_lbl = ctk.CTkLabel(
                 q_frame,
                 text=qa["question"],
                 font=self._font(13, "bold"),
                 text_color=COLORS["text_primary"],
-                wraplength=680,
                 justify="left",
                 anchor="w",
-            ).pack(side="left", fill="x", expand=True)
+            )
+            _q_lbl.pack(side="left", fill="x", expand=True)
+            bind_dynamic_wraplength(q_frame, _q_lbl)
 
             # Answer
-            ctk.CTkLabel(
+            _a_lbl = ctk.CTkLabel(
                 card,
                 text=qa["answer"],
                 font=self._font(11),
                 text_color=COLORS["text_secondary"],
-                wraplength=700,
                 justify="left",
-            ).pack(anchor="w", padx=15, pady=(0, 12))
+            )
+            _a_lbl.pack(anchor="w", fill="x", padx=15, pady=(0, 12))
+            bind_dynamic_wraplength(card, _a_lbl)
 
     def on_search_change(self):
         """Handle help search."""
@@ -885,13 +897,14 @@ class HelpView(ctk.CTkFrame):
             ).pack(side="left")
 
             snippet = self._make_snippet(topic.content, q)
-            ctk.CTkLabel(
+            _snippet_lbl = ctk.CTkLabel(
                 card,
                 text=snippet,
                 font=self._font(11),
                 text_color=COLORS["text_secondary"],
-                wraplength=720,
-            ).pack(anchor="w", padx=15, pady=(0, 10))
+            )
+            _snippet_lbl.pack(anchor="w", fill="x", padx=15, pady=(0, 10))
+            bind_dynamic_wraplength(card, _snippet_lbl)
 
             EnhancedButton.outline(
                 card,

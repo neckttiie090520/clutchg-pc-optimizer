@@ -18,7 +18,7 @@ from gui.theme import (
     get_score_color,
     NAV_ICONS,
 )
-from gui.style import font
+from gui.style import font, bind_dynamic_wraplength
 from gui.components.glass_card import GlassCard, HardwareCard
 from gui.components.circular_progress import CircularProgress
 from gui.components.enhanced_button import EnhancedButton, IconButton
@@ -252,14 +252,17 @@ class DashboardView(ctk.CTkFrame):
             )
             rec_text = self._ui("rec_optimal").format(profile=recommended)
 
-        ctk.CTkLabel(
+        _rec_desc = ctk.CTkLabel(
             rec_card,
             text=rec_text,
             font=self._font(13),
             text_color=COLORS["text_secondary"],
-            wraplength=320,
             justify="left",
-        ).pack(anchor="w", padx=SPACING["md"], pady=(0, SPACING["md"]))
+        )
+        _rec_desc.pack(
+            anchor="w", fill="x", padx=SPACING["md"], pady=(0, SPACING["md"])
+        )
+        bind_dynamic_wraplength(rec_card, _rec_desc)
 
         # Apply Optimization button
         EnhancedButton.primary(
@@ -389,20 +392,21 @@ class DashboardView(ctk.CTkFrame):
                 text_color=COLORS["text_primary"],
             ).pack(side="left")
 
-            ctk.CTkLabel(
+            _spec_lbl = ctk.CTkLabel(
                 card,
                 text=spec,
                 font=self._font(14, "bold"),
                 text_color=COLORS["text_primary"],
-                wraplength=160,
                 justify="left",
-            ).grid(
+            )
+            _spec_lbl.grid(
                 row=1,
                 column=0,
-                sticky="w",
+                sticky="ew",
                 padx=SPACING["sm"],
                 pady=(SPACING["xs"], SPACING["sm"]),
             )
+            bind_dynamic_wraplength(card, _spec_lbl)
 
     def _get_active_profile_name(self) -> str:
         """Get the active or recommended profile name for display"""

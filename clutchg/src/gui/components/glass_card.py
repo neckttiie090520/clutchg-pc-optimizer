@@ -5,6 +5,7 @@ Glassmorphism cards with glow effects and better styling
 
 import customtkinter as ctk
 from gui.theme import theme_manager, SPACING, RADIUS
+from gui.style import bind_dynamic_wraplength
 from typing import Optional
 
 
@@ -193,7 +194,7 @@ class ProfileCard(GlassCard):
             text=profile_name,
             font=ctk.CTkFont(family="Figtree", size=20, weight="bold"),
             text_color=colors["text_primary"],
-        ).grid(row=1, column=0, pady=(0, SPACING["xs"]))
+        ).grid(row=1, column=0, sticky="ew", pady=(0, SPACING["xs"]))
 
         # --- Row 2: Description ---
         desc_label = ctk.CTkLabel(
@@ -204,14 +205,10 @@ class ProfileCard(GlassCard):
             wraplength=220,
             justify="left",
         )
-        desc_label.grid(row=2, column=0, pady=(0, SPACING["md"]))
+        desc_label.grid(row=2, column=0, sticky="ew", pady=(0, SPACING["md"]))
 
-        # Dynamic wraplength on resize
-        def _update_wraplength(event):
-            new_wrap = max(120, event.width - 40)
-            desc_label.configure(wraplength=new_wrap)
-
-        inner.bind("<Configure>", _update_wraplength)
+        # Dynamic wraplength on resize (DPI-aware)
+        bind_dynamic_wraplength(inner, desc_label, padding=40)
 
         # --- Row 3: Stats grid (2x4) ---
         stats_frame = ctk.CTkFrame(inner, fg_color="transparent")
