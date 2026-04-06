@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" modified="2026-04-05" agent="ClutchG Thesis" version="24.0">
   <diagram id="mod-dep" name="Module Dependency Map">
-    <mxGraphModel dx="1100" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+    <mxGraphModel dx="1200" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -56,12 +56,22 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="e3" value="imports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#333333;strokeWidth=2;fontFamily=Segoe UI;fontSize=9;" edge="1" source="comps" target="infra" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e3" value="imports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#333333;strokeWidth=2;fontFamily=Segoe UI;fontSize=9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="comps" target="infra" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="220"/>
+              <mxPoint x="570" y="220"/>
+            </Array>
+          </mxGeometry>
         </mxCell>
 
-        <mxCell id="e4" value="reads tweaks (TYPE_CHECKING)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;dashed=1;dashPattern=8 4;fontFamily=Segoe UI;fontSize=9;fontColor=#e65100;" edge="1" source="views" target="root" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e4" value="reads tweaks (TYPE_CHECKING)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;dashed=1;dashPattern=8 4;fontFamily=Segoe UI;fontSize=9;fontColor=#e65100;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" edge="1" source="views" target="root" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="135"/>
+              <mxPoint x="960" y="310"/>
+            </Array>
+          </mxGeometry>
         </mxCell>
 
         <mxCell id="e5" value="imports registry" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#333333;strokeWidth=2;fontFamily=Segoe UI;fontSize=9;" edge="1" source="hub" target="root" parent="1">
