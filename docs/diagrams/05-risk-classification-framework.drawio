@@ -1,0 +1,101 @@
+<mxfile host="app.diagrams.net" modified="2026-04-05" agent="ClutchG Thesis" version="24.0">
+  <diagram id="risk-class" name="Risk Classification Framework">
+    <mxGraphModel dx="1100" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Diagram 5: Risk Classification Framework" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="200" y="15" width="700" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Decision tree for classifying 48 tweaks into 3 risk levels and 3 profiles" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="250" y="45" width="600" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="tweak_in" value="New Tweak" style="ellipse;whiteSpace=wrap;fillColor=#e3f2fd;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#0d47a1;" vertex="1" parent="1">
+          <mxGeometry x="475" y="80" width="130" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="d1" value="Modifies security&#xa;features?" style="rhombus;whiteSpace=wrap;fillColor=#ffebee;strokeColor=#c62828;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="455" y="170" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_in_d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;strokeWidth=2;" edge="1" source="tweak_in" target="d1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="reject" value="REJECTED" style="rounded=1;whiteSpace=wrap;fillColor=#b71c1c;strokeColor=#7f0000;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="750" y="190" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d1_reject" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#c62828;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#c62828;" edge="1" source="d1" target="reject" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="d2" value="Evidence-based&#xa;&amp;amp; reversible?" style="rhombus;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="455" y="310" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d1_d2" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#2e7d32;" edge="1" source="d1" target="d2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="placebo" value="REJECTED&#xa;(myth/placebo)" style="rounded=1;whiteSpace=wrap;fillColor=#ff6f00;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="740" y="325" width="140" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d2_placebo" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#e65100;" edge="1" source="d2" target="placebo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="d3" value="System stability&#xa;impact?" style="rhombus;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="455" y="450" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d2_d3" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#2e7d32;" edge="1" source="d2" target="d3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="risk_low" value="LOW Risk" style="rounded=1;whiteSpace=wrap;fillColor=#e8f5e9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#1b5e20;" vertex="1" parent="1">
+          <mxGeometry x="170" y="580" width="130" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="risk_med" value="MEDIUM Risk" style="rounded=1;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#e65100;" vertex="1" parent="1">
+          <mxGeometry x="430" y="580" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="risk_high" value="HIGH Risk" style="rounded=1;whiteSpace=wrap;fillColor=#ffebee;strokeColor=#c62828;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#b71c1c;" vertex="1" parent="1">
+          <mxGeometry x="720" y="580" width="130" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_d3_low" value="Minimal" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#2e7d32;" edge="1" source="d3" target="risk_low" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d3_med" value="Moderate" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#e65100;" edge="1" source="d3" target="risk_med" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_d3_high" value="Significant" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#c62828;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#c62828;" edge="1" source="d3" target="risk_high" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prof_safe" value="SAFE Profile" style="rounded=1;whiteSpace=wrap;fillColor=#c8e6c9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#1b5e20;" vertex="1" parent="1">
+          <mxGeometry x="175" y="645" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="prof_comp" value="COMPETITIVE Profile" style="rounded=1;whiteSpace=wrap;fillColor=#ffe0b2;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#e65100;" vertex="1" parent="1">
+          <mxGeometry x="415" y="645" width="180" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="prof_ext" value="EXTREME Profile" style="rounded=1;whiteSpace=wrap;fillColor=#ffcdd2;strokeColor=#c62828;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#b71c1c;" vertex="1" parent="1">
+          <mxGeometry x="720" y="645" width="130" height="35" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_low_safe" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=2;" edge="1" source="risk_low" target="prof_safe" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_med_comp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;" edge="1" source="risk_med" target="prof_comp" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_high_ext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#c62828;strokeWidth=2;" edge="1" source="risk_high" target="prof_ext" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="inclusion_note" value="Profiles are cumulative: COMPETITIVE includes all SAFE tweaks, EXTREME includes all" style="text;html=1;align=center;fontSize=9;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#999999;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="300" y="690" width="450" height="18" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

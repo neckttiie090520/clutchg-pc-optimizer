@@ -1,0 +1,328 @@
+<mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
+  <diagram id="batch-flow" name="Batch Optimizer Execution Flow">
+    <mxGraphModel dx="1100" dy="1500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Diagram 2: Batch Optimizer Execution Flow" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="200" y="15" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="UML Activity Diagram — optimizer.bat main execution path (v2.0, 549 lines)" style="text;html=1;fontSize=11;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="42" width="700" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="initial" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="523" y="80" width="24" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_init" value="Initialize paths, counters, logging" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#1565C0;fontFamily=Segoe UI;fontSize=11;fontColor=#0D47A1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="130" width="210" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_init" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="initial" target="act_init" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dec_admin" value="[Admin?]" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="480" y="200" width="110" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_admin" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_init" target="dec_admin" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_exit_noadmin" value="Show error, exit" style="rounded=1;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#B71C1C;" vertex="1" parent="1">
+          <mxGeometry x="680" y="215" width="130" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_noadmin" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#C62828;" edge="1" source="dec_admin" target="act_exit_noadmin" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="final_noadmin" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="870" y="221" width="24" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="final_noadmin_outer" value="" style="ellipse;fillColor=none;strokeColor=#000000;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="866" y="217" width="32" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_noadmin_final" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_exit_noadmin" target="final_noadmin_outer" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_detect" value="System detection&#xa;(OS, CPU, GPU, RAM)" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#1565C0;fontFamily=Segoe UI;fontSize=11;fontColor=#0D47A1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="300" width="210" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_yes_admin" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#2E7D32;" edge="1" source="dec_admin" target="act_detect" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_menu" value="Main Menu&#xa;(10 options)" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1">
+          <mxGeometry x="450" y="375" width="170" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_menu" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_detect" target="act_menu" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dec_choice" value="[User choice]" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="465" y="455" width="140" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_menu" target="dec_choice" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_other" value="View Status / Restore /&#xa;Reset / Docs / About" style="rounded=1;whiteSpace=wrap;fillColor=#F3E5F5;strokeColor=#6A1B9A;fontFamily=Segoe UI;fontSize=10;fontColor=#4A148C;" vertex="1" parent="1">
+          <mxGeometry x="130" y="465" width="160" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_other" value="[5-9]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6A1B9A;fontFamily=Segoe UI;fontSize=10;fontColor=#6A1B9A;" edge="1" source="dec_choice" target="act_other" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_other_back" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#888;dashed=1;" edge="1" source="act_other" target="act_menu" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="420"/>
+              <mxPoint x="210" y="398"/>
+              <mxPoint x="450" y="398"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_exit" value="Exit" style="rounded=1;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#B71C1C;" vertex="1" parent="1">
+          <mxGeometry x="750" y="475" width="70" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_exit" value="[0]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#C62828;" edge="1" source="dec_choice" target="act_exit" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="final_exit" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="870" y="479" width="24" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="final_exit_outer" value="" style="ellipse;fillColor=none;strokeColor=#000000;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="866" y="475" width="32" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_exit_final" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_exit" target="final_exit_outer" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dec_profile" value="[Profile?]" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="480" y="575" width="110" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_profile" value="[1-3]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#2E7D32;" edge="1" source="dec_choice" target="dec_profile" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_safe" value="Load SAFE flags" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1">
+          <mxGeometry x="305" y="585" width="120" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_comp" value="Load COMPETITIVE flags" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="305" y="630" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_ext" value="Load EXTREME flags" style="rounded=1;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#B71C1C;" vertex="1" parent="1">
+          <mxGeometry x="305" y="675" width="130" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_safe" value="[SAFE]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=9;fontColor=#2E7D32;" edge="1" source="dec_profile" target="act_safe" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_comp" value="[COMPETITIVE]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=9;fontColor=#E65100;" edge="1" source="dec_profile" target="act_comp" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="647"/>
+              <mxPoint x="480" y="647"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ext" value="[EXTREME]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=9;fontColor=#C62828;" edge="1" source="dec_profile" target="act_ext" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="692"/>
+              <mxPoint x="480" y="692"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="note_extreme" value="EXTREME requires user&#xa;confirmation (Y/N)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=9;fontFamily=Segoe UI;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#B71C1C;rounded=1;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="130" y="672" width="155" height="38" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_custom" value="Custom Tweak&#xa;Selection Menu" style="rounded=1;whiteSpace=wrap;fillColor=#E8EAF6;strokeColor=#283593;fontFamily=Segoe UI;fontSize=10;fontColor=#1A237E;" vertex="1" parent="1">
+          <mxGeometry x="680" y="575" width="130" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_custom" value="[4]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#283593;fontFamily=Segoe UI;fontSize=10;fontColor=#283593;" edge="1" source="dec_choice" target="act_custom" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="495"/>
+              <mxPoint x="640" y="595"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="merge_profile" value="" style="rhombus;fillColor=#333;strokeColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="520" y="740" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_safe_merge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_safe" target="merge_profile" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="365" y="755"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_comp_merge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_comp" target="merge_profile" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="755"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ext_merge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_ext" target="merge_profile" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="730"/>
+              <mxPoint x="520" y="730"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_custom_merge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_custom" target="merge_profile" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="745" y="755"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="header_apply" value=":apply_profile" style="text;html=1;align=left;fontSize=11;fontFamily=Segoe UI;fontStyle=3;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="380" y="785" width="120" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_snapshot" value="[1/6] Create registry snapshot&#xa;(flight-recorder.bat)" style="rounded=1;whiteSpace=wrap;fillColor=#FCE4EC;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="420" y="810" width="230" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_snapshot" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="merge_profile" target="act_snapshot" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_restore" value="[2/6] Create restore point&#xa;(restore-point.bat)" style="rounded=1;whiteSpace=wrap;fillColor=#FCE4EC;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="420" y="865" width="230" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_restore" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_snapshot" target="act_restore" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_backup" value="[3/6] Create configuration backup&#xa;(backup-registry.bat)" style="rounded=1;whiteSpace=wrap;fillColor=#FCE4EC;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="420" y="920" width="230" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_backup" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_restore" target="act_backup" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_tweaks" value="[4/6] Apply optimizations conditionally&#xa;(up to 15 TWEAK_* flag checks, each calls core/*.bat)" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#1565C0;fontFamily=Segoe UI;fontSize=10;fontColor=#0D47A1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="980" width="290" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_tweaks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_backup" target="act_tweaks" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="note_tweaks" value="Each TWEAK_* flag set by profile .bat:&#xa;TWEAK_POWER, TWEAK_BCDEDIT_SAFE,&#xa;TWEAK_SERVICES, TWEAK_TELEMETRY,&#xa;TWEAK_GAMING, TWEAK_NETWORK, ..." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=9;fontFamily=Segoe UI;fillColor=#E3F2FD;strokeColor=#1565C0;fontColor=#0D47A1;rounded=1;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="710" y="960" width="240" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dec_bench" value="[TWEAK_&#xa;BENCHMARK?]" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=9;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="475" y="1050" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_bench" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_tweaks" target="dec_bench" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_bench" value="[5/6] Run benchmark&#xa;(benchmark-runner.bat)" style="rounded=1;whiteSpace=wrap;fillColor=#F3E5F5;strokeColor=#6A1B9A;fontFamily=Segoe UI;fontSize=10;fontColor=#4A148C;" vertex="1" parent="1">
+          <mxGeometry x="660" y="1060" width="180" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_bench_yes" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6A1B9A;fontFamily=Segoe UI;fontSize=9;fontColor=#6A1B9A;" edge="1" source="dec_bench" target="act_bench" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="merge_bench" value="" style="rhombus;fillColor=#333;strokeColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="520" y="1140" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_bench_no" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#888;fontFamily=Segoe UI;fontSize=9;fontColor=#888;" edge="1" source="dec_bench" target="merge_bench" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_bench_merge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="act_bench" target="merge_bench" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="1155"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_summary" value="[6/6] Generate summary&#xa;(success/failed/skipped counts, log path, expected gains)" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#1B5E20;" vertex="1" parent="1">
+          <mxGeometry x="380" y="1195" width="310" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_to_summary" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;" edge="1" source="merge_bench" target="act_summary" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_back_menu" value="return to Main Menu" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#888;dashed=1;fontFamily=Segoe UI;fontSize=9;fontColor=#888;" edge="1" source="act_summary" target="act_menu" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="1216"/>
+              <mxPoint x="140" y="398"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="1300" width="820" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s1" value="" style="rounded=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="145" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t1" value="Initial / Final node" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="170" y="1308" width="100" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s2" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t2" value="Decision" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="305" y="1308" width="55" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s3" value="" style="rounded=1;fillColor=#FCE4EC;strokeColor=#C62828;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t3" value="Safety / Backup" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="395" y="1308" width="85" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s4" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t4" value="Execution" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="515" y="1308" width="60" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s5" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#6A1B9A;" vertex="1" parent="1">
+          <mxGeometry x="585" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t5" value="Validation" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="610" y="1308" width="60" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s6" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t6" value="Info / Menu" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="705" y="1308" width="65" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s7" value="" style="rounded=1;fillColor=#FFEBEE;strokeColor=#C62828;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1311" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t7" value="Exit / Error" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="805" y="1308" width="65" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="leg_s1b" value="" style="rounded=1;fillColor=#E8EAF6;strokeColor=#283593;" vertex="1" parent="1">
+          <mxGeometry x="145" y="1331" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t1b" value="Custom" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="170" y="1328" width="50" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s2b" value="" style="rounded=0;fillColor=none;strokeColor=#333;strokeWidth=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1331" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_t2b" value="Return / loop-back" style="text;fontSize=9;fontFamily=Segoe UI;fontColor=#555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="305" y="1328" width="100" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
