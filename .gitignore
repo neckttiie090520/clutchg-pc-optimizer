@@ -75,10 +75,7 @@ docs/notion-imports/
 docs/proposal-vs-current-state.md
 docs/_proposal_extract_*.txt
 
-# ISO work products with academic-only content
-docs/iso29110-clutchg/01-Project-Plan.md
-docs/iso29110-clutchg/08-Progress-Status-Record.md
-docs/iso29110-clutchg/README.md
+
 
 # ============================================================
 # Reference / Research Material (not product code)
