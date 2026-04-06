@@ -29,7 +29,7 @@ Drawn in [draw.io](https://app.diagrams.net/), exported as PNG at 2x scale with 
 
 ## 01 — System Architecture Overview
 
-**File:** `01-system-architecture-overview.drawio`
+**Source:** [`drawio/01-system-architecture-overview.drawio`](drawio/01-system-architecture-overview.drawio)
 
 High-level view of the entire ClutchG system showing the three main layers:
 - **ClutchG GUI** (Python/CustomTkinter) — the user-facing desktop application
@@ -38,13 +38,13 @@ High-level view of the entire ClutchG system showing the three main layers:
 
 Shows how the GUI discovers and invokes batch scripts, how scripts interact with Windows subsystems (Registry, Services, Power, Network, etc.), and where safety mechanisms (backup, rollback, flight recorder) sit in the pipeline.
 
-![01-system-architecture-overview](01-system-architecture-overview.png)
+![01-system-architecture-overview](img/01-system-architecture-overview.png)
 
 ---
 
 ## 02 — Batch Optimizer Execution Flow
 
-**File:** `02-batch-optimizer-execution-flow.drawio`
+**Source:** [`drawio/02-batch-optimizer-execution-flow.drawio`](drawio/02-batch-optimizer-execution-flow.drawio)
 
 Step-by-step flowchart of what happens when a user runs an optimization profile through the batch engine:
 1. Admin rights check
@@ -57,13 +57,13 @@ Step-by-step flowchart of what happens when a user runs an optimization profile 
 
 Covers error paths and rollback triggers.
 
-![02-batch-optimizer-execution-flow](02-batch-optimizer-execution-flow.png)
+![02-batch-optimizer-execution-flow](img/02-batch-optimizer-execution-flow.png)
 
 ---
 
 ## 03 — GUI Navigation Flow
 
-**File:** `03-gui-navigation-flow.drawio`
+**Source:** [`drawio/03-gui-navigation-flow.drawio`](drawio/03-gui-navigation-flow.drawio)
 
 Shows how users navigate through the ClutchG desktop application. Maps the sidebar navigation to each view:
 - Dashboard (system info, quick actions)
@@ -75,13 +75,13 @@ Shows how users navigate through the ClutchG desktop application. Maps the sideb
 
 Includes view transitions, dialog popups, and the Welcome screen first-run flow.
 
-![03-gui-navigation-flow](03-gui-navigation-flow.png)
+![03-gui-navigation-flow](img/03-gui-navigation-flow.png)
 
 ---
 
 ## 04 — Tweak Lifecycle
 
-**File:** `04-tweak-lifecycle.drawio`
+**Source:** [`drawio/04-tweak-lifecycle.drawio`](drawio/04-tweak-lifecycle.drawio)
 
 Activity diagram tracing a single tweak from research to deployment:
 1. Research & evidence gathering
@@ -93,13 +93,13 @@ Activity diagram tracing a single tweak from research to deployment:
 7. User applies tweak
 8. Logging & rollback availability
 
-![04-tweak-lifecycle](04-tweak-lifecycle.png)
+![04-tweak-lifecycle](img/04-tweak-lifecycle.png)
 
 ---
 
 ## 05 — Risk Classification Framework
 
-**File:** `05-risk-classification-framework.drawio`
+**Source:** [`drawio/05-risk-classification-framework.drawio`](drawio/05-risk-classification-framework.drawio)
 
 Visualizes the three-tier risk model used to classify all 48 tweaks:
 - **LOW** risk — safe for all users, minimal system impact
@@ -108,13 +108,13 @@ Visualizes the three-tier risk model used to classify all 48 tweaks:
 
 Shows classification criteria (reversibility, scope of change, failure impact) and how risk levels map to profiles (SAFE = LOW only, COMPETITIVE = LOW+MEDIUM, EXTREME = all).
 
-![05-risk-classification-framework](05-risk-classification-framework.png)
+![05-risk-classification-framework](img/05-risk-classification-framework.png)
 
 ---
 
 ## 06 — Module Dependency Map
 
-**File:** `06-module-dependency-map.drawio`
+**Source:** [`drawio/06-module-dependency-map.drawio`](drawio/06-module-dependency-map.drawio)
 
 Component diagram showing how batch modules in `src/core/` depend on each other and on shared infrastructure (`logger.bat`, `flight-recorder.bat`, `validator.bat`). Groups modules by category:
 - Power & Performance
@@ -123,13 +123,13 @@ Component diagram showing how batch modules in `src/core/` depend on each other 
 - Storage & Maintenance
 - GPU & Display
 
-![06-module-dependency-map](06-module-dependency-map.png)
+![06-module-dependency-map](img/06-module-dependency-map.png)
 
 ---
 
 ## 07 — Use Case Diagram
 
-**File:** `07-use-case-diagram.drawio`
+**Source:** [`drawio/07-use-case-diagram.drawio`](drawio/07-use-case-diagram.drawio)
 
 UML Use Case diagram with two actors:
 - **User** — views system info, selects profiles, applies tweaks, creates backups, restores settings
@@ -137,25 +137,25 @@ UML Use Case diagram with two actors:
 
 Use cases cover the full workflow: view dashboard, browse tweaks, apply profile, backup/restore, view help, change settings. Includes `<<include>>` and `<<extend>>` relationships.
 
-![07-use-case-diagram](07-use-case-diagram.png)
+![07-use-case-diagram](img/07-use-case-diagram.png)
 
 ---
 
 ## 08 — Class Diagram (Full)
 
-**File:** `08-class-diagram.drawio`
+**Source:** [`drawio/08-class-diagram.drawio`](drawio/08-class-diagram.drawio)
 
 Complete UML class diagram showing all classes in `clutchg/src/` with attributes, methods, and relationships. Contains all core, GUI, and utility classes. Best viewed at full zoom or printed on A3.
 
 > This is the reference version for the appendix. For the thesis body, use 08a (simplified) below.
 
-![08-class-diagram](08-class-diagram.png)
+![08-class-diagram](img/08-class-diagram.png)
 
 ---
 
 ## 08a — Class Diagram (Simplified)
 
-**File:** `08a-class-diagram-simplified.drawio`
+**Source:** [`drawio/08a-class-diagram-simplified.drawio`](drawio/08a-class-diagram-simplified.drawio)
 
 Simplified class diagram for the thesis body chapter. Shows the key architectural classes grouped into:
 - **App Layer** — `ClutchGApp` (main controller)
@@ -163,13 +163,13 @@ Simplified class diagram for the thesis body chapter. Shows the key architectura
 
 Relationships: composition ("owns"), usage ("uses"), dependency arrows. Omits GUI view classes and data model details (those are in 08b).
 
-![08a-class-diagram-simplified](08a-class-diagram-simplified.png)
+![08a-class-diagram-simplified](img/08a-class-diagram-simplified.png)
 
 ---
 
 ## 08b — Class Diagram — Data Models
 
-**File:** `08b-class-diagram-datamodels.drawio`
+**Source:** [`drawio/08b-class-diagram-datamodels.drawio`](drawio/08b-class-diagram-datamodels.drawio)
 
 UML class diagram focusing on data structures and enums:
 - `Tweak` dataclass (id, name, category, risk_level, expected_gain, etc.)
@@ -180,13 +180,13 @@ UML class diagram focusing on data structures and enums:
 
 Shows field types, enum values, and relationships between data models.
 
-![08b-class-diagram-datamodels](08b-class-diagram-datamodels.png)
+![08b-class-diagram-datamodels](img/08b-class-diagram-datamodels.png)
 
 ---
 
 ## 09 — Sequence Diagram
 
-**File:** `09-sequence-diagram.drawio`
+**Source:** [`drawio/09-sequence-diagram.drawio`](drawio/09-sequence-diagram.drawio)
 
 UML sequence diagram showing the message flow when a user applies an optimization profile:
 
@@ -194,13 +194,13 @@ UML sequence diagram showing the message flow when a user applies an optimizatio
 
 Covers: profile selection, backup creation, tweak iteration, batch script execution, result collection, flight recorder logging, and UI feedback.
 
-![09-sequence-diagram](09-sequence-diagram.png)
+![09-sequence-diagram](img/09-sequence-diagram.png)
 
 ---
 
 ## 10 — Deployment Diagram
 
-**File:** `10-deployment-diagram.drawio`
+**Source:** [`drawio/10-deployment-diagram.drawio`](drawio/10-deployment-diagram.drawio)
 
 UML deployment diagram showing the physical runtime environment:
 - **User's PC** node containing:
@@ -211,13 +211,13 @@ UML deployment diagram showing the physical runtime environment:
 
 Shows `<<artifact>>` and `<<execute>>` stereotypes.
 
-![10-deployment-diagram](10-deployment-diagram.png)
+![10-deployment-diagram](img/10-deployment-diagram.png)
 
 ---
 
 ## 11 — Conceptual Framework
 
-**File:** `11-conceptual-framework.drawio`
+**Source:** [`drawio/11-conceptual-framework.drawio`](drawio/11-conceptual-framework.drawio)
 
 High-level research framework connecting:
 - **Input:** 28 open-source optimizer repos analyzed, 50,000+ lines reviewed
@@ -226,13 +226,13 @@ High-level research framework connecting:
 
 Shows the relationship between research methodology, the tool's design decisions, and the expected outcomes (5-15% performance improvement, safety-first approach).
 
-![11-conceptual-framework](11-conceptual-framework.png)
+![11-conceptual-framework](img/11-conceptual-framework.png)
 
 ---
 
 ## 12 — Project Timeline (Gantt Chart)
 
-**File:** `12-gantt-chart.drawio`
+**Source:** [`drawio/12-gantt-chart.drawio`](drawio/12-gantt-chart.drawio)
 
 Gantt chart showing the project schedule across phases:
 - Literature review & repo analysis
@@ -243,13 +243,13 @@ Gantt chart showing the project schedule across phases:
 - Thesis writing & documentation
 - ISO 29110 work products
 
-![12-gantt-chart](12-gantt-chart.png)
+![12-gantt-chart](img/12-gantt-chart.png)
 
 ---
 
 ## 13 — Tweak State Diagram
 
-**File:** `13-state-diagram.drawio`
+**Source:** [`drawio/13-state-diagram.drawio`](drawio/13-state-diagram.drawio)
 
 UML state diagram for a tweak's runtime lifecycle:
 - **Registered** — tweak exists in TweakRegistry
@@ -262,7 +262,7 @@ UML state diagram for a tweak's runtime lifecycle:
 
 Shows transitions, guards, and error recovery paths.
 
-![13-state-diagram](13-state-diagram.png)
+![13-state-diagram](img/13-state-diagram.png)
 
 ---
 
@@ -281,10 +281,20 @@ All diagrams follow these rules:
 
 ## How to Edit
 
-1. Open any `.drawio` file in [draw.io](https://app.diagrams.net/) (web) or the desktop app
+1. Open any `.drawio` file from [`drawio/`](drawio/) in [draw.io](https://app.diagrams.net/) (web) or the desktop app
 2. Edit as needed
 3. Export: `File > Export as > PNG` with scale 2x and 20px border
-4. Or via CLI:
+4. Save the PNG to [`img/`](img/)
+5. Or via CLI:
    ```
-   "C:\Program Files\draw.io\draw.io.exe" --export --format png --scale 2 --border 20 --output <name>.png <name>.drawio
+   "C:\Program Files\draw.io\draw.io.exe" --export --format png --scale 2 --border 20 --output img/<name>.png drawio/<name>.drawio
    ```
+
+## Folder Structure
+
+```
+docs/diagrams/
+  README.md          <- This file (diagram gallery)
+  drawio/            <- Editable source files (.drawio)
+  img/               <- Exported PNG images
+```
