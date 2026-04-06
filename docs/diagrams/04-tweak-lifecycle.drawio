@@ -5,7 +5,7 @@
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="title" value="Diagram 4: Tweak Lifecycle" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
+        <mxCell id="title" value="Diagram 4: Tweak Lifecycle" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
           <mxGeometry x="350" y="20" width="700" height="35" as="geometry"/>
         </mxCell>
         <mxCell id="subtitle" value="7-phase lifecycle: from research discovery to rollback (48 tweaks, 10 categories)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">

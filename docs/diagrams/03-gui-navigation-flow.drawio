@@ -1,126 +1,147 @@
-<mxfile host="app.diagrams.net" modified="2026-04-05" agent="ClutchG Thesis" version="24.0">
+<mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
   <diagram id="gui-nav" name="GUI Navigation Flow">
-    <mxGraphModel dx="1000" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="700" math="0" shadow="0">
+    <mxGraphModel dx="1100" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="780" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
         <mxCell id="title" value="Diagram 3: GUI Navigation Flow" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
-          <mxGeometry x="300" y="10" width="400" height="30" as="geometry"/>
+          <mxGeometry x="310" y="10" width="400" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="subtitle" value="ClutchG PC Optimizer — 7 views with sidebar navigation" style="text;html=1;fontSize=11;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="300" y="37" width="400" height="20" as="geometry"/>
+        <mxCell id="subtitle" value="ClutchG PC Optimizer — 5 sidebar views + 1 hidden view" style="text;html=1;fontSize=11;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="310" y="37" width="400" height="20" as="geometry"/>
         </mxCell>
 
         <mxCell id="entry" value="main.py" style="ellipse;whiteSpace=wrap;fillColor=#e8f5e9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#1b5e20;" vertex="1" parent="1">
-          <mxGeometry x="50" y="70" width="120" height="45" as="geometry"/>
+          <mxGeometry x="50" y="80" width="120" height="45" as="geometry"/>
         </mxCell>
 
-        <mxCell id="app" value="App Controller" style="rounded=1;whiteSpace=wrap;fillColor=#e8eaf6;strokeColor=#283593;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
-          <mxGeometry x="50" y="160" width="140" height="40" as="geometry"/>
+        <mxCell id="app" value="ClutchGApp&#xa;(app_minimal.py)" style="rounded=1;whiteSpace=wrap;fillColor=#e8eaf6;strokeColor=#283593;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="175" width="150" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="e1" value="launches" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;fontFamily=Segoe UI;fontSize=10;" edge="1" source="entry" target="app" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="sidebar" value="Sidebar" style="rounded=1;whiteSpace=wrap;fillColor=#fff8e1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#f57f17;" vertex="1" parent="1">
-          <mxGeometry x="50" y="250" width="140" height="40" as="geometry"/>
+        <mxCell id="sidebar" value="EnhancedSidebar&#xa;(collapsible 60px ↔ 210px)" style="rounded=1;whiteSpace=wrap;fillColor=#fff8e1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#f57f17;" vertex="1" parent="1">
+          <mxGeometry x="30" y="275" width="170" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="e2" value="creates" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555;fontFamily=Segoe UI;fontSize=10;" edge="1" source="app" target="sidebar" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="views" value="7 Views" style="swimlane;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Segoe UI;fontStyle=1;fontSize=12;fontColor=#333333;rounded=1;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="280" y="70" width="670" height="160" as="geometry"/>
+        <mxCell id="views" value="5 Sidebar Views" style="swimlane;startSize=28;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Segoe UI;fontStyle=1;fontSize=12;fontColor=#333333;rounded=1;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="280" y="70" width="770" height="210" as="geometry"/>
         </mxCell>
-        <mxCell id="v1" value="Dashboard" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;fontStyle=1;" vertex="1" parent="views">
-          <mxGeometry x="15" y="38" width="90" height="32" as="geometry"/>
+        <mxCell id="v1" value="DashboardView&#xa;&quot;Dashboard&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;fontStyle=1;" vertex="1" parent="views">
+          <mxGeometry x="15" y="40" width="120" height="40" as="geometry"/>
         </mxCell>
-        <mxCell id="v2" value="Tweaks" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="120" y="38" width="75" height="32" as="geometry"/>
+        <mxCell id="v2" value="ScriptsView&#xa;&quot;Optimize&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#c8e6c9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=10;fontColor=#1b5e20;" vertex="1" parent="views">
+          <mxGeometry x="155" y="40" width="110" height="40" as="geometry"/>
         </mxCell>
-        <mxCell id="v3" value="Profiles" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="210" y="38" width="75" height="32" as="geometry"/>
+        <mxCell id="v3" value="BackupRestoreCenter&#xa;&quot;Backup&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#ffe0b2;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=10;fontColor=#bf360c;" vertex="1" parent="views">
+          <mxGeometry x="285" y="40" width="140" height="40" as="geometry"/>
         </mxCell>
-        <mxCell id="v4" value="Backup" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="300" y="38" width="75" height="32" as="geometry"/>
+        <mxCell id="v4" value="HelpView&#xa;&quot;Help&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
+          <mxGeometry x="445" y="40" width="100" height="40" as="geometry"/>
         </mxCell>
-        <mxCell id="v5" value="Restore" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="390" y="38" width="75" height="32" as="geometry"/>
-        </mxCell>
-        <mxCell id="v6" value="Help" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="480" y="38" width="65" height="32" as="geometry"/>
-        </mxCell>
-        <mxCell id="v7" value="Settings" style="rounded=1;whiteSpace=wrap;fillColor=#bbdefb;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=10;fontColor=#0d47a1;" vertex="1" parent="views">
-          <mxGeometry x="560" y="38" width="80" height="32" as="geometry"/>
-        </mxCell>
-        <mxCell id="vn1" value="Dashboard is default view" style="text;fontSize=9;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#999;" vertex="1" parent="views">
-          <mxGeometry x="15" y="78" width="180" height="16" as="geometry"/>
-        </mxCell>
-        <mxCell id="vuse" value="Views use 12 shared components&#xa;(cards, buttons, dialogs, toasts, ...)" style="rounded=1;whiteSpace=wrap;fillColor=#fff8e1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=10;fontColor=#333;" vertex="1" parent="views">
-          <mxGeometry x="15" y="102" width="280" height="40" as="geometry"/>
-        </mxCell>
-        <mxCell id="vinfra" value="Theme + Style + Icons + Fonts" style="rounded=1;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontFamily=Segoe UI;fontSize=10;fontColor=#4a148c;" vertex="1" parent="views">
-          <mxGeometry x="320" y="102" width="220" height="40" as="geometry"/>
+        <mxCell id="v5" value="SettingsView&#xa;&quot;Settings&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#e1bee7;strokeColor=#6a1b9a;fontFamily=Segoe UI;fontSize=10;fontColor=#4a148c;" vertex="1" parent="views">
+          <mxGeometry x="565" y="40" width="110" height="40" as="geometry"/>
         </mxCell>
 
-        <mxCell id="e3" value="navigate(view)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=10;fontColor=#f57f17;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" source="sidebar" target="views" parent="1">
+        <mxCell id="v6" value="ProfilesView&#xa;(hidden from sidebar)" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontFamily=Segoe UI;fontSize=9;fontColor=#757575;dashed=1;dashPattern=5 3;" vertex="1" parent="views">
+          <mxGeometry x="15" y="100" width="140" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="vn1" value="DashboardView is default (loaded on startup)" style="text;fontSize=9;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#999;" vertex="1" parent="views">
+          <mxGeometry x="15" y="148" width="260" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="vuse" value="12 shared components&#xa;(glass_card, enhanced_button, toast, tooltip, execution_dialog,&#xa;refined_dialog, circular_progress, timeline, inline_help, ...)" style="rounded=1;whiteSpace=wrap;fillColor=#fff8e1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=9;fontColor=#333;" vertex="1" parent="views">
+          <mxGeometry x="290" y="100" width="330" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="vinfra" value="theme.py + style.py +&#xa;icons.py + font_loader.py" style="rounded=1;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontFamily=Segoe UI;fontSize=9;fontColor=#4a148c;" vertex="1" parent="views">
+          <mxGeometry x="640" y="100" width="115" height="52" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" value="switch_view(name)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=10;fontColor=#f57f17;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" edge="1" source="sidebar" target="views" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="core" value="13 Core Modules (Business Logic)&#xa;Tweak Registry, Profile Manager, Batch Executor, ..." style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="280" y="280" width="370" height="50" as="geometry"/>
+        <mxCell id="nav_keys" value="Nav keys: dashboard, scripts, backup, help, settings" style="text;fontSize=9;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#888;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="280" y="285" width="340" height="16" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="core" value="13 Core Modules (Business Logic)&#xa;TweakRegistry, ProfileManager, BatchExecutor, BatchParser, BackupManager,&#xa;ConfigManager, SystemDetector, FlightRecorder, ActionCatalog, HelpManager, ..." style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="280" y="320" width="470" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="e4" value="imports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;fontFamily=Segoe UI;fontSize=10;fontColor=#2e7d32;" edge="1" source="views" target="core" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="batch" value="Batch Engine (src/)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="280" y="380" width="370" height="40" as="geometry"/>
+        <mxCell id="batch" value="Batch Engine (src/)&#xa;optimizer.bat → core/ + profiles/ + safety/ + backup/" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="280" y="430" width="370" height="50" as="geometry"/>
         </mxCell>
         <mxCell id="e5" value="subprocess" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;fontFamily=Segoe UI;fontSize=10;fontColor=#d79b00;" edge="1" source="core" target="batch" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="welcome" value="Welcome Overlay&#xa;(first run only)" style="rounded=1;whiteSpace=wrap;fillColor=#e8f5e9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=10;fontColor=#1b5e20;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
-          <mxGeometry x="50" y="350" width="150" height="42" as="geometry"/>
+        <mxCell id="welcome" value="WelcomeOverlay&#xa;(CTkToplevel, first run only)" style="rounded=1;whiteSpace=wrap;fillColor=#e8f5e9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=10;fontColor=#1b5e20;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="30" y="385" width="180" height="42" as="geometry"/>
         </mxCell>
         <mxCell id="e6" value="first launch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;dashed=1;fontFamily=Segoe UI;fontSize=9;fontColor=#2e7d32;" edge="1" source="app" target="welcome" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
+        <mxCell id="vt" value="ViewTransition&#xa;(animated switch)" style="rounded=1;whiteSpace=wrap;fillColor=#fff8e1;strokeColor=#f9a825;fontFamily=Segoe UI;fontSize=9;fontColor=#f57f17;dashed=1;dashPattern=3 2;" vertex="1" parent="1">
+          <mxGeometry x="30" y="470" width="140" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#f9a825;dashed=1;fontFamily=Segoe UI;fontSize=9;fontColor=#f9a825;" edge="1" source="app" target="vt" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
         <mxCell id="legend_bg" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;arcSize=6;" vertex="1" parent="1">
-          <mxGeometry x="50" y="440" width="700" height="34" as="geometry"/>
+          <mxGeometry x="50" y="540" width="900" height="38" as="geometry"/>
         </mxCell>
         <mxCell id="leg_swatch1" value="" style="rounded=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="66" y="449" width="20" height="12" as="geometry"/>
+          <mxGeometry x="66" y="551" width="20" height="12" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_label1" value="Views" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
-          <mxGeometry x="90" y="447" width="60" height="16" as="geometry"/>
+        <mxCell id="leg_label1" value="Views (Blue)" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="90" y="549" width="80" height="16" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_swatch2" value="" style="rounded=1;fillColor=#FFF8E1;strokeColor=#F9A825;" vertex="1" parent="1">
-          <mxGeometry x="170" y="449" width="20" height="12" as="geometry"/>
+        <mxCell id="leg_swatch2" value="" style="rounded=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="182" y="551" width="20" height="12" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_label2" value="Sidebar/Components" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
-          <mxGeometry x="194" y="447" width="120" height="16" as="geometry"/>
+        <mxCell id="leg_label2" value="Optimize (Green)" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="206" y="549" width="110" height="16" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_swatch3" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#6A1B9A;" vertex="1" parent="1">
-          <mxGeometry x="328" y="449" width="20" height="12" as="geometry"/>
+        <mxCell id="leg_swatch3" value="" style="rounded=1;fillColor=#FFE0B2;strokeColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="328" y="551" width="20" height="12" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_label3" value="Infrastructure" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
-          <mxGeometry x="352" y="447" width="80" height="16" as="geometry"/>
+        <mxCell id="leg_label3" value="Backup (Orange)" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="352" y="549" width="100" height="16" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_swatch4" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
-          <mxGeometry x="450" y="449" width="20" height="12" as="geometry"/>
+        <mxCell id="leg_swatch4" value="" style="rounded=1;fillColor=#E1BEE7;strokeColor=#6A1B9A;" vertex="1" parent="1">
+          <mxGeometry x="464" y="551" width="20" height="12" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_label4" value="Entry" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
-          <mxGeometry x="474" y="447" width="50" height="16" as="geometry"/>
+        <mxCell id="leg_label4" value="Settings (Purple)" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="488" y="549" width="100" height="16" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_swatch5" value="" style="rounded=1;fillColor=#E8EAF6;strokeColor=#283593;" vertex="1" parent="1">
-          <mxGeometry x="542" y="449" width="20" height="12" as="geometry"/>
+        <mxCell id="leg_swatch5" value="" style="rounded=1;fillColor=#FFF8E1;strokeColor=#F9A825;" vertex="1" parent="1">
+          <mxGeometry x="600" y="551" width="20" height="12" as="geometry"/>
         </mxCell>
-        <mxCell id="leg_label5" value="Controller" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
-          <mxGeometry x="566" y="447" width="70" height="16" as="geometry"/>
+        <mxCell id="leg_label5" value="Components" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="624" y="549" width="80" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch6" value="" style="rounded=1;fillColor=#E8EAF6;strokeColor=#283593;" vertex="1" parent="1">
+          <mxGeometry x="716" y="551" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label6" value="Controller" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="740" y="549" width="70" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch7" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="822" y="551" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label7" value="Entry / Overlay" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="846" y="549" width="90" height="16" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>

@@ -12,7 +12,7 @@
           <mxGeometry x="250" y="48" width="600" height="20" as="geometry"/>
         </mxCell>
 
-        <mxCell id="views" value="GUI Views (7 views + welcome)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+        <mxCell id="views" value="GUI Views (6 views + welcome)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
           <mxGeometry x="350" y="90" width="300" height="45" as="geometry"/>
         </mxCell>
 
@@ -36,7 +36,7 @@
           <mxGeometry x="540" y="310" width="200" height="40" as="geometry"/>
         </mxCell>
 
-        <mxCell id="leaves" value="Leaf Modules (8): config, batch_parser, backup_manager, batch_executor, flight_recorder, help_manager, profile_recommender, system_snapshot" style="rounded=1;whiteSpace=wrap;fillColor=#c8e6c9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=10;fontColor=#1b5e20;" vertex="1" parent="1">
+        <mxCell id="leaves" value="Leaf Modules (9): config, batch_parser, backup_manager, batch_executor, flight_recorder, help_manager, profile_recommender, system_snapshot, action_catalog" style="rounded=1;whiteSpace=wrap;fillColor=#c8e6c9;strokeColor=#2e7d32;fontFamily=Segoe UI;fontSize=10;fontColor=#1b5e20;" vertex="1" parent="1">
           <mxGeometry x="100" y="410" width="640" height="40" as="geometry"/>
         </mxCell>
 

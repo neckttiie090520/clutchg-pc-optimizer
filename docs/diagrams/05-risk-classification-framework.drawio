@@ -1,11 +1,11 @@
 <mxfile host="app.diagrams.net" modified="2026-04-05" agent="ClutchG Thesis" version="24.0">
   <diagram id="risk-class" name="Risk Classification Framework">
-    <mxGraphModel dx="1100" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="800" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="title" value="Diagram 5: Risk Classification Framework" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
+        <mxCell id="title" value="Diagram 5: Risk Classification Framework" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontFamily=Segoe UI;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
           <mxGeometry x="200" y="15" width="700" height="35" as="geometry"/>
         </mxCell>
         <mxCell id="subtitle" value="Decision tree for classifying 48 tweaks into 3 risk levels and 3 profiles" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
@@ -93,6 +93,40 @@
 
         <mxCell id="inclusion_note" value="Profiles are cumulative: COMPETITIVE includes all SAFE tweaks, EXTREME includes all" style="text;html=1;align=center;fontSize=9;fontFamily=Segoe UI;fillColor=none;strokeColor=none;fontColor=#999999;fontStyle=2;" vertex="1" parent="1">
           <mxGeometry x="300" y="690" width="450" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend_bg" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="200" y="720" width="650" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch1" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="216" y="729" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label1" value="LOW Risk" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="240" y="727" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch2" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="316" y="729" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label2" value="MEDIUM Risk" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="340" y="727" width="80" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch3" value="" style="rounded=1;fillColor=#FFEBEE;strokeColor=#C62828;" vertex="1" parent="1">
+          <mxGeometry x="436" y="729" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label3" value="HIGH Risk" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="460" y="727" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch4" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="546" y="729" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label4" value="Input" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="570" y="727" width="40" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch5" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#6A1B9A;" vertex="1" parent="1">
+          <mxGeometry x="626" y="729" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label5" value="Decision" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="650" y="727" width="60" height="16" as="geometry"/>
         </mxCell>
 
       </root>
