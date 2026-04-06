@@ -1,0 +1,147 @@
+<mxfile host="app.diagrams.net" modified="2026-04-05" agent="ClutchG Thesis" version="24.0">
+  <diagram name="Tweak State Diagram" id="state1">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Diagram 13: Tweak State Diagram" style="text;html=1;fontSize=18;fontStyle=1;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="370" y="20" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="ClutchG PC Optimizer — Tweak Lifecycle States" style="text;html=1;fontSize=11;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="370" y="55" width="360" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="start" value="" style="ellipse;fillColor=#333333;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="Registered" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#1976D2;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="185" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1desc" value="Tweak loaded into&#xa;TweakRegistry at startup" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="180" y="248" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="Selected" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#F57C00;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="400" y="185" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2desc" value="User picks tweak via&#xa;Profile or individually" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="400" y="248" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="Applying" style="rounded=1;whiteSpace=wrap;fillColor=#FFFDE7;strokeColor=#FBC02D;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#F57F17;" vertex="1" parent="1">
+          <mxGeometry x="620" y="185" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3desc" value="BatchExecutor runs&#xa;.bat script with admin" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="620" y="248" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4" value="Applied" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#388E3C;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="840" y="120" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4desc" value="Tweak active on system&#xa;Logged by FlightRecorder" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="840" y="183" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5" value="Failed" style="rounded=1;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#D32F2F;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#C62828;" vertex="1" parent="1">
+          <mxGeometry x="840" y="260" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5desc" value="Script error or&#xa;validation rejected" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="840" y="323" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s6" value="Rolled Back" style="rounded=1;whiteSpace=wrap;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#6A1B9A;" vertex="1" parent="1">
+          <mxGeometry x="620" y="380" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s6desc" value="Restored to original&#xa;via rollback script" style="text;html=0;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=top;fillColor=none;strokeColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="620" y="443" width="140" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;" edge="1" source="start" target="s1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="User selects" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;" edge="1" source="s1" target="s2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;" edge="1" source="s2" target="s3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="Success" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#388E3C;fontFamily=Segoe UI;fontSize=10;fontColor=#388E3C;" edge="1" source="s3" target="s4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="Error" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#D32F2F;fontFamily=Segoe UI;fontSize=10;fontColor=#D32F2F;" edge="1" source="s3" target="s5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Rollback" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7B1FA2;fontFamily=Segoe UI;fontSize=10;fontColor=#7B1FA2;" edge="1" source="s4" target="s6" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="150"/>
+              <mxPoint x="1000" y="410"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="Re-select" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;dashed=1;" edge="1" source="s6" target="s2" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="410"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="Deselect" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;dashed=1;" edge="1" source="s2" target="s1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="145"/>
+              <mxPoint x="320" y="145"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="Retry" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#555555;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;dashed=1;" edge="1" source="s5" target="s2" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="290"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="end_state" value="" style="ellipse;fillColor=#333333;strokeColor=#333333;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="138" width="24" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s4_end" value="Complete" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#388E3C;fontFamily=Segoe UI;fontSize=10;fontColor=#388E3C;" edge="1" source="s4" target="end_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend_bg" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="490" width="700" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch1" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="66" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label1" value="Registered" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="90" y="497" width="65" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch2" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#F57C00;" vertex="1" parent="1">
+          <mxGeometry x="172" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label2" value="Selected" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="196" y="497" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch3" value="" style="rounded=1;fillColor=#FFFDE7;strokeColor=#FBC02D;" vertex="1" parent="1">
+          <mxGeometry x="270" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label3" value="Applying" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="294" y="497" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch4" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#388E3C;" vertex="1" parent="1">
+          <mxGeometry x="368" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label4" value="Applied" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="392" y="497" width="50" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch5" value="" style="rounded=1;fillColor=#FFEBEE;strokeColor=#D32F2F;" vertex="1" parent="1">
+          <mxGeometry x="456" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label5" value="Failed" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="480" y="497" width="50" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_swatch6" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;" vertex="1" parent="1">
+          <mxGeometry x="542" y="499" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_label6" value="Rolled Back" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="566" y="497" width="70" height="16" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
