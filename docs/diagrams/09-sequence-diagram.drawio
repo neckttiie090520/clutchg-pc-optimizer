@@ -1,0 +1,266 @@
+<mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
+  <diagram name="Sequence Diagram - Apply Profile" id="seq-diagram-1">
+    <mxGraphModel dx="1300" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Diagram 9: Sequence Diagram — Apply Optimization Profile" style="text;html=1;fontSize=18;fontStyle=1;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="300" y="5" width="900" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="ClutchG PC Optimizer — User triggers profile apply through GUI with backup-before-apply safety pattern" style="text;html=1;fontSize=11;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="300" y="37" width="900" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_user" value="&lt;b&gt;: User&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#E8EAF6;strokeColor=#5C6BC0;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="60" y="70" width="100" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_pv" value="&lt;b&gt;: ProfilesView&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="240" y="70" width="120" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_ed" value="&lt;b&gt;: ExecutionDialog&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF3E0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="440" y="70" width="140" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_pm" value="&lt;b&gt;: ProfileManager&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#E8F5E9;strokeColor=#43A047;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="660" y="70" width="140" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_bm" value="&lt;b&gt;: BackupManager&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF3E0;strokeColor=#EF6C00;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="880" y="70" width="140" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_be" value="&lt;b&gt;: BatchExecutor&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#E3F2FD;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="70" width="120" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p_os" value="&lt;b&gt;: Windows OS&lt;/b&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FCE4EC;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=12;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="70" width="110" height="960" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_pv1" value="" style="rounded=0;fillColor=#E8F5E9;strokeColor=#66BB6A;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="295" y="155" width="10" height="165" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m1" value="1. click &amp;quot;Apply {profile}&amp;quot;" style="html=1;rounded=0;exitX=1;exitY=0;entryX=0;entryY=0;strokeColor=#5C6BC0;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="160" as="sourcePoint"/>
+            <mxPoint x="295" y="160" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m2" value="2. show_confirmation(profile)" style="html=1;rounded=0;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;fontColor=#333;edgeStyle=orthogonalEdgeStyle;curved=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="200" as="sourcePoint"/>
+            <mxPoint x="305" y="220" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="340" y="200"/>
+              <mxPoint x="340" y="220"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m2r" value="confirmation dialog" style="html=1;rounded=0;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="250" as="sourcePoint"/>
+            <mxPoint x="110" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m3" value="3. confirm (click Yes)" style="html=1;rounded=0;strokeColor=#5C6BC0;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="290" as="sourcePoint"/>
+            <mxPoint x="295" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_pv2" value="" style="rounded=0;fillColor=#E8F5E9;strokeColor=#66BB6A;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="295" y="290" width="10" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m4" value="4. &amp;lt;&amp;lt;create&amp;gt;&amp;gt; ExecutionDialog(profile)" style="html=1;rounded=0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;fontColor=#333;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="320" as="sourcePoint"/>
+            <mxPoint x="505" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="thread_note" value="&lt;i&gt;Worker Thread (daemon=True)&lt;/i&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#888;align=center;fillColor=#FFFDE7;strokeColor=#FDD835;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="315" y="345" width="190" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="act_pm1" value="" style="rounded=0;fillColor=#E8F5E9;strokeColor=#43A047;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="725" y="380" width="10" height="500" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m5" value="5. apply_profile(profile, on_progress, on_output)" style="html=1;rounded=0;strokeColor=#43A047;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="385" as="sourcePoint"/>
+            <mxPoint x="725" y="385" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m6" value="6. create_backup(profile_name)" style="html=1;rounded=0;strokeColor=#EF6C00;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="430" as="sourcePoint"/>
+            <mxPoint x="945" y="430" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_bm1" value="" style="rounded=0;fillColor=#FFF3E0;strokeColor=#EF6C00;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="945" y="425" width="10" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m6r" value="BackupInfo" style="html=1;rounded=0;strokeColor=#EF6C00;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="945" y="475" as="sourcePoint"/>
+            <mxPoint x="735" y="475" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="cb1" value="7. on_output(&amp;quot;Backup created&amp;quot;)" style="html=1;rounded=0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;fontColor=#666;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="510" as="sourcePoint"/>
+            <mxPoint x="505" y="510" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="loop_frame" value="" style="rounded=1;whiteSpace=wrap;fillColor=none;strokeColor=#90CAF9;dashed=1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="710" y="540" width="640" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="loop_label" value="loop [for each script in profile.scripts]" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#42A5F5;fontStyle=1;align=left;fillColor=#E3F2FD;strokeColor=#90CAF9;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="540" width="230" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m8" value="8. execute(script_path)" style="html=1;rounded=0;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="590" as="sourcePoint"/>
+            <mxPoint x="1155" y="590" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_be1" value="" style="rounded=0;fillColor=#E3F2FD;strokeColor=#42A5F5;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="1155" y="585" width="10" height="105" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m9" value="9. Popen(cmd /c script.bat)" style="html=1;rounded=0;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1165" y="630" as="sourcePoint"/>
+            <mxPoint x="1360" y="630" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="act_os1" value="" style="rounded=0;fillColor=#FCE4EC;strokeColor=#E53935;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="625" width="10" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m9r" value="exit code + stdout" style="html=1;rounded=0;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1360" y="660" as="sourcePoint"/>
+            <mxPoint x="1165" y="660" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m8r" value="ExecutionResult" style="html=1;rounded=0;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1155" y="690" as="sourcePoint"/>
+            <mxPoint x="735" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="cb2" value="on_progress(percent)" style="html=1;rounded=0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;fontColor=#666;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="730" as="sourcePoint"/>
+            <mxPoint x="505" y="730" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="cb2_note" value="&lt;i&gt;callback updates progress bar in dialog&lt;/i&gt;" style="text;html=1;fontSize=9;fontFamily=Segoe UI;fontColor=#999;align=center;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="540" y="738" width="200" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="opt_frame" value="" style="rounded=1;whiteSpace=wrap;fillColor=none;strokeColor=#E53935;dashed=1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="720" y="770" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_label" value="opt [on error &amp;amp; auto_backup]" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#E53935;fontStyle=1;align=left;fillColor=#FFF3F3;strokeColor=#E53935;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="770" width="180" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_rollback" value="restore_registry(backup_id)" style="html=1;rounded=0;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=10;fontColor=#E53935;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="800" as="sourcePoint"/>
+            <mxPoint x="945" y="800" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m10" value="10. return ExecutionResult (aggregated)" style="html=1;rounded=0;strokeColor=#43A047;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="725" y="850" as="sourcePoint"/>
+            <mxPoint x="305" y="850" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m11" value="11. show_result(result)" style="html=1;rounded=0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="890" as="sourcePoint"/>
+            <mxPoint x="505" y="890" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m12" value="12. display results summary" style="html=1;rounded=0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;fontColor=#888;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="505" y="930" as="sourcePoint"/>
+            <mxPoint x="110" y="930" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend_bg" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1040" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s1" value="" style="rounded=1;fillColor=#E8EAF6;strokeColor=#5C6BC0;" vertex="1" parent="1">
+          <mxGeometry x="76" y="1049" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l1" value="User" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1047" width="40" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s2" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#66BB6A;" vertex="1" parent="1">
+          <mxGeometry x="150" y="1049" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l2" value="GUI / Business" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="174" y="1047" width="90" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s3" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#FF9800;" vertex="1" parent="1">
+          <mxGeometry x="276" y="1049" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l3" value="Dialog / Backup" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1047" width="90" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s4" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#42A5F5;" vertex="1" parent="1">
+          <mxGeometry x="402" y="1049" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l4" value="BatchExecutor" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="426" y="1047" width="80" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s5" value="" style="rounded=1;fillColor=#FCE4EC;strokeColor=#E53935;" vertex="1" parent="1">
+          <mxGeometry x="518" y="1049" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l5" value="Windows OS" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="542" y="1047" width="70" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s6" value="" style="rounded=0;fillColor=none;strokeColor=#333;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="1049" width="8" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l6" value="= activation bar" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="642" y="1047" width="90" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_s7" value="---" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=center;fontColor=#888;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1049" width="30" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_l7" value="= return / callback" style="text;fontSize=10;fontFamily=Segoe UI;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="770" y="1047" width="120" height="16" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
