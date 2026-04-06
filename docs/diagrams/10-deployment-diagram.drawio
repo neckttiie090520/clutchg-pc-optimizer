@@ -12,11 +12,11 @@
           <mxGeometry x="250" y="37" width="700" height="25" as="geometry"/>
         </mxCell>
 
-        <mxCell id="node_pc" value="&lt;b&gt;&amp;laquo;device&amp;raquo;&lt;br&gt;Windows 10/11 PC&lt;/b&gt;" style="swimlane;startSize=40;fillColor=#E8EAF6;strokeColor=#5C6BC0;fontFamily=Segoe UI;fontStyle=0;fontSize=13;fontColor=#3949AB;rounded=1;arcSize=6;swimlaneLine=0;" vertex="1" parent="1">
+        <mxCell id="node_pc" value="&lt;b&gt;&amp;laquo;device&amp;raquo;&lt;br&gt;Windows 10/11 PC&lt;/b&gt;" style="swimlane;html=1;startSize=40;fillColor=#E8EAF6;strokeColor=#5C6BC0;fontFamily=Segoe UI;fontStyle=0;fontSize=13;fontColor=#3949AB;rounded=1;arcSize=6;swimlaneLine=0;" vertex="1" parent="1">
           <mxGeometry x="60" y="70" width="1080" height="680" as="geometry"/>
         </mxCell>
 
-        <mxCell id="node_install" value="&lt;b&gt;&amp;laquo;directory&amp;raquo;&lt;br&gt;Installation Folder&lt;/b&gt;" style="swimlane;startSize=40;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=12;fontColor=#2E7D32;rounded=1;arcSize=8;swimlaneLine=0;" vertex="1" parent="node_pc">
+        <mxCell id="node_install" value="&lt;b&gt;&amp;laquo;directory&amp;raquo;&lt;br&gt;Installation Folder&lt;/b&gt;" style="swimlane;html=1;startSize=40;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=12;fontColor=#2E7D32;rounded=1;arcSize=8;swimlaneLine=0;" vertex="1" parent="node_pc">
           <mxGeometry x="30" y="60" width="480" height="300" as="geometry"/>
         </mxCell>
 
@@ -36,7 +36,7 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="node_appdata" value="&lt;b&gt;&amp;laquo;directory&amp;raquo;&lt;br&gt;%APPDATA%/ClutchG/&lt;/b&gt;" style="swimlane;startSize=40;fillColor=#FFF3E0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=12;fontColor=#E65100;rounded=1;arcSize=8;swimlaneLine=0;" vertex="1" parent="node_pc">
+        <mxCell id="node_appdata" value="&lt;b&gt;&amp;laquo;directory&amp;raquo;&lt;br&gt;%APPDATA%/ClutchG/&lt;/b&gt;" style="swimlane;html=1;startSize=40;fillColor=#FFF3E0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=12;fontColor=#E65100;rounded=1;arcSize=8;swimlaneLine=0;" vertex="1" parent="node_pc">
           <mxGeometry x="570" y="60" width="480" height="195" as="geometry"/>
         </mxCell>
 

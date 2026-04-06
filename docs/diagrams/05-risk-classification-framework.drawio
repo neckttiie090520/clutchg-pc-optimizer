@@ -30,7 +30,7 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="d2" value="Evidence-based&#xa;&amp;amp; reversible?" style="rhombus;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+        <mxCell id="d2" value="Evidence-based&#xa;&amp; reversible?" style="rhombus;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#e65100;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
           <mxGeometry x="455" y="310" width="170" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="e_d1_d2" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=2;fontFamily=Segoe UI;fontSize=10;fontColor=#2e7d32;" edge="1" source="d1" target="d2" parent="1">
