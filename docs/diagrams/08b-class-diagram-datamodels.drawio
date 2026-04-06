@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
+  <diagram name="Data Models" id="class-datamodels-1">
+    <mxGraphModel dx="1160" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1160" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Diagram 8b: Class Diagram — Data Models" style="text;html=1;fontSize=16;fontStyle=1;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="200" y="8" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="ClutchG PC Optimizer — @dataclass and Enum models with full field detail" style="text;html=1;fontSize=10;fontFamily=Segoe UI;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="36" width="700" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_tweak" value="&lt;b&gt;@dataclass Tweak&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;id: str&lt;br&gt;name: str&lt;br&gt;category: str&lt;br&gt;description: str&lt;br&gt;what_it_does: str&lt;br&gt;why_it_helps: str&lt;br&gt;limitations: str&lt;br&gt;warnings: List[str]&lt;br&gt;risk_level: str &lt;i&gt;(LOW|MED|HIGH)&lt;/i&gt;&lt;br&gt;expected_gain: str&lt;br&gt;requires_admin: bool&lt;br&gt;requires_restart: bool&lt;br&gt;reversible: bool&lt;br&gt;registry_keys: List[str]&lt;br&gt;bat_script: str&lt;br&gt;bat_function: str&lt;br&gt;preset_safe: bool&lt;br&gt;preset_competitive: bool&lt;br&gt;preset_extreme: bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="20" y="66" width="210" height="310" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_profile" value="&lt;b&gt;@dataclass Profile&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;name: str&lt;br&gt;display_name: str&lt;br&gt;description: str&lt;br&gt;icon: str&lt;br&gt;risk_level: RiskLevel&lt;br&gt;expected_fps_gain: tuple[int, int]&lt;br&gt;scripts: List[str]&lt;br&gt;warnings: List[str]&lt;br&gt;requires_restart: bool&lt;br&gt;requires_confirmation: bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="250" y="66" width="220" height="185" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_result" value="&lt;b&gt;@dataclass ExecutionResult&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;success: bool&lt;br&gt;output: str&lt;br&gt;errors: str&lt;br&gt;return_code: int&lt;br&gt;duration: float&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="490" y="66" width="200" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_backup" value="&lt;b&gt;@dataclass BackupInfo&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;id: str&lt;br&gt;name: str&lt;br&gt;created_at: str&lt;br&gt;profile: str&lt;br&gt;has_restore_point: bool&lt;br&gt;has_registry_backup: bool&lt;br&gt;description: str&lt;br&gt;size_bytes: int&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="710" y="66" width="200" height="165" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_sys" value="&lt;b&gt;@dataclass SystemProfile&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;os: OSInfo&lt;br&gt;cpu: CPUInfo&lt;br&gt;gpu: GPUInfo&lt;br&gt;ram: RAMInfo&lt;br&gt;storage: StorageInfo&lt;br&gt;form_factor: str&lt;br&gt;tier: str&lt;br&gt;total_score: int&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="490" y="206" width="195" height="165" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_batchscript" value="&lt;b&gt;@dataclass BatchScript&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;path: Path&lt;br&gt;name: str&lt;br&gt;description: str&lt;br&gt;category: str&lt;br&gt;requires_admin: bool&lt;br&gt;estimated_time: int&lt;br&gt;requires_restart: bool&lt;br&gt;risk_level: str&lt;br&gt;tags: List[str]&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="250" y="270" width="195" height="175" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_tweakchange" value="&lt;b&gt;@dataclass TweakChange&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;name: str&lt;br&gt;category: ChangeCategory&lt;br&gt;key_path: str&lt;br&gt;old_value: str&lt;br&gt;new_value: str&lt;br&gt;value_type: str&lt;br&gt;risk_level: RiskLevel&lt;br&gt;timestamp: datetime&lt;br&gt;profile: str&lt;br&gt;success: bool&lt;br&gt;can_rollback: bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="710" y="250" width="200" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_snapshot" value="&lt;b&gt;@dataclass SystemSnapshot&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;snapshot_id: str&lt;br&gt;timestamp: datetime&lt;br&gt;operation_type: str&lt;br&gt;profile: str&lt;br&gt;tweaks: List[TweakChange]&lt;br&gt;success: bool&lt;br&gt;error_message: str&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="210" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_actiondef" value="&lt;b&gt;@dataclass(frozen) ActionDefinition&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;id: str&lt;br&gt;group: str&lt;br&gt;title: str&lt;br&gt;description: str&lt;br&gt;kind: ActionKind&lt;br&gt;risk: RiskLevel&lt;br&gt;tweak_ids: Tuple[str, ...]&lt;br&gt;url: str&lt;br&gt;requires_confirmation: bool&lt;br&gt;requires_nvidia: bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="250" y="470" width="230" height="190" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_enums" value="&lt;b&gt;&amp;laquo;enum&amp;raquo; RiskLevel&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;LOW | MEDIUM | HIGH&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=11;align=center;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="930" y="66" width="150" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_enum_cc" value="&lt;b&gt;&amp;laquo;enum&amp;raquo; ChangeCategory&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;REGISTRY | SERVICE | BCDEDIT&lt;br&gt;NETWORK | POWER | FILE | OTHER&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=11;align=center;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="930" y="140" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_enum_ak" value="&lt;b&gt;&amp;laquo;enum&amp;raquo; ActionKind&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;TWEAK_PACK | EXTERNAL_LINK&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=11;align=center;verticalAlign=top;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="930" y="230" width="160" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dc_subinfo" value="&lt;font size=&quot;1&quot;&gt;&lt;b&gt;Sub-models (nested @dataclass):&lt;/b&gt;&lt;br&gt;OSInfo | CPUInfo | GPUInfo&lt;br&gt;RAMInfo | StorageInfo&lt;br&gt;ActionSummary | HelpTopic&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#AB47BC;fontFamily=Segoe UI;fontSize=11;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="310" width="160" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_profile_risk" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;" edge="1" parent="1" source="dc_profile" target="dc_enums">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_tc_risk" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.15;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dc_tweakchange" target="dc_enums">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1110" y="280"/>
+              <mxPoint x="1110" y="94"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_tc_cc" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dc_tweakchange" target="dc_enum_cc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="320"/>
+              <mxPoint x="1120" y="175"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ad_risk" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.15;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dc_actiondef" target="dc_enums">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="499"/>
+              <mxPoint x="1140" y="94"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ad_ak" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7986CB;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dc_actiondef" target="dc_enum_ak">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1130" y="527"/>
+              <mxPoint x="1130" y="258"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_snap_tc" value="contains *" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;" edge="1" parent="1" source="dc_snapshot" target="dc_tweakchange">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="125" y="580"/>
+              <mxPoint x="810" y="580"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_sys_sub" value="contains" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#AB47BC;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;" edge="1" parent="1" source="dc_sys" target="dc_subinfo">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#BDBDBD;fontFamily=Segoe UI;" vertex="1" parent="1">
+          <mxGeometry x="520" y="470" width="380" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;fontSize=11;fontFamily=Segoe UI;fontColor=#333;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="530" y="472" width="60" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg1" value="&lt;font size=&quot;1&quot;&gt;@dataclass&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="530" y="494" width="65" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg1_box" value="" style="rounded=1;fillColor=#FFFFFF;strokeColor=#FFB300;" vertex="1" parent="1">
+          <mxGeometry x="600" y="495" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg2" value="&lt;font size=&quot;1&quot;&gt;Enum&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="530" y="514" width="40" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg2_box" value="" style="rounded=1;fillColor=#E8EAF6;strokeColor=#7986CB;" vertex="1" parent="1">
+          <mxGeometry x="600" y="515" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg3" value="&lt;font size=&quot;1&quot;&gt;Sub-model group&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="640" y="494" width="90" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg3_box" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#AB47BC;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="735" y="495" width="20" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg4" value="&lt;font size=&quot;1&quot;&gt;contains *&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="640" y="514" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg4_line" value="" style="endArrow=open;endFill=0;strokeColor=#FFB300;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="705" y="522" as="sourcePoint"/>
+            <mxPoint x="745" y="522" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg5" value="&lt;font size=&quot;1&quot;&gt;uses (enum ref)&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="780" y="494" width="80" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg5_line" value="" style="endArrow=open;endFill=0;strokeColor=#7986CB;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="862" y="502" as="sourcePoint"/>
+            <mxPoint x="892" y="502" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
