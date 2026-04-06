@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
   <diagram name="Class Diagram (Simplified)" id="class-simplified-1">
-    <mxGraphModel dx="1100" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="1100" dy="940" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="940" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -32,8 +32,9 @@
         </mxCell>
 
         <mxCell id="grp_core" value="Core Business Logic" style="swimlane;startSize=22;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontStyle=1;fontSize=11;fontColor=#2E7D32;rounded=1;arcSize=8;swimlaneLine=0;" vertex="1" parent="1">
-          <mxGeometry x="20" y="280" width="1060" height="350" as="geometry"/>
+          <mxGeometry x="20" y="280" width="1060" height="430" as="geometry"/>
         </mxCell>
+
         <mxCell id="cls_pm" value="&lt;b&gt;ProfileManager&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- profiles: Dict[str, Profile]&lt;br&gt;- active_profile: Optional[str]&lt;br&gt;- _execution_lock: Lock&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ apply_profile(profile): ExecutionResult&lt;br&gt;+ apply_tweaks(ids): ExecutionResult&lt;br&gt;+ get_registry(): TweakRegistry&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
           <mxGeometry x="15" y="30" width="230" height="130" as="geometry"/>
         </mxCell>
@@ -46,130 +47,185 @@
         <mxCell id="cls_bp" value="&lt;b&gt;BatchParser&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- scripts_dir: Path&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ discover_scripts(): List[BatchScript]&lt;br&gt;+ parse_script(path): BatchScript&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
           <mxGeometry x="780" y="30" width="250" height="95" as="geometry"/>
         </mxCell>
+
         <mxCell id="cls_bm" value="&lt;b&gt;BackupManager&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- backup_dir: Path&lt;br&gt;- backups: List[BackupInfo]&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ create_backup(name, profile): BackupInfo&lt;br&gt;+ restore_registry(id): bool&lt;br&gt;+ delete_backup(id): bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
-          <mxGeometry x="15" y="185" width="240" height="120" as="geometry"/>
+          <mxGeometry x="15" y="190" width="240" height="120" as="geometry"/>
         </mxCell>
         <mxCell id="cls_sd" value="&lt;b&gt;SystemDetector&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- wmi_conn&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ detect_all(): SystemProfile&lt;br&gt;+ recommend_profile(sys): str&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
-          <mxGeometry x="280" y="185" width="220" height="95" as="geometry"/>
-        </mxCell>
-        <mxCell id="cls_cm" value="&lt;b&gt;ConfigManager&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- config_file: Path&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ load_config(): Dict&lt;br&gt;+ save_config(config): bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
-          <mxGeometry x="525" y="185" width="200" height="95" as="geometry"/>
-        </mxCell>
-        <mxCell id="cls_fr" value="&lt;b&gt;&amp;laquo;singleton&amp;raquo;&lt;br&gt;FlightRecorder&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- current_snapshot: SystemSnapshot&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ start_recording(op): SystemSnapshot&lt;br&gt;+ record_change(name, ...): TweakChange&lt;br&gt;+ finish_recording(success): SystemSnapshot&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
-          <mxGeometry x="750" y="175" width="255" height="125" as="geometry"/>
+          <mxGeometry x="280" y="190" width="220" height="95" as="geometry"/>
         </mxCell>
         <mxCell id="cls_ac" value="&lt;b&gt;ActionCatalog&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- _actions: Tuple[ActionDefinition]&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ get_actions(group, sys): List&lt;br&gt;+ validate(): List[str]&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
-          <mxGeometry x="525" y="150" width="200" height="95" as="geometry"/>
+          <mxGeometry x="525" y="190" width="200" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_fr" value="&lt;b&gt;&amp;laquo;singleton&amp;raquo;&lt;br&gt;FlightRecorder&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- current_snapshot: SystemSnapshot&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ start_recording(op): SystemSnapshot&lt;br&gt;+ record_change(name, ...): TweakChange&lt;br&gt;+ finish_recording(success): SystemSnapshot&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#E53935;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
+          <mxGeometry x="750" y="180" width="255" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_cm" value="&lt;b&gt;ConfigManager&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;- config_file: Path&lt;/font&gt;&lt;hr size=&quot;1&quot;&gt;&lt;font size=&quot;1&quot;&gt;+ load_config(): Dict&lt;br&gt;+ save_config(config): bool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=11;align=left;verticalAlign=top;spacingLeft=5;spacingTop=3;" vertex="1" parent="grp_core">
+          <mxGeometry x="280" y="320" width="200" height="95" as="geometry"/>
         </mxCell>
 
-        <mxCell id="e_pm_tr" value="uses" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_tr">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_pm_tr" value="uses" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_tr">
+          <mxGeometry x="-0.2" y="-10" relative="1" as="geometry">
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e_pm_be" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_be">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="e_pm_bp" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_bp">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="e_ac_tr" value="uses" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#F9A825;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="grp_core" source="cls_ac" target="cls_tr">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e_pm_be" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;exitX=1;exitY=0.05;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_be">
+          <mxGeometry x="0.4" y="-12" relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="385" y="179"/>
+              <mxPoint x="255" y="37"/>
+              <mxPoint x="255" y="22"/>
+              <mxPoint x="515" y="22"/>
+              <mxPoint x="515" y="62"/>
             </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_pm_bp" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="grp_core" source="cls_pm" target="cls_bp">
+          <mxGeometry x="0.5" y="-10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="12"/>
+              <mxPoint x="905" y="12"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ac_tr" value="uses" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#F9A825;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.85;entryDx=0;entryDy=0;" edge="1" parent="grp_core" source="cls_ac" target="cls_tr">
+          <mxGeometry x="0.2" y="12" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="219"/>
+              <mxPoint x="510" y="136"/>
+            </Array>
+            <mxPoint as="offset"/>
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="e_app_pm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="cls_app" target="cls_pm">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_app_pm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cls_app" target="cls_pm">
+          <mxGeometry x="-0.4" y="-12" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="70" y="254"/>
+              <mxPoint x="150" y="254"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e_app_bm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.1;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="cls_app" target="cls_bm">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_app_bm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#FF9800;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0;exitY=0.85;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cls_app" target="cls_bm">
+          <mxGeometry x="-0.55" y="-10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="35" y="208"/>
+              <mxPoint x="8" y="208"/>
+              <mxPoint x="8" y="460"/>
+              <mxPoint x="155" y="460"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e_app_sd" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="cls_app" target="cls_sd">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_app_sd" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#42A5F5;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cls_app" target="cls_sd">
+          <mxGeometry x="-0.65" y="-12" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="116" y="256"/>
+              <mxPoint x="280" y="256"/>
+              <mxPoint x="280" y="518"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e_app_cm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=1;exitY=0.6;exitDx=0;exitDy=0;" edge="1" parent="1" source="cls_app" target="cls_cm">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_app_cm" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=0.55;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cls_app" target="cls_cm">
+          <mxGeometry x="-0.75" y="12" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="162" y="264"/>
+              <mxPoint x="285" y="264"/>
+              <mxPoint x="285" y="648"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e_app_ac" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=1;exitY=0.8;exitDx=0;exitDy=0;" edge="1" parent="1" source="cls_app" target="cls_ac">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e_app_ac" value="owns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=9;endArrow=diamond;endFill=1;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cls_app" target="cls_ac">
+          <mxGeometry x="-0.6" y="12" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="265" y="189"/>
+              <mxPoint x="535" y="189"/>
+              <mxPoint x="535" y="470"/>
+              <mxPoint x="645" y="470"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
         </mxCell>
 
         <mxCell id="note_data" value="&lt;font size=&quot;1&quot;&gt;&lt;b&gt;Data Models&lt;/b&gt; (see Diagram 8b for full detail)&lt;br&gt;Tweak | Profile | ExecutionResult | BackupInfo&lt;br&gt;SystemProfile | BatchScript | TweakChange&lt;br&gt;SystemSnapshot | ActionDefinition&lt;br&gt;RiskLevel (enum) | ChangeCategory (enum)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=11;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="580" y="660" width="350" height="85" as="geometry"/>
+          <mxGeometry x="580" y="740" width="350" height="85" as="geometry"/>
         </mxCell>
         <mxCell id="e_core_data" value="produces / uses" style="strokeColor=#FFB300;fontFamily=Segoe UI;fontSize=9;endArrow=open;endFill=0;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="grp_core" target="note_data">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
         <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#BDBDBD;fontFamily=Segoe UI;" vertex="1" parent="1">
-          <mxGeometry x="20" y="660" width="520" height="85" as="geometry"/>
+          <mxGeometry x="20" y="740" width="520" height="85" as="geometry"/>
         </mxCell>
         <mxCell id="leg_title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;fontSize=11;fontFamily=Segoe UI;fontColor=#333;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="30" y="663" width="60" height="18" as="geometry"/>
+          <mxGeometry x="30" y="743" width="60" height="18" as="geometry"/>
         </mxCell>
         <mxCell id="leg1" value="&lt;font size=&quot;1&quot;&gt;Composition (owns)&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="30" y="684" width="110" height="16" as="geometry"/>
+          <mxGeometry x="30" y="764" width="110" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg1_line" value="" style="endArrow=diamond;endFill=1;strokeColor=#2E7D32;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="145" y="692" as="sourcePoint"/>
-            <mxPoint x="185" y="692" as="targetPoint"/>
+            <mxPoint x="145" y="772" as="sourcePoint"/>
+            <mxPoint x="185" y="772" as="targetPoint"/>
           </mxGeometry>
         </mxCell>
         <mxCell id="leg2" value="&lt;font size=&quot;1&quot;&gt;Dependency (uses)&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="30" y="704" width="110" height="16" as="geometry"/>
+          <mxGeometry x="30" y="784" width="110" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg2_line" value="" style="endArrow=open;endFill=0;strokeColor=#666;dashed=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="145" y="712" as="sourcePoint"/>
-            <mxPoint x="185" y="712" as="targetPoint"/>
+            <mxPoint x="145" y="792" as="sourcePoint"/>
+            <mxPoint x="185" y="792" as="targetPoint"/>
           </mxGeometry>
         </mxCell>
         <mxCell id="leg3" value="&lt;font size=&quot;1&quot;&gt;Association&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="30" y="724" width="80" height="16" as="geometry"/>
+          <mxGeometry x="30" y="804" width="80" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg3_line" value="" style="endArrow=open;endFill=0;strokeColor=#666;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="110" y="732" as="sourcePoint"/>
-            <mxPoint x="150" y="732" as="targetPoint"/>
+            <mxPoint x="110" y="812" as="sourcePoint"/>
+            <mxPoint x="150" y="812" as="targetPoint"/>
           </mxGeometry>
         </mxCell>
         <mxCell id="leg4" value="&lt;font size=&quot;1&quot;&gt;Singleton&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="210" y="684" width="60" height="16" as="geometry"/>
+          <mxGeometry x="210" y="764" width="60" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg4_box" value="" style="rounded=1;fillColor=#FFF9C4;strokeColor=#F9A825;" vertex="1" parent="1">
-          <mxGeometry x="275" y="685" width="20" height="12" as="geometry"/>
+          <mxGeometry x="275" y="765" width="20" height="12" as="geometry"/>
         </mxCell>
         <mxCell id="leg5" value="&lt;font size=&quot;1&quot;&gt;Safety&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="210" y="704" width="50" height="16" as="geometry"/>
+          <mxGeometry x="210" y="784" width="50" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg5_box" value="" style="rounded=1;fillColor=#FFEBEE;strokeColor=#E53935;" vertex="1" parent="1">
-          <mxGeometry x="275" y="705" width="20" height="12" as="geometry"/>
+          <mxGeometry x="275" y="785" width="20" height="12" as="geometry"/>
         </mxCell>
         <mxCell id="leg6" value="&lt;font size=&quot;1&quot;&gt;Backup&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="210" y="724" width="50" height="16" as="geometry"/>
+          <mxGeometry x="210" y="804" width="50" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg6_box" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#FF9800;" vertex="1" parent="1">
-          <mxGeometry x="275" y="725" width="20" height="12" as="geometry"/>
+          <mxGeometry x="275" y="805" width="20" height="12" as="geometry"/>
         </mxCell>
         <mxCell id="leg7" value="&lt;font size=&quot;1&quot;&gt;Hardware&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="320" y="684" width="60" height="16" as="geometry"/>
+          <mxGeometry x="320" y="764" width="60" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg7_box" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#42A5F5;" vertex="1" parent="1">
-          <mxGeometry x="385" y="685" width="20" height="12" as="geometry"/>
+          <mxGeometry x="385" y="765" width="20" height="12" as="geometry"/>
         </mxCell>
         <mxCell id="leg8" value="&lt;font size=&quot;1&quot;&gt;GUI summary&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="320" y="704" width="70" height="16" as="geometry"/>
+          <mxGeometry x="320" y="784" width="70" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg8_box" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#AB47BC;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="395" y="705" width="20" height="12" as="geometry"/>
+          <mxGeometry x="395" y="785" width="20" height="12" as="geometry"/>
         </mxCell>
         <mxCell id="leg9" value="&lt;font size=&quot;1&quot;&gt;Data Models&lt;/font&gt;" style="text;html=1;fontSize=10;fontFamily=Segoe UI;fontColor=#555;align=left;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="320" y="724" width="70" height="16" as="geometry"/>
+          <mxGeometry x="320" y="804" width="70" height="16" as="geometry"/>
         </mxCell>
         <mxCell id="leg9_box" value="" style="rounded=1;fillColor=#FFF8E1;strokeColor=#FFB300;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="395" y="725" width="20" height="12" as="geometry"/>
+          <mxGeometry x="395" y="805" width="20" height="12" as="geometry"/>
         </mxCell>
 
       </root>
