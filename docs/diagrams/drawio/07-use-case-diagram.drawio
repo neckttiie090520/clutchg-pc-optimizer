@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" modified="2026-04-06" agent="ClutchG Thesis" version="24.0">
   <diagram id="use-case" name="Use Case Diagram">
-    <mxGraphModel dx="1200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1050" math="0" shadow="0">
+    <mxGraphModel dx="1300" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1050" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -13,14 +13,14 @@
         </mxCell>
 
         <mxCell id="sys_boundary" value="ClutchG PC Optimizer" style="shape=umlFrame;whiteSpace=wrap;fillColor=#fafafa;strokeColor=#333333;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="155" y="58" width="880" height="940" as="geometry"/>
+          <mxGeometry x="155" y="58" width="840" height="940" as="geometry"/>
         </mxCell>
 
         <mxCell id="actor_user" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
           <mxGeometry x="50" y="440" width="40" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="actor_os" value="Windows OS" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;fontFamily=Segoe UI;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="1010" y="250" width="40" height="60" as="geometry"/>
+          <mxGeometry x="1070" y="250" width="40" height="60" as="geometry"/>
         </mxCell>
 
         <mxCell id="uc01" value="View Dashboard &amp;&#xa;System Score" style="ellipse;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
@@ -94,17 +94,22 @@
         <mxCell id="u_uc12" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="actor_user" target="uc12" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="os_uc02" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;" edge="1" source="actor_os" target="uc02" parent="1">
+        <mxCell id="os_uc02" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" edge="1" source="actor_os" target="uc02" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="os_uc13" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;" edge="1" source="actor_os" target="uc13" parent="1">
+        <mxCell id="os_uc13" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actor_os" target="uc13" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="os_uc06" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;" edge="1" source="actor_os" target="uc06" parent="1">
+        <mxCell id="os_uc06" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.4;exitDx=0;exitDy=0;" edge="1" source="actor_os" target="uc06" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="os_uc07" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;" edge="1" source="actor_os" target="uc07" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="os_uc07" style="endArrow=none;strokeColor=#555555;strokeWidth=1.5;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" edge="1" source="actor_os" target="uc07" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1040" y="452"/>
+              <mxPoint x="400" y="452"/>
+            </Array>
+          </mxGeometry>
         </mxCell>
 
         <mxCell id="ext_01_02" value="&lt;&lt;extend&gt;&gt;" style="endArrow=open;endSize=6;dashed=1;strokeColor=#999999;fontFamily=Segoe UI;fontSize=9;fontColor=#777777;" edge="1" source="uc02" target="uc01" parent="1">
