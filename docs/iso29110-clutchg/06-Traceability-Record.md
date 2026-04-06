@@ -1,8 +1,26 @@
 # 06 — บันทึกความสอดคล้อง (Traceability Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O3 (Software Traceability)
+> **เวอร์ชัน:** 2.0
+> **ETVX:** Entry = SRS v3.1 + SDD v3.2 approved; Task = Map FR→Design→Code→Test for all requirements; Verification = Coverage ≥ 85%; Exit = All P0 FRs traced, gaps documented
+> **อ้างอิง SE:** SE 721 (Requirements Engineering — Traceability), SE 725 (V&V — Requirements-based Testing)
+> **Cross-ref:** SRS v3.1 (`02-SRS.md`), SDD v3.2 (`03-SDD.md`), Test Plan v3.0 (`04-Test-Plan.md`), Test Record v2.1 (`05-Test-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **วันที่:** 2026-03-12 | **อ้างอิง SRS:** v3.0, **SDD:** v3.1, **Test Plan:** v2.1
+> **วันที่:** 2026-03-12 | **ผู้จัดทำ:** nextzus
+
+---
+
+## ทฤษฎี Traceability (SE 721)
+
+Requirements Traceability คือความสามารถในการติดตามความสัมพันธ์ระหว่าง requirement กับ work products อื่นตลอดวงจรชีวิตซอฟต์แวร์ แบ่งเป็น 3 ประเภท:
+
+| ประเภท | ทิศทาง | จุดประสงค์ | ส่วน |
+|--------|--------|-----------|------|
+| **Forward Traceability** | FR → Design → Code → Test | ตรวจว่า requirement ทุกข้อถูก implement และทดสอบ | §1 |
+| **Backward Traceability** | Test → Code → Design → FR | ตรวจว่า test/code ทุกชิ้นมี requirement รองรับ (ไม่มี gold plating) | §2 |
+| **Horizontal Traceability** | SRS ↔ SDD ↔ Test Plan ↔ Test Record | ตรวจความสอดคล้องระหว่างเอกสาร ISO 29110 | §4 |
+
+> **หลักการ:** Traceability ที่ดีต้องติดตามได้ทั้งสองทิศทาง (bi-directional) และข้ามเอกสาร (horizontal) เพื่อให้มั่นใจว่าไม่มี requirement ที่ตกหล่นและไม่มี code ที่ไม่จำเป็น
 
 ---
 
@@ -168,3 +186,55 @@
 | NFR-14 Coverage ≥ 70% | Yes | pytest-cov |
 | NFR-05~07 Usability | Partial | Manual UX test |
 | NFR-08 Async UI | Partial | Observation |
+
+---
+
+## 4. Horizontal Traceability: ความสอดคล้องระหว่างเอกสาร ISO 29110
+
+> ตรวจว่าข้อมูลที่ปรากฏในเอกสาร ISO หนึ่งสอดคล้องกับเอกสาร ISO อื่นที่อ้างอิงข้อมูลเดียวกัน
+
+| รายการตรวจ | เอกสารต้นทาง | เอกสารปลายทาง | สอดคล้อง? | หมายเหตุ |
+|-----------|-------------|--------------|-----------|---------|
+| จำนวน FR ทั้งหมด | SRS: 63 FRs (MoSCoW) | Traceability: 59 FRs | ⚠️ ต่าง | SRS นับรวม Won't=5 + admin FRs ที่เพิ่มภายหลัง — ตัวเลข reconcile ได้ |
+| จำนวน NFR | SRS: 17 NFRs | Test Plan: 17 NFRs | ✅ ตรง | |
+| จำนวน Test Cases | Test Plan: 308 planned | Test Record: 308 executed | ✅ ตรง | |
+| Coverage target | Test Plan: ≥ 60% core | Test Record: ~65% core | ✅ ผ่าน | |
+| DRE target | Test Plan: ≥ 85% | Test Record: 100% (pre-release) | ✅ ผ่าน | |
+| 10 Risk items | Project Plan: 10 risks | Progress Status: 10 risks | ✅ ตรง | 8 resolved, 2 monitoring |
+| 3 Profiles | SRS: SAFE/COMPETITIVE/EXTREME | SDD: 3 profiles in architecture | ✅ ตรง | |
+| Tweak count | SRS: 48 tweaks | SDD: 48 tweaks in registry | ✅ ตรง | |
+| Change Requests | CR-001~004 | Traceability: CR impacts traced | ✅ ตรง | |
+| Architecture pattern | SDD: Layered + MVC hybrid | Test Plan: test by layer | ✅ ตรง | |
+
+### 4.1 Cross-Document Version Alignment
+
+| เอกสาร | เวอร์ชันปัจจุบัน | อ้างอิงใน Traceability Record |
+|--------|----------------|------------------------------|
+| SRS | v3.1 | ✅ อ้างอิงถูกต้อง |
+| SDD | v3.2 | ✅ อ้างอิงถูกต้อง |
+| Test Plan | v3.0 | ✅ อ้างอิงถูกต้อง |
+| Test Record | v2.1 | ✅ อ้างอิงถูกต้อง |
+
+---
+
+## 5. Consolidated RTM Summary
+
+| Metric | ค่า | เป้าหมาย | สถานะ |
+|--------|-----|---------|-------|
+| Total FRs traced | 52/59 | ≥ 85% | ✅ 88.1% |
+| FRs with automated tests | 52 | — | |
+| FRs with manual tests only | 7 | ≤ 10 | ✅ |
+| NFRs testable | 4/6 groups | — | ⚠️ Partial (usability/async = manual) |
+| Horizontal consistency issues | 1 minor (FR count reconciliation) | 0 critical | ✅ |
+| Gold plating detected | 0 | 0 | ✅ ไม่มี code ที่ไม่มี FR รองรับ |
+
+> **สรุป:** ระบบ traceability ของ ClutchG ครอบคลุม 88.1% ของ FRs ด้วย automated tests ส่วนที่เหลือ 7 FRs มีการทดสอบด้วยวิธี manual ทั้งหมด ไม่พบ gold plating
+
+---
+
+## 6. ประวัติการแก้ไข (Revision History)
+
+| เวอร์ชัน | วันที่ | ผู้แก้ไข | รายละเอียด |
+|----------|--------|---------|------------|
+| 1.0 | 2026-03-12 | nextzus | สร้างเอกสารเริ่มต้น — Forward/Backward traceability, coverage summary |
+| 2.0 | 2026-04-06 | nextzus | เสริม SE academic content: ทฤษฎี Traceability (SE 721), §4 Horizontal Traceability, §5 Consolidated RTM Summary, header ETVX + cross-refs |

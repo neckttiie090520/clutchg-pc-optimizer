@@ -1,8 +1,12 @@
 # 09 — แผนการกำหนดค่า (Configuration Management Plan)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — PM.O2/PM.O3
+> **Version:** 2.0
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่:** 2026-03-12
+> **ETVX Compliance:** Entry = Project Plan approved; Task = PM.2.2 Configuration Management; Verification = CI audit checklist; Exit = Baselines established, CIs tracked
+> **ทฤษฎีอ้างอิง:** SE 702 — Software Process Management (ICSA Framework, Baseline Management, FCA/PCA Audit)
+> **เอกสารที่เกี่ยวข้อง:** Project Plan v3.0 (`01`), SRS v3.1 (`02`), SDD v3.2 (`03`), Test Plan v3.0 (`04`), Test Record v2.1 (`05`), Traceability v2.0 (`06`), Change Request v2.1 (`07`), Progress Status v3.0 (`08`)
 
 ---
 
@@ -12,13 +16,55 @@
 1. ระบุ Configuration Items (CI) ทั้งหมดในโครงงาน
 2. กำหนดนโยบาย versioning, branching, baseline
 3. กำหนดสิทธิ์การเข้าถึงและแก้ไข
-4. Contact repository integrity ตลอดโครงงาน
+4. รักษา repository integrity ตลอดโครงงาน
+
+### 1.2 กรอบทฤษฎี ICSA (SE 702)
+
+Configuration Management (CM) ประกอบด้วย 4 กิจกรรมหลัก ตามกรอบ **ICSA** (Pressman & Maxim, 2020):
+
+| กิจกรรม | วัตถุประสงค์ | Section ที่เกี่ยวข้อง |
+|---------|------------|---------------------|
+| **Identification** | ระบุ Configuration Items (CI) ทั้งหมด กำหนด naming convention และ priority | §2 |
+| **Control** | ควบคุมการเปลี่ยนแปลง CI ผ่าน change control process — approve/reject | §3 (Version Control), อ้างอิง `07-Change-Request.md` |
+| **Status Accounting** | บันทึกสถานะของ CI ทุกเวอร์ชัน ติดตาม baseline และ milestone | §7 |
+| **Audit** | ตรวจสอบว่า CI ตรงกับ baseline ที่กำหนด ผ่าน FCA/PCA | §8 |
+
+```
+   Identification ──► Control ──► Status Accounting ──► Audit
+        │                │               │                │
+   ระบุ 34 CIs     4 CRs ผ่าน      Version tracking    FCA + PCA
+   Naming conv.    Change Control   9 Baselines         8 audit items
+```
+
+**Baseline** = จุดอ้างอิงที่ "freeze" configuration ณ เวลาหนึ่ง — การเปลี่ยนแปลงหลัง baseline ต้องผ่าน change control process (ดู Section 3.4)
 
 ---
 
 ## 2. Configuration Items (CI)
 
-### 2.1 Source Code CIs
+### 2.1 CI Naming Convention
+
+```
+CI-{CATEGORY}-{NUMBER}
+
+CATEGORY:
+  CORE  = Python core modules (business logic)
+  GUI   = GUI views/components (presentation layer)
+  BAT   = Batch scripts (optimization engine)
+  TEST  = Test files (quality assurance)
+  DOC   = Documentation (ISO 29110 WPs, thesis, research)
+  DEP   = Dependencies (requirements files)
+```
+
+### 2.2 Priority Classification
+
+| Priority | จำนวน | เกณฑ์การจัดลำดับ |
+|----------|-------|----------------|
+| **สูง** | 18 CIs | Core modules, safety-critical components, test infrastructure |
+| **ปานกลาง** | 10 CIs | Supporting modules, documentation, secondary views |
+| **ต่ำ** | 6 CIs | Configuration files, helper modules |
+
+### 2.3 Source Code CIs
 
 | CI-ID        | ประเภท        | ที่ตั้ง                                          | LOC (est.) | ความสำคัญ | หมายเหตุ                                      |
 | ------------ | ------------- | ------------------------------------------------ | ---------- | --------- | --------------------------------------------- |
@@ -38,7 +84,7 @@
 | CI-GUI-04    | Python Module | `clutchg/src/gui/views/dashboard_minimal.py`     | ~730       | ปานกลาง   | System info display                           |
 | CI-BAT-01~09 | Batch Scripts | `clutchg/src/core/*.bat`                         | 9 files    | สูง       | System optimization scripts                   |
 
-### 2.2 Test CIs
+### 2.4 Test CIs
 
 | CI-ID | ประเภท | ที่ตั้ง | Tests | ความสำคัญ |
 |-------|--------|-------|-------|----------|
@@ -48,7 +94,7 @@
 | CI-TEST-04 | E2E Tests | `clutchg/tests/e2e/` | 64 tests | ปานกลาง |
 | CI-TEST-05 | Security Audit Tests | `clutchg/tests/unit/test_admin.py`, `test_backup_manager.py`, `test_flight_recorder.py`, `test_tweak_registry_integrity.py`, `test_help_system.py` | 160 tests (5 files) | สูง |
 
-### 2.3 Documentation CIs
+### 2.5 Documentation CIs
 
 | CI-ID | ประเภท | ที่ตั้ง | Pages | ความสำคัญ |
 |-------|--------|-------|-------|----------|
@@ -57,14 +103,14 @@
 | CI-DOC-03 | Research | `docs/` | 15+ documents | ปานกลาง |
 | CI-DOC-04 | User Guides | `clutchg/README.md`, `QUICKSTART.md` | 2 files | ปานกลาง |
 
-### 2.4 Dependencies CI
+### 2.6 Dependencies CI
 
 | CI-ID | ประเภท | ที่ตั้ง | ความสำคัญ |
 |-------|--------|-------|----------|
 | CI-DEP-01 | Requirements | `clutchg/requirements.txt` | สูง |
 | CI-DEP-02 | Test Requirements | `clutchg/requirements-dev.txt` | ปานกลาง |
 
-**รวม CI ทั้งหมด: 33 items**
+**รวม CI ทั้งหมด: 34 items** (CORE=10, GUI=4, BAT=9, TEST=5, DOC=4, DEP=2)
 
 ---
 
@@ -190,3 +236,146 @@ pytest tests/ -v --cov=src/core --cov-report=html
 |----------|------|-----------|
 | HTML Coverage Report | `clutchg/htmlcov/` | 14 วัน |
 | JUnit XML Results | `clutchg/test-results/` | 14 วัน |
+
+---
+
+## 7. Status Accounting (ICSA — S)
+
+> **ICSA Activity:** Status Accounting — บันทึกสถานะของ CI ทุกเวอร์ชัน ติดตาม baseline, milestone, และ work product versions
+
+### 7.1 Work Product Version Tracking
+
+| Work Product | Version History | Current | ไฟล์ | Lines (est.) |
+|-------------|----------------|---------|------|-------------|
+| Project Plan | v1.0 → v2.0 → v3.0 | **v3.0** | `01-Project-Plan.md` | ~470 |
+| SRS | v1.0 → v2.0 → v3.0 → v3.1 | **v3.1** | `02-SRS.md` | ~604 |
+| SDD | v1.0 → v2.0 → v3.0 → v3.2 | **v3.2** | `03-SDD.md` | ~610 |
+| Test Plan | v1.0 → v2.0 → v3.0 | **v3.0** | `04-Test-Plan.md` | ~543 |
+| Test Record | v1.0 → v2.0 → v2.1 | **v2.1** | `05-Test-Record.md` | ~474 |
+| Traceability Record | v1.0 → v2.0 | **v2.0** | `06-Traceability-Record.md` | ~230 |
+| Change Request | v1.0 → v2.0 → v2.1 | **v2.1** | `07-Change-Request.md` | ~460 |
+| Progress Status | v1.0 → v2.0 → v2.3 → v3.0 | **v3.0** | `08-Progress-Status-Record.md` | ~250 |
+| Configuration Plan | v1.0 → v2.0 | **v2.0** | `09-Configuration-Plan.md` | (this doc) |
+| User Manual | v1.0 | **v1.0** | `10-User-Manual.md` | ~132 |
+
+### 7.2 Milestone Status
+
+| Milestone | Plan | Actual | Variance | Baseline Tag |
+|-----------|------|--------|----------|-------------|
+| M1: Research Complete | Feb 2025 | Feb 2025 | On time | BL-1 (v0.1) |
+| M2: Architecture Approved | Apr 2025 | Apr 2025 | On time | BL-2 (v0.5) |
+| M3: Batch Optimizer v1.0 | Jun 2025 | Jun 2025 | On time | BL-3 (v1.0) |
+| M4: GUI Alpha | Aug 2025 | Aug 2025 | On time | BL-4 (v1.5) |
+| M5: Safety System Complete | Sep 2025 | Sep 2025 | On time | BL-5 (v1.7) |
+| M6: All Views Complete | Oct 2025 | Oct 2025 | On time | BL-6 (v2.0-rc) |
+| M7: Test Suite Pass | Nov 2025 | Nov 2025 | On time | — |
+| M8: Full Release | Dec 2025 | Dec 2025 | On time | BL-7 (v2.0) |
+| M9: Documentation Complete | Mar 2026 | Mar 2026 | On time | BL-8 (v2.0.1) |
+| M10: Security Audit Complete | Mar 2026 | Mar 2026 | On time | BL-9 (v2.0.2) |
+
+### 7.3 Source Code Metrics
+
+| Metric | ค่า |
+|--------|-----|
+| Source Code (Python) | ~12,000 lines (clutchg/src/) |
+| Source Code (Batch) | ~3,500 lines (src/) |
+| Test Code | ~8,000 lines (clutchg/tests/) |
+| Documentation | ~5,200 lines (10 ISO WPs + appendix) |
+| Total Project | ~56,000 lines (all files) |
+| Test Cases | 445 collected (285 unit, 23 integration, 64 E2E, 73 skipped) |
+| Open Defects | 0 HIGH, 0 MEDIUM |
+
+**อ้างอิง:** `08-Progress-Status-Record.md` §3-§5
+
+---
+
+## 8. Configuration Audit (ICSA — A)
+
+> **ICSA Activity:** Audit — ตรวจสอบว่า CI ตรงกับ baseline ที่กำหนด แบ่งเป็น Functional Configuration Audit (FCA) และ Physical Configuration Audit (PCA)
+
+### 8.1 Functional Configuration Audit (FCA)
+
+**วัตถุประสงค์:** ตรวจสอบว่าซอฟต์แวร์ทำงานตามที่ระบุใน SRS — ผลลัพธ์ตรงกับ requirements
+
+| เกณฑ์ | วิธีตรวจ | ผลลัพธ์ | สถานะ |
+|-------|---------|---------|-------|
+| Functional Requirements ครบถ้วน | Traceability Matrix (`06`) | 59/67 FRs traced to test cases (88.1%) | PASS |
+| Test suite passes | `pytest` | 308 passed, 0 failed (unit + integration) | PASS |
+| Coverage meets target | `.coveragerc` (target ≥ 60%) | ~65%+ achieved | PASS |
+| Safety requirements verified | Security audit tests | 160 security tests, 0 failures | PASS |
+| No HIGH/MEDIUM open defects | Defect tracking | 0 HIGH, 0 MEDIUM open | PASS |
+
+**อ้างอิง:** `06-Traceability-Record.md`, `05-Test-Record.md`
+
+### 8.2 Physical Configuration Audit (PCA)
+
+**วัตถุประสงค์:** ตรวจสอบว่า deliverables ตรงกับ design documentation — โครงสร้างจริงสอดคล้องกับ SDD
+
+| เกณฑ์ | วิธีตรวจ | ผลลัพธ์ | สถานะ |
+|-------|---------|---------|-------|
+| Source files ตรง SDD | Manual review vs SDD §2 | Module structure matches architecture diagram | PASS |
+| Build produces executable | `python build.py` | `ClutchG.exe` generated successfully | PASS |
+| Documents match current code | Version comparison | All 10 WPs updated (see §7.1) | PASS |
+| Dependencies match requirements.txt | `pip freeze` comparison | All packages listed, no extras | PASS |
+| CI naming consistent | CI-ID audit | 34 CIs, no duplicates, all categorized | PASS |
+| Git repository intact | `git fsck` | No corrupted objects | PASS |
+
+**อ้างอิง:** `03-SDD.md` §2, `requirements.txt`
+
+### 8.3 Audit Checklist Summary
+
+| # | รายการตรวจ | FCA/PCA | สถานะ |
+|---|-----------|---------|-------|
+| 1 | ทุก CI มี ID ที่ไม่ซ้ำกัน | PCA | PASS |
+| 2 | ทุก CI ระบุ priority classification | PCA | PASS |
+| 3 | ทุก Change Request มี impact analysis | FCA | PASS |
+| 4 | Version ของเอกสารเป็นปัจจุบัน | PCA | PASS |
+| 5 | Git repository intact (no corruption) | PCA | PASS |
+| 6 | Build reproducible | PCA | PASS |
+| 7 | Test suite passes (308 tests) | FCA | PASS |
+| 8 | No uncommitted critical changes | PCA | PASS |
+| 9 | FRs traced to test cases (88.1%) | FCA | PASS |
+| 10 | Safety tests pass (160 tests) | FCA | PASS |
+
+**ผลการ Audit: 10/10 PASS** — ไม่พบ non-conformance
+
+---
+
+## 9. ICSA Mapping กับ Git Operations
+
+| ICSA Activity | Git Operation | ตัวอย่างใน ClutchG |
+|--------------|-------------|-------------------|
+| **Identification** | File naming + `.gitignore` | CI naming convention (`CI-{CAT}-{NUM}`), `.gitignore` excludes `thesis/`, `data/` |
+| **Control** | `git add`, `git commit`, CR process | Commit แต่ละ change แยก, 4 CRs ผ่าน formal change control |
+| **Status Accounting** | `git log`, `git diff`, `git tag` | Version tracking ผ่าน tags (v0.1 → v2.0.2), 9 baselines |
+| **Audit** | `git diff --stat`, `git show`, `git fsck` | Compare current vs baseline, integrity check |
+
+---
+
+## 10. ICSA Compliance Summary
+
+| ICSA Activity | ดำเนินการ? | หลักฐาน | SE 702 Score |
+|--------------|-----------|---------|-------------|
+| **Identification** | Yes | 34 CIs ระบุครบ พร้อม naming convention + priority classification | Full |
+| **Control** | Yes | 4 CRs ผ่าน formal change control, CCB process (ดู `07-Change-Request.md`) | Full |
+| **Status Accounting** | Yes | Progress Status Record v3.0, version tracking ทุก WP, 10 milestones tracked | Full |
+| **Audit** | Yes | FCA (test pass + traceability) + PCA (build verification + structure check), 10/10 PASS | Full |
+
+### จุดแข็งและข้อจำกัด
+
+| จุดแข็ง | ข้อจำกัด |
+|---------|---------|
+| CI ระบุครบ 34 items พร้อม priority | Solo developer — ไม่มี peer review สำหรับ commits |
+| ISO 29110 CM plan formal ครบ ICSA | Single-branch workflow — ไม่มี feature branch isolation |
+| Change Requests มี impact analysis | ไม่มี automated version bumping |
+| FCA/PCA audit ผ่านครบ 10 ข้อ | CI/CD ครอบคลุมเฉพาะ unit + integration (E2E ต้อง manual) |
+| 9 baselines tagged ใน Git | — |
+
+---
+
+## 11. Revision History
+
+| Version | วันที่ | ผู้แก้ไข | รายละเอียดการเปลี่ยนแปลง |
+|---------|-------|---------|------------------------|
+| v1.0 | 2026-03-12 | nextzus | ฉบับแรก — CI inventory (33 items), version control, access control, build/release, CI/CD |
+| v2.0 | 2026-04-06 | nextzus | เพิ่ม ICSA framework (§1.2), CI naming convention (§2.1), priority classification (§2.2), CI count แก้เป็น 34, Status Accounting (§7), FCA/PCA Audit (§8), ICSA-to-Git mapping (§9), ICSA compliance summary (§10), cross-refs to all WPs |

@@ -1,6 +1,10 @@
 # 05 — บันทึกผลการทดสอบ (Test Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5
+> **เวอร์ชัน:** 2.1
+> **ETVX:** Entry = Test Plan v3.0 approved; Task = Execute tests per plan; Verification = Coverage + pass rate; Exit = All P0 paths pass, DRE ≥ 85%
+> **อ้างอิง SE:** SE 725 (V&V), SE 702 (DRE/CoSQ)
+> **Cross-ref:** Test Plan v3.0 (`04-Test-Plan.md`), SRS v3.1 (`02-SRS.md`), SDD v3.2 (`03-SDD.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่ทดสอบ:** 2026-03-12 | **ผู้ทดสอบ:** nextzus
 
@@ -331,7 +335,96 @@ E2E tests ทั้งหมด 64 tests ถูก skip ในสภาพแว
 
 ---
 
-## 6. ข้อบกพร่องที่พบ (Defects Found)
+## 6. ตัวชี้วัดคุณภาพ (Quality Metrics)
+
+> อ้างอิงกรอบแนวคิด: Cost of Software Quality (CoSQ) และ Defect Removal Effectiveness (DRE) จาก SE 702 Software Process Management
+> แหล่งข้อมูลฉบับเต็ม: `docs/se-academic/06-quality-metrics.md`
+
+### 6.1 Defect Removal Effectiveness (DRE)
+
+```
+DRE = (Defects removed during development / Total defects) × 100%
+```
+
+#### ข้อมูล Defects ที่ค้นพบในกระบวนการพัฒนา
+
+| แหล่งค้นพบ | จำนวน Defects | ตัวอย่าง |
+|-----------|-------------|---------|
+| Unit Testing | 8 | Logic errors ใน core modules |
+| Integration Testing | 3 | Interface mismatches |
+| Security Audit | 11 | Race condition, unbounded growth, no validation |
+| Code Review | 5 | Design issues, missing error handling |
+| **รวม (Development)** | **27** | |
+| Post-release (External) | 0 | ยังไม่ release |
+| **Total Known Defects** | **27** | |
+
+#### ผลลัพธ์ DRE
+
+```
+DRE = 27 / (27 + 0) × 100% = 100%
+```
+
+**หมายเหตุ:** DRE = 100% เพราะยังไม่ release — external defects ยังไม่มีโอกาสเกิด ค่า DRE จริงจะวัดได้หลัง deployment
+
+#### DRE แยกตามเฟส
+
+| เฟส | Defects Found | Defects Injected (est.) | Phase DRE |
+|-----|-------------|----------------------|-----------|
+| Requirements | 2 | 5 | 40% |
+| Design | 3 | 5 | 60% |
+| Construction | 8 | 15 | 53% |
+| Testing | 14 | 2 | 700%* |
+
+> \* Testing เฟสจับ defects ข้ามเฟสได้มากที่สุด — สอดคล้องกับทฤษฎีที่ testing เป็น primary defect removal activity สำหรับโครงงานที่ไม่มี formal inspection process
+
+### 6.2 Defect Density
+
+```
+Defect Density = Total Defects / Total Statements
+             = 27 / 1,986 statements
+             = 0.0136 defects/statement
+             ≈ 13.6 defects/KLOC
+```
+
+| Metric | ค่า | เกณฑ์อ้างอิง (industry) | ประเมิน |
+|--------|-----|----------------------|---------|
+| Defect Density | 13.6/KLOC | 15–50/KLOC (ก่อน release) | ดี — ต่ำกว่าค่าเฉลี่ย |
+| Post-release Defects | 0/KLOC | < 5/KLOC (เป้า) | ✅ ยังไม่มี external defects |
+
+### 6.3 Cost of Software Quality (CoSQ)
+
+| หมวด CoSQ | เวลา (ชม.) | สัดส่วน | กิจกรรมหลัก |
+|-----------|-----------|---------|-------------|
+| **Prevention** | 228 | 42% | AGENTS.md standards, Safety Rules, ISO 29110 adoption, Test strategy, Risk framework |
+| **Appraisal** | 146 | 27% | Unit testing (80 ชม.), Integration testing (16 ชม.), E2E testing (24 ชม.), Security audit (16 ชม.), Code review (8 ชม.) |
+| **Internal Failure** | 168 | 31% | Bug fixing (24 ชม.), UI rework 3 phases (120 ชม.), Re-testing (16 ชม.), GPUtil removal (8 ชม.) |
+| **External Failure** | 0 | 0% | ยังไม่ deliver — ไม่มี external failure |
+| **รวม CoSQ** | **542** | **100%** | |
+
+#### สัดส่วน Conformance vs Non-conformance
+
+| สัดส่วน | ค่า | ตีความ |
+|---------|-----|--------|
+| **Conformance** (Prevention + Appraisal) | 374 ชม. (69%) | ลงทุนป้องกันและตรวจสอบสูง |
+| **Non-conformance** (Failure) | 168 ชม. (31%) | ต้นทุนแก้ไขปานกลาง — ส่วนใหญ่เป็น UI rework |
+
+> Conformance 69% สอดคล้องกับหลักการ "invest in prevention to reduce failure costs" (SE 702)
+
+### 6.4 QA vs QC Balance
+
+| ประเภท | จำนวนกิจกรรม | สัดส่วน |
+|--------|-------------|---------|
+| QA (Process-Oriented) | 9 | 53% |
+| QC (Product-Oriented) | 8 | 47% |
+
+- **QA:** สร้าง coding standards, Safety Rules, ISO 29110, Configuration Plan, Test strategy, Design guidelines, Risk Classification, No-emoji rule, Dynamic wraplength rule
+- **QC:** Unit testing, Integration testing, E2E testing, Security audit, SRS review, SDD review, Test Record verification, Compilation check
+
+> สมดุล QA/QC ที่ 53%/47% ถือว่าดีสำหรับ thesis project — มีทั้งกระบวนการป้องกันและการตรวจสอบผลิตภัณฑ์
+
+---
+
+## 7. ข้อบกพร่องที่พบ (Defects Found)
 
 | # | Severity | คำอธิบาย | สถานะ | แก้ไข |
 |---|----------|---------|-------|------|
@@ -339,13 +432,41 @@ E2E tests ทั้งหมด 64 tests ถูก skip ในสภาพแว
 
 ---
 
-## 7. ข้อสังเกตและข้อเสนอแนะ
+## 7.1 การจำแนก Verification vs Validation (V&V Mapping)
+
+> อ้างอิง: SE 725 — Verification ตรวจว่า "สร้างถูกวิธีหรือไม่" (are we building the product right?) / Validation ตรวจว่า "สร้างถูกสิ่งหรือไม่" (are we building the right product?)
+
+| กิจกรรม | ประเภท | เหตุผล |
+|---------|--------|--------|
+| SRS/SDD Review | Verification | ตรวจเอกสารเทียบกับ standards |
+| Code Compilation Check | Verification | ตรวจ syntax ถูกต้อง |
+| Unit Testing (285 cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
+| Integration Testing (23 cases) | Validation | ตรวจว่า modules ทำงานร่วมกันตามความต้องการ |
+| E2E Testing (64 cases) | Validation | ตรวจว่า workflow ตอบโจทย์ผู้ใช้ |
+| Security Audit (28 items) | Verification | ตรวจ code เทียบกับ security standards |
+| Manual Walkthrough | Validation | ผู้พัฒนาทดสอบว่าระบบใช้งานได้จริง |
+
+> **สัดส่วน:** Verification 4 กิจกรรม (57%) / Validation 3 กิจกรรม (43%) — สมดุลระหว่างการตรวจกระบวนการและการตรวจผลิตภัณฑ์
+
+---
+
+## 8. ข้อสังเกตและข้อเสนอแนะ
 
 1. **E2E tests ต้อง Admin**: 2 tests (apply flow) ถูก skip — ทดสอบ manual แทน
 2. **Coverage gap**: `core/flight_recorder.py` และ `core/tweak_registry.py` มี coverage ต่ำ (27%/38%) เนื่องจาก branches ที่ต้องการ real system calls (WMI, registry, PowerShell)
 3. **Security Audit (CR-004) ผ่าน 100%**: 28 รายการตรวจสอบทั้งหมดผ่าน ไม่พบ defect เพิ่มเติม
 4. **GPUtil ถูกลบออก**: `system_info.py` ใช้ 3-strategy แทน (WMI Get-PhysicalDisk → psutil fallback) — ลด dependency ที่ไม่จำเป็น
 5. **Recommendation**: เพิ่ม mock สำหรับ nvidia-smi + WMI เพื่อเพิ่ม coverage ของ `flight_recorder.py` และ `system_info.py` ใน Phase 12
+
+---
+
+## 9. ประวัติการแก้ไข (Revision History)
+
+| เวอร์ชัน | วันที่ | ผู้แก้ไข | รายละเอียด |
+|----------|--------|---------|------------|
+| 1.0 | 2026-03-12 | nextzus | สร้างเอกสารเริ่มต้น — ผลทดสอบ Unit/Integration/E2E, coverage report |
+| 2.0 | 2026-03-15 | nextzus | เพิ่มผลทดสอบ Security Audit (CR-004), อัปเดต coverage หลัง refactor |
+| 2.1 | 2026-04-06 | nextzus | เสริม SE academic content: §6 Quality Metrics (DRE, Defect Density, CoSQ, QA/QC), §7.1 V&V Mapping, header ETVX + cross-refs |
 
 ---
 

@@ -1,9 +1,45 @@
 # 07 — คำขอเปลี่ยนแปลง (Software Change Request)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2:2011 — PM.O3, Table 23
+> **เวอร์ชันเอกสาร:** v2.1
+> **ETVX:** Entry = Change identified + Impact assessed; Task = Analyze, approve, implement, verify; Verification = Regression tests pass; Exit = CR closed + Traceability updated
+> **อ้างอิง SE:** SE 702 (Configuration Management — Change Control), SE 721 (Requirements Management — Change Control process)
+> **Cross-ref:** SRS v3.1 (`02-SRS.md`), SDD v3.2 (`03-SDD.md`), Traceability v2.0 (`06-Traceability-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชันเอกสาร:** v2.0
-> **วันที่อัปเดตล่าสุด:** 2026-03-12
+> **วันที่อัปเดตล่าสุด:** 2026-04-06
+
+---
+
+## กระบวนการควบคุมการเปลี่ยนแปลง (Change Control Process)
+
+### Change Control Board (CCB)
+
+ตามแนวปฏิบัติ Configuration Management (SE 702) การเปลี่ยนแปลงทุกรายการต้องผ่านกระบวนการควบคุมโดย Change Control Board (CCB) ซึ่งทำหน้าที่ประเมินผลกระทบและอนุมัติ/ปฏิเสธคำขอเปลี่ยนแปลง
+
+**องค์ประกอบ CCB ของโครงงาน ClutchG:**
+
+| บทบาท | ผู้รับผิดชอบ | หน้าที่ |
+|--------|-------------|---------|
+| ประธาน CCB | อาจารย์ที่ปรึกษา | อนุมัติ/ปฏิเสธ CR ระดับ HIGH |
+| สมาชิก CCB / ผู้ดำเนินการ | nextzus (นักศึกษา) | วิเคราะห์ผลกระทบ, เสนอ CR, ดำเนินการแก้ไข |
+
+> **หมายเหตุ:** เนื่องจากเป็นโครงงานวิทยานิพนธ์ขนาดเล็ก (VSE profile) CCB จึงมีเพียง 2 คน โดย CR ระดับ LOW/MEDIUM นักศึกษาสามารถอนุมัติและดำเนินการได้เอง ส่วน CR ระดับ HIGH ต้องได้รับความเห็นชอบจากอาจารย์ที่ปรึกษาก่อนดำเนินการ
+
+### ขั้นตอนการควบคุมการเปลี่ยนแปลง (ISO 29110 — PM.2.2, PM.2.3, PM.3.3)
+
+```
+ระบุการเปลี่ยนแปลง → วิเคราะห์ผลกระทบ → เสนอ CCB → อนุมัติ/ปฏิเสธ → ดำเนินการ → ทดสอบ Regression → ปิด CR
+     (PM.O3)          (PM.2.2)        (PM.2.3)    (PM.2.3)     (SI.5)      (SI.4/SI.5)    (PM.3.3)
+```
+
+| ขั้นตอน | กิจกรรม | ผลลัพธ์ |
+|---------|---------|---------|
+| 1. ระบุ | บันทึกคำขอเปลี่ยนแปลงลงใน CR Form | CR document พร้อม ID |
+| 2. วิเคราะห์ | ประเมินผลกระทบทางเทคนิค, กำหนดการ, ต้นทุน, เอกสาร | Impact Analysis (§9 ของแต่ละ CR) |
+| 3. อนุมัติ | CCB พิจารณาอนุมัติ — LOW/MED: นักศึกษา, HIGH: อาจารย์ | Acceptance status |
+| 4. ดำเนินการ | แก้ไขโค้ดตาม CR, อัปเดตเอกสารที่เกี่ยวข้อง | Modified source + docs |
+| 5. ทดสอบ | Run regression tests ให้ผ่านทั้งหมด | Test results (05-Test-Record.md) |
+| 6. ปิด | บันทึกสถานะ closed, อัปเดต Traceability | CR closed + Traceability updated |
 
 ---
 
@@ -398,3 +434,48 @@
 | **วันที่ปิด** | 2026-03-12 |
 | **สถานะการปิด** | `[closed]` — Security audit และ test expansion เสร็จสมบูรณ์ |
 | **หมายเหตุ** | ทั้ง 28 security items resolved, test count 125 → 285, GPUtil dependency removed |
+
+---
+
+## สรุปค่าใช้จ่ายแรงงาน (Effort Estimation Summary)
+
+| CR No. | ชื่อ | ระดับ | ชั่วโมงประมาณการ | ชั่วโมงจริง | Phase | หมายเหตุ |
+|--------|------|-------|-----------------|------------|-------|---------|
+| CR-001 | Unified Backup & Restore Center | MEDIUM | 40 | 38 | Phase 9 | UI refactor, timeline component |
+| CR-002 | Export/Import Presets | LOW | 8 | 6 | Phase 10 | 2 methods เพิ่มใน profile_manager |
+| CR-003 | Multi-Theme System | LOW | 24 | 22 | Phase 10 | ThemeManager class + Settings view |
+| CR-004 | Security Audit & Test Expansion | HIGH | 48 | 44 | Phase 11 | 28 audit items + 160 new tests |
+| | **รวม** | | **120** | **110** | | Variance = −10 hrs (ดีกว่าประมาณการ 8.3%) |
+
+> **หมายเหตุ:** ค่าประมาณการคำนวณจาก expert judgment ร่วมกับ historical data ของโครงงาน ส่วนชั่วโมงจริงบันทึกผ่าน flight recorder log และ git commit timestamps
+
+---
+
+## ตารางเชื่อมโยง CR กับ Functional Requirements (CR-to-FR Traceability)
+
+| CR No. | FR ที่ได้รับผลกระทบ | ประเภทผลกระทบ | เอกสารอ้างอิง |
+|--------|---------------------|---------------|--------------|
+| CR-001 | FR-BK-01 (Create Backup), FR-BK-02 (Restore Backup), FR-BK-03 (Timeline View), FR-BK-04 (Per-tweak Rollback) | Modified / Added | SRS v3.1 §3.6 |
+| CR-002 | FR-PM-06 (Export/Import Presets) | Added | SRS v3.1 §3.4 |
+| CR-003 | FR-UI-06 (Multi-Theme Support), FR-UI-07 (Accent Color Selection) | Added | SRS v3.1 §3.7 |
+| CR-004 | FR-SF-01 (Dangerous Pattern Detection), FR-SF-02 (Input Sanitization), NFR-SE-01 (Security Hardening) | Modified / Strengthened | SRS v3.1 §3.8, §4.2 |
+
+| สรุป | จำนวน |
+|------|-------|
+| FR ที่ถูกเพิ่มใหม่ (Added) | 5 |
+| FR ที่ถูกแก้ไข (Modified) | 4 |
+| FR ที่ถูกลบ (Removed) | 0 |
+| NFR ที่ได้รับผลกระทบ | 1 |
+| **รวม Requirements ที่เกี่ยวข้อง** | **10** |
+
+> **Cross-reference:** ดูรายละเอียด Forward/Backward Traceability ใน `06-Traceability-Record.md` v2.0 §3–§4
+
+---
+
+## ประวัติการแก้ไขเอกสาร (Revision History)
+
+| เวอร์ชัน | วันที่ | ผู้แก้ไข | รายละเอียด |
+|----------|--------|---------|-----------|
+| v1.0 | 2025-09-30 | nextzus | สร้างเอกสารเริ่มต้น พร้อม CR-001 |
+| v2.0 | 2026-03-12 | nextzus | เพิ่ม CR-002, CR-003, CR-004, อัปเดตตารางสรุป |
+| v2.1 | 2026-04-06 | nextzus | เพิ่มกระบวนการ CCB (SE 702), ตาราง Effort Estimation, CR-to-FR Traceability, ETVX header |

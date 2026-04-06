@@ -1,8 +1,8 @@
 # Appendix A — แผนภาพ UML (UML Diagrams)
 
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **วันที่:** 2026-03-04
-> **อ้างอิง:** UML 2.5.1, SRS v3.0, SDD v3.0
+> **วันที่:** 2026-04-06
+> **อ้างอิง:** UML 2.5.1, SRS v3.1, SDD v3.2, Test Plan v3.0 | SE 701 OO Design
 
 ---
 
@@ -13,21 +13,21 @@
 ```mermaid
 graph TB
     subgraph External Actors
-        BEG["👤 Beginner User<br/>ใช้ SAFE Profile"]
-        GAM["🎮 Gamer<br/>ใช้ COMPETITIVE Profile"]
-        PWR["⚙️ Power User<br/>ใช้ EXTREME / Custom"]
-        ADV["👨‍🏫 Advisor<br/>ตรวจสอบเอกสาร"]
+        BEG["Beginner User<br/>ใช้ SAFE Profile"]
+        GAM["Gamer<br/>ใช้ COMPETITIVE Profile"]
+        PWR["Power User<br/>ใช้ EXTREME / Custom"]
+        ADV["Advisor<br/>ตรวจสอบเอกสาร"]
     end
 
     subgraph ClutchG System
-        CG["🖥️ ClutchG PC Optimizer<br/>Desktop Application"]
+        CG["ClutchG PC Optimizer<br/>Desktop Application"]
     end
 
     subgraph External Systems
-        WIN["🪟 Windows OS<br/>Registry, Services, BCDEdit"]
-        GPU_DRV["🎮 GPU Driver<br/>nvidia-smi, WMI"]
-        FS["💾 File System<br/>Config, Backups, Logs"]
-        PS["⚡ PowerShell<br/>Restore Points"]
+        WIN["Windows OS<br/>Registry, Services, BCDEdit"]
+        GPU_DRV["GPU Driver<br/>nvidia-smi, WMI"]
+        FS["File System<br/>Config, Backups, Logs"]
+        PS["PowerShell<br/>Restore Points"]
     end
 
     BEG -->|"เลือก Profile → Apply"| CG
@@ -49,14 +49,14 @@ graph TB
 
 ## 2. Use Case Diagram
 
-แสดง Use Cases ทั้งหมดจัดกลุ่มตามฟังก์ชัน
+แสดง Use Cases ทั้งหมดจัดกลุ่มตามฟังก์ชัน พร้อมความสัมพันธ์ Include/Extend
 
 ```mermaid
 graph LR
     subgraph Actors
-        BEG["👤 Beginner"]
-        GAM["🎮 Gamer"]
-        PWR["⚙️ Power User"]
+        BEG["Beginner"]
+        GAM["Gamer"]
+        PWR["Power User"]
     end
 
     subgraph "ClutchG PC Optimizer"
@@ -122,7 +122,25 @@ graph LR
     PWR --> UC14
     PWR --> UC15
     PWR --> UC16
+
+    %% Include relationships
+    UC03 -.->|"include"| UC01
+    UC03 -.->|"include"| UC11
+    UC09 -.->|"include"| UC08
+    UC12 -.->|"include"| UC11
+    UC13 -.->|"include"| UC11
+
+    %% Extend relationships
+    UC05 -.->|"extend"| UC03
+    UC06 -.->|"extend"| UC05
+    UC07 -.->|"extend"| UC05
+    UC14 -.->|"extend"| UC13
+    UC10 -.->|"extend"| UC08
 ```
+
+> **Include (5):** UC-03→UC-01 (ต้อง detect ระบบก่อน apply), UC-03→UC-11 (สร้าง backup ทุกครั้ง), UC-09→UC-08 (browse ก่อน apply), UC-12→UC-11 (ดู history ก่อน rollback), UC-13→UC-11 (ดู history ก่อน rollback)
+>
+> **Extend (5):** UC-05←UC-03 (สร้าง custom preset จากหน้า profile), UC-06←UC-05 (export ต่อจาก save), UC-07←UC-05 (import เข้า preset), UC-14←UC-13 (export script หลัง rollback), UC-10←UC-08 (ดูรายละเอียด tweak จาก browse)
 
 ---
 
@@ -157,7 +175,7 @@ graph LR
 | **คำอธิบาย** | ผู้ใช้เลือก optimization profile แล้ว apply ให้ระบบทำ tweaks ทั้งหมดใน profile |
 | **Trigger** | กดปุ่ม "Apply" บนหน้า Profiles |
 | **Precondition** | 1. สิทธิ์ Administrator<br/>2. System detection เสร็จแล้ว<br/>3. Batch scripts มีครบ (verify_scripts=True) |
-| **Main Flow** | 1. ผู้ใช้เข้าหน้า Profiles → เห็น 3 cards (SAFE 🟢 / COMPETITIVE 🟡 / EXTREME 🔴)<br/>2. ผู้ใช้เลือก profile → อ่าน risk level, expected FPS, warnings<br/>3. ผู้ใช้กด "Apply"<br/>4. **ระบบสร้าง backup** (BackupManager.create_backup):<br/>   - Export 6 registry keys เป็น .reg<br/>   - สร้าง Windows Restore Point (PowerShell → WMIC fallback)<br/>5. **FlightRecorder เริ่ม recording** (start_recording)<br/>   - Capture registry snapshot (reg export → _before.reg)<br/>6. **Apply tweaks ทีละตัว** (for each tweak in profile):<br/>   - แสดง progress bar (on_progress callback)<br/>   - Execute .bat script + function (subprocess)<br/>   - บันทึก TweakChange: {name, key_path, old_value, new_value, rollback_command}<br/>   - แสดง per-tweak status ✅/❌ (on_tweak_status callback)<br/>7. **FlightRecorder จบ recording** (finish_recording)<br/>   - Capture registry snapshot (reg export → _after.reg)<br/>   - Save JSON (change_logs/{id}.json)<br/>8. แสดง Toast notification "Profile applied successfully!" |
+| **Main Flow** | 1. ผู้ใช้เข้าหน้า Profiles → เห็น 3 cards (SAFE [LOW] / COMPETITIVE [MEDIUM] / EXTREME [HIGH])<br/>2. ผู้ใช้เลือก profile → อ่าน risk level, expected FPS, warnings<br/>3. ผู้ใช้กด "Apply"<br/>4. **ระบบสร้าง backup** (BackupManager.create_backup):<br/>   - Export 6 registry keys เป็น .reg<br/>   - สร้าง Windows Restore Point (PowerShell → WMIC fallback)<br/>5. **FlightRecorder เริ่ม recording** (start_recording)<br/>   - Capture registry snapshot (reg export → _before.reg)<br/>6. **Apply tweaks ทีละตัว** (for each tweak in profile):<br/>   - แสดง progress bar (on_progress callback)<br/>   - Execute .bat script + function (subprocess)<br/>   - บันทึก TweakChange: {name, key_path, old_value, new_value, rollback_command}<br/>   - แสดง per-tweak status [PASS]/[FAIL] (on_tweak_status callback)<br/>7. **FlightRecorder จบ recording** (finish_recording)<br/>   - Capture registry snapshot (reg export → _after.reg)<br/>   - Save JSON (change_logs/{id}.json)<br/>8. แสดง Toast notification "Profile applied successfully!" |
 | **Postcondition** | 1. Tweaks ถูก apply<br/>2. Backup + Restore Point พร้อม<br/>3. FlightRecord JSON บันทึกครบ (rollback ready) |
 | **Alternative** | 3a. ผู้ใช้กด Cancel → กลับหน้า Profiles ไม่มีอะไรเปลี่ยน<br/>6a. Tweak บางตัว fail → บันทึก error, ทำตัวต่อไป |
 | **Exception** | 4a. Backup creation fail → แจ้ง warning, proceed (ไม่ block)<br/>5a. Restore Point fail → ลอง WMIC fallback → log warning<br/>6b. Script file ไม่มี → skip tweak + error log |
@@ -212,7 +230,7 @@ graph LR
 | **คำอธิบาย** | ผู้ใช้เรียกดู tweaks ทั้ง 48 ตัว จัดกลุ่มตาม 10 categories |
 | **Trigger** | คลิก sidebar "Scripts" |
 | **Precondition** | ไม่มี |
-| **Main Flow** | 1. ระบบแสดง 10 categories: Telemetry(8), Input(6), Power(7), GPU(8), Network(6), Services(5), Memory(4), Boot(5), Visual(4), Cleanup(3)<br/>2. แต่ละ category มี icon + color + count<br/>3. ผู้ใช้ expand category → เห็น tweaks ในกลุ่ม<br/>4. แต่ละ tweak แสดง: name, risk badge (🟢🟡🔴), checkbox, "?" help button<br/>5. กด "?" → popup: what_it_does, why_it_helps, limitations, warnings, expected_gain |
+| **Main Flow** | 1. ระบบแสดง 10 categories: Telemetry(8), Input(6), Power(7), GPU(8), Network(6), Services(5), Memory(4), Boot(5), Visual(4), Cleanup(3)<br/>2. แต่ละ category มี icon + color + count<br/>3. ผู้ใช้ expand category → เห็น tweaks ในกลุ่ม<br/>4. แต่ละ tweak แสดง: name, risk badge (LOW/MEDIUM/HIGH), checkbox, "?" help button<br/>5. กด "?" → popup: what_it_does, why_it_helps, limitations, warnings, expected_gain |
 | **Postcondition** | ผู้ใช้เข้าใจ tweak ก่อนเลือก |
 | **Source** | `core/tweak_registry.py` L39-51, L884-933, `gui/views/scripts_minimal.py` |
 
@@ -239,7 +257,7 @@ graph LR
 
 ```mermaid
 flowchart TD
-    START(("🟢 Start"))
+    START(("Start"))
     A1["User opens Profiles view"]
     A2["User selects profile<br/>SAFE / COMPETITIVE / EXTREME"]
     A3["User clicks Apply"]
@@ -266,9 +284,9 @@ flowchart TD
     L4["BatchExecutor.execute<br/>script + function"]
     D4{"Execution success?"}
     L5["Record TweakChange<br/>name, old→new, rollback_cmd"]
-    L6["Show ✅ on tweak"]
+    L6["Show PASS on tweak"]
     L7["Record error<br/>success=false"]
-    L8["Show ❌ on tweak"]
+    L8["Show FAIL on tweak"]
     D5{"More tweaks?"}
     
     F3["FlightRecorder.finish_recording()"]
@@ -276,7 +294,7 @@ flowchart TD
     F5["Save snapshot JSON"]
     
     T1["Show Toast: Profile applied!"]
-    END(("🔴 End"))
+    END(("End"))
     
     START --> A1 --> A2 --> A3 --> D1
     D1 -->|"Yes"| B1
@@ -301,7 +319,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START(("🟢 Start"))
+    START(("Start"))
     A1["User opens Backup Center"]
     A2["Load snapshots from FlightRecorder<br/>list_snapshots(limit=50)"]
     A3["Display timeline UI<br/>newest first"]
@@ -314,8 +332,8 @@ flowchart TD
         R1["User clicks Undo on specific tweak"]
         R2["Execute rollback_command<br/>reg add ... /d old_value /f"]
         D2{"Success?"}
-        R3["Mark tweak as Reverted ✅"]
-        R4["Show error message ❌"]
+        R3["Mark tweak as Reverted"]
+        R4["Show error message"]
     end
     
     subgraph "Full Snapshot Rollback"
@@ -335,7 +353,7 @@ flowchart TD
         E4["Show Toast: Script exported"]
     end
     
-    END(("🔴 End"))
+    END(("End"))
     
     START --> A1 --> A2 --> A3 --> A4 --> A5 --> D1
     D1 -->|"Per-Tweak"| R1 --> R2 --> D2
@@ -351,7 +369,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START(("🟢 Start"))
+    START(("Start"))
     A1["App launches → Start background thread"]
     
     subgraph "CPU Detection"
@@ -399,7 +417,7 @@ flowchart TD
     R1["Build SystemProfile"]
     R2["Callback: _on_detection_complete()"]
     R3["Refresh Dashboard UI"]
-    END(("🔴 End"))
+    END(("End"))
     
     START --> A1 --> C1 --> DC1
     DC1 -->|"Yes"| C2 --> C6
@@ -590,7 +608,7 @@ sequenceDiagram
         FR-->>PM: TweakChange
         
         PM->>PV: on_tweak_status("Mouse Accel", "done")
-        PV->>User: Show ✅ next to tweak
+        PV->>User: Show [PASS] next to tweak
     end
     
     Note over PM: Step 5: Finish Recording
@@ -600,7 +618,7 @@ sequenceDiagram
     FR-->>PM: SystemSnapshot(35 tweaks recorded)
     
     PM-->>PV: success=true
-    PV->>User: Toast "COMPETITIVE profile applied! 35 tweaks ✅"
+    PV->>User: Toast "COMPETITIVE profile applied! 35 tweaks done"
 ```
 
 ### 6.2 Sequence Diagram: Per-Tweak Rollback
@@ -628,7 +646,7 @@ sequenceDiagram
     RC->>WIN: reg add "HKCU\Control Panel\Mouse" /v MouseSpeed /t REG_SZ /d 1 /f
     WIN-->>RC: Success
     
-    RC->>User: Show ✅ "Mouse Acceleration restored"
+    RC->>User: Show "Mouse Acceleration restored"
     RC->>User: Toast "Tweak reverted successfully"
 ```
 
@@ -680,7 +698,7 @@ sequenceDiagram
     SD-->>APP: SystemProfile(score=77, tier=enthusiast)
     APP->>DV: window.after(0, update_dashboard)
     DV->>DV: Display CPU, GPU, RAM, Storage cards
-    DV->>DV: Display score=77, tier=Enthusiast ⭐
+    DV->>DV: Display score=77, tier=Enthusiast
 ```
 
 ### 6.4 Sequence Diagram: Export/Import Custom Preset
@@ -876,6 +894,209 @@ classDiagram
     SystemDetector "1" --> "1" SystemProfile : creates
     TweakRegistry "1" --> "1" SystemProfile : filters by
 ```
+
+---
+
+## 8. State Machine Diagram: Tweak Lifecycle
+
+แสดงวงจรชีวิตของ Tweak ตั้งแต่ค้นพบจาก Registry จนถึงการ Rollback
+
+> **อ้างอิง SE 701:** State Machine Diagram (UML 2.5.1) ใช้แสดงสถานะและการเปลี่ยนสถานะของ object ภายในระบบ
+
+```mermaid
+stateDiagram-v2
+    [*] --> Registered : TweakRegistry.init()
+
+    Registered --> Compatible : SystemDetector confirms OS/HW match
+    Registered --> Incompatible : OS/HW mismatch detected
+
+    Incompatible --> [*] : Filtered out (not shown to user)
+
+    Compatible --> Selected : User checks tweak / Profile auto-select
+    Compatible --> Compatible : User browses (no state change)
+
+    Selected --> Validating : User clicks Apply
+    Selected --> Compatible : User unchecks tweak
+
+    Validating --> Applying : Validator passes (admin + scripts OK)
+    Validating --> Selected : Validation fails (no admin / missing script)
+
+    Applying --> Applied : BatchExecutor returns success
+    Applying --> Failed : BatchExecutor returns error
+
+    Applied --> RollingBack : User clicks Undo / Rollback All
+    Applied --> Applied : System reboot (tweak persists)
+
+    Failed --> Selected : User retries
+    Failed --> [*] : User dismisses error
+
+    RollingBack --> Reverted : reg add old_value succeeds
+    RollingBack --> RollbackFailed : reg add fails (access denied)
+
+    Reverted --> Compatible : Ready for re-apply
+    RollbackFailed --> Applied : Tweak still active (manual fix needed)
+
+    note right of Registered
+        48 tweaks loaded from
+        TweakRegistry at startup
+    end note
+
+    note right of Applied
+        FlightRecorder saves
+        TweakChange with
+        rollback_command
+    end note
+
+    note right of Reverted
+        Registry restored to
+        old_value from snapshot
+    end note
+```
+
+**สถานะ (States):**
+
+| State | คำอธิบาย | ข้อมูลที่บันทึก |
+|-------|---------|---------------|
+| Registered | Tweak อยู่ใน TweakRegistry | id, name, category, risk_level |
+| Compatible | ตรวจแล้วรองรับ OS/HW ของเครื่อง | compatible_os, compatible_hardware |
+| Incompatible | ไม่รองรับ (กรองออก) | filter_reason |
+| Selected | ผู้ใช้เลือก (หรือ profile auto-select) | preset flag (safe/competitive/extreme) |
+| Validating | กำลังตรวจ admin rights + script availability | verify_scripts() result |
+| Applying | กำลัง execute batch script | subprocess PID, progress % |
+| Applied | Apply สำเร็จ | TweakChange: old→new, rollback_command |
+| Failed | Apply ล้มเหลว | error message, exit code |
+| RollingBack | กำลัง revert registry value | rollback_command executing |
+| Reverted | Rollback สำเร็จ | restored old_value confirmed |
+| RollbackFailed | Rollback ล้มเหลว | error (access denied / key changed) |
+
+---
+
+## 9. Package Diagram: Layer Architecture
+
+แสดงโครงสร้าง package แบบ 3 ชั้น ตาม Layered Architecture ของ ClutchG
+
+> **อ้างอิง SE 701:** Package Diagram ใช้แสดง logical grouping ของ modules และ dependency direction ระหว่างชั้น — dependency ต้องชี้ลงเท่านั้น (Presentation → Business Logic → Infrastructure)
+
+```mermaid
+graph TB
+    subgraph "Presentation Layer (clutchg/src/gui/)"
+        subgraph "Views (gui/views/)"
+            V_DASH["dashboard_minimal.py"]
+            V_PROF["profiles_minimal.py"]
+            V_SCRP["scripts_minimal.py"]
+            V_BACK["backup_restore_center.py"]
+            V_HELP["help_minimal.py"]
+            V_SETS["settings_minimal.py"]
+            V_WELC["welcome_overlay.py"]
+        end
+        subgraph "Components (gui/components/)"
+            C_SIDE["enhanced_sidebar.py"]
+            C_RISK["risk_badge.py"]
+            C_TOST["toast.py"]
+            C_EXEC["execution_dialog.py"]
+            C_PROG["progress_bar.py"]
+            C_CARD["glass_card.py"]
+        end
+        subgraph "Theme & Style (gui/)"
+            T_THM["theme.py"]
+            T_STL["style.py"]
+            T_ICN["icons.py"]
+            T_FNT["font_loader.py"]
+        end
+    end
+
+    subgraph "Business Logic Layer (clutchg/src/core/)"
+        subgraph "Domain Models"
+            M_TWK["tweak_registry.py (Tweak dataclass)"]
+            M_ACT["action_catalog.py"]
+        end
+        subgraph "Managers"
+            MGR_PRF["profile_manager.py"]
+            MGR_BAK["backup_manager.py"]
+            MGR_FLR["flight_recorder.py"]
+            MGR_CFG["config_manager.py"]
+        end
+        subgraph "Detection & Analysis"
+            DET_SYS["system_info.py"]
+            DET_BDB["benchmark_db.py"]
+            DET_REC["profile_recommender.py"]
+        end
+        subgraph "Script Interface"
+            SCR_PAR["batch_parser.py"]
+            SCR_EXE["batch_executor.py"]
+        end
+    end
+
+    subgraph "Infrastructure Layer"
+        subgraph "Batch Scripts (src/core/)"
+            BAT_TEL["telemetry-blocker.bat"]
+            BAT_INP["input-optimizer.bat"]
+            BAT_PWR["power-manager.bat"]
+            BAT_GPU["gpu-optimizer.bat"]
+            BAT_NET["network-optimizer.bat"]
+            BAT_SVC["service-manager.bat"]
+        end
+        subgraph "Data Files"
+            DAT_CFG["config/config.json"]
+            DAT_BKP["data/backups/*.json"]
+            DAT_FLR["data/flight_recorder/*.json"]
+            DAT_HLP["data/help_content.json"]
+        end
+        subgraph "Windows OS APIs"
+            WIN_REG["Registry (reg.exe)"]
+            WIN_SVC["Services (sc.exe)"]
+            WIN_BCD["BCDEdit (bcdedit.exe)"]
+            WIN_PS["PowerShell"]
+        end
+    end
+
+    %% Presentation → Business Logic
+    V_DASH --> DET_SYS
+    V_PROF --> MGR_PRF
+    V_SCRP --> M_TWK
+    V_BACK --> MGR_FLR
+    V_BACK --> MGR_BAK
+    V_HELP --> MGR_CFG
+    V_SETS --> MGR_CFG
+
+    %% Business Logic internal
+    MGR_PRF --> M_TWK
+    MGR_PRF --> MGR_BAK
+    MGR_PRF --> MGR_FLR
+    MGR_PRF --> SCR_EXE
+    DET_SYS --> DET_BDB
+    DET_SYS --> DET_REC
+    M_TWK --> M_ACT
+    SCR_EXE --> SCR_PAR
+
+    %% Business Logic → Infrastructure
+    SCR_EXE --> BAT_TEL & BAT_INP & BAT_PWR & BAT_GPU & BAT_NET & BAT_SVC
+    MGR_BAK --> DAT_BKP
+    MGR_FLR --> DAT_FLR
+    MGR_CFG --> DAT_CFG
+
+    BAT_TEL & BAT_INP & BAT_PWR --> WIN_REG
+    BAT_SVC --> WIN_SVC
+    MGR_BAK --> WIN_PS
+```
+
+**Dependency Rules:**
+
+| กฎ | รายละเอียด | การปฏิบัติใน ClutchG |
+|----|-----------|-------------------|
+| Top-down only | Presentation → Business → Infrastructure | Views import core modules เท่านั้น ไม่มี core import gui |
+| No circular | ห้าม dependency วน | ตรวจสอบแล้วไม่มี circular imports |
+| Stable dependencies | ชั้นล่างเปลี่ยนน้อยกว่าชั้นบน | core/ เปลี่ยน ~20 ครั้ง vs gui/ เปลี่ยน ~80 ครั้ง |
+| Interface boundary | ชั้นบนเรียกผ่าน public API | Views ใช้ manager methods ไม่เข้าถึง internal state |
+
+---
+
+## Revision History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v1.0 | 2026-03-04 | Initial UML diagrams: Context, Use Case, Activity, Component, Sequence, Class |
+| v2.0 | 2026-04-06 | SE 701 enrichment: Include/Extend relationships, emoji removal, State Machine diagram, Package diagram, dependency rules |
 
 ---
 

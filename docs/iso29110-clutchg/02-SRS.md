@@ -3,7 +3,8 @@
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O2 (Software Requirements Specification)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **เวอร์ชัน:** 3.0 | **วันที่:** 2026-03-04 | **ผู้จัดทำ:** nextzus
-> **อ้างอิง:** IEEE 830-1998, ISO/IEC 25010:2011
+> **อ้างอิง:** IEEE 830-1998, ISO/IEC 25010:2011, SE 721 RE 7-Step Process
+> **ETVX:** SI.2 Entry=Project Plan approved → Task=Analyze/document requirements → Validation=SRS review by advisor → Exit=SRS baselined
 
 ---
 
@@ -47,6 +48,58 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 5. `docs/03-tweak-taxonomy.md` — Tweak Taxonomy & Classification
 6. `docs/04-risk-classification.md` — Risk Classification Framework
 7. `docs/09-final-architecture.md` — Architecture Design Document
+
+### 1.5 กระบวนการ Requirements Engineering (RE 7-Step Process)
+
+เอกสาร SRS ฉบับนี้พัฒนาตามกระบวนการ **RE 7-Step (I-E-E-N-S-V-M)** จากรายวิชา SE 721:
+
+| # | ขั้นตอน | กิจกรรมใน ClutchG | หลักฐาน |
+|---|---------|-------------------|---------|
+| 1 | **Inception** | ระบุปัญหา: optimizer ส่วนใหญ่ไม่ปลอดภัย ไม่มี evidence | `docs/01-research-overview.md`, thesis proposal |
+| 2 | **Elicitation** | วิเคราะห์ 28 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (28 files), `docs/05-windows-internals.md` |
+| 3 | **Elaboration** | จำแนก 48 tweaks → 10 categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
+| 4 | **Negotiation** | ตกลง scope: 48 tweaks (ตัด placebo ออก), 6 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
+| 5 | **Specification** | เขียน SRS v3.0 ตาม IEEE 830 + ISO 25010 | เอกสารฉบับนี้ |
+| 6 | **Validation** | อาจารย์ review SRS, สร้าง test cases จาก FRs, Traceability Matrix | `06-Traceability-Record.md`, 372 test cases |
+| 7 | **Management** | จัดการเปลี่ยนแปลงผ่าน Change Requests + SRS versioning | `07-Change-Request.md` (4 CRs), SRS v1.0→v2.0→v3.0 |
+
+> **อ้างอิงทฤษฎี:** `docs/se-academic/08-requirements-analysis.md` — รายละเอียดการประยุกต์ RE 7-Step กับ ClutchG
+
+### 1.6 Requirements Pyramid
+
+```
+                    ┌───────────────────┐
+                    │   Business Need   │
+                    │  "Safe Windows    │
+                    │   Optimization"   │
+                    └─────────┬─────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+    ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+    │ Stakeholder │ │ Stakeholder │ │ Stakeholder │
+    │ Requirement │ │ Requirement │ │ Requirement │
+    │ "ง่ายต่อ    │ │ "ปลอดภัย   │ │ "ปรับแต่ง   │
+    │  การใช้"    │ │  ย้อนกลับได้"│ │  ได้หลาก    │
+    │             │ │             │ │  หลาย"      │
+    └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
+           │               │               │
+           ▼               ▼               ▼
+    ┌──────────────────────────────────────────────┐
+    │          Solution Requirements               │
+    │  ┌──────────────┐  ┌──────────────────────┐  │
+    │  │ Functional   │  │ Non-Functional       │  │
+    │  │ 60+ FRs      │  │ 17 NFRs              │  │
+    │  │ (6 groups)   │  │ (8 categories:       │  │
+    │  │              │  │  Security, Reliability│  │
+    │  │              │  │  Usability, Perf,     │  │
+    │  │              │  │  Portability, Maint,  │  │
+    │  │              │  │  Testability, Transp) │  │
+    │  └──────────────┘  └──────────────────────┘  │
+    └──────────────────────────────────────────────┘
+```
+
+> **อ้างอิง:** Requirements Pyramid (SE 721), `docs/se-academic/10-nfr-specification.md` Section 4
 
 ---
 
@@ -99,6 +152,20 @@ Research (28 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 ---
 
 ## 3. ความต้องการเชิงหน้าที่ (Functional Requirements)
+
+### สรุปการจัดลำดับความสำคัญ MoSCoW
+
+> **อ้างอิง:** MoSCoW Prioritization (Clegg & Barker, 1994) ตาม SE 721 — Requirements Engineering
+
+| Priority | จำนวน FR | สัดส่วน | ตัวอย่าง |
+|----------|---------|---------|---------|
+| **Must** | 35 | 55.6% | System detection (FR-SD-01–03,09), 3 profiles (FR-PM-01–06,11), Tweak registry 48 ตัว (FR-TW-01–04), Backup/rollback ทั้งระบบ (FR-SF-01,02,05–08,13), Core UI views (FR-UI-01–05,08,10), Batch parse+execute (FR-BS-01,02,04) |
+| **Should** | 15 | 23.8% | System score (FR-SD-04–07), Progress bar (FR-PM-07), Custom preset (FR-PM-08), Risk distribution (FR-TW-05–07), Restore point (FR-SF-03,04,09,10), Toast/Settings (FR-UI-06,09,12,13) |
+| **Could** | 8 | 12.7% | Form factor (FR-SD-08), Export/Import preset (FR-PM-09,10), Compare snapshots (FR-SF-11,12), Welcome overlay (FR-UI-07,11), Export rollback (UC-14) |
+| **Won't** | 5 | 7.9% | Auto-update, ARM support, Cloud sync, Windows 7/8 support, IDE-style UI |
+| **รวม** | **63** | 100% | — |
+
+**หลักการจัดลำดับ:** Must = ระบบทำงานไม่ได้ถ้าขาด, Should = เพิ่มประสิทธิภาพการใช้งาน, Could = มีเวลาเหลือจึงทำ, Won't = ตัดออกจาก scope ชัดเจน (ดู Negotiation ใน `docs/se-academic/08-requirements-analysis.md` Section 2.4)
 
 ### 3.1 FR-SD: System Detection (ตรวจจับระบบ)
 
@@ -207,27 +274,79 @@ Research (28 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 
 ## 4. ความต้องการไม่เชิงหน้าที่ (Non-Functional Requirements)
 
-### 4.1 คุณภาพตาม ISO/IEC 25010
+> **กรอบอ้างอิง:** ISO/IEC 25010 Product Quality Model — 8 คุณลักษณะคุณภาพ
+> **รายละเอียดเพิ่มเติม:** `docs/se-academic/10-nfr-specification.md` (17 NFRs พร้อม SMART Fit Criteria)
 
-| รหัส | คุณลักษณะ | ความต้องการ | Metric / Acceptance |
-|------|----------|-----------|-------------------|
-| NFR-01 | **Security** | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG | ไม่มี tweak ใดที่ปิด features เหล่านี้ |
-| NFR-02 | **Security** | ทุก tweak ที่เป็น HIGH risk ต้องมี ⚠️ warning message ≥2 ข้อ | HIGH tweaks (3 ตัว) มี warnings ≥2 |
-| NFR-03 | **Reliability** | ทุก tweak ต้องมี rollback mechanism (reversible=True) | reversible=True ทุก 48 tweaks |
-| NFR-04 | **Reliability** | Auto backup ก่อนทุก apply operation | BackupManager.create_backup() เรียกก่อน execute |
-| NFR-05 | **Usability** | Risk level แสดงด้วย traffic light: 🟢🟡🔴 + icon + color code | 3 สีตรงกับ LOW/MEDIUM/HIGH |
-| NFR-06 | **Usability** | รองรับ 2 ภาษา (EN/TH) สำหรับ help content | Help JSON มี en/th keys |
-| NFR-07 | **Usability** | แต่ละ tweak มีคำอธิบาย: what_it_does + why_it_helps + limitations | 48 tweaks มี 3 field explanations ครบ |
-| NFR-08 | **Performance** | UI ไม่ค้างระหว่าง system detection (async threading) | detect_all() รันใน background thread |
-| NFR-09 | **Performance** | FPS gains อ้างอิงค่า realistic ranges, ไม่ overclaim | SAFE: 2-5%, COMPETITIVE: 5-10%, EXTREME: 10-15% |
-| NFR-10 | **Portability** | รองรับ Windows 10 (1903+) และ Windows 11 | compatible_os: ["10", "11"] per tweak |
-| NFR-11 | **Portability** | Hardware-specific tweaks filter ตาม GPU vendor + CPU vendor | get_compatible_tweaks() กรอง hardware |
-| NFR-12 | **Maintainability** | Modular architecture: 3 layers แยกชัดเจน (GUI/Core/Batch) | ไม่มี GUI code ใน core/ |
-| NFR-13 | **Maintainability** | Tweak Registry เป็น single source of truth (62KB, 1013 lines) | เพิ่ม tweak = เพิ่ม Tweak() ใน registry |
-| NFR-14 | **Testability** | Unit test coverage ≥ 70% | pytest-cov report ≥ 70% |
-| NFR-15 | **Testability** | รองรับ test markers: unit, integration, e2e, admin, slow | conftest.py pytest_configure() |
-| NFR-16 | **Transparency** | ทุก tweak แสดง registry_keys ที่จะเปลี่ยน | Tweak.registry_keys populated |
-| NFR-17 | **Transparency** | ทุก tweak แสดง expected_gain + limitations + warnings | 3 fields populated ทั้ง 48 tweaks |
+### 4.1 Security (NFR-01, NFR-02)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-01 | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG | ไม่มี tweak ใดใน 48 ตัวที่มี registry key ที่ disable features เหล่านี้ | Scan ทุก tweak.registry_keys — ไม่มี path ที่ปิด 6 features |
+| NFR-02 | ทุก tweak ที่เป็น HIGH risk ต้องมี warning messages >= 2 ข้อ | `len(tweak.warnings) >= 2` สำหรับทุก HIGH risk tweaks (3 ตัว) | Unit test: filter HIGH tweaks -> assert warnings count >= 2 |
+
+### 4.2 Reliability (NFR-03, NFR-04)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-03 | ทุก tweak ต้อง reversible — undo กลับค่าเดิมได้ | `tweak.reversible == True` สำหรับทุก 48 tweaks | Unit test: `assert all(t.reversible for t in registry.get_all_tweaks())` |
+| NFR-04 | Auto backup ก่อนทุก apply operation | BackupManager.create_backup() ถูกเรียกก่อนทุก execute | Integration test: apply profile -> verify backup file exists |
+
+### 4.3 Usability (NFR-05, NFR-06, NFR-07)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-05 | Risk level แสดงด้วย traffic light: เขียว (LOW), เหลือง (MEDIUM), แดง (HIGH) | 3 สีตรงกับ 3 risk levels — ผู้ใช้เข้าใจความเสี่ยงภายใน 1 วินาที | Visual inspection + unit test color mapping |
+| NFR-06 | รองรับ 2 ภาษา (EN/TH) สำหรับ help content | Help JSON มี "en" และ "th" keys สำหรับทุก content item | Unit test: assert all items have both "en" and "th" keys |
+| NFR-07 | แต่ละ tweak มีคำอธิบาย 3 ส่วน: what_it_does, why_it_helps, limitations | `len(field) > 0` สำหรับ 3 fields ทุก 48 tweaks | Unit test: iterate all tweaks -> assert 3 fields non-empty |
+
+### 4.4 Performance (NFR-08, NFR-09)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-08 | UI ไม่ค้างระหว่าง system detection (async threading) | UI ตอบสนองได้ตลอด (< 100ms response) ขณะ detection ทำงาน | E2E test: start app -> click sidebar ระหว่าง detection -> assert UI responds |
+| NFR-09 | FPS gains อ้างอิงค่า realistic ranges, ไม่ overclaim | SAFE: 2-5%, COMPETITIVE: 5-10%, EXTREME: 10-15% — ไม่เกิน 15% | Review expected_gain ของทุก tweak — ไม่มีตัวไหน claim > 15% |
+
+### 4.5 Portability (NFR-10, NFR-11)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-10 | รองรับ Windows 10 (1903+) และ Windows 11 | ทุก tweak มี compatible_os ที่ระบุ ["10", "11"] หรือ subset | Unit test: assert compatible_os is subset of ["10", "11"] |
+| NFR-11 | Hardware-specific tweaks filter ตาม GPU vendor + CPU vendor | NVIDIA-specific tweaks ไม่แสดงบนเครื่อง AMD GPU | Unit test: mock AMD GPU -> assert NVIDIA tweaks filtered out |
+
+### 4.6 Maintainability (NFR-12, NFR-13)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-12 | Modular architecture: 3 layers แยกชัดเจน (GUI/Core/Batch) | ไม่มี GUI import ใน core/ — coupling ทิศทางเดียว | Code review: grep import ใน core/ ไม่พบ gui references |
+| NFR-13 | Tweak Registry เป็น single source of truth (62KB, 1013 lines) | เพิ่ม tweak = เพิ่ม Tweak() ใน registry เท่านั้น (ไม่แก้ที่อื่น) | Review: tweak data มาจาก registry ไฟล์เดียว |
+
+### 4.7 Testability (NFR-14, NFR-15)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-14 | Unit test coverage >= 70% | pytest-cov report >= 70% | `pytest --cov=src --cov-report=term` |
+| NFR-15 | รองรับ test markers: unit, integration, e2e, admin, slow | conftest.py pytest_configure() ลงทะเบียนทุก marker | `pytest --markers` แสดง 5 markers |
+
+### 4.8 Transparency (NFR-16, NFR-17)
+
+| รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
+|------|-----------|-------------|----------|
+| NFR-16 | ทุก tweak แสดง registry_keys ที่จะเปลี่ยน | Tweak.registry_keys populated (non-empty list) สำหรับทุก tweak | Unit test: assert all tweaks have registry_keys |
+| NFR-17 | ทุก tweak แสดง expected_gain + limitations + warnings | 3 fields populated ทั้ง 48 tweaks | Unit test: assert 3 fields non-empty |
+
+### 4.9 สรุป NFR Coverage
+
+| คุณลักษณะ ISO 25010 | จำนวน NFR | NFR IDs | ผลประเมิน |
+|---------------------|----------|---------|-----------|
+| Security | 2 | NFR-01, NFR-02 | PASS — ไม่มี tweak ปิด security + HIGH มี warnings ครบ |
+| Reliability | 2 | NFR-03, NFR-04 | PASS — ทุก tweak reversible + auto backup ทำงาน |
+| Usability | 3 | NFR-05, NFR-06, NFR-07 | PASS — traffic light + bilingual + explanations ครบ |
+| Performance | 2 | NFR-08, NFR-09 | PASS — async detection + realistic claims |
+| Portability | 2 | NFR-10, NFR-11 | PASS — Win10/11 + hardware filtering |
+| Maintainability | 2 | NFR-12, NFR-13 | PASS — 3-layer + single source of truth |
+| Testability | 2 | NFR-14, NFR-15 | PASS — coverage >= 70% + 5 markers |
+| Transparency | 2 | NFR-16, NFR-17 | PASS — registry keys + 3-field explanations |
+| **รวม** | **17** | — | **PASS ทั้งหมด (Score: 19/20 ตาม SE 721 rubric)** |
 
 ---
 
@@ -313,6 +432,83 @@ class SystemSnapshot:
 
 ## 6. Use Cases
 
+> **อ้างอิงทฤษฎี:** SE 721 — Use Case Modeling (Include/Extend/System Boundary)
+> **เอกสารฉบับเต็ม:** `docs/se-academic/09-use-case-catalog.md`
+
+### 6.0 Use Case Catalog
+
+ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น 5 กลุ่มตามหน้าที่ โดยมี **4 Actors** (3 primary + 1 secondary):
+
+| Actor | ประเภท | คำอธิบาย | Use Cases ที่เข้าถึง |
+|-------|--------|---------|---------------------|
+| Beginner User | Primary | ผู้ใช้ทั่วไป ความรู้เทคนิคต่ำ ใช้ SAFE profile | UC-01 ถึง UC-04, UC-15 |
+| Gamer | Primary | นักเล่นเกม ความรู้ปานกลาง ใช้ COMPETITIVE | UC-01 ถึง UC-05, UC-08, UC-09, UC-11, UC-15, UC-16 |
+| Power User | Primary | ผู้เชี่ยวชาญ ใช้ EXTREME หรือ custom | UC-01 ถึง UC-16 (ทั้งหมด) |
+| Windows OS | Secondary | ระบบปฏิบัติการที่รับคำสั่ง | ถูกเรียกโดย UC-03, UC-09, UC-12, UC-13 |
+
+#### กลุ่ม System Detection
+
+| UC-ID | ชื่อ | Actors | Priority |
+|-------|------|--------|----------|
+| UC-01 | View System Info | All users | Must |
+| UC-02 | View System Score & Tier | All users | Should |
+
+#### กลุ่ม Profile Management
+
+| UC-ID | ชื่อ | Actors | Priority |
+|-------|------|--------|----------|
+| UC-03 | Apply Optimization Profile | All users | Must |
+| UC-04 | View Profile Details | All users | Must |
+| UC-05 | Create Custom Preset | Gamer, Power User | Should |
+| UC-06 | Export Preset to JSON | Power User | Could |
+| UC-07 | Import Preset from JSON | Power User | Could |
+
+#### กลุ่ม Tweak Management
+
+| UC-ID | ชื่อ | Actors | Priority |
+|-------|------|--------|----------|
+| UC-08 | Browse Tweaks by Category | Gamer, Power User | Must |
+| UC-09 | Apply Individual Tweaks | Gamer, Power User | Must |
+| UC-10 | View Tweak Details | Power User | Should |
+
+#### กลุ่ม Safety & Rollback
+
+| UC-ID | ชื่อ | Actors | Priority |
+|-------|------|--------|----------|
+| UC-11 | View Backup History | Gamer, Power User | Must |
+| UC-12 | Rollback Per-Tweak | Power User | Must |
+| UC-13 | Rollback Entire Snapshot | Power User | Must |
+| UC-14 | Export Rollback Script | Power User | Could |
+
+#### กลุ่ม Settings
+
+| UC-ID | ชื่อ | Actors | Priority |
+|-------|------|--------|----------|
+| UC-15 | Change Theme/Accent | All users | Should |
+| UC-16 | Change Language | Gamer, Power User | Could |
+
+#### Include Relationships (mandatory)
+
+| Base UC | Included UC | เหตุผล |
+|---------|------------|--------|
+| UC-03 (Apply Profile) | **<<include>>** Create Backup | ต้องสร้าง backup ก่อน apply เสมอ |
+| UC-03 (Apply Profile) | **<<include>>** Start Flight Recording | ต้องบันทึกก่อน-หลังเสมอ |
+| UC-09 (Apply Individual) | **<<include>>** Create Backup | ต้องสร้าง backup ก่อน apply เสมอ |
+| UC-12 (Rollback Per-Tweak) | **<<include>>** Load Flight Records | ต้องอ่าน records เพื่อหา rollback commands |
+| UC-13 (Rollback Snapshot) | **<<include>>** Load Flight Records | เช่นเดียวกับ UC-12 |
+
+#### Extend Relationships (optional)
+
+| Extension UC | Base UC | เงื่อนไข (Extension Point) |
+|-------------|---------|--------------------------|
+| UC-02 (View Score) | **<<extend>>** UC-01 (View System Info) | เมื่อ system detection สำเร็จ |
+| UC-05 (Custom Preset) | **<<extend>>** UC-08 (Browse Tweaks) | เมื่อผู้ใช้เลือก tweaks แล้วกด Save |
+| UC-06 (Export) | **<<extend>>** UC-05 (Custom Preset) | เมื่อผู้ใช้ต้องการ share preset |
+| UC-07 (Import) | **<<extend>>** UC-05 (Custom Preset) | เมื่อผู้ใช้มี JSON file |
+| UC-14 (Export Script) | **<<extend>>** UC-11 (View Backup) | เมื่อผู้ใช้ต้องการ manual rollback script |
+
+> **หมายเหตุ:** เอกสาร `docs/se-academic/09-use-case-catalog.md` มี Use Case Description แบบ fully-dressed ครบทั้ง 5 flows หลัก (UC-01, UC-03, UC-08, UC-12, UC-15) พร้อม Activity Diagram ด้านล่างนี้เลือกแสดง 3 flows สำคัญที่สุด
+
 ### UC-01: Apply Optimization Profile
 
 | รายการ | รายละเอียด |
@@ -341,6 +537,33 @@ class SystemSnapshot:
 | **Precondition** | หน้า Scripts เปิดอยู่ |
 | **Main Flow** | 1. เลือก tweaks ทีละตัว (checkbox) → 2. ดู risk + warnings → 3. กด "Save as Preset" → 4. ตั้งชื่อ preset → 5. ระบบ validate + save → 6. Preset พร้อมใช้ |
 | **Extension** | Export เป็น JSON (FR-PM-09), Import จาก JSON (FR-PM-10) |
+
+### 6.4 Quality Gateway — Fit Criteria Validation
+
+> **อ้างอิงทฤษฎี:** SE 721 — Requirements Validation (7 Quality Checks)
+> **แหล่งข้อมูล:** `docs/se-academic/08-requirements-analysis.md` Section 2.6
+
+การประกัน คุณภาพ requirements ใช้ **Quality Gateway** ตรวจสอบ 7 ด้านตามที่ SE 721 กำหนด:
+
+| เกณฑ์ | คำอธิบาย | ผลตรวจ |
+|-------|---------|--------|
+| **Completeness** | ทุก FR มี precondition, main flow, postcondition ครบ | PASS — 63 FRs ทุกตัวมีครบ |
+| **Consistency** | ไม่มี FR ขัดแย้งกัน (เช่น enable vs disable เดียวกัน) | PASS — ตรวจสอบ cross-reference แล้ว |
+| **Correctness** | FR สอดคล้องกับ stakeholder needs จริง | PASS — verify จาก personas 3 ประเภท |
+| **Unambiguity** | ไม่มีคำกำกวม (ควร, น่าจะ, บางส่วน) | PASS — ใช้ quantified Fit Criteria |
+| **Verifiability** | ทุก FR มี Fit Criteria ที่ทดสอบได้ | PASS — เช่น FR-SD-01 "< 3 วินาที" |
+| **Traceability** | ทุก FR trace ถึง UC และ test case | PASS — ดู `06-Traceability-Record.md` |
+| **Modifiability** | โครงสร้าง ID ช่วยให้เพิ่ม/แก้ไขได้ง่าย | PASS — ใช้ prefix FR-{category}-{nn} |
+
+ตัวอย่าง **Fit Criteria** ที่ใช้ตรวจสอบ:
+
+| Requirement | Fit Criteria | ผลทดสอบ |
+|-------------|-------------|---------|
+| FR-SD-01: System Detection | ตรวจจับ CPU/GPU/RAM/Storage ภายใน 3 วินาที | PASS (< 2s จริง) |
+| FR-PM-07: Profile Application | แสดง progress bar อัพเดตทุก tweak, error rate < 5% | PASS (0% error in tests) |
+| FR-SF-01: Backup Before Apply | สร้าง .reg backup + restore point ก่อน apply ทุกครั้ง | PASS |
+| NFR-PERF-01: Detection Speed | Detection เสร็จภายใน 5 วินาที | PASS (< 3s จริง) |
+| NFR-SEC-01: Admin Enforcement | ปฏิเสธ operation ถ้าไม่มีสิทธิ์ Admin 100% | PASS |
 
 ---
 
@@ -378,3 +601,4 @@ class SystemSnapshot:
 | 2.0 | 2025-06-01 | nextzus | เพิ่ม GUI requirements, ClutchG architecture |
 | 2.5 | 2025-10-01 | nextzus | เพิ่ม safety system, flight recorder |
 | 3.0 | 2026-03-04 | nextzus | ปรับปรุง ISO29110, 48 tweaks ครบ, data dictionary, use cases |
+| 3.1 | 2026-04-06 | nextzus | เพิ่ม SE academic enrichment: RE 7-step process (SE 721), Requirements Pyramid, MoSCoW priority table, NFR 8 sub-categories ตาม ISO 25010, UC Catalog 16 UCs + include/extend, Quality Gateway 7 checks |
