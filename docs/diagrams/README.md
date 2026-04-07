@@ -24,6 +24,9 @@ Drawn in [draw.io](https://app.diagrams.net/), exported as PNG at 2x scale with 
 | 11 | [Conceptual Framework](#11-conceptual-framework) | Custom | Ch.1 Introduction |
 | 12 | [Project Timeline (Gantt Chart)](#12-project-timeline-gantt-chart) | Gantt | Ch.1 / Project Plan |
 | 13 | [Tweak State Diagram](#13-tweak-state-diagram) | UML State | Ch.3 System Design |
+| 14 | [PC Score Scoring Flow](#14-pc-score-scoring-flow) | Activity | Ch.3 System Design |
+| 15 | [Profile Recommendation Decision Tree](#15-profile-recommendation-decision-tree) | Decision Tree | Ch.3 System Design |
+| 16 | [Tech Stack](#16-tech-stack) | Tech Stack | Ch.3 System Design |
 
 ---
 
@@ -263,6 +266,61 @@ UML state diagram for a tweak's runtime lifecycle:
 Shows transitions, guards, and error recovery paths.
 
 ![13-state-diagram](img/13-state-diagram.png)
+
+---
+
+## 14 — PC Score Scoring Flow
+
+**Source:** [`drawio/14-pc-score-scoring-flow.drawio`](drawio/14-pc-score-scoring-flow.drawio)
+
+Activity diagram showing the complete PC Score calculation pipeline:
+
+1. App startup spawns a **daemon thread** (non-blocking)
+2. `SystemDetector.detect_all()` runs parallel hardware detection (CPU, GPU, RAM, Storage)
+3. CPU and GPU names go through **BenchmarkDatabase fuzzy matching** (3-stage: exact → regex key parts → difflib cutoff=0.5)
+4. Raw PassMark scores are **normalized** to component weights: CPU (0–30), GPU (0–30), RAM (0–20), Storage (0–10)
+5. Total score = sum of all components (max ~90 practical)
+6. **Tier classification**: Entry (<30), Mid (30–49), High (50–69), Enthusiast (70+)
+7. `SystemProfile` is built and returned via `window.after(0)` callback to the GUI main thread
+8. Dashboard displays the circular score ring with tier-colored badge
+
+Color coding: Blue = hardware detection, Orange = fuzzy matching, Green = scoring/normalization, Purple = GUI thread.
+
+![14-pc-score-scoring-flow](img/14-pc-score-scoring-flow.png)
+
+---
+
+## 15 — Profile Recommendation Decision Tree
+
+**Source:** [`drawio/15-recommendation-decision-tree.drawio`](drawio/15-recommendation-decision-tree.drawio)
+
+Side-by-side decision tree comparing the two independent profile recommendation paths in ClutchG:
+
+- **Path A — `SystemDetector.recommend_profile()`** (system_info.py): Checks form factor first (Laptop → always SAFE), then uses tier to decide (Enthusiast/High/Mid → COMPETITIVE, Entry → SAFE). **Never recommends EXTREME.**
+- **Path B — `TweakRegistry.suggest_preset()`** (tweak_registry.py): Uses score thresholds + hardware requirements (score ≥ 80 + desktop + RAM ≥ 16GB → EXTREME, score ≥ 50 + RAM ≥ 8GB → COMPETITIVE, else → SAFE). **Can recommend EXTREME.**
+
+Includes a comparison table highlighting key differences and two worked examples showing how the paths can agree or disagree for the same hardware.
+
+![15-recommendation-decision-tree](img/15-recommendation-decision-tree.png)
+
+---
+
+## 16 — Tech Stack
+
+**Source:** [`drawio/16-tech-stack.drawio`](drawio/16-tech-stack.drawio)
+
+Layered technology stack diagram showing all tools, libraries, and subsystems that make up ClutchG, organized into 6 horizontal tiers:
+
+1. **GUI Layer** (blue) — Python 3, CustomTkinter, Tkinter, Pillow, tkextrafont, Figtree font, Tabler Icons
+2. **Core Logic** (green) — psutil, py-cpuinfo, WMI, pywin32, difflib, JSON, dataclasses
+3. **Batch Engine** (orange) — CMD/Batch, PowerShell, reg.exe, sc.exe, powercfg, bcdedit, netsh, fsutil
+4. **Windows Subsystems** (pink) — Registry, Services (SCM), Power Plans, Network (TCP/IP), BCD Store, NTFS, GPU (NVIDIA/AMD), AppX/UWP
+5. **Safety & Logging** (light purple) — System Restore, reg export, Flight Recorder, Structured Logger, Validator, Rollback Engine
+6. **DevOps & Testing** (purple) — PyInstaller, pytest, pywinauto, pytest-cov, pytest-xdist, Git, nvidia-smi
+
+Inter-layer arrows show the interaction types: calls, invokes, modifies, protects, builds & tests.
+
+![16-tech-stack](img/16-tech-stack.png)
 
 ---
 
