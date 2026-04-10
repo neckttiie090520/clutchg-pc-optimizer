@@ -4,7 +4,7 @@
 > Every file and folder in this project: where it lives, what it is, what it does.
 
 **Git root:** `C:\Users\nextzus\Documents\thesis\bat\`
-**Last updated:** 2026-04-05
+**Last updated:** 2026-04-10
 
 ---
 
@@ -132,19 +132,20 @@ The interface. CustomTkinter desktop app for managing the batch optimizer.
 | `app_minimal.py` | Main app controller, view routing, sidebar integration |
 | `__init__.py` | Package init |
 
-### `clutchg/src/core/` — Business Logic (13 modules)
+### `clutchg/src/core/` — Business Logic (14 modules)
 
 | Module | Role |
 |--------|------|
+| `recommendation_service.py` | **Unified preset recommendation** — single authority (`recommend_preset()`) used by all callers |
 | `tweak_registry.py` | Central knowledge base — 48 `Tweak` dataclasses with full metadata |
 | `action_catalog.py` | User-facing optimization "packs" with risk aggregation |
 | `batch_parser.py` | Parse `.bat` files → discover tweaks, extract call structure |
 | `batch_executor.py` | Execute batch scripts with output capture and error handling |
 | `profile_manager.py` | SAFE/COMPETITIVE/EXTREME profile mapping and state tracking |
-| `profile_recommender.py` | Recommend profiles based on system hardware |
+| `profile_recommender.py` | Legacy recommender (unused by views — different input schema) |
 | `backup_manager.py` | Create/restore registry backups, manage backup index |
 | `flight_recorder.py` | Audit log — track every change, registry snapshots |
-| `benchmark_database.py` | Store and query benchmark results |
+| `benchmark_database.py` | PassMark CPU/GPU benchmark DB with 3-stage fuzzy matching |
 | `system_info.py` | Hardware/OS detection (CPU, GPU, RAM, disk via psutil/pywin32) |
 | `system_snapshot.py` | Full system state snapshots for comparison |
 | `config.py` | JSON-based app configuration (load/save/defaults) |
@@ -242,9 +243,9 @@ The interface. CustomTkinter desktop app for managing the batch optimizer.
 
 ## `clutchg/tests/` — Test Suite
 
-**Baseline: 445 passed, 64 skipped** (E2E skipped without display).
+**Baseline: 477 passed, 64 skipped** (E2E skipped without display).
 
-### `tests/unit/` — 15 Unit Test Files
+### `tests/unit/` — 16 Unit Test Files
 
 | Test File | What It Tests |
 |-----------|--------------|
@@ -256,6 +257,7 @@ The interface. CustomTkinter desktop app for managing the batch optimizer.
 | `test_backup_manager.py` | Backup create/restore/index operations |
 | `test_flight_recorder.py` | Audit log integrity, snapshot operations |
 | `test_benchmark_database.py` | Benchmark storage and retrieval |
+| `test_recommendation_service.py` | Unified recommendation — score-based, fallback, benchmark-miss routing (32 tests) |
 | `test_system_detection.py` | System info collection |
 | `test_help_system.py` | Help content loading and serving |
 | `test_admin.py` | Admin privilege checking |
@@ -313,6 +315,41 @@ The interface. CustomTkinter desktop app for managing the batch optimizer.
 | `14-testing-checklist.md` | Pre-release testing checklist |
 | `15-user-guide-th.md` | User guide (Thai) |
 | `16-user-guide-en.md` | User guide (English) |
+
+### Thesis Diagrams (`docs/diagrams/`)
+
+18 draw.io diagrams with PNG exports, plus a README index. All diagrams are white/light theme, exported at 2x scale with 20px border.
+
+| Path | Content |
+|------|---------|
+| `README.md` | Diagram index with descriptions for all 18 diagrams |
+| `drawio/` | 18 `.drawio` source files + `export_pngs.bat` helper |
+| `img/` | 19 exported PNGs (01 through 16b) |
+| `logos/` | SVG/PNG tech logos + base64 converter scripts (used by diagram 16) |
+
+**Diagram inventory:**
+
+| # | Diagram | Type |
+|---|---------|------|
+| 01 | System Architecture Overview | Architecture |
+| 02 | Batch Optimizer Execution Flow | Flowchart |
+| 03 | GUI Navigation Flow | Flowchart |
+| 04 | Tweak Lifecycle | Activity |
+| 05 | Risk Classification Framework | Custom / Entity |
+| 06 | Module Dependency Map | Component |
+| 07 | Use Case Diagram | UML Use Case |
+| 08 | Class Diagram (Full) | UML Class |
+| 08a | Class Diagram (Simplified) | UML Class |
+| 08b | Class Diagram — Data Models | UML Class |
+| 09 | Sequence Diagram | UML Sequence |
+| 10 | Deployment Diagram | UML Deployment |
+| 11 | Conceptual Framework | Custom |
+| 12 | Project Timeline (Gantt Chart) | Gantt |
+| 13 | Tweak State Diagram | UML State |
+| 14 | PC Score Scoring Flow | Activity |
+| 15 | Unified Preset Recommendation Flow | Flowchart |
+| 16 | Tech Stack | Tech Stack |
+| 16b | Tech Stack — Architecture View | Tech Stack |
 
 ### Architecture & Design
 
