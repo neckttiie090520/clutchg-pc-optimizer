@@ -1,0 +1,324 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Tech Stack Architecture View" id="tech-stack-16b">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title16b" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=20;fontStyle=1;fontColor=#1a1a1a;" value="ClutchG PC Optimizer &amp;mdash; Technology Ecosystem Across System Layers" vertex="1">
+          <mxGeometry x="280" y="15" width="640" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle16b" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=11;fontColor=#666666;" value="Architecture-aligned view mapping technologies to their functional responsibilities" vertex="1">
+          <mxGeometry x="330" y="52" width="540" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_gui" parent="1" style="swimlane;startSize=36;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#1565C0;swimlaneLine=0;shadow=0;collapsible=0;" value="User Interface / GUI" vertex="1">
+          <mxGeometry x="40" y="95" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="gui_desc" parent="zone_gui" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="Desktop application presentation layer" vertex="1">
+          <mxGeometry x="10" y="36" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="g_python" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EBF4FA;strokeColor=#3776AB;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;Python 3&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Language Runtime&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g_ctk" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#43A047;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;CustomTkinter&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Modern GUI Framework&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g_tkinter" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EBF4FA;strokeColor=#3776AB;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Tkinter&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Base Toolkit&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pillow" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#5A67D8;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Pillow&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Image Processing&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="g_tkextrafont" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;tkextrafont&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Custom Font Loader&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="g_figtree" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Figtree&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;UI Typeface&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="g_tabler" parent="zone_gui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Tabler Icons&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Icon Font (v3.41)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="200" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_core" parent="1" style="swimlane;startSize=36;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#2E7D32;swimlaneLine=0;shadow=0;collapsible=0;" value="Core Logic / Application Services" vertex="1">
+          <mxGeometry x="590" y="95" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="core_desc" parent="zone_core" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="Hardware detection, scoring, profiles &amp; configuration" vertex="1">
+          <mxGeometry x="10" y="36" width="310" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c_psutil" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#FF8F00;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;psutil&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;System Monitor&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cpuinfo" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#FF8F00;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;py-cpuinfo&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;CPU Detection&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="c_wmi" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;WMI&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Hardware Queries&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="c_pywin32" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;pywin32&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Windows API Bridge&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="c_difflib" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A5D6A7;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;difflib&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Fuzzy Matching&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="c_json" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A5D6A7;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;JSON&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Config Storage&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="c_dataclass" parent="zone_core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A5D6A7;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;dataclasses&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Domain Models&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="200" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_batch" parent="1" style="swimlane;startSize=36;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#E65100;swimlaneLine=0;shadow=0;collapsible=0;" value="Batch Execution Engine" vertex="1">
+          <mxGeometry x="40" y="410" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="batch_desc" parent="zone_batch" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="Optimization scripts &amp; Windows system tool invocations" vertex="1">
+          <mxGeometry x="10" y="36" width="320" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="b_bat" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#795548;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;CMD / Batch&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Script Engine&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b_ps" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#012456;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;PowerShell&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;CIM / AppX Queries&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b_reg" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;reg.exe&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Registry (~297 keys)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b_sc" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;sc.exe&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Services (52)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_powercfg" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFCC80;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;powercfg&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Power Plans&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_bcdedit" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFCC80;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;bcdedit&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Boot Config (54)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_netsh" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFCC80;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;netsh&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;TCP/IP Stack&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="200" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_fsutil" parent="zone_batch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFCC80;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;fsutil&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;NTFS Tuning&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="200" width="155" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_win" parent="1" style="swimlane;startSize=36;fillColor=#E3F2FD;strokeColor=#0D47A1;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#0D47A1;swimlaneLine=0;shadow=0;collapsible=0;" value="Windows Subsystems (OS Targets)" vertex="1">
+          <mxGeometry x="590" y="410" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="win_desc" parent="zone_win" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="OS-level subsystems modified by optimization tweaks" vertex="1">
+          <mxGeometry x="10" y="36" width="300" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="w_registry" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;Registry&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;HKLM / HKCU&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="w_services" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Services (SCM)&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Service Control Manager&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="w_power" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Power Plans&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Schemes / GUID&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="w_network" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Network (TCP/IP)&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Stack / DNS&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w_bcd" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;BCD Store&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Boot Configuration&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w_ntfs" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;NTFS&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;File System&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w_gpu" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#76B900;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;GPU Subsystem&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;NVIDIA / AMD Drivers&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="200" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w_appx" parent="zone_win" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#012456;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;AppX / UWP&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Bloatware Removal&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="200" width="155" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_safety" parent="1" style="swimlane;startSize=36;fillColor=#EDE7F6;strokeColor=#4527A0;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#4527A0;swimlaneLine=0;shadow=0;collapsible=0;" value="Safety, Logging &amp; Recovery" vertex="1">
+          <mxGeometry x="40" y="725" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="safety_desc" parent="zone_safety" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="Backup, rollback, validation &amp; audit trail mechanisms" vertex="1">
+          <mxGeometry x="10" y="36" width="310" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s_restore" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#7B1FA2;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;System Restore&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Checkpoint API&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="s_regbackup" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B39DDB;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;reg export&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Registry Backup&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="s_flight" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B39DDB;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Flight Recorder&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Snapshot / Diff&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="s_logger" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B39DDB;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Structured Logger&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Batch + Python&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="s_validator" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B39DDB;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;Validator&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Pre-flight Checks&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="s_rollback" parent="zone_safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#7B1FA2;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;Rollback Engine&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Undo All Changes&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="155" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="zone_devops" parent="1" style="swimlane;startSize=36;fillColor=#F3E5F5;strokeColor=#6A1B9A;strokeWidth=2;rounded=1;arcSize=8;fontFamily=Segoe UI;fontSize=14;fontStyle=1;fontColor=#6A1B9A;swimlaneLine=0;shadow=0;collapsible=0;" value="DevOps &amp; Testing" vertex="1">
+          <mxGeometry x="590" y="725" width="520" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="devops_desc" parent="zone_devops" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#5E6C84;" value="Build, packaging, testing &amp; version control" vertex="1">
+          <mxGeometry x="10" y="36" width="260" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="d_pyinstaller" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#F57C00;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;PyInstaller&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Build &amp;rarr; .exe&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="65" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d_pytest" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#009BDB;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;pytest&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Test Framework&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d_pywinauto" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;pywinauto&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;E2E GUI Testing&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="65" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d_cov" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;pytest-cov&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Coverage Reports&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="135" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="d_xdist" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;pytest-xdist&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Parallel Execution&lt;/font&gt;" vertex="1">
+          <mxGeometry x="180" y="135" width="155" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="d_git" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE9E7;strokeColor=#F05032;strokeWidth=2;fontFamily=Segoe UI;fontSize=11;verticalAlign=middle;shadow=0;" value="&lt;b style='font-size:12px'&gt;Git&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;Version Control&lt;/font&gt;" vertex="1">
+          <mxGeometry x="350" y="135" width="155" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d_nvsmi" parent="zone_devops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#76B900;strokeWidth=1.5;fontFamily=Segoe UI;fontSize=10;verticalAlign=middle;shadow=0;" value="&lt;b&gt;nvidia-smi&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:9px;color:#555'&gt;GPU Management CLI&lt;/font&gt;" vertex="1">
+          <mxGeometry x="15" y="200" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arr_gui_core" edge="1" parent="1" source="zone_gui" target="zone_core" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1565C0;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr_gui_core_lbl" connectable="0" parent="arr_gui_core" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" value="calls" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arr_core_batch" edge="1" parent="1" source="zone_core" target="zone_batch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="395" />
+              <mxPoint x="300" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr_core_batch_lbl" connectable="0" parent="arr_core_batch" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" value="invokes" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arr_batch_win" edge="1" parent="1" source="zone_batch" target="zone_win" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#E65100;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr_batch_win_lbl" connectable="0" parent="arr_batch_win" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" value="modifies" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arr_safety_batch" edge="1" parent="1" source="zone_safety" target="zone_batch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#7B1FA2;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr_safety_batch_lbl" connectable="0" parent="arr_safety_batch" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" value="protects" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arr_devops_gui" edge="1" parent="1" source="zone_devops" target="zone_gui" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6A1B9A;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="809" />
+              <mxPoint x="1140" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr_devops_gui_lbl" connectable="0" parent="arr_devops_gui" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" value="builds &amp; tests" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend_bg16b" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#E0E0E0;arcSize=8;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry x="1180" y="95" width="200" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_title16b" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=12;fontStyle=1;fontColor=#1a1a1a;" value="Legend" vertex="1">
+          <mxGeometry x="1195" y="103" width="60" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_main16b" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#0078D4;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1195" y="133" width="24" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_main16b_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" value="Main Technology" vertex="1">
+          <mxGeometry x="1225" y="131" width="105" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_sec16b" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#999999;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry x="1195" y="158" width="24" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_sec16b_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=10;fontColor=#333333;" value="Secondary / Utility" vertex="1">
+          <mxGeometry x="1225" y="156" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_sep116b" parent="1" style="line;strokeColor=#E0E0E0;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry x="1195" y="183" width="170" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_brand16b" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#1a1a1a;" value="Zone Colors" vertex="1">
+          <mxGeometry x="1195" y="190" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z1" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1195" y="215" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z1_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="GUI Layer" vertex="1">
+          <mxGeometry x="1215" y="213" width="60" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z2" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1285" y="215" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z2_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="Core Logic" vertex="1">
+          <mxGeometry x="1305" y="213" width="60" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z3" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1195" y="237" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z3_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="Batch Engine" vertex="1">
+          <mxGeometry x="1215" y="235" width="70" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z4" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#E3F2FD;strokeColor=#0D47A1;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1285" y="237" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z4_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="Windows OS" vertex="1">
+          <mxGeometry x="1305" y="235" width="65" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z5" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#EDE7F6;strokeColor=#4527A0;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1195" y="259" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z5_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="Safety" vertex="1">
+          <mxGeometry x="1215" y="257" width="40" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z6" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#F3E5F5;strokeColor=#6A1B9A;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry x="1285" y="259" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_z6_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="DevOps" vertex="1">
+          <mxGeometry x="1305" y="257" width="45" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_sep216b" parent="1" style="line;strokeColor=#E0E0E0;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry x="1195" y="280" width="170" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_arrow16b" edge="1" parent="1" style="rounded=1;strokeColor=#666666;strokeWidth=1.5;dashed=1;endArrow=blockThin;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1195" y="300" as="sourcePoint" />
+            <mxPoint x="1235" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_arrow16b_txt" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#555555;" value="Data / Control Flow" vertex="1">
+          <mxGeometry x="1240" y="291" width="115" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_note16b" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#888888;" value="(n) = invocation count&lt;br&gt;in batch scripts" vertex="1">
+          <mxGeometry x="1195" y="320" width="130" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="footer16b" parent="1" style="text;html=1;align=right;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Segoe UI;fontSize=9;fontColor=#AAAAAA;" value="Diagram 16b &amp;mdash; Architecture-Aligned Technology Landscape" vertex="1">
+          <mxGeometry x="870" y="1060" width="340" height="18" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

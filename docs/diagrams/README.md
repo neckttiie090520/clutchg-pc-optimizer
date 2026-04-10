@@ -25,8 +25,9 @@ Drawn in [draw.io](https://app.diagrams.net/), exported as PNG at 2x scale with 
 | 12 | [Project Timeline (Gantt Chart)](#12-project-timeline-gantt-chart) | Gantt | Ch.1 / Project Plan |
 | 13 | [Tweak State Diagram](#13-tweak-state-diagram) | UML State | Ch.3 System Design |
 | 14 | [PC Score Scoring Flow](#14-pc-score-scoring-flow) | Activity | Ch.3 System Design |
-| 15 | [Profile Recommendation Decision Tree](#15-profile-recommendation-decision-tree) | Decision Tree | Ch.3 System Design |
+| 15 | [Unified Preset Recommendation Flow](#15-unified-preset-recommendation-flow) | Flowchart | Ch.3 System Design |
 | 16 | [Tech Stack](#16-tech-stack) | Tech Stack | Ch.3 System Design |
+| 16b | [Tech Stack — Architecture View](#16b-tech-stack-architecture-view) | Tech Stack | Ch.3 System Design |
 
 ---
 
@@ -290,16 +291,34 @@ Color coding: Blue = hardware detection, Orange = fuzzy matching, Green = scorin
 
 ---
 
-## 15 — Profile Recommendation Decision Tree
+## 15 — Unified Preset Recommendation Flow
 
 **Source:** [`drawio/15-recommendation-decision-tree.drawio`](drawio/15-recommendation-decision-tree.drawio)
 
-Side-by-side decision tree comparing the two independent profile recommendation paths in ClutchG:
+Flowchart showing the single authoritative recommendation path in ClutchG. All callers — Dashboard, Scripts view, and legacy delegate methods — enter through `recommend_preset(profile)`.
 
-- **Path A — `SystemDetector.recommend_profile()`** (system_info.py): Checks form factor first (Laptop → always SAFE), then uses tier to decide (Enthusiast/High/Mid → COMPETITIVE, Entry → SAFE). **Never recommends EXTREME.**
-- **Path B — `TweakRegistry.suggest_preset()`** (tweak_registry.py): Uses score thresholds + hardware requirements (score ≥ 80 + desktop + RAM ≥ 16GB → EXTREME, score ≥ 50 + RAM ≥ 8GB → COMPETITIVE, else → SAFE). **Can recommend EXTREME.**
+**Null-profile guard:** If no `SystemProfile` is provided, the function returns `SAFE` immediately.
 
-Includes a comparison table highlighting key differences and two worked examples showing how the paths can agree or disagree for the same hardware.
+**Evidence sufficiency gate:** The profile must pass four checks before the score-based path is used:
+1. `total_score` is numeric (not None)
+2. `form_factor` is known (not "unknown")
+3. RAM is positive (> 0 GB)
+4. At least one of CPU or GPU has `benchmark_matched = True`
+
+If any check fails, the flow drops to the **fallback heuristic** branch.
+
+**Primary path (score-based):**
+- Score ≥ 80 + desktop + RAM ≥ 16 GB → **EXTREME**
+- Score ≥ 50 + RAM ≥ 8 GB → **COMPETITIVE**
+- Otherwise → **SAFE**
+
+**Fallback path (conservative heuristic):**
+- Laptop → **SAFE**
+- Desktop with mid / high / enthusiast tier → **COMPETITIVE**
+- Otherwise → **SAFE**
+- **Fallback never returns EXTREME.**
+
+Both Dashboard and Scripts view consume the same `recommend_preset()` result. The legacy methods `SystemDetector.recommend_profile()` and `TweakRegistry.suggest_preset()` delegate to it internally.
 
 ![15-recommendation-decision-tree](img/15-recommendation-decision-tree.png)
 
@@ -321,6 +340,38 @@ Layered technology stack diagram showing all tools, libraries, and subsystems th
 Inter-layer arrows show the interaction types: calls, invokes, modifies, protects, builds & tests.
 
 ![16-tech-stack](img/16-tech-stack.png)
+
+---
+
+## 16b — Tech Stack — Architecture View
+
+**Source:** [`drawio/16b-tech-stack-architecture-view.drawio`](drawio/16b-tech-stack-architecture-view.drawio)
+
+Alternative architecture-aligned view of the same technology stack, using a C4-inspired bounded-context layout instead of horizontal tiers. Technologies are grouped into 6 zones arranged in a 2-column grid:
+
+1. **User Interface / GUI** (blue) — Python 3, CustomTkinter, Tkinter, Pillow, tkextrafont, Figtree, Tabler Icons
+2. **Core Logic / Application Services** (green) — psutil, py-cpuinfo, WMI, pywin32, difflib, JSON, dataclasses
+3. **Batch Execution Engine** (orange) — CMD/Batch, PowerShell, reg.exe, sc.exe, powercfg, bcdedit, netsh, fsutil
+4. **Windows Subsystems (OS Targets)** (pink) — Registry, Services (SCM), Power Plans, Network (TCP/IP), BCD Store, NTFS, GPU Subsystem, AppX/UWP
+5. **Safety, Logging & Recovery** (yellow) — System Restore, reg export, Flight Recorder, Structured Logger, Validator, Rollback Engine
+6. **DevOps & Testing** (purple) — PyInstaller, pytest, pywinauto, pytest-cov, pytest-xdist, Git, nvidia-smi
+
+Each technology card distinguishes **Main Technology** (bold border) from **Secondary / Utility** (light border). Inter-zone arrows show architectural relationships: calls, invokes, modifies, protects, builds & tests.
+
+### Comparison: 16 vs 16b
+
+| Aspect | 16 (Row-Based) | 16b (Architecture View) |
+|--------|----------------|------------------------|
+| Layout | 6 horizontal rows, top-to-bottom flow | 2-column grid, 6 bounded-context zones |
+| Visual metaphor | Layer cake / stack | Architecture map / C4-inspired containers |
+| Technology logos | Embedded brand logos (base64 PNG) | Native draw.io shapes only (CLI-safe) |
+| Emphasis | What technologies exist, organized by layer | How technologies relate to architectural responsibilities |
+| Arrows | Vertical inter-layer arrows | Cross-zone directional arrows with labels |
+| Best for | Quick tech inventory, visual appeal with logos | Architectural reasoning, system comprehension |
+
+**Thesis recommendation:** Use **16** (row-based with logos) in Chapter 3 for visual appeal and readability — it's more immediately scannable for a reader. Use **16b** (architecture view) in the appendix or SDD document where architectural context matters more. The two complement each other well.
+
+![16b-tech-stack-architecture-view](img/16b-tech-stack-architecture-view.png)
 
 ---
 

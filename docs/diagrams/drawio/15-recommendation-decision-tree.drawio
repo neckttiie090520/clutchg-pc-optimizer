@@ -1,240 +1,167 @@
 <mxfile host="app.diagrams.net" agent="ClutchG Thesis" version="24.7.17">
-  <diagram id="recommendation-tree" name="Profile Recommendation Decision Tree">
-    <mxGraphModel dx="1400" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1200" math="0" shadow="0">
+  <diagram id="recommendation-tree" name="Unified Preset Recommendation Flow">
+    <mxGraphModel dx="1422" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1000" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="title" value="15 — Profile Recommendation Decision Tree" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Segoe UI;fontColor=#1a1a1a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="350" y="15" width="700" height="35" as="geometry"/>
+        <mxCell id="title" value="15 — Unified Preset Recommendation Flow" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="600" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="subtitle" value="Profile Recommendation Decision Tree — Comparing 2 Paths (Path A vs Path B)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontFamily=Segoe UI;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="350" y="48" width="700" height="22" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="pathA_container" value="Path A: SystemDetector.recommend_profile()" style="swimlane;startSize=28;fillColor=#FFFFFF;strokeColor=#4A90D9;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#4A90D9;swimlaneLine=1;rounded=1;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="30" y="85" width="660" height="540" as="geometry"/>
-        </mxCell>
-        <mxCell id="pathA_note" value="Used by: Dashboard view, initial recommendation&#xa;File: core/system_info.py:414" style="text;align=left;fontSize=9;fontFamily=Segoe UI;fontColor=#888888;fillColor=none;strokeColor=none;" vertex="1" parent="pathA_container">
-          <mxGeometry x="15" y="32" width="280" height="28" as="geometry"/>
+        <mxCell id="subtitle" value="Primary score-based recommendation with fallback heuristic for incomplete or low-confidence hardware evidence" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="300" y="50" width="600" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="a_start" value="" style="ellipse;fillColor=#4A90D9;strokeColor=#4A90D9;strokeWidth=2;" vertex="1" parent="pathA_container">
-          <mxGeometry x="308" y="70" width="22" height="22" as="geometry"/>
+        <mxCell id="entry" value="recommend_preset(profile)" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#333333;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="470" y="100" width="260" height="40" as="geometry"/>
         </mxCell>
 
-        <mxCell id="a_form" value="form_factor?" style="rhombus;whiteSpace=wrap;fillColor=#DCEEFB;strokeColor=#4A90D9;fontFamily=Segoe UI;fontSize=11;fontColor=#1a1a1a;strokeWidth=1.5;" vertex="1" parent="pathA_container">
-          <mxGeometry x="257" y="110" width="125" height="65" as="geometry"/>
+        <mxCell id="nullCheck" value="profile is None?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="510" y="180" width="160" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="ea_start_form" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#666666;" edge="1" source="a_start" target="a_form" parent="pathA_container">
+
+        <mxCell id="nullReturn" value="Return SAFE&#xa;(no profile, confidence=0.3)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="190" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="suffCheck" value="_has_sufficient_data()?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="310" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="suffNote" value="Checks 4 conditions:&#xa;1. total_score is numeric&#xa;2. form_factor ≠ &quot;unknown&quot;&#xa;3. RAM &gt; 0 GB&#xa;4. CPU or GPU benchmark_matched = true" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fillColor=#f9f9f9;strokeColor=#cccccc;dashed=1;fontSize=9;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="140" y="300" width="270" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="pLabel" value="PRIMARY PATH" style="text;html=0;align=center;verticalAlign=middle;fontSize=10;fontStyle=5;fontColor=#1a73e8;" vertex="1" parent="1">
+          <mxGeometry x="250" y="430" width="140" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fLabel" value="FALLBACK PATH" style="text;html=0;align=center;verticalAlign=middle;fontSize=10;fontStyle=5;fontColor=#e37400;" vertex="1" parent="1">
+          <mxGeometry x="770" y="430" width="140" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p1" value="score ≥ 80 AND&#xa;desktop AND&#xa;RAM ≥ 16 GB?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="240" y="460" width="180" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="pExtreme" value="Return EXTREME&#xa;(confidence=0.9)" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="480" width="160" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p2" value="score ≥ 50 AND&#xa;RAM ≥ 8 GB?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="240" y="600" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="pCompetitive" value="Return COMPETITIVE&#xa;(confidence=0.75)" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="615" width="170" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="pSafe" value="Return SAFE&#xa;(confidence=0.8)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="265" y="730" width="160" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="f1" value="form_factor&#xa;== &quot;laptop&quot;?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="760" y="460" width="160" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fSafeLaptop" value="Return SAFE&#xa;(confidence=0.6)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="475" width="160" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="f2" value="tier ∈ {high,&#xa;enthusiast, mid}?" style="rhombus;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#333333;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="760" y="600" width="160" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fCompetitive" value="Return COMPETITIVE&#xa;(confidence=0.5)" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="615" width="170" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fSafeDefault" value="Return SAFE&#xa;(confidence=0.4)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="730" width="160" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fbConstraint" value="Fallback NEVER returns EXTREME" style="text;html=0;align=center;verticalAlign=middle;fillColor=#fff3e0;strokeColor=#e37400;dashed=1;fontSize=9;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="800" width="220" height="26" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="consumers" value="Consumed by" style="text;html=0;align=center;verticalAlign=middle;fontSize=10;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="530" y="830" width="120" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dashboard" value="Dashboard View" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="860" width="130" height="36" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="scripts" value="Scripts View" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="620" y="860" width="130" height="36" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legacyNote" value="Legacy methods (recommend_profile, suggest_preset) delegate to recommend_preset()" style="text;html=0;align=center;verticalAlign=middle;fillColor=#f9f9f9;strokeColor=#cccccc;dashed=1;fontSize=8;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="910" width="400" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" edge="1" parent="1" source="entry" target="nullCheck" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="a_laptop_safe" value="SAFE" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#2E7D32;strokeWidth=2;" vertex="1" parent="pathA_container">
-          <mxGeometry x="60" y="195" width="120" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="a_laptop_reason" value="Laptop always gets SAFE&#xa;(battery + thermal limits)" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathA_container">
-          <mxGeometry x="45" y="240" width="150" height="28" as="geometry"/>
-        </mxCell>
-        <mxCell id="ea_form_laptop" value="laptop" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#2E7D32;" edge="1" source="a_form" target="a_laptop_safe" parent="pathA_container">
+        <mxCell id="e2" value="Yes" edge="1" parent="1" source="nullCheck" target="nullReturn" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="a_tier" value="system.tier?" style="rhombus;whiteSpace=wrap;fillColor=#DCEEFB;strokeColor=#4A90D9;fontFamily=Segoe UI;fontSize=11;fontColor=#1a1a1a;strokeWidth=1.5;" vertex="1" parent="pathA_container">
-          <mxGeometry x="410" y="195" width="125" height="65" as="geometry"/>
+        <mxCell id="e3" value="No" edge="1" parent="1" source="nullCheck" target="suffCheck" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="ea_form_desktop" value="desktop" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4A90D9;fontFamily=Segoe UI;fontSize=10;fontColor=#4A90D9;" edge="1" source="a_form" target="a_tier" parent="pathA_container">
+
+        <mxCell id="e4" value="Yes (sufficient)" edge="1" parent="1" source="suffCheck" target="p1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#1a73e8;strokeWidth=2;fontSize=9;exitX=0;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="472" y="143"/>
+              <mxPoint x="330" y="355"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="a_entry_safe" value="SAFE" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#2E7D32;strokeWidth=2;" vertex="1" parent="pathA_container">
-          <mxGeometry x="270" y="320" width="120" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="a_entry_reason" value="Entry-level hardware&#xa;(score &lt; 30)" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathA_container">
-          <mxGeometry x="270" y="365" width="120" height="28" as="geometry"/>
-        </mxCell>
-        <mxCell id="ea_tier_entry" value="entry" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontColor=#C62828;" edge="1" source="a_tier" target="a_entry_safe" parent="pathA_container">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="a_competitive" value="COMPETITIVE" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#E65100;strokeWidth=2;" vertex="1" parent="pathA_container">
-          <mxGeometry x="445" y="320" width="145" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="a_comp_reason" value="Mid / High / Enthusiast&#xa;(score 30+)" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathA_container">
-          <mxGeometry x="448" y="365" width="140" height="28" as="geometry"/>
-        </mxCell>
-        <mxCell id="ea_tier_mid" value="mid / high /&#xa;enthusiast" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=9;fontColor=#E65100;" edge="1" source="a_tier" target="a_competitive" parent="pathA_container">
+        <mxCell id="e5" value="No (insufficient)" edge="1" parent="1" source="suffCheck" target="f1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e37400;strokeWidth=2;fontSize=9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="517" y="285"/>
+              <mxPoint x="840" y="355"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="a_note_never" value="Path A NEVER recommends EXTREME&#xa;(conservative by design — max = COMPETITIVE)" style="shape=note;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#C62828;align=left;spacingLeft=8;size=14;strokeWidth=1.5;" vertex="1" parent="pathA_container">
-          <mxGeometry x="30" y="460" width="310" height="50" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="a_summary" value="Possible outputs: SAFE, COMPETITIVE" style="text;align=left;fontSize=10;fontFamily=Segoe UI;fontColor=#4A90D9;fontStyle=2;fillColor=none;strokeColor=none;" vertex="1" parent="pathA_container">
-          <mxGeometry x="365" y="470" width="260" height="20" as="geometry"/>
-        </mxCell>
-
-
-        <mxCell id="pathB_container" value="Path B: TweakRegistry.suggest_preset()" style="swimlane;startSize=28;fillColor=#FFFFFF;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=11;fontStyle=1;fontColor=#E65100;swimlaneLine=1;rounded=1;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="710" y="85" width="660" height="540" as="geometry"/>
-        </mxCell>
-        <mxCell id="pathB_note" value="Used by: Scripts view recommendation card&#xa;File: core/tweak_registry.py:1158" style="text;align=left;fontSize=9;fontFamily=Segoe UI;fontColor=#888888;fillColor=none;strokeColor=none;" vertex="1" parent="pathB_container">
-          <mxGeometry x="15" y="32" width="280" height="28" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="b_start" value="" style="ellipse;fillColor=#E65100;strokeColor=#E65100;strokeWidth=2;" vertex="1" parent="pathB_container">
-          <mxGeometry x="308" y="70" width="22" height="22" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="b_check1" value="score &gt;= 80&#xa;AND desktop&#xa;AND RAM &gt;= 16GB?" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontColor=#1a1a1a;strokeWidth=1.5;" vertex="1" parent="pathB_container">
-          <mxGeometry x="237" y="115" width="165" height="85" as="geometry"/>
-        </mxCell>
-        <mxCell id="eb_start_c1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#666666;" edge="1" source="b_start" target="b_check1" parent="pathB_container">
+        <mxCell id="e6" value="Yes" edge="1" parent="1" source="p1" target="pExtreme" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;exitX=0;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_extreme" value="EXTREME" style="rounded=1;whiteSpace=wrap;fillColor=#FFEBEE;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#C62828;strokeWidth=2;" vertex="1" parent="pathB_container">
-          <mxGeometry x="480" y="130" width="140" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="b_extreme_reason" value="&quot;High-end desktop with&#xa;16GB+ RAM — maximum&#xa;performance available&quot;" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathB_container">
-          <mxGeometry x="475" y="175" width="150" height="40" as="geometry"/>
-        </mxCell>
-        <mxCell id="eb_c1_extreme" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#C62828;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#C62828;" edge="1" source="b_check1" target="b_extreme" parent="pathB_container">
+        <mxCell id="e7" value="No" edge="1" parent="1" source="p1" target="p2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_check2" value="score &gt;= 50&#xa;AND RAM &gt;= 8GB?" style="rhombus;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontColor=#1a1a1a;strokeWidth=1.5;" vertex="1" parent="pathB_container">
-          <mxGeometry x="247" y="260" width="145" height="75" as="geometry"/>
-        </mxCell>
-        <mxCell id="eb_c1_no" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#666666;fontFamily=Segoe UI;fontSize=10;fontColor=#555555;" edge="1" source="b_check1" target="b_check2" parent="pathB_container">
+        <mxCell id="e8" value="Yes" edge="1" parent="1" source="p2" target="pCompetitive" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;exitX=0;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_competitive" value="COMPETITIVE" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#E65100;strokeWidth=2;" vertex="1" parent="pathB_container">
-          <mxGeometry x="480" y="275" width="145" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="b_comp_reason" value="&quot;Mid-range system with&#xa;8GB+ RAM — balanced&#xa;gaming optimizations&quot;" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathB_container">
-          <mxGeometry x="475" y="320" width="155" height="40" as="geometry"/>
-        </mxCell>
-        <mxCell id="eb_c2_comp" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#E65100;" edge="1" source="b_check2" target="b_competitive" parent="pathB_container">
+        <mxCell id="e9" value="No" edge="1" parent="1" source="p2" target="pSafe" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_safe" value="SAFE" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=13;fontStyle=1;fontColor=#2E7D32;strokeWidth=2;" vertex="1" parent="pathB_container">
-          <mxGeometry x="260" y="380" width="120" height="42" as="geometry"/>
-        </mxCell>
-        <mxCell id="b_safe_reason" value="&quot;Safe optimizations recommended&#xa;for your system configuration&quot;" style="text;align=center;fontSize=9;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="pathB_container">
-          <mxGeometry x="390" y="385" width="180" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="eb_c2_safe" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#2E7D32;" edge="1" source="b_check2" target="b_safe" parent="pathB_container">
+        <mxCell id="e10" value="Yes" edge="1" parent="1" source="f1" target="fSafeLaptop" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_note_extreme" value="Path B CAN recommend EXTREME&#xa;(requires all 3: score 80+ AND desktop AND RAM 16GB+)" style="shape=note;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#E65100;align=left;spacingLeft=8;size=14;strokeWidth=1.5;" vertex="1" parent="pathB_container">
-          <mxGeometry x="30" y="460" width="310" height="50" as="geometry"/>
+        <mxCell id="e11" value="No" edge="1" parent="1" source="f1" target="f2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="b_summary" value="Possible outputs: SAFE, COMPETITIVE, EXTREME" style="text;align=left;fontSize=10;fontFamily=Segoe UI;fontColor=#E65100;fontStyle=2;fillColor=none;strokeColor=none;" vertex="1" parent="pathB_container">
-          <mxGeometry x="365" y="470" width="290" height="20" as="geometry"/>
+        <mxCell id="e12" value="Yes" edge="1" parent="1" source="f2" target="fCompetitive" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-
-        <mxCell id="comp_header" value="Comparison: Path A vs Path B" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontFamily=Segoe UI;fontColor=#7B1FA2;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="30" y="650" width="260" height="25" as="geometry"/>
+        <mxCell id="e13" value="No" edge="1" parent="1" source="f2" target="fSafeDefault" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#333333;fontSize=9;">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <mxCell id="table" value="&lt;table style=&quot;font-family:Segoe UI;font-size:11px;color:#1a1a1a;border-collapse:collapse;width:100%&quot;&gt;&lt;tr style=&quot;background:#F3E5F5;color:#4A148C;font-weight:bold&quot;&gt;&lt;td style=&quot;padding:8px;border:1px solid #CE93D8;width:180px&quot;&gt;Criterion&lt;/td&gt;&lt;td style=&quot;padding:8px;border:1px solid #CE93D8;width:350px&quot;&gt;Path A: recommend_profile()&lt;/td&gt;&lt;td style=&quot;padding:8px;border:1px solid #CE93D8;width:350px&quot;&gt;Path B: suggest_preset()&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Location&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;core/system_info.py:414&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;core/tweak_registry.py:1158&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FAFAFA&quot;&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Used by&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Dashboard view (initial display)&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Scripts view (recommendation card)&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Decision factors&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;form_factor + tier (4 tiers)&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;total_score + form_factor + RAM GB&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FAFAFA&quot;&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Can recommend EXTREME?&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0;color:#C62828;font-weight:bold&quot;&gt;NO (never)&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0;color:#2E7D32;font-weight:bold&quot;&gt;YES (score 80+ AND desktop AND 16GB+)&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Granularity&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Coarse (tier-based, 2 outcomes)&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Fine (score thresholds, 3 outcomes)&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FAFAFA&quot;&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Design philosophy&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Conservative — protect user from risk&lt;/td&gt;&lt;td style=&quot;padding:6px;border:1px solid #E0E0E0&quot;&gt;Capability-driven — unlock full potential&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;html=1;overflow=fill;rounded=1;strokeColor=#CE93D8;fillColor=#FFFFFF;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="100" y="680" width="1200" height="215" as="geometry"/>
-        </mxCell>
-
-
-        <mxCell id="ex1_container" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#BDBDBD;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="30" y="920" width="660" height="175" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex1_title" value="Example 1: Mid-Range Desktop" style="text;align=left;fontSize=11;fontStyle=1;fontFamily=Segoe UI;fontColor=#1a1a1a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="50" y="930" width="260" height="22" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex1_spec" value="Ryzen 5 5600X + GTX 1660 + 16GB RAM + SSD&#xa;Score = 22 + 6 + 8 + 10 = 46 (Mid tier)" style="text;align=left;fontSize=10;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="50" y="953" width="340" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex1_pathA" value="Path A:  desktop + mid tier  →  COMPETITIVE" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontColor=#E65100;align=left;spacingLeft=10;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="50" y="990" width="360" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex1_pathB" value="Path B:  score 46 &lt; 50  →  SAFE" style="rounded=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#2E7D32;align=left;spacingLeft=10;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="50" y="1027" width="360" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex1_insight" value="Paths DISAGREE — Mid-tier desktop gets&#xa;COMPETITIVE from A but only SAFE from B" style="shape=note;whiteSpace=wrap;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontFamily=Segoe UI;fontSize=10;fontColor=#7B1FA2;align=left;spacingLeft=8;size=14;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="435" y="990" width="240" height="52" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="ex2_container" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FAFAFA;strokeColor=#BDBDBD;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="710" y="920" width="660" height="175" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex2_title" value="Example 2: Enthusiast Desktop" style="text;align=left;fontSize=11;fontStyle=1;fontFamily=Segoe UI;fontColor=#1a1a1a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="730" y="930" width="260" height="22" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex2_spec" value="i9-14900K + RTX 4090 + 32GB RAM + NVMe&#xa;Score = 28 + 21 + 16 + 10 = 75 (Enthusiast)" style="text;align=left;fontSize=10;fontFamily=Segoe UI;fontColor=#555555;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="730" y="953" width="340" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex2_pathA" value="Path A:  desktop + enthusiast  →  COMPETITIVE" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontColor=#E65100;align=left;spacingLeft=10;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="730" y="990" width="360" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex2_pathB" value="Path B:  score 75 &lt; 80  →  COMPETITIVE" style="rounded=1;whiteSpace=wrap;fillColor=#FFF3E0;strokeColor=#E65100;fontFamily=Segoe UI;fontSize=10;fontColor=#E65100;align=left;spacingLeft=10;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="730" y="1027" width="360" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="ex2_insight" value="Paths AGREE — Both recommend COMPETITIVE.&#xa;EXTREME requires score 80+ (top-tier CPU AND GPU)" style="shape=note;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;fontFamily=Segoe UI;fontSize=10;fontColor=#2E7D32;align=left;spacingLeft=8;size=14;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="1085" y="985" width="290" height="60" as="geometry"/>
-        </mxCell>
-
-
-        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E0E0E0;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="310" y="1105" width="780" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_safe_c" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="325" y="1113" width="14" height="14" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_safe_t" value="SAFE" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#2E7D32;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="345" y="1110" width="50" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_comp_c" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="420" y="1113" width="14" height="14" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_comp_t" value="COMPETITIVE" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#E65100;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="440" y="1110" width="100" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_ext_c" value="" style="rounded=1;fillColor=#FFEBEE;strokeColor=#C62828;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="565" y="1113" width="14" height="14" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_ext_t" value="EXTREME" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#C62828;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="585" y="1110" width="80" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_decision" value="" style="rhombus;fillColor=#DCEEFB;strokeColor=#4A90D9;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="690" y="1112" width="16" height="16" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_decision_t" value="Decision node" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#333333;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="712" y="1110" width="100" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_note_c" value="" style="shape=note;fillColor=#F3E5F5;strokeColor=#7B1FA2;size=8;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="830" y="1110" width="16" height="18" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_note_t" value="Key insight" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#333333;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="852" y="1110" width="80" height="20" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="leg_disagree_c" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="950" y="1113" width="14" height="14" as="geometry"/>
-        </mxCell>
-        <mxCell id="leg_disagree_t" value="Paths disagree" style="text;fontSize=10;fontFamily=Segoe UI;fontColor=#7B1FA2;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="970" y="1110" width="100" height="20" as="geometry"/>
+        <mxCell id="eSuffNote" edge="1" parent="1" source="suffNote" target="suffCheck" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#cccccc;dashed=1;endArrow=none;">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
       </root>
