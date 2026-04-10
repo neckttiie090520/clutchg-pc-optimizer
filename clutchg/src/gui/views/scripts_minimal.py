@@ -1576,17 +1576,28 @@ class ScriptsView(ctk.CTkFrame):
         self._compare_panel = panel
 
     def _get_spec_suggestion(self) -> Optional[Dict]:
-        """Get preset suggestion based on system specs"""
+        """Get preset suggestion based on system specs using unified recommendation."""
         try:
             from core.system_info import SystemDetector
+            from core.recommendation_service import recommend_preset
 
             detector = SystemDetector()
             profile = detector.detect_all()
-            return self.registry.suggest_preset(profile)
+            rec = recommend_preset(profile)
+            return {
+                "preset": rec.preset,
+                "reason": rec.reason,
+                "source": rec.source,
+                "total_score": rec.total_score,
+                "confidence": rec.confidence,
+            }
         except Exception:
             return {
                 "preset": "safe",
                 "reason": "Default recommendation (system detection unavailable)",
+                "source": "fallback",
+                "total_score": None,
+                "confidence": 0.3,
             }
 
     def _create_preset_card(

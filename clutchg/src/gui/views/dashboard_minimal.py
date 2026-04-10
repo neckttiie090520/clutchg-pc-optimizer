@@ -247,9 +247,10 @@ class DashboardView(ctk.CTkFrame):
         # Recommendation text — body
         rec_text = self._ui("rec_safe")
         if self.app.system_profile:
-            recommended = self.app.system_detector.recommend_profile(
-                self.app.system_profile
-            )
+            from core.recommendation_service import recommend_preset
+
+            rec = recommend_preset(self.app.system_profile)
+            recommended = rec.preset.upper()
             rec_text = self._ui("rec_optimal").format(profile=recommended)
 
         _rec_desc = ctk.CTkLabel(
@@ -419,9 +420,10 @@ class DashboardView(ctk.CTkFrame):
 
         # Fall back to recommendation based on system profile
         if self.app.system_profile:
-            recommended = self.app.system_detector.recommend_profile(
-                self.app.system_profile
-            )
+            from core.recommendation_service import recommend_preset
+
+            rec = recommend_preset(self.app.system_profile)
+            recommended = rec.preset.upper()
             return f"{recommended} {self._ui('mode')}{self._ui('recommended_suffix')}"
 
         return self._ui("safe_mode")

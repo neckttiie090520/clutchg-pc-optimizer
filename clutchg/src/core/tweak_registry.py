@@ -1156,28 +1156,25 @@ class TweakRegistry:
         return compatible
 
     def suggest_preset(self, system_profile: Any) -> Dict[str, Any]:
-        """Suggest a preset based on system specs"""
-        tier = getattr(system_profile, "tier", "mid-range")
-        total_score = getattr(system_profile, "total_score", 50)
-        form_factor = getattr(system_profile, "form_factor", "desktop")
-        ram_gb = 16
-        if hasattr(system_profile, "ram"):
-            ram_gb = getattr(system_profile.ram, "total_gb", 16)
+        """Suggest a preset based on system specs.
 
-        if total_score >= 80 and form_factor == "desktop" and ram_gb >= 16:
-            preset = "extreme"
-            reason = "High-end desktop with 16GB+ RAM — maximum performance available"
-        elif total_score >= 50 and ram_gb >= 8:
-            preset = "competitive"
-            reason = "Mid-range system with 8GB+ RAM — balanced gaming optimizations"
-        else:
-            preset = "safe"
-            reason = "Safe optimizations recommended for your system configuration"
+        .. deprecated::
+            Use ``core.recommendation_service.recommend_preset()`` instead.
+            This method is kept for backward compatibility and now delegates
+            to the unified recommendation service, augmenting the result with
+            tweak/compatibility counts that callers may still need.
+        """
+        from core.recommendation_service import recommend_preset
+
+        result = recommend_preset(system_profile)
+        preset = result.preset
 
         return {
             "preset": preset,
-            "reason": reason,
-            "total_score": total_score,
+            "reason": result.reason,
+            "source": result.source,
+            "total_score": result.total_score,
+            "confidence": result.confidence,
             "tweak_count": len(self.get_tweaks_for_preset(preset)),
             "compatible_count": len(self.get_compatible_tweaks(system_profile)),
         }
