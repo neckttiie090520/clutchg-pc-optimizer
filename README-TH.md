@@ -22,7 +22,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows" alt="Platform">
   <img src="https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/tests-445%20passed-2ea44f" alt="Tests">
+  <img src="https://img.shields.io/badge/tests-477%20passed-2ea44f" alt="Tests">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
   <img src="https://github.com/neckttiie090520/clutchg-pc-optimizer/actions/workflows/ci.yml/badge.svg" alt="CI">
 </p>
@@ -178,11 +178,11 @@ clutchg-pc-optimizer/
 ├── clutchg/                          # แอปพลิเคชัน GUI (Python)
 │   ├── src/
 │   │   ├── main.py                   # จุดเริ่มต้น
-│   │   ├── core/                     # business logic (13 โมดูล)
+│   │   ├── core/                     # business logic (14 โมดูล)
 │   │   ├── gui/views/               # หน้าจอ 8 หน้า
 │   │   ├── gui/components/          # คอมโพเนนต์ 12 ตัว
 │   │   └── gui/theme.py             # ระบบธีมมืด
-│   ├── tests/                        # ชุดทดสอบ 445 tests
+│   ├── tests/                        # ชุดทดสอบ 477 tests
 │   └── build.py                      # สร้างไฟล์ .exe
 │
 ├── docs/                             # เอกสารวิจัยและเทคนิค
@@ -256,7 +256,7 @@ pytest tests\integration -m integration
 pytest --cov=src tests/
 ```
 
-**สถานะปัจจุบัน:** 445 passed, 64 skipped (E2E tests ข้ามเมื่อไม่มี display)
+**สถานะปัจจุบัน:** 477 passed, 64 skipped (E2E tests ข้ามเมื่อไม่มี display)
 
 CI รัน unit และ integration tests อัตโนมัติบน `windows-latest` ผ่าน GitHub Actions
 

@@ -33,7 +33,7 @@
 - **Framework:** CustomTkinter (GUI), Batch Scripts (Backend)
 - **ประเภท:** Desktop Application (Windows 10/11)
 - **Source Code:** `clutchg/src/` (121 files)
-- **Tests:** `clutchg/tests/` (21 files, 445 passed, 64 skipped)
+- **Tests:** `clutchg/tests/` (21 files, 477 passed, 64 skipped)
 
 ---
 

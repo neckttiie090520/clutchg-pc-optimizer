@@ -22,7 +22,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows" alt="Platform">
   <img src="https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/tests-445%20passed-2ea44f" alt="Tests">
+  <img src="https://img.shields.io/badge/tests-477%20passed-2ea44f" alt="Tests">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
   <img src="https://github.com/neckttiie090520/clutchg-pc-optimizer/actions/workflows/ci.yml/badge.svg" alt="CI">
 </p>
@@ -178,11 +178,11 @@ clutchg-pc-optimizer/
 ├── clutchg/                          # Python GUI Application
 │   ├── src/
 │   │   ├── main.py                   # Entry point
-│   │   ├── core/                     # Business logic (13 modules)
+│   │   ├── core/                     # Business logic (14 modules)
 │   │   ├── gui/views/               # 8 view screens
 │   │   ├── gui/components/          # 12 reusable components
 │   │   └── gui/theme.py             # Dark theme system
-│   ├── tests/                        # 445 tests (unit + integration + E2E)
+│   ├── tests/                        # 477 tests (unit + integration + E2E)
 │   └── build.py                      # PyInstaller build script
 │
 ├── docs/                             # Research & Documentation
@@ -256,7 +256,7 @@ pytest tests\integration -m integration
 pytest --cov=src tests/
 ```
 
-**Current baseline:** 445 passed, 64 skipped (E2E tests skip without display).
+**Current baseline:** 477 passed, 64 skipped (E2E tests skip without display).
 
 CI runs unit and integration tests automatically on `windows-latest` via GitHub Actions.
 

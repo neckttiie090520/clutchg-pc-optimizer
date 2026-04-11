@@ -14,14 +14,14 @@
 
 | ระดับ | จำนวน Tests | Pass | Fail | Skip | Pass Rate | Duration |
 |-------|------------|------|------|------|-----------|---------
-| Unit | 285 | 285 | 0 | 0 | 100% | ~42s |
+| Unit | 454 | 454 | 0 | 0 | 100% | ~65s |
 | Integration | 23 | 23 | 0 | 0 | 100% | ~31s |
 | E2E | 64 | 0 | 0 | 64 | — (skipped) | — |
-| **รวม** | **372** | **308** | **0** | **64** | **100%** | **~73s** |
+| **รวม** | **541** | **477** | **0** | **64** | **100%** | **~99s** |
 
 > **สถานะ:** ✅ ผ่านเกณฑ์ (Unit = 100%, Integration = 100%, No defects)
 > **หมายเหตุ:** E2E 64 tests skipped ทั้งหมดเนื่องจากไม่มี display session (headless CI) — ทดสอบ manual บน desktop แทน
-> **Coverage (core modules):** ~25% total (GUI excluded headless); core highlights: profile_recommender 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%
+> **Coverage (core modules):** ~33% total (GUI excluded headless); core highlights: recommendation_service 97%, profile_recommender 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%
 
 ---
 

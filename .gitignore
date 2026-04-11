@@ -142,3 +142,12 @@ clutchg/build/
 # ============================================================
 *.log
 nul
+NUL
+*.code-workspace
+.benchmarks/
+.superpowers/
+.ruff_cache/
+docsdiagrams/
+
+# SE academic course analysis (private supporting material)
+docs/se-academic/

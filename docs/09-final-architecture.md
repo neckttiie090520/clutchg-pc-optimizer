@@ -7,7 +7,7 @@
 This document specifies the final architecture for a next-generation Windows optimizer that:
 - Prioritizes safety and security over aggressive optimization
 - Provides transparent, documented tweaks with clear explanations
-- Implements robust backup and rollback mechanisms
+- Implements reliable backup and rollback mechanisms
 - Uses a profile-based approach for different use cases
 - Maintains compatibility with modern Windows 10/11 updates
 

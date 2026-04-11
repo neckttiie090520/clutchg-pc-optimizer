@@ -105,7 +105,7 @@ Build: `cd clutchg && python build.py` → `clutchg/dist/ClutchG.exe`.
 | Integration | `tests/integration/` | 2 files | Cross-module workflows |
 | E2E | `tests/e2e/` | 4 files | Page objects in `tests/e2e/pages/` |
 
-**Current baseline: 445 passed, 64 skipped (E2E skipped without display).**
+**Current baseline: 477 passed, 64 skipped (E2E skipped without display).**
 
 Config: `clutchg/pytest.ini`, `clutchg/.coveragerc`. Markers: `unit`, `integration`, `e2e`, `slow`, `admin`, `requires_network`.
 

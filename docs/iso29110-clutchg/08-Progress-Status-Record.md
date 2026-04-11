@@ -24,9 +24,9 @@
 | Phases Complete | 11 / 12 |
 | Work Products | 10 / 10 (ISO29110) |
 | Source Code | ~56,000 lines (Python + Batch) |
-| Test Cases | 372 collected (285 unit, 23 integration, 64 E2E) |
-| Test Pass Rate | 100% (308 passed, 0 failed, 64 skipped headless) |
-| Code Coverage | ~65%+ core total; highlights: profile_recommender 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%, admin 79% |
+| Test Cases | 541 collected (454 unit, 23 integration, 64 E2E) |
+| Test Pass Rate | 100% (477 passed, 0 failed, 64 skipped headless) |
+| Code Coverage | ~33% total; core highlights: recommendation_service 97%, profile_recommender 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83% |
 | Open Defects | 0 HIGH, 0 MEDIUM |
 
 ---
