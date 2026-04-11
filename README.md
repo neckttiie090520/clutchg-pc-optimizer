@@ -54,7 +54,6 @@ The result: a modular batch optimizer with a modern GUI that applies only eviden
 - **Auto Hardware Detection** -- identifies CPU, GPU, RAM and recommends the right profile
 - **Flight Recorder** -- logs every change with before/after values
 - **Restore Center** -- visual timeline of all changes with per-tweak rollback
-- **Bilingual UI** -- English and Thai throughout
 - **Modern Dark Theme** -- Windows 11 / Sun Valley aesthetic
 
 ---
@@ -93,12 +92,12 @@ The result: a modular batch optimizer with a modern GUI that applies only eviden
 
 <p align="center">
   <img src="UX/UI design/latest/07-docs.png" width="720" alt="Documentation">
-  <br><em>Built-in help system with bilingual content</em>
+  <br><em>Built-in help system with documentation and guides</em>
 </p>
 
 <p align="center">
   <img src="UX/UI design/latest/08-settings.png" width="720" alt="Settings">
-  <br><em>Settings with language, theme, and profile configuration</em>
+  <br><em>Settings with theme and profile configuration</em>
 </p>
 
 ---

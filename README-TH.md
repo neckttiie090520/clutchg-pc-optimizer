@@ -54,7 +54,6 @@ ClutchG เป็นเครื่องมือปรับแต่ง Windo
 - **ตรวจจับฮาร์ดแวร์อัตโนมัติ** -- ระบุ CPU, GPU, RAM แล้วแนะนำโปรไฟล์ที่เหมาะสม
 - **Flight Recorder** -- บันทึกทุกการเปลี่ยนแปลงพร้อมค่าก่อน/หลัง
 - **Restore Center** -- ดู timeline การเปลี่ยนแปลงทั้งหมด ย้อนกลับทีละรายการได้
-- **รองรับสองภาษา** -- ไทยและอังกฤษทั่วทั้งแอป
 - **ธีมมืดสมัยใหม่** -- สไตล์ Windows 11 / Sun Valley
 
 ---
@@ -93,12 +92,12 @@ ClutchG เป็นเครื่องมือปรับแต่ง Windo
 
 <p align="center">
   <img src="UX/UI design/latest/07-docs.png" width="720" alt="Documentation">
-  <br><em>ระบบช่วยเหลือในตัว รองรับทั้งไทยและอังกฤษ</em>
+  <br><em>ระบบช่วยเหลือในตัว พร้อมเอกสารและคู่มือ</em>
 </p>
 
 <p align="center">
   <img src="UX/UI design/latest/08-settings.png" width="720" alt="Settings">
-  <br><em>ตั้งค่าภาษา ธีม และโปรไฟล์</em>
+  <br><em>ตั้งค่าธีมและโปรไฟล์</em>
 </p>
 
 ---
