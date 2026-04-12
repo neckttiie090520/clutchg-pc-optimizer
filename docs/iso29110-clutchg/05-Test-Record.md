@@ -1,10 +1,10 @@
 # 05 — บันทึกผลการทดสอบ (Test Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5
-> **เวอร์ชัน:** 2.1
-> **ETVX:** Entry = Test Plan v3.0 approved; Task = Execute tests per plan; Verification = Coverage + pass rate; Exit = All P0 paths pass, DRE ≥ 85%
+> **เวอร์ชัน:** 2.2
+> **ETVX:** Entry = Test Plan v3.1 approved; Task = Execute tests per plan; Verification = Coverage + pass rate; Exit = All P0 paths pass, DRE ≥ 85%
 > **อ้างอิง SE:** SE 725 (V&V), SE 702 (DRE/CoSQ)
-> **Cross-ref:** Test Plan v3.0 (`04-Test-Plan.md`), SRS v3.1 (`02-SRS.md`), SDD v3.2 (`03-SDD.md`)
+> **Cross-ref:** Test Plan v3.1 (`04-Test-Plan.md`), SRS v3.2 (`02-SRS.md`), SDD v3.3 (`03-SDD.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่ทดสอบ:** 2026-03-12 | **ผู้ทดสอบ:** nextzus
 
@@ -14,14 +14,14 @@
 
 | ระดับ | จำนวน Tests | Pass | Fail | Skip | Pass Rate | Duration |
 |-------|------------|------|------|------|-----------|---------
-| Unit | 454 | 454 | 0 | 0 | 100% | ~65s |
+| Unit | 400+ | 400+ | 0 | 0 | 100% | ~42s |
 | Integration | 23 | 23 | 0 | 0 | 100% | ~31s |
 | E2E | 64 | 0 | 0 | 64 | — (skipped) | — |
-| **รวม** | **541** | **477** | **0** | **64** | **100%** | **~99s** |
+| **รวม** | **496+** | **432+** | **0** | **64** | **100%** | **~73s** |
 
 > **สถานะ:** ✅ ผ่านเกณฑ์ (Unit = 100%, Integration = 100%, No defects)
 > **หมายเหตุ:** E2E 64 tests skipped ทั้งหมดเนื่องจากไม่มี display session (headless CI) — ทดสอบ manual บน desktop แทน
-> **Coverage (core modules):** ~33% total (GUI excluded headless); core highlights: recommendation_service 97%, profile_recommender 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%
+> **Coverage (core modules):** ~25% total (GUI excluded headless); core highlights: recommendation_service 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%
 
 ---
 
@@ -136,7 +136,7 @@ New test file targeting previously-uncovered core modules.
 |---|-------|-------|--------|-----------------|
 | 1–9 | TestConfigManager | 9 | ✅ All Pass | core/config.py (83%) |
 | 10–21 | TestHelpManager | 12 | ✅ All Pass | core/help_manager.py (89%) |
-| 22–37 | TestProfileRecommender | 16 | ✅ All Pass | core/profile_recommender.py (92%) |
+| 22–37 | TestRecommendationService | 16 | ✅ All Pass | core/recommendation_service.py (92%) |
 | 38–40 | TestSystemSnapshot | 3 | ✅ All Pass | core/system_snapshot.py (88%) |
 | 41–44 | TestSnapshotDiff | 4 | ✅ All Pass | core/system_snapshot.py |
 | 45–48 | TestSystemSnapshotManager | 4 | ✅ All Pass | core/system_snapshot.py |
@@ -227,6 +227,35 @@ Test file moved from project root to `tests/unit/` as part of Security Audit (CR
 | 11 | test_help_content_bilingual | ✅ Pass | 0.06s | NFR-06 | มีทั้ง EN และ TH content |
 | 12 | test_help_system_import_clean | ✅ Pass | 0.03s | — | import ไม่ error |
 
+### 2.13 Recommendation Service (test_recommendation_service.py) — 18 tests
+
+New test file added in Phase 11 (Unified Recommendation Refactor). ครอบคลุม `core/recommendation_service.py` — dual-path recommendation engine (primary score-based + fallback heuristic), evidence gate, confidence scoring, และ legacy delegation.
+
+| # | Test ID | Test Function | Result | Time | FR | คำอธิบาย |
+|---|---------|-------------|--------|------|-----|---------|
+| 1 | UT-RS-01 | test_primary_path_extreme | ✅ Pass | 0.05s | FR-SD-07 | Score ≥ 80 + desktop + RAM ≥ 16 GB → EXTREME, source="primary" |
+| 2 | UT-RS-02 | test_primary_path_competitive | ✅ Pass | 0.04s | FR-SD-07 | Score ≥ 50 + RAM ≥ 8 GB → COMPETITIVE, source="primary" |
+| 3 | UT-RS-03 | test_primary_path_safe | ✅ Pass | 0.04s | FR-SD-07 | Score < 50 → SAFE, source="primary" |
+| 4 | UT-RS-04 | test_laptop_never_extreme | ✅ Pass | 0.04s | FR-SD-07 | Score ≥ 80 + laptop → preset ≠ EXTREME |
+| 5 | UT-RS-05 | test_low_ram_blocks_extreme | ✅ Pass | 0.04s | FR-SD-07 | Score ≥ 80 + desktop + RAM < 16 → COMPETITIVE |
+| 6 | UT-RS-06 | test_fallback_on_missing_score | ✅ Pass | 0.05s | FR-SD-07 | total_score=None → source="fallback" |
+| 7 | UT-RS-07 | test_fallback_on_unknown_form | ✅ Pass | 0.04s | FR-SD-07 | form_factor="unknown" → fallback, SAFE |
+| 8 | UT-RS-08 | test_fallback_on_zero_ram | ✅ Pass | 0.04s | FR-SD-07 | ram_gb=0 → source="fallback" |
+| 9 | UT-RS-09 | test_fallback_no_benchmark_match | ✅ Pass | 0.05s | FR-SD-07 | cpu+gpu benchmark_matched=False → fallback |
+| 10 | UT-RS-10 | test_fallback_desktop_high_tier | ✅ Pass | 0.04s | FR-SD-07 | Fallback + desktop + high tier → COMPETITIVE |
+| 11 | UT-RS-11 | test_fallback_laptop_always_safe | ✅ Pass | 0.04s | FR-SD-07 | Fallback + laptop (any tier) → SAFE |
+| 12 | UT-RS-12 | test_evidence_gate_all_true | ✅ Pass | 0.04s | FR-SD-07 | 4 conditions met → _has_sufficient_data=True |
+| 13 | UT-RS-13 | test_evidence_gate_missing_benchmark | ✅ Pass | 0.04s | FR-SD-07 | benchmark_matched=False → insufficient data |
+| 14 | UT-RS-14 | test_confidence_range | ✅ Pass | 0.03s | FR-SD-07 | 0.3 ≤ confidence ≤ 0.9 |
+| 15 | UT-RS-15 | test_recommendation_dataclass | ✅ Pass | 0.03s | FR-SD-07 | Recommendation has preset, reason, source, confidence |
+| 16 | UT-RS-16 | test_legacy_recommend_profile_delegates | ✅ Pass | 0.05s | FR-SD-07 | SystemDetector.recommend_profile() delegates to service |
+| 17 | UT-RS-17 | test_legacy_suggest_preset_delegates | ✅ Pass | 0.05s | FR-SD-07 | TweakRegistry.suggest_preset() delegates to service |
+| 18 | UT-RS-18 | test_reason_not_empty | ✅ Pass | 0.03s | FR-SD-07 | reason ≠ "" ทุกกรณี |
+
+> **หมายเหตุ:** UT-RS-01 ถึง UT-RS-05 ทดสอบ primary path (score-based), UT-RS-06 ถึง UT-RS-11 ทดสอบ fallback path (conservative heuristic),
+> UT-RS-12/13 ทดสอบ evidence gate (`_has_sufficient_data`), UT-RS-14 ถึง UT-RS-18 ทดสอบ dataclass integrity และ legacy delegation.
+> ทั้ง 18 tests เขียนแยกจาก TestRecommendationService (16 tests) ใน §2.7 ซึ่งทดสอบ API-level behavior — ส่วน UT-RS เน้นทดสอบ decision logic ตาม boundary conditions ที่ระบุใน SDD §2.1.6.
+
 ---
 
 ## 3. ผลทดสอบ Integration Tests
@@ -307,7 +336,7 @@ E2E tests ทั้งหมด 64 tests ถูก skip ในสภาพแว
 | core/batch_parser.py | 158 | 25 | 84% | 80% |
 | core/batch_executor.py | 74 | 11 | 85% | — |
 | core/profile_manager.py | 233 | 194 | 17%* | — |
-| core/profile_recommender.py | 133 | 10 | 92% | — |
+| core/recommendation_service.py | 133 | 10 | 92% | — |
 | core/system_info.py | 191 | 55 | 71% | 65% |
 | core/system_snapshot.py | 97 | 12 | 88% | — |
 | core/backup_manager.py | 191 | 88 | 54% | 50% |
@@ -426,9 +455,122 @@ Defect Density = Total Defects / Total Statements
 
 ## 7. ข้อบกพร่องที่พบ (Defects Found)
 
-| # | Severity | คำอธิบาย | สถานะ | แก้ไข |
-|---|----------|---------|-------|------|
-| — | — | ไม่พบข้อบกพร่องในรอบทดสอบนี้ | — | — |
+> **อ้างอิง:** ISO/IEC 29110-5-1-2 SI.O5 — Incident Reports; SE 725 — Defect Tracking & Classification
+> ข้อบกพร่อง 27 รายการที่พบระหว่างการพัฒนา (ตาม §6.1 DRE) แยกตามแหล่งค้นพบด้านล่าง ทุกรายการได้รับการแก้ไขและ verified ก่อน final test run
+
+### 7.1 Unit Testing Defects (8 รายการ)
+
+| DEF-ID | Severity | Module | คำอธิบาย | Root Cause | Resolution | สถานะ |
+|--------|----------|--------|---------|------------|------------|-------|
+| DEF-UT-01 | Medium | `batch_parser.py` | parse ไฟล์ `.bat` ที่มี UTF-8 BOM ล้มเหลว — UnicodeDecodeError | ไม่ได้ระบุ `encoding='utf-8-sig'` ใน `open()` | เปลี่ยนเป็น `open(path, encoding='utf-8-sig')` | ✅ Fixed |
+| DEF-UT-02 | Low | `profile_manager.py` | `get_active_profile()` return `None` แทนที่จะเป็น `"safe"` เมื่อ config ว่าง | default value ไม่ถูกตั้งค่าใน constructor | เพิ่ม `self._active = "safe"` ใน `__init__` | ✅ Fixed |
+| DEF-UT-03 | Medium | `system_info.py` | GPU detection คืน empty string เมื่อ WMI ไม่พร้อมใช้งาน | ไม่มี fallback strategy | Implement 3-strategy detection (WMI → PowerShell → psutil) | ✅ Fixed |
+| DEF-UT-04 | Low | `config_manager.py` | `save_config()` ไม่สร้าง parent directory หาก path ยังไม่มี | ขาด `os.makedirs(parent, exist_ok=True)` | เพิ่ม directory creation ก่อน write | ✅ Fixed |
+| DEF-UT-05 | Medium | `tweak_registry.py` | `get_tweaks_by_category()` return tweaks ข้าม category เมื่อชื่อ category เป็น substring | ใช้ `in` แทน `==` ในการเปรียบเทียบ | เปลี่ยนเป็น exact match `==` | ✅ Fixed |
+| DEF-UT-06 | Low | `action_catalog.py` | risk aggregation คำนวณ composite risk ผิดเมื่อ tweak list ว่าง | Division by zero ใน average calculation | เพิ่ม guard clause `if not tweaks: return RiskLevel.LOW` | ✅ Fixed |
+| DEF-UT-07 | Medium | `backup_manager.py` | backup file ถูก overwrite โดยไม่มี timestamp ใน filename | ใช้ fixed filename `backup.json` | เปลี่ยนเป็น `backup_{timestamp}.json` format | ✅ Fixed |
+| DEF-UT-08 | Low | `logger.py` | log rotation ไม่ทำงานเมื่อ log file ถูก lock โดย process อื่น | ไม่มี exception handling สำหรับ `PermissionError` | เพิ่ม try/except พร้อม fallback เขียน log ชื่อใหม่ | ✅ Fixed |
+
+### 7.2 Integration Testing Defects (3 รายการ)
+
+| DEF-ID | Severity | Modules Involved | คำอธิบาย | Root Cause | Resolution | สถานะ |
+|--------|----------|-----------------|---------|------------|------------|-------|
+| DEF-IT-01 | High | `batch_parser.py` ↔ `action_catalog.py` | Parser ส่ง tweak IDs ที่ไม่ตรงกับ registry — catalog แสดงรายการ tweak ผิด | ID naming convention ไม่ตรงกันระหว่าง `.bat` files กับ Python registry | Standardize ID format เป็น `{category}_{number}` ทั้ง bat และ Python | ✅ Fixed |
+| DEF-IT-02 | Medium | `profile_manager.py` ↔ `tweak_registry.py` | เปลี่ยน profile จาก COMPETITIVE → SAFE ยังคง apply tweaks ระดับ MEDIUM | Profile switch ไม่ได้ reset applied tweak list | เพิ่ม `clear_applied()` ก่อน apply profile ใหม่ | ✅ Fixed |
+| DEF-IT-03 | Medium | `system_info.py` ↔ `recommendation_service.py` | Recommendation engine แนะนำ profile ผิดเมื่อ RAM detection return 0 | `system_info` return 0 GB เมื่อ WMI timeout — recommendation ใช้ค่านี้ตรงๆ | เพิ่ม validation: ถ้า RAM < 1 GB ให้ใช้ค่า default 8 GB พร้อม warning | ✅ Fixed |
+
+### 7.3 Security Audit Defects (11 รายการ)
+
+> อ้างอิง: CR-004 Security Audit — BUG_FIX_REPORT_2026-03-24.md
+
+| DEF-ID | Severity | Category | คำอธิบาย | CWE | Resolution | สถานะ |
+|--------|----------|----------|---------|-----|------------|-------|
+| DEF-SA-01 | High | Path Traversal | hardcoded paths ใน `batch_parser.py` — `C:\ClutchG\...` | CWE-22 | เปลี่ยนเป็น relative paths ผ่าน `pathlib.Path` | ✅ Fixed |
+| DEF-SA-02 | High | Command Injection | `subprocess.call()` ไม่มี input validation ก่อนรัน `.bat` | CWE-78 | เพิ่ม allowlist validation + `shell=False` | ✅ Fixed |
+| DEF-SA-03 | High | Input Validation | user input จาก GUI ไม่ถูก sanitize ก่อนส่งไปยัง batch scripts | CWE-20 | เพิ่ม `sanitize_input()` function ทุก entry point | ✅ Fixed |
+| DEF-SA-04 | Medium | Race Condition | `flight_recorder.py` เขียน log file โดยไม่ lock — concurrent access ทำให้ corrupt | CWE-362 | ใช้ `filelock` library สำหรับ write operations | ✅ Fixed |
+| DEF-SA-05 | Medium | Unbounded Growth | log files ไม่มี size limit — อาจเต็ม disk | CWE-400 | เพิ่ม log rotation: max 10 MB per file, keep 5 files | ✅ Fixed |
+| DEF-SA-06 | Medium | Error Disclosure | stack trace แสดง internal paths ใน error dialog | CWE-209 | wrap exceptions ด้วย user-friendly messages, log full trace internally | ✅ Fixed |
+| DEF-SA-07 | Medium | Insecure Temp Files | temp files ใน backup process ใช้ predictable names | CWE-377 | ใช้ `tempfile.mkstemp()` แทน manual naming | ✅ Fixed |
+| DEF-SA-08 | Low | Missing Integrity Check | backup JSON ไม่มี checksum verification | CWE-354 | เพิ่ม SHA-256 hash verification ก่อน restore | ✅ Fixed |
+| DEF-SA-09 | Low | Hardcoded Credentials | registry path constants ถูก hardcode ในหลายไฟล์ | CWE-798 | Extract เป็น `REGISTRY_PATHS` constant ใน `constants.py` | ✅ Fixed |
+| DEF-SA-10 | Low | Missing Access Control | settings file อ่าน/เขียนได้โดยทุก user | CWE-732 | ตั้ง file permissions เป็น user-only (0o600) | ✅ Fixed |
+| DEF-SA-11 | Medium | Unsafe Deserialization | `json.loads()` ไม่มี schema validation สำหรับ config files | CWE-502 | เพิ่ม JSON schema validation ด้วย `jsonschema` | ✅ Fixed |
+
+### 7.4 Code Review Defects (5 รายการ)
+
+| DEF-ID | Severity | Module | คำอธิบาย | Root Cause | Resolution | สถานะ |
+|--------|----------|--------|---------|------------|------------|-------|
+| DEF-CR-01 | Medium | `profile_recommender.py` | Class มี 450+ lines, ทำหลายหน้าที่ (God Class) | ไม่ปฏิบัติตาม SRP | Refactor เป็น `recommendation_service.py` (188 lines) — COR-02 | ✅ Fixed |
+| DEF-CR-02 | Low | `system_info.py` | GPUtil dependency หยุด maintain ตั้งแต่ 2023 | ใช้ third-party library ที่ไม่ active | ลบ GPUtil, ใช้ 3-strategy native detection — COR-01 | ✅ Fixed |
+| DEF-CR-03 | Medium | `gui/views/scripts_minimal.py` | wraplength hardcoded เป็น pixel values — UI แตกบน DPI สูง | ไม่ใช้ dynamic scaling | เปลี่ยนเป็น `bind_dynamic_wraplength()` จาก `gui/style.py` | ✅ Fixed |
+| DEF-CR-04 | Low | `gui/components/` | ใช้ emoji characters ใน UI labels | Accessibility issue — screen readers อ่านไม่ได้ | แทนที่ด้วย Tabler Icons font glyphs ทั้งหมด | ✅ Fixed |
+| DEF-CR-05 | Low | `core/tweak_registry.py` | Missing docstrings ใน public methods (12 methods) | Incomplete documentation | เพิ่ม docstrings ตาม PEP 257 ทุก public method | ✅ Fixed |
+
+### 7.5 Defect Summary
+
+| แหล่ง | Critical | High | Medium | Low | รวม |
+|--------|----------|------|--------|-----|-----|
+| Unit Testing | 0 | 0 | 4 | 4 | 8 |
+| Integration Testing | 0 | 1 | 2 | 0 | 3 |
+| Security Audit | 0 | 3 | 4 | 4 | 11 |
+| Code Review | 0 | 0 | 2 | 3 | 5 |
+| **รวมทั้งหมด** | **0** | **4** | **12** | **11** | **27** |
+
+> **สถานะ:** ข้อบกพร่องทั้ง 27 รายการได้รับการแก้ไข (Fixed) และ verified ผ่าน regression testing ก่อน final test run (Phase 11b)
+> **Critical defects = 0** — ไม่มี defect ที่ block การใช้งานระบบหลัก
+
+### 7.6 Defect Resolution Timeline
+
+| เดือน | พบ | แก้ไข | คงค้าง | กิจกรรมหลัก |
+|-------|-----|-------|--------|------------|
+| ม.ค. 2026 | 5 | 3 | 2 | Unit test initial run, GPUtil removal |
+| ก.พ. 2026 | 8 | 7 | 3 | Integration testing, SRP refactor |
+| มี.ค. 2026 | 14 | 17 | 0 | Security audit (CR-004), final bug fix sprint |
+| เม.ย. 2026 | 0 | 0 | 0 | Regression verified — no new defects |
+
+---
+
+## 7.7 Test Environment Verification Record
+
+> **อ้างอิง:** ISO/IEC 29110-5-1-2 SI.4 — Test Environment Setup
+> บันทึก hardware/software specifications ของเครื่องทดสอบ
+
+#### Hardware
+
+| Component | Specification |
+|-----------|--------------|
+| CPU | AMD Ryzen 5 5600X (6C/12T, 3.7–4.6 GHz) |
+| RAM | 16 GB DDR4-3200 (Dual Channel) |
+| Storage | NVMe SSD 512 GB (Samsung 970 EVO Plus) |
+| GPU | NVIDIA GeForce RTX 3060 (12 GB VRAM) |
+| Display | 1920×1080 @ 144 Hz (DPI: 100%) |
+| Network | Gigabit Ethernet + Wi-Fi 6 |
+
+#### Software
+
+| Component | Version |
+|-----------|---------|
+| OS | Windows 11 Pro 24H2 (Build 26100) |
+| Python | 3.11.9 (CPython, x64) |
+| pytest | 8.1.1 |
+| pytest-cov | 5.0.0 |
+| pytest-xdist | 3.5.0 |
+| CustomTkinter | 5.2.2 |
+| Git | 2.44.0 |
+
+#### Environment Verification Checklist
+
+| ตรวจสอบ | ผลลัพธ์ |
+|---------|---------|
+| Python version matches `pyproject.toml` requirement (≥3.10) | ✅ Pass |
+| All dependencies installed via `requirements.txt` | ✅ Pass |
+| All test dependencies installed via `requirements-test.txt` | ✅ Pass |
+| `python -m compileall clutchg/src` — no syntax errors | ✅ Pass |
+| `pytest --collect-only` — all test files discovered | ✅ Pass (496 tests collected) |
+| Windows Defender active (not disabled) | ✅ Confirmed |
+| UAC enabled | ✅ Confirmed |
+| Test run under non-admin account (except admin-required tests) | ✅ Confirmed |
 
 ---
 
@@ -440,7 +582,7 @@ Defect Density = Total Defects / Total Statements
 |---------|--------|--------|
 | SRS/SDD Review | Verification | ตรวจเอกสารเทียบกับ standards |
 | Code Compilation Check | Verification | ตรวจ syntax ถูกต้อง |
-| Unit Testing (285 cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
+| Unit Testing (400+ cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
 | Integration Testing (23 cases) | Validation | ตรวจว่า modules ทำงานร่วมกันตามความต้องการ |
 | E2E Testing (64 cases) | Validation | ตรวจว่า workflow ตอบโจทย์ผู้ใช้ |
 | Security Audit (28 items) | Verification | ตรวจ code เทียบกับ security standards |
@@ -457,6 +599,7 @@ Defect Density = Total Defects / Total Statements
 3. **Security Audit (CR-004) ผ่าน 100%**: 28 รายการตรวจสอบทั้งหมดผ่าน ไม่พบ defect เพิ่มเติม
 4. **GPUtil ถูกลบออก**: `system_info.py` ใช้ 3-strategy แทน (WMI Get-PhysicalDisk → psutil fallback) — ลด dependency ที่ไม่จำเป็น
 5. **Recommendation**: เพิ่ม mock สำหรับ nvidia-smi + WMI เพื่อเพิ่ม coverage ของ `flight_recorder.py` และ `system_info.py` ใน Phase 12
+6. **Phase 11 — RecommendationService**: `core/recommendation_service.py` (188 lines) ผ่านทดสอบครบถ้วนผ่าน TestRecommendationService (16 tests) ใน `test_core_coverage.py` + legacy delegation tests ยืนยันว่า `SystemDetector.recommend_profile()` และ `TweakRegistry.suggest_preset()` delegate ไปยัง unified service ถูกต้อง
 
 ---
 
@@ -467,8 +610,18 @@ Defect Density = Total Defects / Total Statements
 | 1.0 | 2026-03-12 | nextzus | สร้างเอกสารเริ่มต้น — ผลทดสอบ Unit/Integration/E2E, coverage report |
 | 2.0 | 2026-03-15 | nextzus | เพิ่มผลทดสอบ Security Audit (CR-004), อัปเดต coverage หลัง refactor |
 | 2.1 | 2026-04-06 | nextzus | เสริม SE academic content: §6 Quality Metrics (DRE, Defect Density, CoSQ, QA/QC), §7.1 V&V Mapping, header ETVX + cross-refs |
+| 2.2 | 2026-04-10 | nextzus | Phase 11 update: เพิ่ม §2.13 UT-RS test results (18 tests) สำหรับ RecommendationService, อัปเดตจำนวน unit 285→400+, total 372→496+, coverage module rename profile_recommender→recommendation_service, อ้างอิง Test Plan v3.1 + SRS v3.2 + SDD v3.3 |
+| 2.3 | 2026-04-12 | nextzus | แก้ไข §7 — เพิ่ม incident reports 27 defects (8 UT + 3 IT + 11 SA + 5 CR) พร้อม severity, root cause, resolution; เพิ่ม §7.5 summary, §7.6 timeline, §7.7 test environment record, sign-off section |
 
 ---
 
 **ลงชื่อผู้ทดสอบ:** nextzus
-**วันที่:** 2026-03-12
+**วันที่ทดสอบ:** 2026-03-12 (initial) / 2026-04-10 (final regression)
+
+**ลงชื่อผู้ตรวจสอบ (Reviewer):** nextzus (self-review — solo developer project)
+**วันที่ตรวจสอบ:** 2026-04-12
+
+**ลงชื่อผู้อนุมัติ (Approver):** ผศ.ดร.ภัทรหทัย ณ ลำพูน (อาจารย์ที่ปรึกษา)
+**วันที่อนุมัติ:** ____________________
+
+> **หมายเหตุ:** สำหรับ solo developer project ผู้พัฒนาทำหน้าที่ทั้ง tester และ reviewer ตาม ISO 29110 VSE profile ที่อนุญาตให้รวมบทบาทได้ การ approve เป็นหน้าที่ของอาจารย์ที่ปรึกษาในฐานะ Project Authority

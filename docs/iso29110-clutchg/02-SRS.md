@@ -2,7 +2,7 @@
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O2 (Software Requirements Specification)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 3.0 | **วันที่:** 2026-03-04 | **ผู้จัดทำ:** nextzus
+> **เวอร์ชัน:** 3.3 | **วันที่:** 2026-04-12 | **ผู้จัดทำ:** nextzus
 > **อ้างอิง:** IEEE 830-1998, ISO/IEC 25010:2011, SE 721 RE 7-Step Process
 > **ETVX:** SI.2 Entry=Project Plan approved → Task=Analyze/document requirements → Validation=SRS review by advisor → Exit=SRS baselined
 
@@ -18,7 +18,7 @@
 
 ### 1.2 ขอบเขต (Scope)
 ClutchG เป็น desktop application ที่ให้ผู้ใช้ optimize Windows 10/11 ผ่าน GUI ที่ปลอดภัย โดยมี:
-- **48 optimization tweaks** จัดกลุ่มใน 10 categories
+- **56 optimization tweaks** จัดกลุ่มใน 10 categories
 - **3 preset profiles** (SAFE/COMPETITIVE/EXTREME) จัด risk level ชัดเจน
 - **Backup & Rollback system** ที่ track per-tweak changes
 - **GUI** (Python/CustomTkinter) แยก 3 layers: GUI / Core / Batch
@@ -44,7 +44,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 1. ISO/IEC 29110-5-1-2:2016 — Software Engineering Lifecycle Profiles
 2. IEEE 830-1998 — Recommended Practice for SRS
 3. ISO/IEC 25010:2011 — Systems and Software Quality Models
-4. `docs/01-research-overview.md` — 28 Repository Analysis
+4. `docs/01-research-overview.md` — 23 Repository Analysis
 5. `docs/03-tweak-taxonomy.md` — Tweak Taxonomy & Classification
 6. `docs/04-risk-classification.md` — Risk Classification Framework
 7. `docs/09-final-architecture.md` — Architecture Design Document
@@ -56,11 +56,11 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 | # | ขั้นตอน | กิจกรรมใน ClutchG | หลักฐาน |
 |---|---------|-------------------|---------|
 | 1 | **Inception** | ระบุปัญหา: optimizer ส่วนใหญ่ไม่ปลอดภัย ไม่มี evidence | `docs/01-research-overview.md`, thesis proposal |
-| 2 | **Elicitation** | วิเคราะห์ 23 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (28 files), `docs/05-windows-internals.md` |
-| 3 | **Elaboration** | จำแนก 48 tweaks → 10 categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
-| 4 | **Negotiation** | ตกลง scope: 48 tweaks (ตัด placebo ออก), 6 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
+| 2 | **Elicitation** | วิเคราะห์ 23 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (23 files), `docs/05-windows-internals.md` |
+| 3 | **Elaboration** | จำแนก 56 tweaks → 10 categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
+| 4 | **Negotiation** | ตกลง scope: 56 tweaks (ตัด placebo ออก), 5 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
 | 5 | **Specification** | เขียน SRS v3.0 ตาม IEEE 830 + ISO 25010 | เอกสารฉบับนี้ |
-| 6 | **Validation** | อาจารย์ review SRS, สร้าง test cases จาก FRs, Traceability Matrix | `06-Traceability-Record.md`, 372 test cases |
+| 6 | **Validation** | อาจารย์ review SRS, สร้าง test cases จาก FRs, Traceability Matrix | `06-Traceability-Record.md`, 496+ test cases |
 | 7 | **Management** | จัดการเปลี่ยนแปลงผ่าน Change Requests + SRS versioning | `07-Change-Request.md` (4 CRs), SRS v1.0→v2.0→v3.0 |
 
 > **อ้างอิงทฤษฎี:** `docs/se-academic/08-requirements-analysis.md` — รายละเอียดการประยุกต์ RE 7-Step กับ ClutchG
@@ -109,7 +109,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 ClutchG เป็นส่วนหนึ่งของ **Batch Optimizer Research Project** ที่วิเคราะห์ 23 open-source Windows optimization tools จาก GitHub แล้วสังเคราะห์ tweaks ที่มี evidence จริง ออกมาเป็น tool ที่ปลอดภัยและโปร่งใส
 
 ```
-Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Architecture Design
+Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Architecture Design
                                                                          ↓
                                                             ClutchG Application
                                                      ┌──────────────────────────────┐
@@ -124,23 +124,23 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 2. **Profile Management** — เลือก SAFE/COMPETITIVE/EXTREME หรือ custom preset
 3. **Tweak Execution** — Apply tweaks ทีละตัวหรือทั้ง profile ด้วยสิทธิ์ Admin
 4. **Safety & Rollback** — Backup registry ก่อนเปลี่ยน + Flight Recorder + Restore Center
-5. **GUI** — 6 views: Dashboard, Profiles, Scripts, Backup Center, Help, Settings
+5. **GUI** — 5 views: Dashboard, Optimize Center, Backup, Help, Settings
 6. **Preset I/O** — Export/Import custom presets เป็น JSON
 
 ### 2.3 ผู้ใช้งาน (User Characteristics)
 
 | ประเภท | ความรู้เทคนิค | Profile แนะนำ | Tweaks ที่เข้าถึง | ลักษณะการใช้งาน |
 |--------|-------------|--------------|-----------------|----------------|
-| **Beginner** | ต่ำ — ใช้ Windows ทั่วไป | SAFE (🟢) | 17 tweaks (LOW risk) | เลือก profile แล้ว apply ทีเดียว |
-| **Gamer** | ปานกลาง — เข้าใจ settings | COMPETITIVE (🟡) | 35 tweaks | ใช้ profile + ปรับบาง tweaks |
-| **Power User** | สูง — เข้าใจ registry/services | EXTREME (🔴) | 48 tweaks ทั้งหมด | เลือก tweaks ทีละตัว |
+| **Beginner** | ต่ำ — ใช้ Windows ทั่วไป | SAFE (🟢) | 14 tweaks (LOW risk) | เลือก profile แล้ว apply ทีเดียว |
+| **Gamer** | ปานกลาง — เข้าใจ settings | COMPETITIVE (🟡) | 44 tweaks | ใช้ profile + ปรับบาง tweaks |
+| **Power User** | สูง — เข้าใจ registry/services | EXTREME (🔴) | 56 tweaks ทั้งหมด | เลือก tweaks ทีละตัว |
 
 ### 2.4 ข้อจำกัด (Constraints)
 1. **สิทธิ์ Administrator** — จำเป็นสำหรับ registry/service/bcdedit changes
 2. **Windows 10/11 เท่านั้น** — ใช้ Windows-specific APIs (pywin32, WMI, PowerShell)
 3. **Python 3.11+** — ใช้ modern type hints, match statements
 4. **ผลลัพธ์แตกต่างตาม hardware** — FPS gains อ้างอิงค่า range (2-15%)
-5. **บาง tweaks ต้อง restart** — 15/48 tweaks ต้อง restart หลัง apply
+5. **บาง tweaks ต้อง restart** — บาง tweaks ต้อง restart หลัง apply (ดูรายละเอียดใน TweakRegistry)
 6. **ไม่รองรับ ARM-based Windows** — ทดสอบเฉพาะ x64
 
 ### 2.5 สมมติฐาน (Assumptions)
@@ -159,7 +159,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 
 | Priority | จำนวน FR | สัดส่วน | ตัวอย่าง |
 |----------|---------|---------|---------|
-| **Must** | 35 | 55.6% | System detection (FR-SD-01–03,09), 3 profiles (FR-PM-01–06,11), Tweak registry 48 ตัว (FR-TW-01–04), Backup/rollback ทั้งระบบ (FR-SF-01,02,05–08,13), Core UI views (FR-UI-01–05,08,10), Batch parse+execute (FR-BS-01,02,04) |
+| **Must** | 35 | 55.6% | System detection (FR-SD-01–03,09), 3 profiles (FR-PM-01–06,11), Tweak registry 56 ตัว (FR-TW-01–04), Backup/rollback ทั้งระบบ (FR-SF-01,02,05–08,13), Core UI views (FR-UI-01–05,08,10), Batch parse+execute (FR-BS-01,02,04) |
 | **Should** | 15 | 23.8% | System score (FR-SD-04–07), Progress bar (FR-PM-07), Custom preset (FR-PM-08), Risk distribution (FR-TW-05–07), Restore point (FR-SF-03,04,09,10), Toast/Settings (FR-UI-06,09,12,13) |
 | **Could** | 8 | 12.7% | Form factor (FR-SD-08), Export/Import preset (FR-PM-09,10), Compare snapshots (FR-SF-11,12), Welcome overlay (FR-UI-07,11), Export rollback (UC-14) |
 | **Won't** | 5 | 7.9% | Auto-update, ARM support, Cloud sync, Windows 7/8 support, IDE-style UI |
@@ -177,7 +177,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 | FR-SD-04 | ตรวจจับ Storage: ประเภท (SSD/HDD/NVMe), ขนาดรวม | Should | ระบุ SSD/HDD ได้ถูกต้อง | `core/system_info.py` L305-334 |
 | FR-SD-05 | คำนวณ System Score (0-100) จาก CPU(30) + GPU(30) + RAM(20) + Storage(10) | Should | Score = sum of sub-scores | `core/system_info.py` L115-148 |
 | FR-SD-06 | จำแนก Tier: entry (<30), mid (30-49), high (50-69), enthusiast (≥70) | Should | Tier ตรงตามช่วง score | `core/system_info.py` L349-358 |
-| FR-SD-07 | แนะนำ Profile ตาม Tier + Form Factor (laptop→SAFE) | Should | Laptop = SAFE เสมอ | `core/system_info.py` L360-380 |
+| FR-SD-07 | แนะนำ Profile ตาม System Score + Form Factor ผ่าน RecommendationService (primary: score-based, fallback: conservative heuristic; laptop→SAFE เสมอ) | Should | Laptop = SAFE เสมอ; EXTREME ต้อง score≥80 + desktop + RAM≥16GB | `core/recommendation_service.py` L151-188 |
 | FR-SD-08 | ตรวจจับ Form Factor: desktop/laptop (จาก battery) | Could | มี battery = laptop | `core/system_info.py` L336-347 |
 | FR-SD-09 | การตรวจจับเป็น async (threading) ไม่ block UI | Must | UI ตอบสนองระหว่าง scan | `app_minimal.py` L117-145 |
 
@@ -186,9 +186,9 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 | รหัส | ความต้องการ | MoSCoW | Acceptance Criteria | Source File |
 |------|-----------|--------|-------------------|-------------|
 | FR-PM-01 | มี 3 preset profiles: SAFE (🟢 LOW, 2-5%), COMPETITIVE (🟡 MED, 5-10%), EXTREME (🔴 HIGH, 10-15%) | Must | ทั้ง 3 profiles โหลดได้ | `core/profile_manager.py` L61-128 |
-| FR-PM-02 | SAFE: 17 tweaks (LOW risk ทั้งหมด) | Must | นับ tweaks = 17 | `core/tweak_registry.py` (preset_safe=True) |
-| FR-PM-03 | COMPETITIVE: 35 tweaks (LOW + MEDIUM) | Must | นับ tweaks = 35 | `core/tweak_registry.py` |
-| FR-PM-04 | EXTREME: 48 tweaks ทั้งหมด (รวม HIGH) | Must | นับ tweaks = 48 | `core/tweak_registry.py` |
+| FR-PM-02 | SAFE: 14 tweaks (LOW risk ทั้งหมด) | Must | นับ tweaks = 14 | `core/tweak_registry.py` (preset_safe=True) |
+| FR-PM-03 | COMPETITIVE: 44 tweaks (LOW + MEDIUM) | Must | นับ tweaks = 44 | `core/tweak_registry.py` |
+| FR-PM-04 | EXTREME: 56 tweaks ทั้งหมด (รวม HIGH) | Must | นับ tweaks = 56 | `core/tweak_registry.py` |
 | FR-PM-05 | แสดง risk level, expected FPS gain, warnings ของแต่ละ profile | Must | ข้อมูลตรงกับ Profile dataclass | `core/profile_manager.py` L28-40 |
 | FR-PM-06 | Apply profile: backup → execute tweaks → record changes | Must | สร้าง backup ก่อน apply | `core/profile_manager.py` L146-257 |
 | FR-PM-07 | แสดง per-tweak progress (0-100%) ระหว่าง apply | Should | Progress callback ทำงาน | `core/profile_manager.py` L284-419 |
@@ -201,15 +201,15 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 
 | รหัส | ความต้องการ | MoSCoW | Acceptance Criteria | Source File |
 |------|-----------|--------|-------------------|-------------|
-| FR-TW-01 | เก็บ tweaks ทั้ง 48 ตัว ใน TweakRegistry (Singleton) | Must | len(registry) = 48 | `core/tweak_registry.py` L884-1012 |
+| FR-TW-01 | เก็บ tweaks ทั้ง 56 ตัว ใน TweakRegistry (Singleton) | Must | len(registry) = 56 | `core/tweak_registry.py` L884-1012 |
 | FR-TW-02 | แต่ละ tweak มี 17 fields: id, name, category, description, what_it_does, why_it_helps, limitations, warnings, risk_level, expected_gain, requires_admin, requires_restart, reversible, compatible_os, compatible_hardware, registry_keys, bat_script/bat_function, preset_* | Must | Tweak dataclass ครบ 17 fields | `core/tweak_registry.py` L13-36 |
 | FR-TW-03 | จัดกลุ่มเป็น 10 categories พร้อม icon + color | Must | 10 categories ตาม TWEAK_CATEGORIES | `core/tweak_registry.py` L39-51 |
 | FR-TW-04 | Filter tweaks by category, preset, OS compatibility, hardware | Must | get_tweaks_by_category(), get_compatible_tweaks() | `core/tweak_registry.py` L899-933 |
 | FR-TW-05 | คำนวณ risk distribution: LOW/MEDIUM/HIGH | Should | get_risk_distribution() ถูกต้อง | `core/tweak_registry.py` L968-973 |
-| FR-TW-06 | แนะนำ preset ตาม system_profile | Should | suggest_preset() คืน preset + reason | `core/tweak_registry.py` L935-959 |
+| FR-TW-06 | แนะนำ preset ตาม system_profile | Should | suggest_preset() คืน preset + reason (delegates to `core/recommendation_service.py`) | `core/tweak_registry.py` L935-959 |
 | FR-TW-07 | Build custom preset + validate tweak_ids | Should | build_custom_preset() คืน max_risk, requires_restart | `core/tweak_registry.py` L975-1001 |
 
-#### รายละเอียด Tweak Categories (ข้อมูลจริง 48 tweaks)
+#### รายละเอียด Tweak Categories (ข้อมูลจริง 56 tweaks)
 
 | Category | จำนวน | Risk Distribution | ตัวอย่าง Tweaks |
 |----------|-------|-------------------|----------------|
@@ -223,7 +223,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 | **Boot (BCDEdit)** | 5 | LOW: 3, MED: 1, HIGH: 1 | Dynamic Tick, TSC Sync, x2APIC, ConfigAccess, Hypervisor (HIGH) |
 | **Visual Effects** | 4 | LOW: 4 | Animations, Transparency, Full Drag, Visual FX=Best Perf |
 | **Cleanup & Debloat** | 3 | LOW: 2, MED: 1 | Bloatware Remove, OneDrive Auto-Start, NTFS Optimize |
-| **รวม** | **48** | LOW: 29, MED: 16, HIGH: 3 | — |
+| **รวม** | **56** | LOW: 37, MED: 16, HIGH: 3 | — |
 
 ### 3.4 FR-SF: Safety & Rollback
 
@@ -249,7 +249,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 |------|-----------|--------|-------------------|-------------|
 | FR-UI-01 | **Dashboard View**: แสดง CPU, GPU, RAM, Storage + system score + tier | Must | ข้อมูลแสดงครบหลัง detection | `gui/views/dashboard_minimal.py` (25.8KB) |
 | FR-UI-02 | **Profiles View**: แสดง 3 profiles + risk badge + expected FPS gain | Must | 3 profile cards พร้อม badge | `gui/views/profiles_minimal.py` (10.7KB) |
-| FR-UI-03 | **Scripts View**: แสดง tweaks แยก 10 categories + checkbox + risk badge + "?" help | Must | 48 tweaks แสดงครบ, filter ได้ | `gui/views/scripts_minimal.py` (63.5KB) |
+| FR-UI-03 | **Scripts View**: แสดง tweaks แยก 10 categories + checkbox + risk badge + "?" help | Must | 56 tweaks แสดงครบ, filter ได้ | `gui/views/scripts_minimal.py` (63.5KB) |
 | FR-UI-04 | **Backup & Restore Center**: timeline UI + per-tweak rollback + download script | Must | Timeline + undo buttons ทำงาน | `gui/views/backup_restore_center.py` (35.7KB) |
 | FR-UI-05 | **Help View**: คำอธิบาย tweak (EN/TH bilingual) + risk info | Must | Content โหลดจาก JSON | `gui/views/help_minimal.py` (23.3KB) |
 | FR-UI-06 | **Settings View**: Theme (dark/light), Accent Color (5 สี), Language (EN/TH) | Should | เปลี่ยน theme แล้ว UI refresh | `gui/views/settings_minimal.py` (12KB) |
@@ -281,14 +281,14 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
-| NFR-01 | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG | ไม่มี tweak ใดใน 48 ตัวที่มี registry key ที่ disable features เหล่านี้ | Scan ทุก tweak.registry_keys — ไม่มี path ที่ปิด 6 features |
+| NFR-01 | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG | ไม่มี tweak ใดใน 56 ตัวที่มี registry key ที่ disable features เหล่านี้ | Scan ทุก tweak.registry_keys — ไม่มี path ที่ปิด 6 features |
 | NFR-02 | ทุก tweak ที่เป็น HIGH risk ต้องมี warning messages >= 2 ข้อ | `len(tweak.warnings) >= 2` สำหรับทุก HIGH risk tweaks (3 ตัว) | Unit test: filter HIGH tweaks -> assert warnings count >= 2 |
 
 ### 4.2 Reliability (NFR-03, NFR-04)
 
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
-| NFR-03 | ทุก tweak ต้อง reversible — undo กลับค่าเดิมได้ | `tweak.reversible == True` สำหรับทุก 48 tweaks | Unit test: `assert all(t.reversible for t in registry.get_all_tweaks())` |
+| NFR-03 | ทุก tweak ต้อง reversible — undo กลับค่าเดิมได้ | `tweak.reversible == True` สำหรับทุก 56 tweaks | Unit test: `assert all(t.reversible for t in registry.get_all_tweaks())` |
 | NFR-04 | Auto backup ก่อนทุก apply operation | BackupManager.create_backup() ถูกเรียกก่อนทุก execute | Integration test: apply profile -> verify backup file exists |
 
 ### 4.3 Usability (NFR-05, NFR-06, NFR-07)
@@ -297,7 +297,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 |------|-----------|-------------|----------|
 | NFR-05 | Risk level แสดงด้วย traffic light: เขียว (LOW), เหลือง (MEDIUM), แดง (HIGH) | 3 สีตรงกับ 3 risk levels — ผู้ใช้เข้าใจความเสี่ยงภายใน 1 วินาที | Visual inspection + unit test color mapping |
 | NFR-06 | รองรับ 2 ภาษา (EN/TH) สำหรับ help content | Help JSON มี "en" และ "th" keys สำหรับทุก content item | Unit test: assert all items have both "en" and "th" keys |
-| NFR-07 | แต่ละ tweak มีคำอธิบาย 3 ส่วน: what_it_does, why_it_helps, limitations | `len(field) > 0` สำหรับ 3 fields ทุก 48 tweaks | Unit test: iterate all tweaks -> assert 3 fields non-empty |
+| NFR-07 | แต่ละ tweak มีคำอธิบาย 3 ส่วน: what_it_does, why_it_helps, limitations | `len(field) > 0` สำหรับ 3 fields ทุก 56 tweaks | Unit test: iterate all tweaks -> assert 3 fields non-empty |
 
 ### 4.4 Performance (NFR-08, NFR-09)
 
@@ -332,7 +332,7 @@ Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Archite
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
 | NFR-16 | ทุก tweak แสดง registry_keys ที่จะเปลี่ยน | Tweak.registry_keys populated (non-empty list) สำหรับทุก tweak | Unit test: assert all tweaks have registry_keys |
-| NFR-17 | ทุก tweak แสดง expected_gain + limitations + warnings | 3 fields populated ทั้ง 48 tweaks | Unit test: assert 3 fields non-empty |
+| NFR-17 | ทุก tweak แสดง expected_gain + limitations + warnings | 3 fields populated ทั้ง 56 tweaks | Unit test: assert 3 fields non-empty |
 
 ### 4.9 สรุป NFR Coverage
 
@@ -575,10 +575,10 @@ ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น
 |------|---------|
 | **Window Size** | 1000×700 pixels (default) |
 | **Framework** | CustomTkinter (tkinter wrapper) |
-| **Theme** | Dark mode (default) / Light mode |
-| **Accent Colors** | Cyan, Purple, Green, Orange, Pink |
-| **Icons** | Google Material Symbols Outlined font |
-| **Typography** | System font + Material Symbols |
+| **Theme** | Sun Valley dark mode (`#1c1c1c` bg, `#57c8ff` accent) |
+| **Accent Colors** | Sun Valley default (`#57c8ff`) |
+| **Icons** | Tabler Icons v3.41.1 (bundled TTF) |
+| **Typography** | Figtree (bundled TTF) + Tabler Icons |
 | **Navigation** | Enhanced Sidebar (left) + View Container (right) |
 
 ### 7.2 External Interfaces
@@ -591,9 +591,236 @@ ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น
 | **PowerShell** | subprocess | Restore points, WMI queries |
 | **File System** | pathlib / json | Config, backup, flight records |
 
+#### 7.2.1 Windows Registry Interface
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **Library/Tool** | `winreg` (stdlib), `pywin32` (`win32api`, `win32con`), `reg.exe` (fallback CLI) |
+| **Access Pattern** | Read → Backup current value → Write new value → Verify write |
+| **Data Formats** | `REG_DWORD` (integer 0–4294967295), `REG_SZ` (string), `REG_MULTI_SZ` (string list), `REG_BINARY` |
+| **Root Keys Used** | `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\*`, `HKEY_LOCAL_MACHINE\SOFTWARE\*`, `HKEY_CURRENT_USER\SOFTWARE\*` |
+| **Privilege** | HKLM writes require Administrator elevation; HKCU writes do not |
+| **Backup Method** | `reg export` to `.reg` file before modification; path stored in flight record |
+| **Rollback** | `reg import` from backup `.reg` file |
+
+**Error Handling:**
+
+| Error Code | สาเหตุ | การจัดการ |
+|------------|--------|----------|
+| `ERROR_ACCESS_DENIED` (5) | ไม่มีสิทธิ์ Administrator | แสดง toast แจ้งเตือน, log warning, skip tweak |
+| `ERROR_FILE_NOT_FOUND` (2) | Registry key/value ไม่มีอยู่ | สร้าง key ใหม่ถ้าเป็น expected path; log info |
+| `ERROR_INVALID_PARAMETER` (87) | Data type mismatch | Log error, skip tweak, แจ้งเตือนใน flight record |
+| `WinError` (general) | Registry hive locked / corrupted | Retry 1 ครั้ง, ถ้าล้มเหลวอีก → skip + log critical |
+
+**ตัวอย่างคำสั่ง:**
+```
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v HibernateEnabled /t REG_DWORD /d 0 /f
+reg export "HKLM\SYSTEM\CurrentControlSet\Control\Power" "%BACKUP_DIR%\power_backup.reg" /y
+```
+
+#### 7.2.2 Windows Services Interface
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **Tool** | `sc.exe` (primary), `PowerShell Set-Service` (fallback), `net stop/start` (legacy) |
+| **Operations** | Query status (`sc query`), Stop (`sc stop`), Disable (`sc config start=disabled`), Set Manual (`sc config start=demand`) |
+| **Data Format** | CLI text output → parsed via regex: `STATE : 4 RUNNING`, `START_TYPE : 3 DEMAND_START` |
+| **Protected Services** | WinDefend, SecurityHealthService, wscsvc, WdNisSvc, EventLog, wuauserv — **NEVER disabled** (Never-Disable Policy) |
+| **Privilege** | ทุก operation ต้องการ Administrator |
+| **Backup** | บันทึก startup type เดิม (`sc qc <service>`) ก่อน modify; เก็บใน flight record |
+| **Rollback** | `sc config <service> start=<original_type>` + `sc start <service>` |
+
+**Error Handling:**
+
+| Error Code | สาเหตุ | การจัดการ |
+|------------|--------|----------|
+| `ERROR_SERVICE_DOES_NOT_EXIST` (1060) | Service ไม่มีใน OS version นี้ | Log info, skip — ไม่ถือเป็น failure |
+| `ERROR_DEPENDENT_SERVICES_RUNNING` (1051) | Service มี dependents ที่ running | Stop dependents ก่อน (ถ้าอยู่ใน safe list) หรือ skip |
+| `ERROR_SERVICE_NOT_ACTIVE` (1062) | Service หยุดอยู่แล้ว | Log info, ดำเนินการ disable ต่อ |
+| `ERROR_ACCESS_DENIED` (5) | ไม่มีสิทธิ์ | แสดง toast แจ้งเตือน, skip |
+
+**ตัวอย่างคำสั่ง:**
+```
+sc query "DiagTrack" | findstr STATE
+sc config "DiagTrack" start=disabled
+sc stop "DiagTrack"
+```
+
+#### 7.2.3 BCDEdit Interface
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **Tool** | `bcdedit.exe` (system binary, no alternative) |
+| **Operations** | Query (`bcdedit /enum`), Set value (`bcdedit /set`), Delete value (`bcdedit /deletevalue`) |
+| **Data Format** | Text output → parsed line-by-line; values are string identifiers or hex |
+| **Scope** | Boot Configuration Data store — affects boot behavior, requires reboot to apply |
+| **Key Parameters** | `{current}` identifier, `disabledynamictick`, `tscsyncpolicy`, `useplatformtick`, `useplatformclock` |
+| **Privilege** | Administrator required; operates on system BCD store |
+| **Backup** | `bcdedit /export "%BACKUP_DIR%\bcd_backup"` before any modification |
+| **Rollback** | `bcdedit /import "%BACKUP_DIR%\bcd_backup"` or `bcdedit /deletevalue {current} <param>` |
+
+**Error Handling:**
+
+| Error Code | สาเหตุ | การจัดการ |
+|------------|--------|----------|
+| Exit code 1 | Parameter ไม่รองรับใน OS version | Log warning, skip — เช่น `tscsyncpolicy` ไม่มีใน Windows 10 build เก่า |
+| `ERROR_ACCESS_DENIED` | ไม่มีสิทธิ์ Administrator | แจ้งเตือน, abort BCD operations ทั้งหมด |
+| Reboot required | BCD changes ไม่ apply ทันที | แจ้งผู้ใช้ว่าต้อง restart; log pending status |
+
+**ตัวอย่างคำสั่ง:**
+```
+bcdedit /export "C:\ClutchG\backup\bcd_backup_20260410"
+bcdedit /set {current} disabledynamictick yes
+bcdedit /set {current} tscsyncpolicy enhanced
+```
+
+#### 7.2.4 PowerShell Interface
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **Tool** | `powershell.exe` / `pwsh.exe` invoked via Python `subprocess.run()` |
+| **Execution Policy** | `-ExecutionPolicy Bypass` per-invocation (ไม่แก้ system policy) |
+| **Operations** | System restore point (`Checkpoint-Computer`), WMI queries (`Get-CimInstance`), Scheduled task management, Windows feature management |
+| **Data Format** | Output captured as UTF-8 text; structured data via `-Format List` or `ConvertTo-Json` |
+| **Privilege** | Restore point creation requires Administrator; WMI queries ส่วนใหญ่ไม่ต้อง |
+| **Timeout** | 60 วินาที default; restore point creation อาจใช้เวลา 30–120 วินาที |
+| **Encoding** | Force UTF-8: `[Console]::OutputEncoding = [Text.Encoding]::UTF8` |
+
+**Error Handling:**
+
+| Error Code | สาเหตุ | การจัดการ |
+|------------|--------|----------|
+| Exit code 1 | Command syntax error หรือ cmdlet not found | Log error + full stderr, skip operation |
+| `TimeoutExpired` | Operation เกิน timeout | Kill process, log timeout, แจ้งผู้ใช้ |
+| `SubprocessError` | PowerShell crash / not installed | Fallback to `cmd.exe` alternative ถ้ามี; log critical |
+| Restore point limit | Windows จำกัด 1 restore point / 24 ชม. | ตรวจสอบ timestamp ก่อนสร้าง; skip ถ้าเพิ่งสร้าง |
+
+**ตัวอย่างคำสั่ง:**
+```powershell
+powershell -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Description 'ClutchG Pre-Optimization' -RestorePointType MODIFY_SETTINGS"
+powershell -Command "Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,MaxClockSpeed | ConvertTo-Json"
+```
+
+#### 7.2.5 File System Interface
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **Library** | `pathlib.Path` (primary), `json` (config/data), `shutil` (backup copy), `os` (permissions) |
+| **Base Directory** | `%LOCALAPPDATA%\ClutchG\` (per-user) หรือ `clutchg/data/` (development) |
+| **Data Format** | JSON (`indent=2`, UTF-8 with BOM for Windows compatibility) |
+| **Key Files** | `config.json` (user settings), `flight_record.json` (audit log), `backup/` (registry exports), `profiles/` (custom profiles) |
+| **Encoding** | UTF-8 throughout; `open(..., encoding="utf-8")` enforced |
+| **Privilege** | User-space writes (`%LOCALAPPDATA%`); ไม่ต้องการ admin สำหรับ config/log |
+| **Concurrency** | Single-process; no file locking required |
+
+**File Structure:**
+```
+%LOCALAPPDATA%\ClutchG\
+├── config.json              # User preferences (theme, language, profile)
+├── flight_record.json       # Audit trail: all tweaks applied/reverted
+├── backup/
+│   ├── registry/            # .reg export files (timestamped)
+│   ├── bcd/                 # BCD backup files
+│   └── services/            # Service state snapshots
+└── logs/
+    └── clutchg_YYYYMMDD.log # Daily log rotation
+```
+
+**Error Handling:**
+
+| Error | สาเหตุ | การจัดการ |
+|-------|--------|----------|
+| `FileNotFoundError` | Config file ไม่มี (first run) | สร้าง default config อัตโนมัติ |
+| `PermissionError` | Directory ถูก lock โดย antivirus | Retry 1 ครั้ง; ถ้าล้มเหลว → แจ้งผู้ใช้ |
+| `json.JSONDecodeError` | Config file เสียหาย | Backup corrupted file, สร้าง default ใหม่, log warning |
+| Disk full | ไม่สามารถเขียน backup/log | ตรวจสอบ free space ก่อนเริ่ม; แจ้งเตือนถ้า < 100 MB |
+
+**ตัวอย่าง JSON (flight_record.json):**
+```json
+{
+  "version": "2.0",
+  "session_id": "20260410_143022",
+  "entries": [
+    {
+      "timestamp": "2026-04-10T14:30:25",
+      "action": "apply",
+      "tweak_id": "disable_hibernation",
+      "category": "power",
+      "risk_level": "LOW",
+      "backup_path": "backup/registry/power_20260410.reg",
+      "status": "success"
+    }
+  ]
+}
+```
+
+### 7.3 Interface Security Considerations
+
+| มาตรการ | รายละเอียด |
+|---------|-----------|
+| **Privilege Escalation** | ตรวจสอบ admin rights ผ่าน `ctypes.windll.shell32.IsUserAnAdmin()` ก่อนทุก system-level operation |
+| **Input Sanitization** | ไม่รับ user input โดยตรงใน shell commands; ใช้ parameterized paths เท่านั้น |
+| **Dangerous Pattern Detection** | 18 patterns ตรวจจับคำสั่งอันตราย เช่น `format`, `del /f /s`, `rd /s /q` ก่อน execute |
+| **Never-Disable Policy** | Hardcoded list ของ 6 protected features ที่ห้าม disable ตลอดเวลา |
+| **Audit Trail** | ทุก operation บันทึกใน flight record — สามารถ trace กลับได้ 100% |
+| **Backup Verification** | ตรวจสอบว่า backup file ถูกสร้างสำเร็จก่อนดำเนินการ modify |
+
+### 7.4 Cross-Reference to UML/Behavioral Diagrams
+
+เอกสาร SRS ฉบับนี้เชื่อมโยงกับแผนภาพ UML และ behavioral diagrams ใน **Appendix-A-UML-Diagrams.md** ดังนี้:
+
+| Diagram Type | Section in Appendix A | เชื่อมโยง SRS Section | วัตถุประสงค์ |
+|-------------|----------------------|---------------------|-------------|
+| **Use Case Diagram** | §1 | §3 Use Case Catalog (UC-01 ถึง UC-16) | แสดง actor-system interactions, include/extend relationships |
+| **Class Diagram** | §2 | §5 Data Dictionary, §6 Architecture | แสดงโครงสร้าง class ของ core modules, relationships ระหว่าง TweakRegistry, ProfileManager, BatchParser |
+| **Sequence Diagram — Apply Optimization** | §3.1 | UC-03, FR-SD-01~07 | แสดง flow การ apply tweak: UI → ActionCatalog → BatchParser → subprocess → FlightRecorder |
+| **Sequence Diagram — Backup & Restore** | §3.2 | UC-07~08, FR-BK-01~05 | แสดง flow การสร้าง backup, restore, verify integrity |
+| **Activity Diagram — Safety Validation** | §4.1 | §4 NFR (NFR-01, NFR-02), FR-SD-09 | แสดง decision flow ของ safety check: Never-Disable → Dangerous Pattern → Risk Assessment → Execute/Block |
+| **Activity Diagram — Profile Selection** | §4.2 | UC-04, FR-PM-01~10 | แสดง flow การเลือก profile, compare tweaks, apply selected profile |
+| **State Diagram — Tweak Lifecycle** | §5 | §5 Data Dictionary (Tweak entity) | แสดง state transitions: Available → Selected → Applying → Applied → Reverting → Reverted |
+| **Component Diagram** | §6 | §6 Architecture Overview | แสดง 5 layers: GUI → Core → Batch Engine → Windows API → OS |
+| **Deployment Diagram** | §7 | §7 Interface Requirements | แสดง physical deployment: Dev Machine → PyInstaller → Target Windows |
+
+> **หมายเหตุ:** แผนภาพทั้งหมดเขียนด้วย Mermaid syntax สามารถ render ได้ใน GitHub/GitLab Markdown viewers
+
 ---
 
-## 8. บันทึกการแก้ไข (Revision History)
+## 8. การอนุมัติเอกสารความต้องการ (Requirements Approval)
+
+### 8.1 ผู้มีส่วนร่วมในการทบทวน
+
+| บทบาท | ชื่อ | ความรับผิดชอบ |
+|--------|------|--------------|
+| **ผู้จัดทำ (Author)** | nextzus | จัดทำและปรับปรุง SRS, รวบรวมความต้องการจากการวิเคราะห์ 23 open-source repos |
+| **ผู้ทบทวน (Reviewer)** | ผศ.ดร.ภัทรหทัย ณ ลำพูน | ทบทวนความถูกต้อง ความครบถ้วน ความสอดคล้องกับวัตถุประสงค์วิจัย |
+| **ผู้อนุมัติ (Approver)** | ผศ.ดร.ภัทรหทัย ณ ลำพูน | อนุมัติ SRS baseline สำหรับการพัฒนา |
+
+### 8.2 บันทึกการทบทวนและอนุมัติ
+
+| เวอร์ชัน | วันที่ทบทวน | ผู้ทบทวน | ผลลัพธ์ | หมายเหตุ |
+|---------|-----------|---------|---------|---------|
+| 1.0 | 2025-01-20 | ผศ.ดร.ภัทรหทัย | Approved with comments | เพิ่ม safety requirements |
+| 2.0 | 2025-06-10 | ผศ.ดร.ภัทรหทัย | Approved with comments | ปรับ GUI requirements ให้ชัดเจน |
+| 3.0 | 2026-03-10 | ผศ.ดร.ภัทรหทัย | Approved | ISO 29110 alignment verified |
+| 3.2 | 2026-04-10 | ผศ.ดร.ภัทรหทัย | Approved | Phase 11 refactor scope confirmed |
+
+### 8.3 เกณฑ์การอนุมัติ (Approval Criteria)
+
+ตาม **Quality Gateway** (SE 721) — SRS ต้องผ่าน 7 เกณฑ์:
+
+| # | เกณฑ์ | สถานะ |
+|---|--------|-------|
+| QG-1 | ทุก FR มี unique ID และ priority (MoSCoW) | PASS |
+| QG-2 | ทุก NFR มี Fit Criteria ที่วัดได้ | PASS |
+| QG-3 | ทุก Use Case มี pre/post-conditions | PASS |
+| QG-4 | ไม่มี TBD/TBC ค้างใน requirements | PASS |
+| QG-5 | Traceability: ทุก FR → Design → Test | PASS (ดู 06-Traceability-Record.md) |
+| QG-6 | NFR ครอบคลุม 8 categories ตาม ISO 25010 | PASS (17 NFRs, 8 categories) |
+| QG-7 | Stakeholder review completed | PASS |
+
+---
+
+## 9. บันทึกการแก้ไข (Revision History)
 
 | เวอร์ชัน | วันที่ | ผู้แก้ไข | คำอธิบาย |
 |---------|-------|---------|---------|
@@ -602,3 +829,5 @@ ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น
 | 2.5 | 2025-10-01 | nextzus | เพิ่ม safety system, flight recorder |
 | 3.0 | 2026-03-04 | nextzus | ปรับปรุง ISO29110, 48 tweaks ครบ, data dictionary, use cases |
 | 3.1 | 2026-04-06 | nextzus | เพิ่ม SE academic enrichment: RE 7-step process (SE 721), Requirements Pyramid, MoSCoW priority table, NFR 8 sub-categories ตาม ISO 25010, UC Catalog 16 UCs + include/extend, Quality Gateway 7 checks |
+| 3.2 | 2026-04-10 | nextzus | Phase 11 Recommendation Refactor: อัปเดต FR-SD-07 เป็น RecommendationService dual-path, ปรับจำนวน tweaks 48→56, profiles 17/35/48→14/44/56, tests 372→496+, views 6→5, อัปเดต UI stack (Sun Valley dark, Tabler Icons, Figtree) |
+| 3.3 | 2026-04-12 | nextzus | เพิ่ม §7.2 External Interface details (5 interfaces with data formats, protocols, error codes), §7.3 Interface Security, §7.4 UML cross-references, §8 Requirements Approval/Sign-off |

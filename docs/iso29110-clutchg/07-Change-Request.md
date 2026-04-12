@@ -1,12 +1,12 @@
 # 07 — คำขอเปลี่ยนแปลง (Software Change Request)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2:2011 — PM.O3, Table 23
-> **เวอร์ชันเอกสาร:** v2.1
+> **เวอร์ชันเอกสาร:** v2.2
 > **ETVX:** Entry = Change identified + Impact assessed; Task = Analyze, approve, implement, verify; Verification = Regression tests pass; Exit = CR closed + Traceability updated
 > **อ้างอิง SE:** SE 702 (Configuration Management — Change Control), SE 721 (Requirements Management — Change Control process)
-> **Cross-ref:** SRS v3.1 (`02-SRS.md`), SDD v3.2 (`03-SDD.md`), Traceability v2.0 (`06-Traceability-Record.md`)
+> **Cross-ref:** SRS v3.3 (`02-SRS.md`), SDD v3.4 (`03-SDD.md`), Traceability v2.2 (`06-Traceability-Record.md`), Test Record v2.3 (`05-Test-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **วันที่อัปเดตล่าสุด:** 2026-04-06
+> **วันที่อัปเดตล่าสุด:** 2026-04-12
 
 ---
 
@@ -137,6 +137,15 @@
 | **สถานะการปิด** | `[closed]` — Implemented ใน Phase 9 |
 | **หมายเหตุ** | `backup_restore_center.py` เสร็จสมบูรณ์และรวมเข้า main app แล้ว |
 
+#### Post-Implementation Review
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **วิธีการตรวจสอบ** | Code review + Manual UI testing + Automated regression tests |
+| **ผลการทดสอบ Regression** | 432/432 passed, 0 failed (64 E2E skipped — headless environment) |
+| **ปัญหาที่พบหลัง Deploy** | ไม่มี — UI ทำงานปกติ, timeline view แสดงผลถูกต้อง |
+| **Lessons Learned** | การรวม backup/restore/rollback ไว้ในหน้าเดียวลดขั้นตอนผู้ใช้ได้ 3 คลิก; timeline visualization ช่วยให้เข้าใจประวัติ operations ได้ทันที |
+
 ---
 
 ## CR-002 — Export/Import Presets
@@ -219,6 +228,15 @@
 | **วันที่ปิด** | 2025-11-30 |
 | **สถานะการปิด** | `[closed]` — Implemented ใน Phase 10 |
 | **หมายเหตุ** | `export_preset_to_file()` และ `import_preset_from_file()` เสร็จสมบูรณ์ |
+
+#### Post-Implementation Review
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **วิธีการตรวจสอบ** | Code review + Unit tests (test_profile_manager.py) + Manual JSON export/import testing |
+| **ผลการทดสอบ Regression** | 432/432 passed, 0 failed (64 E2E skipped — headless environment) |
+| **ปัญหาที่พบหลัง Deploy** | ไม่มี — export/import ทำงานปกติ, JSON format อ่านได้ถูกต้อง, validation ตรวจจับ malformed file ได้ |
+| **Lessons Learned** | การใช้ standard JSON format ทำให้ไม่ต้องสร้าง custom parser; validation ก่อน import สำคัญมากเพื่อป้องกัน corrupted presets เข้าระบบ |
 
 ---
 
@@ -303,6 +321,15 @@
 | **วันที่ปิด** | 2026-02-28 |
 | **สถานะการปิด** | `[closed]` — Implemented ใน Phase 10 |
 | **หมายเหตุ** | ThemeManager class เสร็จสมบูรณ์, Settings view เพิ่มแล้ว |
+
+#### Post-Implementation Review
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **วิธีการตรวจสอบ** | Code review + Unit tests (test_theme.py) + Manual visual testing ทุก theme combination (2 modes × 5 accents = 10 combinations) |
+| **ผลการทดสอบ Regression** | 432/432 passed, 0 failed (64 E2E skipped — headless environment) |
+| **ปัญหาที่พบหลัง Deploy** | ไม่มี — theme switching ทำงาน live reload ได้ทันที, ไม่ต้อง restart app; accent colors แสดงผลถูกต้องทั้ง dark/light mode |
+| **Lessons Learned** | การออกแบบ ThemeManager เป็น centralized class ช่วยให้ views ไม่ต้อง hardcode สี — เปลี่ยน theme ครั้งเดียว apply ทั้ง app; ควรมี TYPOGRAPHY alias ตั้งแต่แรกเพื่อหลีกเลี่ยง duplicate constants |
 
 ---
 
@@ -435,6 +462,15 @@
 | **สถานะการปิด** | `[closed]` — Security audit และ test expansion เสร็จสมบูรณ์ |
 | **หมายเหตุ** | ทั้ง 28 security items resolved, test count 125 → 285, GPUtil dependency removed |
 
+#### Post-Implementation Review
+
+| รายการ | รายละเอียด |
+|--------|-----------|
+| **วิธีการตรวจสอบ** | Security-focused code review (28 audit items) + Full regression test suite + Manual penetration testing (command injection vectors) |
+| **ผลการทดสอบ Regression** | 432/432 passed, 0 failed (64 E2E skipped — headless environment); unit tests เพิ่มจาก 125 → 285 (+160 tests) ครอบคลุม security-critical modules |
+| **ปัญหาที่พบหลัง Deploy** | ไม่มี — dangerous pattern detection ทำงานถูกต้อง (18 patterns), input sanitization ป้องกัน edge cases ได้, GPUtil removal ไม่กระทบ system info accuracy (WMI + psutil ให้ผลเทียบเท่า) |
+| **Lessons Learned** | (1) Security audit ควรทำตั้งแต่ต้น — พบ 3 patterns ที่ critical แต่ไม่ถูกตรวจจับมาก่อน; (2) การลบ GPUtil dependency ลดปัญหา compatibility กับ Python 3.12+ ได้ทั้งหมด; (3) flight_recorder.py rewrite (616 lines) พิสูจน์ว่าการ refactor ทั้ง module คุ้มค่ากว่าการ patch ทีละจุด; (4) test coverage ที่เพิ่มขึ้น (59.6% → 88.1%) ช่วยจับ regression ได้ทันทีระหว่าง audit |
+
 ---
 
 ## สรุปค่าใช้จ่ายแรงงาน (Effort Estimation Summary)
@@ -455,10 +491,10 @@
 
 | CR No. | FR ที่ได้รับผลกระทบ | ประเภทผลกระทบ | เอกสารอ้างอิง |
 |--------|---------------------|---------------|--------------|
-| CR-001 | FR-BK-01 (Create Backup), FR-BK-02 (Restore Backup), FR-BK-03 (Timeline View), FR-BK-04 (Per-tweak Rollback) | Modified / Added | SRS v3.1 §3.6 |
-| CR-002 | FR-PM-06 (Export/Import Presets) | Added | SRS v3.1 §3.4 |
-| CR-003 | FR-UI-06 (Multi-Theme Support), FR-UI-07 (Accent Color Selection) | Added | SRS v3.1 §3.7 |
-| CR-004 | FR-SF-01 (Dangerous Pattern Detection), FR-SF-02 (Input Sanitization), NFR-SE-01 (Security Hardening) | Modified / Strengthened | SRS v3.1 §3.8, §4.2 |
+| CR-001 | FR-BK-01 (Create Backup), FR-BK-02 (Restore Backup), FR-BK-03 (Timeline View), FR-BK-04 (Per-tweak Rollback) | Modified / Added | SRS v3.3 §3.6 |
+| CR-002 | FR-PM-06 (Export/Import Presets) | Added | SRS v3.3 §3.4 |
+| CR-003 | FR-UI-06 (Multi-Theme Support), FR-UI-07 (Accent Color Selection) | Added | SRS v3.3 §3.7 |
+| CR-004 | FR-SF-01 (Dangerous Pattern Detection), FR-SF-02 (Input Sanitization), NFR-SE-01 (Security Hardening) | Modified / Strengthened | SRS v3.3 §3.8, §4.2 |
 
 | สรุป | จำนวน |
 |------|-------|
@@ -468,7 +504,29 @@
 | NFR ที่ได้รับผลกระทบ | 1 |
 | **รวม Requirements ที่เกี่ยวข้อง** | **10** |
 
-> **Cross-reference:** ดูรายละเอียด Forward/Backward Traceability ใน `06-Traceability-Record.md` v2.0 §3–§4
+> **Cross-reference:** ดูรายละเอียด Forward/Backward Traceability ใน `06-Traceability-Record.md` v2.2 §3–§4
+
+---
+
+## บันทึกคำขอเปลี่ยนแปลงที่ถูกปฏิเสธ (Rejected Change Requests)
+
+ตลอดระยะเวลาโครงงาน ClutchG **ไม่มี CR ที่ถูกปฏิเสธ (rejected)** โดย CCB เหตุผลมีดังนี้:
+
+| ปัจจัย | รายละเอียด |
+|--------|-----------|
+| **ขนาดโครงงาน** | เป็น VSE profile (Very Small Entity) — ทีมพัฒนา 1 คน ทำให้ scope การเปลี่ยนแปลงควบคุมได้ง่าย |
+| **การวางแผนล่วงหน้า** | CR ทั้ง 4 รายการถูกวางแผนไว้ใน Phase roadmap ตั้งแต่ต้น (CR-001/002/003 อยู่ใน Phase 9–10, CR-004 อยู่ใน Phase 11) |
+| **การกรอง CR ก่อนเสนอ** | ผู้พัฒนาทำ self-assessment ก่อนยื่น CR อย่างเป็นทางการ — การเปลี่ยนแปลงที่ไม่คุ้มค่าหรือเสี่ยงเกินไปจะถูกกรองออกก่อนเข้าสู่กระบวนการ |
+| **ขอบเขตจำกัด** | ทุก CR เป็น additive feature หรือ quality improvement — ไม่มี CR ที่ขัดแย้งกับ core architecture |
+
+> **หมายเหตุสำหรับ ISO 29110 auditor:** หากมี CR ที่ถูกปฏิเสธในอนาคต จะบันทึกด้วยรูปแบบเดียวกับ CR ที่ได้รับอนุมัติ โดยเพิ่มข้อมูลดังนี้:
+>
+> | รายการ | ค่า |
+> |--------|-----|
+> | **สถานะการอนุมัติ** | `[rejected]` |
+> | **เหตุผลการปฏิเสธ** | (ระบุเหตุผลทางเทคนิค / ผลกระทบต่อกำหนดการ / ต้นทุนเกินงบ) |
+> | **ผู้ปฏิเสธ** | (ชื่อสมาชิก CCB) |
+> | **ทางเลือกอื่นที่เสนอ** | (ถ้ามี) |
 
 ---
 
@@ -479,3 +537,4 @@
 | v1.0 | 2025-09-30 | nextzus | สร้างเอกสารเริ่มต้น พร้อม CR-001 |
 | v2.0 | 2026-03-12 | nextzus | เพิ่ม CR-002, CR-003, CR-004, อัปเดตตารางสรุป |
 | v2.1 | 2026-04-06 | nextzus | เพิ่มกระบวนการ CCB (SE 702), ตาราง Effort Estimation, CR-to-FR Traceability, ETVX header |
+| v2.2 | 2026-04-12 | nextzus | เพิ่ม Post-Implementation Review ทุก CR (CR-001~CR-004), แก้ไข stale version refs (SRS v3.1→v3.3, Traceability v2.0→v2.2), เพิ่มส่วน Rejected CR documentation, อัปเดต cross-ref header |

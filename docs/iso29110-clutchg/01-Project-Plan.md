@@ -2,7 +2,7 @@
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — PM.O1 (Project Plan)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 2.0 | **วันที่:** 2026-03-04 | **ผู้จัดทำ:** nextzus
+> **เวอร์ชัน:** 3.1 | **วันที่:** 2026-04-12 | **ผู้จัดทำ:** nextzus
 > **อ้างอิง:** PMBOK Guide 7th Ed, ISO/IEC 29110 PM Process, SE 781/725 PM Sessions
 > **ETVX:** PM.1 Entry=Thesis proposal approved → Task=Create Plan+CM → Validation=Advisor review → Exit=Plan baselined
 
@@ -15,7 +15,7 @@
 | ชื่อโครงงาน | ClutchG PC Optimizer — Evidence-Based Windows Optimization Tool |
 | ประเภท | Independent Study (IS) / โครงงานวิศวกรรมซอฟต์แวร์ |
 | ผู้จัดทำ | nextzus |
-| อาจารย์ที่ปรึกษา | [ระบุชื่ออาจารย์ที่ปรึกษา] |
+| อาจารย์ที่ปรึกษา | ผศ.ดร.ภัทรหทัย ณ ลำพูน |
 | สาขาวิชา | วิศวกรรมซอฟต์แวร์ (Software Engineering) |
 | สถาบัน | CAMT, มหาวิทยาลัยเชียงใหม่ |
 | เวอร์ชัน SE Lifecycle | ISO/IEC 29110 Basic Profile |
@@ -129,7 +129,7 @@ ClutchG PC Optimizer (IS Project)
 
 | WBS | Work Package | Duration | Deliverable | Predecessor |
 |-----|-------------|----------|------------|-------------|
-| 1.1 | Repository Analysis | 2 months | 28 repo analysis docs | — |
+| 1.1 | Repository Analysis | 2 months | 23 repo analysis docs | — |
 | 1.2 | Tweak Taxonomy | 1 month | Taxonomy document | 1.1 |
 | 1.3 | Risk Classification | 0.5 month | Risk framework | 1.2 |
 | 2.1 | SRS Document | 1 month | SRS v3.0 | 1.3 |
@@ -428,7 +428,7 @@ Impact ↑
 |---------|----------------|
 | ระบุ Stakeholders | ผู้ใช้ 3 กลุ่ม (Beginner/Gamer/Power User), อาจารย์ที่ปรึกษา |
 | สร้าง Project Charter | แบบขออนุมัติหัวข้อ (`docs/แบบขออนุมัติหัวข้อฯ.pdf`) |
-| กำหนด scope เบื้องต้น | "Safe Windows optimizer based on 28-repo research" |
+| กำหนด scope เบื้องต้น | "Safe Windows optimizer based on 23-repo research" |
 | ได้รับอนุมัติ | อาจารย์ที่ปรึกษา approve thesis proposal |
 
 ### 13.2 Planning
@@ -468,5 +468,141 @@ Impact ↑
 |---------|----------------|-------|
 | ส่งมอบผลิตภัณฑ์ | `clutchg/dist/ClutchG.exe` | อยู่ระหว่างดำเนินการ |
 | ส่ง thesis document | Thesis chapters + IS document | อยู่ระหว่างดำเนินการ |
-| Lessons learned | จะบันทึกหลัง defense | Pending |
+| Lessons learned | ดู §14 Lessons Learned | ✅ บันทึกแล้ว |
 | Archive records | Git repository complete | Ready |
+
+---
+
+## 14. Lessons Learned
+
+> **อ้างอิง:** SE 781 — Closing Process Group (Lessons Learned Documentation)
+> บันทึกบทเรียนที่ได้จากการดำเนินโครงงาน ClutchG ตลอด 15 เดือน เพื่อเป็นประโยชน์สำหรับโครงงานในอนาคต
+
+### 14.1 Research & Methodology
+
+| หมวด | บทเรียน | ผลกระทบ |
+|------|---------|---------|
+| Systematic Literature Review | การวิเคราะห์ 23 repositories (50,000+ lines) ก่อนเริ่มพัฒนาช่วยให้เข้าใจ landscape ของ Windows optimization tools ได้ครอบคลุม สามารถแยก evidence-based tweaks ออกจาก myths/placebos ได้ตั้งแต่ต้น | ลดเวลา design rework เพราะมี taxonomy ชัดเจนก่อนเขียนโค้ด |
+| Risk Classification Framework | การสร้าง 3-tier risk framework (LOW/MEDIUM/HIGH) ตั้งแต่ phase วิจัย ทำให้การตัดสินใจด้าน safety มีเกณฑ์ชัดเจน ไม่ต้องตัดสินใจแบบ ad hoc ระหว่างพัฒนา | ทุก tweak มี risk level ที่ตรวจสอบได้ ลดโอกาสเกิดปัญหาด้าน safety |
+| Evidence-Based Approach | การกำหนดว่าทุก tweak ต้องมี technical justification ที่บันทึกไว้ ป้องกันการเพิ่ม placebo tweaks ที่พบบ่อยใน open-source optimizers | สร้างความน่าเชื่อถือของซอฟต์แวร์ แตกต่างจาก competitors ที่โฆษณาเกินจริง |
+
+### 14.2 Architecture & Design Decisions
+
+| หมวด | บทเรียน | ผลกระทบ |
+|------|---------|---------|
+| Safety-First Architecture | การออกแบบ Never-Disable Policy ตั้งแต่ต้น (ห้ามปิด Defender, UAC, DEP, ASLR, CFG, Windows Update) ช่วยลดความเสี่ยง และเป็นจุดแข็งในการ defense | ไม่มี safety incident ตลอดการพัฒนาและทดสอบ |
+| Layered Architecture | การแยก Core (business logic) ออกจาก GUI (views) ทำให้ทดสอบ business logic ได้โดยไม่ต้องมี GUI ส่งผลให้ coverage สูงขึ้น | Unit tests ครอบคลุม 85–92% สำหรับ key modules โดยไม่ต้อง display |
+| Tweak Registry as Single Source | การรวม tweak metadata ทั้งหมดไว้ใน `tweak_registry.py` แทนที่จะกระจายในหลายไฟล์ ทำให้ maintain ง่ายและ consistency สูง | เพิ่ม tweaks จาก 20 → 56 ได้โดยไม่ต้องแก้ไขหลายจุด |
+| GPUtil Removal (CR-002) | Library ภายนอก (GPUtil) หยุดอัปเดตและมี compatibility issues — การ refactor ใช้ WMI + psutil fallback แทนลด dependency risk | ลด dependency จาก 7 เหลือ 6 packages, เพิ่มความเสถียร |
+
+### 14.3 Testing Strategy
+
+| หมวด | บทเรียน | ผลกระทบ |
+|------|---------|---------|
+| Early Test Investment | การเขียน test framework ตั้งแต่ Phase 4 (ไม่ใช่ Phase 8 ตามแผนเดิม) ช่วยจับ bugs ได้เร็วขึ้น DRE สะสม = 100% pre-release | ไม่มี defect หลุดไป production |
+| Security Audit as Separate Phase | การทำ Security Audit (CR-004) แยกเป็น Phase 11a เพิ่ม 160 security tests ที่ไม่อยู่ในแผนเดิม ใช้เวลาเกิน 8 ชม. แต่คุ้มค่า | พบและแก้ 11 security-related defects ก่อน release |
+| E2E Limitation in Headless | E2E tests 64 ชุดต้อง skip ในสภาพแวดล้อมที่ไม่มี display ส่งผลให้ overall coverage ต่ำกว่าที่ควร ควรวางแผน headless testing strategy ตั้งแต่ต้น | Coverage รายงานต่ำกว่าจริง (~65% vs ~80% ถ้ารวม E2E) |
+| Recommendation Refactor (Phase 11b) | การ refactor แยก RecommendationService ออกจาก SystemDetector ช่วยให้ test ง่ายขึ้นมาก (18 tests สำหรับ recommendation logic แยกจาก hardware detection) | SRP compliance ดีขึ้น, coverage recommendation_service = 92% |
+
+### 14.4 ISO 29110 Compliance
+
+| หมวด | บทเรียน | ผลกระทบ |
+|------|---------|---------|
+| Document-First vs Code-First | การเขียน SRS/SDD ก่อนเริ่ม coding (Waterfall-like documentation) ช่วยให้ traceability ชัดเจน แต่ต้อง update เอกสารบ่อยเมื่อ design เปลี่ยน | Trade-off: traceability 88.1% แต่ revision history ยาว (SRS v3.2, SDD v3.3) |
+| ETVX Model | การใช้ ETVX (Entry-Task-Verification-Exit) headers ในทุกเอกสาร ISO ช่วยให้ตรวจสอบ completeness ของแต่ละ work product ได้ง่าย | ISO auditor สามารถตรวจ criteria ได้โดยตรงจาก header |
+| Solo Developer + ISO 29110 | ISO 29110 ออกแบบสำหรับ VSE (1–25 คน) แต่ solo developer ต้องรับทุกบทบาท (PM, developer, tester, CM) ทำให้ overhead เอกสารสูง | บทเรียน: ใช้ template ที่ปรับให้เหมาะกับ 1-person team, merge roles ที่ซ้อนทับ |
+
+### 14.5 Solo Developer Challenges
+
+| หมวด | บทเรียน | ผลกระทบ |
+|------|---------|---------|
+| No Peer Review | ไม่มี code review จากคนอื่น ต้องใช้ static analysis + comprehensive tests แทน | ใช้ test suite เป็น safety net แทน human review |
+| Scope Creep | Feature freeze หลัง v2.0 มีความสำคัญ — ป้องกันไม่ให้เพิ่ม features ใหม่โดยไม่จำเป็นในช่วง documentation phase | 4 CRs ทั้งหมดเป็น corrective/improvement ไม่ใช่ new features |
+| Time Management | EVM tracking (CPI=1.005, SPI=1.061) ช่วยให้เห็นสถานะจริงเทียบกับแผน การที่ Phase 8 และ 11 เกินงบรวม 40 ชม. ยังอยู่ในขอบเขตที่รับได้ | โครงงานเสร็จภายใน BAC 1,300 ชม. (EAC = 1,294 ชม.) |
+
+---
+
+## 15. Stakeholder Register
+
+> **อ้างอิง:** SE 781 — Initiating Process Group (Identify Stakeholders)
+> **Power/Interest Grid:** จัดกลุ่ม stakeholders ตามระดับอำนาจ (Power) และความสนใจ (Interest)
+
+### 15.1 Stakeholder Identification
+
+| ID | Stakeholder | บทบาท | Power | Interest | กลยุทธ์การจัดการ |
+|----|------------|-------|-------|----------|----------------|
+| STK-01 | ผศ.ดร.ภัทรหทัย ณ ลำพูน | อาจารย์ที่ปรึกษา (Advisor) | High | High | **Manage Closely** — รายงานความคืบหน้าสม่ำเสมอ, ขอ feedback ทุก milestone |
+| STK-02 | nextzus (ผู้พัฒนา) | Developer / PM / Tester / CM | High | High | **Self-managed** — ใช้ EVM + ISO 29110 tracking |
+| STK-03 | กรรมการสอบ | Thesis Committee | High | Medium | **Keep Satisfied** — เตรียมเอกสาร ISO ครบ, defense presentation ชัดเจน |
+| STK-04 | Beginner Users | End user กลุ่ม 1 | Low | High | **Keep Informed** — UI ใช้งานง่าย, Welcome Overlay, Help system |
+| STK-05 | Gamers | End user กลุ่ม 2 | Low | High | **Keep Informed** — COMPETITIVE profile, FPS gain display, risk badges |
+| STK-06 | Power Users | End user กลุ่ม 3 | Low | Medium | **Monitor** — EXTREME profile, per-tweak control, export/import presets |
+| STK-07 | CAMT / มช. | สถาบันการศึกษา | Medium | Low | **Keep Satisfied** — ปฏิบัติตามระเบียบวิทยานิพนธ์, ISO 29110 compliance |
+
+### 15.2 Power/Interest Grid
+
+```
+          High Power
+              │
+    STK-03    │    STK-01, STK-02
+  (Committee) │  (Advisor, Developer)
+   Keep       │   Manage
+   Satisfied  │   Closely
+──────────────┼──────────────────
+    STK-07    │    STK-04, STK-05
+   (CAMT)     │  (Beginner, Gamer)
+   Monitor    │   Keep Informed
+              │        STK-06
+              │    (Power User)
+          Low Power
+    Low Interest ──── High Interest
+```
+
+### 15.3 Communication Plan Summary
+
+| Stakeholder | ช่องทาง | ความถี่ | เนื้อหาหลัก |
+|------------|---------|---------|-------------|
+| อาจารย์ที่ปรึกษา | ประชุมตัวต่อตัว / LINE | ทุก 2–4 สัปดาห์ | ความคืบหน้า, ปัญหา, ขออนุมัติ |
+| กรรมการสอบ | เอกสาร thesis + defense | ตาม milestone | Thesis chapters, ISO documents |
+| End users (ทุกกลุ่ม) | GitHub README, in-app Help | ต่อเนื่อง | User Manual, release notes |
+| CAMT | ระบบส่ง thesis | ตาม deadline | Thesis document ฉบับสมบูรณ์ |
+
+---
+
+## 16. Correction Register (PM.O7)
+
+> **อ้างอิง:** ISO/IEC 29110-5-1-2 PM.O7 — Correction Register
+> บันทึก corrective actions ที่ดำเนินการเมื่อพบปัญหาหรือ non-conformance ระหว่างโครงงาน
+
+| COR-ID | วันที่พบ | แหล่งที่มา | ปัญหาที่พบ | Corrective Action | สถานะ | ผลลัพธ์ |
+|--------|---------|-----------|-----------|-------------------|-------|---------|
+| COR-01 | 2026-01 | Code Review | GPUtil library หยุด maintain, ไม่รองรับ GPU ใหม่ | Refactor `system_info.py` ใช้ 3-strategy detection (WMI → Get-PhysicalDisk → psutil fallback) | ✅ Closed | ลบ dependency, เพิ่ม reliability (CR-002) |
+| COR-02 | 2026-02 | Unit Testing | `profile_recommender.py` มี logic ซับซ้อนเกินไป, ทดสอบยาก | แยกเป็น `recommendation_service.py` (188 lines) ตาม SRP, เพิ่ม 18 dedicated tests | ✅ Closed | Coverage 92%, test isolation ดีขึ้น (Phase 11b) |
+| COR-03 | 2026-03 | Security Audit | พบ 11 security-related defects ใน code review (hardcoded paths, missing input validation, unsafe subprocess calls) | แก้ไขทั้ง 11 จุด, เพิ่ม 160 security tests, สร้าง `BUG_FIX_REPORT_2026-03-24.md` | ✅ Closed | 28/28 security checklist items PASS (CR-004) |
+| COR-04 | 2026-03 | SRS Review | SRS v2.x ไม่สะท้อน actual implementation (tweak counts, profile sizes เปลี่ยน) | อัปเดต SRS → v3.2 ให้ตรงกับ code จริง (56 tweaks, 14/44/56 profiles) | ✅ Closed | SRS-SDD-Code consistency verified |
+| COR-05 | 2026-03 | V&V Review | E2E tests 64 ชุด skip ในสภาพแวดล้อมที่ไม่มี display | บันทึกเป็น known limitation, ทดสอบ manual แทนสำหรับ UI-dependent FRs | ⚠️ Open | Accepted risk — documented in Test Record §8 |
+| COR-06 | 2026-04 | ISO Audit | User Manual v1.0 (~132 lines) ไม่ครอบคลุมฟีเจอร์ใหม่ (Welcome Overlay, Backup Center, Settings) | Expand User Manual → v3.0 (~450 lines) ครบทุก view + troubleshooting + FAQ | ✅ Closed | User Manual coverage ครบถ้วน |
+| COR-07 | 2026-04 | Document Review | Traceability Record มี 7 FRs ที่ไม่มี automated tests | บันทึก justification ว่าเป็น hardware-dependent หรือ UI-only, ทดสอบ manual ทั้งหมด | ⚠️ Open | Accepted risk — 88.1% automated coverage ผ่านเป้า 85% |
+
+### Correction Trend
+
+| เดือน | พบใหม่ | ปิดแล้ว | คงเหลือ |
+|-------|--------|---------|---------|
+| ม.ค. 2026 | 1 (COR-01) | 0 | 1 |
+| ก.พ. 2026 | 1 (COR-02) | 1 | 1 |
+| มี.ค. 2026 | 3 (COR-03~05) | 3 | 1 |
+| เม.ย. 2026 | 2 (COR-06~07) | 1 | 2 |
+| **รวม** | **7** | **5** | **2 (open)** |
+
+> **สรุป:** COR-05 และ COR-07 เป็น accepted risks ที่มี documented justification ไม่ต้องการ corrective action เพิ่มเติม
+
+---
+
+## 17. ประวัติการแก้ไข (Revision History)
+
+| เวอร์ชัน | วันที่ | ผู้แก้ไข | รายละเอียด |
+|----------|--------|---------|------------|
+| 1.0 | 2025-06-01 | nextzus | สร้างเอกสารเริ่มต้น — project info, objectives, scope, WBS, schedule, risk register |
+| 2.0 | 2026-03-04 | nextzus | อัปเดตครั้งใหญ่: ETVX header, EVM metrics, CoSQ, risk updates (R-08~R-10), communication plan, SE academic references |
+| 3.0 | 2026-04-06 | nextzus | เสริม SE academic content: PMBOK mapping, quality management plan, configuration management overview |
+| 3.1 | 2026-04-12 | nextzus | เพิ่ม §14 Lessons Learned (5 หมวด), §15 Stakeholder Register (7 stakeholders + Power/Interest grid), §16 Correction Register PM.O7 (COR-01~07), §17 Revision History |

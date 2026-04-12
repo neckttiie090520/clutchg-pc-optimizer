@@ -3,7 +3,7 @@
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O3 (Software Design)
 > **ETVX:** Entry=SRS v3.1 approved → Task=Design architecture, components, data model → Verify=SDD review → Exit=Approved SDD
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 3.2 | **วันที่:** 2026-04-06 | **อ้างอิง SRS:** v3.1
+> **เวอร์ชัน:** 3.4 | **วันที่:** 2026-04-12 | **อ้างอิง SRS:** v3.3
 > **อ้างอิง:** ISO/IEC 42010:2011, Gang of Four Design Patterns, SE 701 (Architecture & OO Design)
 
 ---
@@ -29,8 +29,8 @@ Design Decisions:
 ┌──────────────────────────────────────────────────────────────────┐
 │                    Presentation Layer (GUI)                       │
 │  ┌───────────┬────────────┬──────────┬───────────┬─────────────┐ │
-│  │ Dashboard │  Profiles  │ Scripts  │  Backup   │ Help/Settings│ │
-│  │   View    │    View    │  View    │  Center   │    View     │ │
+│  │ Dashboard │ Optimize   │  Backup  │   Help    │  Settings   │ │
+│  │   View    │ Center View│  Center  │   View    │    View     │ │
 │  └─────┬─────┴─────┬──────┴────┬─────┴─────┬─────┴──────┬──────┘ │
 │        │           │           │           │            │         │
 │  ┌─────┴───────────┴───────────┴───────────┴────────────┴──────┐ │
@@ -43,7 +43,7 @@ Design Decisions:
 │  │  ┌──────────────┐  ┌────┴──────┐  ┌──────────────────────┐  │ │
 │  │  │  ProfileMgr  │  │  Tweak    │  │  SystemDetector      │  │ │
 │  │  │  (528 lines) │  │ Registry  │  │  + BenchmarkDB       │  │ │
-│  │  │              │  │(1013 lines)│  │  + ProfileRecommender│  │ │
+│  │  │              │  │(1013 lines)│  │  + RecommendationSvc │  │ │
 │  │  └──────┬───────┘  └───────────┘  └──────────────────────┘  │ │
 │  │         │                                                     │ │
 │  │  ┌──────┴───────┐  ┌─────────────┐  ┌────────────────────┐  │ │
@@ -69,6 +69,7 @@ Design Decisions:
 | **Singleton** | TweakRegistry, FlightRecorder | ใช้ instance เดียวทั้ง app | GoF, 1994 |
 | **Observer** (Callback) | on_output, on_progress, on_tweak_status | Real-time UI updates ระหว่าง apply | GoF, 1994 |
 | **Strategy** | Profile presets (SAFE/COMPETITIVE/EXTREME) | เลือก strategy ต่างกัน | GoF, 1994 |
+| **Strategy** (Dual-path) | RecommendationService primary/fallback | เลือก recommendation path ตาม data sufficiency | GoF, 1994 |
 | **Template Method** | start_recording → record → finish_recording | Structured recording workflow | GoF, 1994 |
 | **Data Transfer Object** | Tweak, Profile, SystemProfile, TweakChange, BackupInfo | Type-safe data passing | Fowler, PoEAA |
 | **Repository** | TweakRegistry (get_all, get_by_id, get_by_category, filter) | Centralized data access | Evans, DDD |
@@ -102,13 +103,13 @@ Design Decisions:
 
 ```
 TweakRegistry (Singleton)
-├── _tweaks: Dict[str, Tweak]          # 48 tweaks indexed by ID
+├── _tweaks: Dict[str, Tweak]          # 56 tweaks indexed by ID
 ├── get_all_tweaks() → List[Tweak]
 ├── get_tweak(id) → Optional[Tweak]
 ├── get_tweaks_by_category(cat) → List[Tweak]
 ├── get_tweaks_for_preset(preset) → List[Tweak]
 ├── get_compatible_tweaks(profile) → List[Tweak]     # Filter by OS + hardware
-├── suggest_preset(profile) → Dict                    # Auto-recommend
+├── suggest_preset(profile) → Dict                    # Auto-recommend (delegates to RecommendationService)
 ├── get_category_stats() → Dict[str, int]
 ├── get_risk_distribution() → Dict[str, int]
 └── build_custom_preset(ids) → Dict                   # Validate + build
@@ -247,12 +248,64 @@ SystemDetector
 │   ├── detect_form_factor() → str      # battery check
 │   └── calculate_tier(score) → str     # entry/mid/high/enthusiast
 │
-└── recommend_profile(system) → str     # Laptop→SAFE, Desktop→score-based
+└── recommend_profile(system) → str     # Laptop→SAFE, Desktop→score-based (delegates to RecommendationService)
 
 Score Calculation:
   total_score = cpu.score(0-30) + gpu.score(0-30) + ram.score(0-20) + storage.score(0-10)
   tier = enthusiast(≥70) | high(50-69) | mid(30-49) | entry(<30)
 ```
+
+#### 2.1.6 RecommendationService (`core/recommendation_service.py` — 188 lines, ~6KB)
+**หน้าที่:** Unified dual-path profile recommendation — single authority แทน 2 ระบบเดิม (Phase 11 Refactor)
+
+```
+RecommendationService
+├── recommend_preset(profile: SystemProfile) → Recommendation
+│   ├── _has_sufficient_data(profile) → bool       # Evidence gate (4 conditions)
+│   ├── _primary_recommendation(profile) → Recommendation   # Score-based
+│   └── _fallback_recommendation(profile) → Recommendation  # Conservative heuristic
+│
+├── Recommendation (dataclass):
+│   ├── preset: str            # "SAFE" | "COMPETITIVE" | "EXTREME"
+│   ├── reason: str            # Human-readable explanation
+│   ├── source: str            # "primary" | "fallback"
+│   ├── total_score: Optional[int]
+│   └── confidence: float      # 0.3 (fallback) – 0.9 (score-based)
+│
+└── Legacy delegation:
+    ├── TweakRegistry.suggest_preset() → calls recommend_preset()
+    └── SystemDetector.recommend_profile() → calls recommend_preset()
+```
+
+**Algorithm: recommend_preset()**
+```
+Input: SystemProfile (from SystemDetector.detect_all())
+
+Step 1 — Evidence Gate (_has_sufficient_data):
+  IF total_score is None or 0 → insufficient
+  IF form_factor == "unknown" → insufficient
+  IF ram_gb <= 0 → insufficient
+  IF NOT cpu.benchmark_matched AND NOT gpu.benchmark_matched → insufficient
+
+Step 2a — Primary Path (sufficient data, confidence 0.7–0.9):
+  IF score ≥ 80 AND desktop AND ram ≥ 16GB → EXTREME (confidence 0.9)
+  IF score ≥ 50 AND ram ≥ 8GB → COMPETITIVE (confidence 0.8)
+  ELSE → SAFE (confidence 0.7)
+
+Step 2b — Fallback Path (insufficient data, confidence 0.3–0.5):
+  IF laptop → SAFE always (confidence 0.5)
+  IF desktop AND tier in {mid, high, enthusiast} → COMPETITIVE (confidence 0.4)
+  ELSE → SAFE (confidence 0.3)
+  NOTE: Fallback NEVER returns EXTREME
+
+Output: Recommendation (preset, reason, source, total_score, confidence)
+```
+
+**Design Rationale:**
+- **Single Authority:** เดิมมี 2 ระบบ (SystemDetector.recommend_profile + TweakRegistry.suggest_preset) ที่อาจขัดแย้งกัน — รวมเป็นหนึ่งเดียว
+- **Evidence Gate:** ป้องกัน EXTREME recommendation เมื่อข้อมูล hardware ไม่สมบูรณ์
+- **`benchmark_matched` field:** เพิ่มใน CPUInfo/GPUInfo dataclass เพื่อระบุว่า CPU/GPU ตรงกับ PassMark database หรือไม่
+- **Fallback ไม่แนะนำ EXTREME:** ถ้าข้อมูลไม่พอ จะแนะนำ conservative เพื่อความปลอดภัย
 
 ### 2.2 Presentation Layer (GUI)
 
@@ -282,8 +335,7 @@ ClutchGApp
 │
 ├── switch_view(name, immediate)      # View router
 │   ├── "dashboard" → DashboardView
-│   ├── "profiles" → ProfilesView
-│   ├── "scripts" → ScriptsView
+│   ├── "scripts" → ScriptsView (Optimize Center)
 │   ├── "backup" → BackupRestoreCenter
 │   ├── "help" → HelpView
 │   └── "settings" → SettingsView
@@ -296,7 +348,7 @@ ClutchGApp
 
 | View | File Size | Lines (est.) | Complexity | หน้าที่ |
 |------|----------|-------------|-----------|---------|
-| Scripts | 63.5KB | ~1800 | สูงสุด | 48 tweaks, 10 categories, checkboxes, apply |
+| Scripts | 63.5KB | ~1800 | สูงสุด | 56 tweaks, 10 categories, checkboxes, apply |
 | Backup/Restore | 35.7KB | ~1000 | สูง | Timeline, per-tweak undo, snapshot details |
 | Dashboard | 25.8KB | ~730 | ปานกลาง | System cards, score display, detection |
 | Help | 23.3KB | ~660 | ปานกลาง | Content rendering, bilingual, search |
@@ -313,7 +365,7 @@ ClutchGApp
 
 | Module | ไฟล์ | LOC | หน้าที่ | Cohesion Level | เหตุผล |
 |--------|------|-----|---------|---------------|--------|
-| TweakRegistry | `core/tweak_registry.py` | 1013 | Central knowledge base ของ 48 tweaks | **Functional** | ทุก method เกี่ยวกับ tweak data access |
+| TweakRegistry | `core/tweak_registry.py` | 1013 | Central knowledge base ของ 56 tweaks | **Functional** | ทุก method เกี่ยวกับ tweak data access |
 | ProfileManager | `core/profile_manager.py` | 528 | จัดการ preset profiles | **Functional** | ทุก method เกี่ยวกับ profile mapping |
 | FlightRecorder | `core/flight_recorder.py` | 589 | บันทึก before/after ของ changes | **Sequential** | start → record → finish flow |
 | BackupManager | `core/backup_manager.py` | 373 | สร้าง/จัดการ backups | **Functional** | ทุก method เกี่ยวกับ backup operations |
@@ -324,10 +376,10 @@ ClutchGApp
 | HelpManager | `core/help_manager.py` | ~100 | จัดการ help content | **Functional** | ทุก method เกี่ยวกับ help data |
 | BenchmarkDB | `core/benchmark_database.py` | ~450 | Hardware scoring database | **Functional** | ทุก method เกี่ยวกับ benchmark data |
 | ActionCatalog | `core/action_catalog.py` | ~300 | กำหนด optimization actions | **Functional** | ทุก method เกี่ยวกับ action definitions |
-| ProfileRecommender | `core/profile_recommender.py` | ~200 | แนะนำ profile ตาม hardware | **Functional** | ทุก method เกี่ยวกับ recommendation |
+| RecommendationService | `core/recommendation_service.py` | ~188 | Unified dual-path profile recommendation | **Functional** | ทุก method เกี่ยวกับ recommendation logic |
 | SystemSnapshot | `core/system_snapshot.py` | ~150 | สร้าง snapshot ของ system state | **Sequential** | capture → store → retrieve flow |
 
-**สรุป:** Core modules 11/13 ตัวมี **Functional Cohesion** (ระดับสูงสุด), 2 ตัวมี Sequential/Informational (ยังอยู่ในระดับดี)
+**สรุป:** Core modules 12/14 ตัวมี **Functional Cohesion** (ระดับสูงสุด), 2 ตัวมี Sequential/Informational (ยังอยู่ในระดับดี)
 
 #### 2.3.2 Cohesion — GUI Layer
 
@@ -558,12 +610,201 @@ ClutchGApp           SystemDetector       nvidia-smi    psutil    WMI    Benchma
 | Backend | Windows .bat | N/A | System-level optimization |
 | Testing | pytest | latest | Unit/Integration/E2E |
 | Testing | pytest-cov | latest | Code coverage |
-| Icons | Material Symbols | Outlined | Google font icons |
+| Icons | Tabler Icons | v3.41.1 | Bundled icon font (tabler-icons.ttf) |
 | Data | JSON | N/A | Config, backups, flight records |
 
 ---
 
-## 7. สรุปการประเมินสถาปัตยกรรม (Architecture Evaluation)
+## 7. Deployment & Infrastructure View
+
+### 7.1 Deployment Overview
+
+ClutchG เป็น standalone desktop application ที่ทำงานบนเครื่อง Windows 10/11 โดยตรง ไม่มี server-side component หรือ network dependency
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    DEVELOPMENT ENVIRONMENT                          │
+│  ┌──────────────────┐    ┌──────────────────┐                       │
+│  │  Python 3.11+    │    │  Git Repository   │                      │
+│  │  clutchg/src/    │    │  bat/ (root)      │                      │
+│  │  - main.py       │    │  - src/ (batch)   │                      │
+│  │  - core/         │    │  - clutchg/       │                      │
+│  │  - gui/          │    │  - docs/          │                      │
+│  └────────┬─────────┘    └──────────────────┘                       │
+│           │                                                         │
+│           ▼                                                         │
+│  ┌──────────────────┐                                               │
+│  │  PyInstaller     │  python build.py                              │
+│  │  --onefile       │  → clutchg/dist/ClutchG.exe                   │
+│  │  --windowed      │  (includes: Python runtime, CustomTkinter,    │
+│  │  --uac-admin     │   bundled fonts, icons, batch scripts)        │
+│  └────────┬─────────┘                                               │
+└───────────┼─────────────────────────────────────────────────────────┘
+            │
+            ▼ Distribution (USB / file share / direct copy)
+┌─────────────────────────────────────────────────────────────────────┐
+│                    TARGET ENVIRONMENT                                │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  Windows 10/11 (x64)                                         │   │
+│  │  ┌─────────────────────────────────────────────────────────┐ │   │
+│  │  │  ClutchG.exe (runs as Administrator)                     │ │   │
+│  │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │ │   │
+│  │  │  │ GUI Layer│  │Core Layer│  │Batch     │              │ │   │
+│  │  │  │(CTk/Tk)  │→ │(Python)  │→ │Engine    │              │ │   │
+│  │  │  └──────────┘  └──────────┘  └────┬─────┘              │ │   │
+│  │  └───────────────────────────────────┼─────────────────────┘ │   │
+│  │                                      ▼                       │   │
+│  │  ┌─────────────────────────────────────────────────────────┐ │   │
+│  │  │  Windows OS APIs                                         │ │   │
+│  │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────┐ │ │   │
+│  │  │  │ Registry │ │ Services │ │ BCDEdit  │ │ PowerShell │ │ │   │
+│  │  │  │ (winreg) │ │ (sc.exe) │ │          │ │            │ │ │   │
+│  │  │  └──────────┘ └──────────┘ └──────────┘ └────────────┘ │ │   │
+│  │  └─────────────────────────────────────────────────────────┘ │   │
+│  │                                                               │   │
+│  │  ┌─────────────────────────────────────────────────────────┐ │   │
+│  │  │  Local File System (%LOCALAPPDATA%\ClutchG\)             │ │   │
+│  │  │  config.json | flight_record.json | backup/ | logs/      │ │   │
+│  │  └─────────────────────────────────────────────────────────┘ │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  Prerequisites:                                                     │
+│  - Windows 10 v1903+ or Windows 11                                 │
+│  - .NET Framework 4.7.2+ (for PowerShell integration)              │
+│  - Administrator privileges (for system-level tweaks)              │
+│  - 50 MB disk space (exe + data files)                             │
+│  - No network required (fully offline capable)                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 Build Process
+
+| ขั้นตอน | เครื่องมือ | รายละเอียด |
+|---------|-----------|-----------|
+| 1. Development | Python 3.11+, VS Code | เขียนและทดสอบ code ใน `clutchg/src/` |
+| 2. Testing | pytest | รัน 496+ tests (unit/integration/E2E) |
+| 3. Build | PyInstaller (`build.py`) | Compile เป็น single `.exe` — `--onefile --windowed --uac-admin` |
+| 4. Bundle | PyInstaller spec | รวม: Python runtime, CustomTkinter, Pillow, psutil, pywin32, bundled fonts (Figtree, Tabler Icons), data files (help_content.json, risk_explanations.json), batch scripts |
+| 5. Artifact | `clutchg/dist/ClutchG.exe` | ~45 MB standalone executable |
+| 6. Distribution | Manual copy | USB drive / file share — ไม่มี installer, ไม่มี auto-update |
+
+### 7.3 Runtime Environment Requirements
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **OS** | Windows 10 v1903 (19H1) | Windows 11 23H2 |
+| **Architecture** | x86-64 only | x86-64 |
+| **RAM** | 4 GB | 8 GB+ |
+| **Disk Space** | 50 MB (app) + 100 MB (backups) | 500 MB+ (backup history) |
+| **.NET Framework** | 4.7.2 | 4.8+ |
+| **Display** | 1024×768 | 1920×1080 |
+| **Privilege** | Administrator (for system tweaks) | Administrator |
+| **Network** | Not required | Not required |
+
+### 7.4 Deployment Constraints
+
+| ข้อจำกัด | รายละเอียด |
+|----------|-----------|
+| **No Installer** | ใช้ portable `.exe` — ไม่ต้อง install, ไม่แก้ไข Program Files |
+| **No Auto-Update** | ไม่มีระบบ update อัตโนมัติ — ผู้ใช้ต้อง download version ใหม่เอง |
+| **Single User** | ไม่รองรับ multi-user concurrent access |
+| **No Cloud** | ไม่มี telemetry, ไม่ส่งข้อมูลออก internet, ทำงาน offline 100% |
+| **UAC Prompt** | ผู้ใช้ต้องกด "Yes" ที่ UAC prompt ทุกครั้งที่เปิดโปรแกรม |
+
+---
+
+## 8. Security Architecture
+
+### 8.1 Security Design Philosophy
+
+ClutchG ใช้หลัก **Defense in Depth** — มีกลไกป้องกันหลายชั้น ป้องกันการกระทำที่อาจทำให้ระบบปฏิบัติการเสียหายหรือไม่ปลอดภัย
+
+### 8.2 Never-Disable Policy (6 Protected Features)
+
+| # | Protected Feature | Service/Component | เหตุผลที่ห้ามปิด |
+|---|-------------------|-------------------|------------------|
+| 1 | **Windows Defender** | WinDefend, WdNisSvc | ป้องกัน malware — ปิดแล้วเครื่องเสี่ยงทันที |
+| 2 | **User Account Control (UAC)** | Registry: EnableLUA | ป้องกัน unauthorized privilege escalation |
+| 3 | **Data Execution Prevention (DEP)** | BCDEdit: nx | ป้องกัน buffer overflow attacks |
+| 4 | **Address Space Layout Randomization (ASLR)** | Registry: MoveImages | ป้องกัน memory-based exploits |
+| 5 | **Control Flow Guard (CFG)** | System-level | ป้องกัน ROP/JOP attacks |
+| 6 | **Windows Update** | wuauserv | ป้องกัน unpatched vulnerabilities |
+
+**Implementation:** Hardcoded blocklist ใน `core/tweak_registry.py` — ทุก tweak ถูกตรวจสอบก่อน execute ว่าไม่แตะ protected features เหล่านี้
+
+### 8.3 Dangerous Pattern Detection (18 Patterns)
+
+ระบบตรวจจับคำสั่งอันตรายก่อนส่งไปยัง `subprocess`:
+
+| # | Pattern Category | ตัวอย่าง | Action |
+|---|-----------------|---------|--------|
+| 1-3 | **Destructive File Ops** | `format`, `del /f /s /q`, `rd /s /q` | BLOCK + log critical |
+| 4-6 | **System Corruption** | `sfc /scannow` disable, `dism` delete, `bcdedit /delete` | BLOCK + alert |
+| 7-9 | **Security Disable** | `netsh advfirewall set allprofiles state off`, Defender disable | BLOCK (Never-Disable) |
+| 10-12 | **Boot Destruction** | `bcdedit /deletevalue {bootmgr}`, MBR overwrite | BLOCK + log critical |
+| 13-15 | **Permission Abuse** | `takeown /f C:\Windows`, `icacls * /grant Everyone:F` | BLOCK |
+| 16-18 | **Network Exposure** | Firewall disable, Remote Desktop force-enable, port forwarding | BLOCK |
+
+**Implementation:** Regex-based scanner ใน batch scripts (`safety/validator.bat`) — ทุก command ผ่าน validation ก่อน execute
+
+### 8.4 Input Sanitization
+
+| มาตรการ | รายละเอียด |
+|---------|-----------|
+| **No User-Supplied Shell Input** | GUI ไม่มี free-text input ที่ส่งเข้า shell commands โดยตรง |
+| **Parameterized Paths** | ใช้ `pathlib.Path` สร้าง file paths — ไม่ใช้ string concatenation |
+| **Tweak ID Validation** | ทุก tweak ID ต้องมีใน TweakRegistry — ไม่รับ arbitrary IDs |
+| **Profile Validation** | Profile names ถูกจำกัดเป็น SAFE/COMPETITIVE/EXTREME — ไม่รับ custom names ใน production |
+
+### 8.5 Privilege Management
+
+```
+┌──────────────────────────────────────────────────────┐
+│  Application Launch                                   │
+│  ├─ Check: IsUserAnAdmin()?                           │
+│  │  ├─ YES → Proceed normally                         │
+│  │  └─ NO → Show warning dialog                       │
+│  │         ├─ System tweaks: DISABLED (greyed out)    │
+│  │         └─ View/Info features: ENABLED             │
+│  │                                                    │
+│  For each system operation:                           │
+│  ├─ Verify admin rights again                         │
+│  ├─ Check Never-Disable blocklist                     │
+│  ├─ Run Dangerous Pattern scanner                     │
+│  ├─ Create backup (registry/BCD/services)             │
+│  ├─ Verify backup created successfully                │
+│  ├─ Execute operation via subprocess                  │
+│  ├─ Log to flight record                              │
+│  └─ Verify operation result                           │
+└──────────────────────────────────────────────────────┘
+```
+
+### 8.6 Audit Trail (Flight Recorder)
+
+| คุณสมบัติ | รายละเอียด |
+|----------|-----------|
+| **Coverage** | บันทึกทุก operation: apply, revert, backup, restore, config change |
+| **Format** | JSON structured log — machine-readable, human-inspectable |
+| **Immutability** | Append-only — ไม่มี function สำหรับลบ/แก้ไข entries เดิม |
+| **Fields per Entry** | timestamp, session_id, action, tweak_id, category, risk_level, backup_path, status, error_message (ถ้ามี) |
+| **Retention** | ไม่จำกัด — เก็บทุก session ตั้งแต่ first run |
+| **Location** | `%LOCALAPPDATA%\ClutchG\flight_record.json` |
+
+### 8.7 Security Testing Summary
+
+| Test Category | จำนวน Tests | Coverage |
+|---------------|------------|----------|
+| Safety validation (Never-Disable) | 11 tests (UT-SA-01~11) | ทุก protected feature |
+| Dangerous pattern detection | 8 tests (UT-SA-03~08) | 18 patterns ทั้งหมด |
+| Input validation | 5 tests (UT-SA-09~11) | Edge cases, malformed input |
+| Backup integrity | 3 tests (IT-01~03) | Create, verify, restore cycle |
+| **รวม** | **27 tests** | **ครอบคลุม security requirements ทั้งหมด** |
+
+> **อ้างอิง:** ดูผลทดสอบโดยละเอียดใน 05-Test-Record.md §7.3 (Safety Audit Defects DEF-SA-01~11)
+
+---
+
+## 9. สรุปการประเมินสถาปัตยกรรม (Architecture Evaluation)
 
 > **อ้างอิง:** `docs/se-academic/02-architecture-evaluation.md` — วิเคราะห์ตามเกณฑ์ SE 701
 
@@ -572,10 +813,10 @@ ClutchGApp           SystemDetector       nvidia-smi    psutil    WMI    Benchma
 | จุดแข็ง | หลักฐาน |
 |---------|---------|
 | **Low Coupling** ระหว่าง layers | Core ไม่ import Views เลย — สื่อสารผ่าน callback parameters |
-| **High Cohesion** ใน Core modules | 11/13 modules มี Functional Cohesion (ระดับสูงสุด) |
+| **High Cohesion** ใน Core modules | 12/14 modules มี Functional Cohesion (ระดับสูงสุด) |
 | **Separation of Concerns** | 3 layers ชัดเจน: Presentation / Business / Infrastructure |
-| **Testability** | Core test ได้โดยไม่ต้อง GUI (445+ tests passed) |
-| **Design Patterns ที่เหมาะสม** | 8 patterns ตอบโจทย์ design problems เฉพาะ — ไม่ over-engineer |
+| **Testability** | Core test ได้โดยไม่ต้อง GUI (496+ tests passed) |
+| **Design Patterns ที่เหมาะสม** | 9 patterns ตอบโจทย์ design problems เฉพาะ — ไม่ over-engineer |
 
 ### 7.2 จุดที่ควรปรับปรุง
 
@@ -590,15 +831,15 @@ ClutchGApp           SystemDetector       nvidia-smi    psutil    WMI    Benchma
 | เกณฑ์ (SE 701) | คะแนน (1-5) | เหตุผล |
 |----------------|-------------|--------|
 | Coupling | 4/5 | Low coupling ดี แต่ Core modules บางตัวผูกกัน (ProfileManager → TweakRegistry) |
-| Cohesion | 5/5 | ทุก module มี Functional cohesion หรือสูงกว่า |
+| Cohesion | 5/5 | ทุก module มี Functional cohesion หรือสูงกว่า (12/14 Functional) |
 | Separation of Concerns | 5/5 | 3 layers แยกชัดเจน กฎ "Core ห้ามเรียก Views" บังคับใช้จริง |
-| Testability | 4/5 | Core testable ดี (445+ tests) แต่ GUI testing ต้อง mock มาก + E2E ต้องมี display |
-| Pattern Usage | 5/5 | ใช้ 8 patterns ที่เหมาะสม ไม่มี pattern ที่ใส่มาโดยไม่จำเป็น |
+| Testability | 4/5 | Core testable ดี (496+ tests) แต่ GUI testing ต้อง mock มาก + E2E ต้องมี display |
+| Pattern Usage | 5/5 | ใช้ 9 patterns ที่เหมาะสม (เพิ่ม dual-path Strategy สำหรับ recommendation) ไม่มี pattern ที่ใส่มาโดยไม่จำเป็น |
 | **รวม** | **23/25** | **สถาปัตยกรรมคุณภาพดี — เหมาะสมกับ desktop optimizer ที่ solo developer พัฒนา** |
 
 ---
 
-## 8. บันทึกการแก้ไข
+## 10. บันทึกการแก้ไข
 
 | เวอร์ชัน | วันที่ | คำอธิบาย |
 |---------|-------|---------|
@@ -607,3 +848,5 @@ ClutchGApp           SystemDetector       nvidia-smi    psutil    WMI    Benchma
 | 3.0 | 2026-03-04 | ISO29110 SDD, class diagrams, sequence diagrams, design patterns, data storage, error handling |
 | 3.1 | 2026-03-12 | อัปเดต: GPUtil ถูกลบออก, FlightRecorder rewritten (616 lines), storage detection 3-strategy, security hardening notes |
 | 3.2 | 2026-04-06 | เสริม SE 701: Architecture Pattern Comparison (§1.4), Coupling & Cohesion Analysis (§2.3), SOLID Assessment (§2.4), Architecture Evaluation Summary (§7) |
+| 3.3 | 2026-04-10 | Phase 11 Recommendation Refactor: เพิ่ม §2.1.6 RecommendationService, อัปเดต layer diagram, rename ProfileRecommender→RecommendationService, เพิ่ม dual-path Strategy pattern, อัปเดต tweaks 48→56, tests 445→496+, views 6→5, icons Material Symbols→Tabler Icons |
+| 3.4 | 2026-04-12 | เพิ่ม §7 Deployment & Infrastructure View (build process, runtime requirements, deployment constraints), §8 Security Architecture (Never-Disable Policy, 18 dangerous patterns, input sanitization, privilege management, flight recorder audit trail) |

@@ -1,9 +1,9 @@
 # 04 — แผนการทดสอบ (Test Plan)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5 (Software Testing)
-> **ETVX:** Entry = SRS v3.1 approved + SDD v3.2 reviewed | Task = Execute test levels | Verify = Coverage ≥ 70%, DRE target 100% | Exit = Test Record v3.0 signed-off
+> **ETVX:** Entry = SRS v3.3 approved + SDD v3.4 reviewed | Task = Execute test levels | Verify = Coverage ≥ 70%, DRE target 100% | Exit = Test Record v2.3 signed-off
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 3.0 | **วันที่:** 2026-04-06 | **อ้างอิง SRS:** v3.1 | **อ้างอิง SDD:** v3.2
+> **เวอร์ชัน:** 3.2 | **วันที่:** 2026-04-12 | **อ้างอิง SRS:** v3.3 | **อ้างอิง SDD:** v3.4
 > **อ้างอิง:** IEEE 829-2008, ISTQB Foundation, SE 725 (V&V Sessions), SE 701 (Testing Chapters)
 
 ---
@@ -29,6 +29,7 @@
 | ConfigManager | `core/config.py` | ~120 | ต่ำ |
 | HelpManager | `core/help_manager.py` | ~100 | ต่ำ |
 | BenchmarkDB | `core/benchmark_database.py` | ~450 | ปานกลาง |
+| RecommendationService | `core/recommendation_service.py` | ~188 | สูง |
 
 ### 1.3 สิ่งที่ไม่ทดสอบ
 - Batch script (.bat) internals — ทดสอบเฉพาะ parsing + execution interface
@@ -62,7 +63,7 @@
 
 | กิจกรรม | ตรวจอะไร | เทียบกับอะไร | วิธี |
 |---------|---------|-------------|-----|
-| Unit Testing | Individual modules | Expected behavior | pytest (285 cases) |
+| Unit Testing | Individual modules | Expected behavior | pytest (400+ cases) |
 | Integration Testing | Module interactions | Interface specifications | pytest (23 cases) |
 | E2E Testing | Complete workflows | Use Case scenarios | pytest + pywinauto (64 cases) |
 | Security Testing | Security properties | Safety rules | Bug Hunter audit (28 items) |
@@ -80,7 +81,7 @@
             ╱──────╲              Full app lifecycle
            ╱Integration╲         23 tests (pytest)
           ╱──────────────╲        Multi-component workflows
-         ╱  Unit Tests    ╲      285 tests (pytest)
+         ╱  Unit Tests    ╲      400+ tests (pytest)
         ╱──────────────────╲     Isolated function tests
        ╱  Static Analysis   ╲   Type hints + linting
       ╱──────────────────────╲
@@ -109,7 +110,7 @@
 
 | # | Level | ทดสอบอะไร | ClutchG? | จำนวน Tests | เครื่องมือ |
 |---|-------|----------|---------|------------|----------|
-| 1 | **Unit** | Function/method เดี่ยว | Yes | 285 | pytest + mock |
+| 1 | **Unit** | Function/method เดี่ยว | Yes | 400+ | pytest + mock |
 | 2 | **Integration** | Interface ระหว่าง modules | Yes | 23 | pytest |
 | 3 | **Function (System)** | ระบบทั้งหมดเทียบกับ SRS | Yes (via E2E) | 64 | pytest + pywinauto |
 | 4 | **Security** | Vulnerabilities, access control | Yes | 28 items | Bug Hunter audit |
@@ -247,7 +248,7 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 
 | Test ID | Test Function | FR | คำอธิบาย | Expected |
 |---------|--------------|-----|---------|----------|
-| UT-TW-01~61 | TestTweakRegistryIntegrity, parametrized | FR-TW-01~07, NFR-01~03 | 48 tweaks complete, risk distribution, dangerous patterns absent from bat files | All pass |
+| UT-TW-01~61 | TestTweakRegistryIntegrity, parametrized | FR-TW-01~07, NFR-01~03 | 56 tweaks complete, risk distribution, dangerous patterns absent from bat files | All pass |
 
 #### UT-AD: Admin Utils Tests (`test_admin.py` — 16 tests)
 
@@ -260,6 +261,29 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 | Test ID | Test Function | FR | คำอธิบาย | Expected |
 |---------|--------------|-----|---------|----------|
 | UT-HS-01~12 | TestHelpSystem | FR-UI-05, NFR-06 | Help content load, bilingual, search | All pass |
+
+#### UT-RS: Recommendation Service Tests (`test_recommendation_service.py` — 18 tests)
+
+| Test ID | Test Function | FR | คำอธิบาย | Expected |
+|---------|--------------|-----|---------|----------|
+| UT-RS-01 | test_primary_path_extreme | FR-SD-07 | Score ≥ 80 + desktop + RAM ≥ 16 GB | preset=EXTREME, source="primary" |
+| UT-RS-02 | test_primary_path_competitive | FR-SD-07 | Score ≥ 50 + RAM ≥ 8 GB | preset=COMPETITIVE, source="primary" |
+| UT-RS-03 | test_primary_path_safe | FR-SD-07 | Score < 50 | preset=SAFE, source="primary" |
+| UT-RS-04 | test_laptop_never_extreme | FR-SD-07 | Score ≥ 80 + laptop | preset ≠ EXTREME |
+| UT-RS-05 | test_low_ram_blocks_extreme | FR-SD-07 | Score ≥ 80 + desktop + RAM < 16 | preset=COMPETITIVE |
+| UT-RS-06 | test_fallback_on_missing_score | FR-SD-07 | total_score=None | source="fallback" |
+| UT-RS-07 | test_fallback_on_unknown_form | FR-SD-07 | form_factor="unknown" | source="fallback", preset=SAFE |
+| UT-RS-08 | test_fallback_on_zero_ram | FR-SD-07 | ram_gb=0 | source="fallback" |
+| UT-RS-09 | test_fallback_no_benchmark_match | FR-SD-07 | cpu.benchmark_matched=False, gpu.benchmark_matched=False | source="fallback" |
+| UT-RS-10 | test_fallback_desktop_high_tier | FR-SD-07 | Fallback + desktop + high tier | preset=COMPETITIVE |
+| UT-RS-11 | test_fallback_laptop_always_safe | FR-SD-07 | Fallback + laptop (any tier) | preset=SAFE |
+| UT-RS-12 | test_evidence_gate_all_true | FR-SD-07 | All 4 conditions met | _has_sufficient_data=True |
+| UT-RS-13 | test_evidence_gate_missing_benchmark | FR-SD-07 | benchmark_matched=False on both | _has_sufficient_data=False |
+| UT-RS-14 | test_confidence_range | FR-SD-07 | Any valid profile | 0.3 ≤ confidence ≤ 0.9 |
+| UT-RS-15 | test_recommendation_dataclass | FR-SD-07 | Valid Recommendation | has preset, reason, source, confidence |
+| UT-RS-16 | test_legacy_recommend_profile_delegates | FR-SD-07 | SystemDetector.recommend_profile() | Calls recommendation_service internally |
+| UT-RS-17 | test_legacy_suggest_preset_delegates | FR-SD-07 | TweakRegistry.suggest_preset() | Calls recommendation_service internally |
+| UT-RS-18 | test_reason_not_empty | FR-SD-07 | Any valid profile | reason ≠ "" |
 
 ### 4.2 Integration Tests (`tests/integration/`)
 
@@ -382,7 +406,7 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 
 | TC-ID | Flow | Scenario | Expected |
 |-------|------|----------|----------|
-| TC-UC-01 | Main | Apply SAFE profile (all preconditions met) | 17 tweaks applied, backup created |
+| TC-UC-01 | Main | Apply SAFE profile (all preconditions met) | 14 tweaks applied, backup created |
 | TC-UC-04 | Alt 3a | User clicks Cancel | No changes, return to Profiles |
 | TC-UC-05 | Alt 6a | One tweak fails during apply | Error logged, continue next tweak |
 | TC-UC-06 | Exc 4a | Backup creation fails | Warning shown, proceed anyway |
@@ -458,7 +482,7 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 
 | Module | Coverage | Target | Status |
 |--------|----------|--------|--------|
-| profile_recommender | 92% | 80% | EXCEEDS |
+| recommendation_service | 92% | 80% | EXCEEDS |
 | help_manager | 89% | 80% | EXCEEDS |
 | system_snapshot | 88% | 80% | EXCEEDS |
 | batch_executor | 85% | 80% | EXCEEDS |
@@ -490,7 +514,7 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 | DRE | ≥ 85% | 100% (pre-release) | EXCEEDS |
 | Statement Coverage (core) | ≥ 60% | ~65%+ | PASS |
 | Critical Module Coverage | ≥ 80% | 79%-92% | PASS |
-| Unit Test Pass Rate | ≥ 95% | 100% (285/285) | EXCEEDS |
+| Unit Test Pass Rate | ≥ 95% | 100% (400+/400+) | EXCEEDS |
 | Integration Pass Rate | 100% for P0 | 100% (23/23) | PASS |
 | Zero Critical Defects Open | 0 | 0 | PASS |
 
@@ -509,7 +533,204 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 
 ---
 
-## 8. Test Execution Commands
+## 8. ตารางเวลาการทดสอบ (Test Execution Schedule)
+
+> อ้างอิง Project Plan v3.1 §5 Gantt Chart — Phase 8~12
+
+### 8.1 ภาพรวมตารางเวลา
+
+| Phase | กิจกรรม | ช่วงเวลา | สถานะ |
+|-------|---------|----------|-------|
+| Phase 8 | Core module development + **Unit Testing (ongoing)** | 2026-01-20 — 2026-02-14 | เสร็จสิ้น |
+| Phase 9 | UI + Integration + Batch Parser development | 2026-02-17 — 2026-03-07 | เสร็จสิ้น |
+| Phase 10 | Advanced features + **Integration Testing** | 2026-03-10 — 2026-03-21 | เสร็จสิ้น |
+| Phase 11 | Polish + **E2E Testing + Security Audit** | 2026-03-24 — 2026-04-04 | เสร็จสิ้น |
+| Phase 12 | Thesis writing + **Regression Testing (post-CR)** | 2026-04-07 — 2026-04-25 | ดำเนินการ |
+
+### 8.2 รายละเอียดตามระดับการทดสอบ
+
+#### Unit Testing (Continuous)
+- **เริ่ม:** Phase 8 (2026-01-20) — เขียน test พร้อมกับ module development
+- **วิธี:** Test-first สำหรับ safety-critical modules (BackupManager, FlightRecorder), test-after สำหรับ utility modules
+- **ความถี่:** ทุกครั้งที่ commit (pre-push hook: `pytest tests/unit/ -x --tb=short`)
+- **ผู้รับผิดชอบ:** nextzus (Developer + Tester)
+- **ผลลัพธ์:** 400+ test cases, pass rate 100%
+
+#### Integration Testing (Phase 10–11)
+- **เริ่ม:** 2026-03-10 หลัง core modules ผ่าน unit tests ทั้งหมด
+- **ขอบเขต:** Backup→Restore cycle, Profile→Execute→FlightRecorder chain, Config save/load, Help system loading
+- **เงื่อนไขเข้า:** Unit test pass rate ≥ 95% สำหรับ modules ที่เกี่ยวข้อง
+- **ผู้รับผิดชอบ:** nextzus
+- **ผลลัพธ์:** 23 test cases, pass rate 100%
+
+#### E2E Testing (Phase 11)
+- **เริ่ม:** 2026-03-24 หลัง UI development เสร็จสิ้น
+- **ขอบเขต:** Navigation flow, Profile display/apply, Settings workflow, Scripts category/apply
+- **เงื่อนไขเข้า:** Integration tests ผ่าน 100% สำหรับ P0 paths
+- **ข้อจำกัด:** ทดสอบใน headless mode (CI) — 64 tests ถูก skip ใน CI environment, ทดสอบจริงบนเครื่อง developer
+- **ผู้รับผิดชอบ:** nextzus
+- **ผลลัพธ์:** 64 test cases (skipped ใน headless CI)
+
+#### Security Audit (Phase 11)
+- **เริ่ม:** 2026-03-28 — สัปดาห์ที่ 2 ของ Phase 11
+- **วิธี:** Bug Hunter automated scan + manual review
+- **ขอบเขต:** 28 security audit items ครอบคลุม dangerous patterns, privilege escalation, input sanitization
+- **ผู้รับผิดชอบ:** nextzus (ใช้ Bug Hunter tool)
+- **ผลลัพธ์:** 11 defects พบและแก้ไข (DEF-SA-01~11)
+
+#### Regression Testing (Post-CR, Phase 12)
+- **Trigger:** หลังจากปิด Change Request (CR-001~004)
+- **วิธี:** Full test suite re-run (`pytest tests/ -v --tb=short`)
+- **เกณฑ์ผ่าน:** Pass rate เท่ากับ baseline (432/432 passed, 64 skipped)
+- **ผู้รับผิดชอบ:** nextzus
+- **ผลลัพธ์:** 4 regression runs (1 ต่อ CR), ทุกรอบผ่าน 432/432
+
+### 8.3 Timeline Diagram
+
+```
+Jan 20       Feb 17       Mar 10       Mar 24       Apr 07       Apr 25
+  |            |            |            |            |            |
+  Phase 8      Phase 9      Phase 10     Phase 11     Phase 12
+  ├──────────── Unit Testing (continuous) ─────────────────────────┤
+  │            │            ├── Integration ─┤            │        │
+  │            │            │            ├── E2E ────┤    │        │
+  │            │            │            │  ├─ Security ─┤ │        │
+  │            │            │            │            ├── Regression ┤
+```
+
+---
+
+## 9. การจัดการข้อมูลทดสอบ (Test Data Management)
+
+> อ้างอิง conftest.py (272 lines) + SE 725 — Test Environment Isolation
+
+### 9.1 หลักการ
+
+1. **Isolation** — แต่ละ test case ต้องไม่กระทบ test อื่น (no shared state)
+2. **Repeatability** — รัน 100 ครั้งได้ผลเหมือนกัน
+3. **No Side Effects** — ไม่แก้ไข system registry/services จริง (ยกเว้น E2E ที่ต้อง admin)
+4. **Cleanup** — ลบ temporary files หลัง test เสร็จเสมอ
+
+### 9.2 Mock Data Creation
+
+#### conftest.py Fixtures (Primary)
+
+| Fixture | ประเภทข้อมูล | วิธีสร้าง | Scope |
+|---------|-------------|----------|-------|
+| `test_config` | Config dict | Hardcoded default values | function |
+| `temp_output_dir` | Temp directory | `tmp_path` (pytest built-in) | function |
+| `test_config_dir` | Config directory | `tempfile.mkdtemp()` | session |
+| `screenshot_dir` | Screenshot output | `tmp_path / "screenshots"` | function |
+| `log_dir` | Log output | `tmp_path / "logs"` | function |
+
+#### Unit Test Mocks
+
+| Module | Mock Strategy | ไฟล์ตัวอย่าง |
+|--------|-------------|-------------|
+| BackupManager | `tmp_path` for backup dir, mock registry keys | `test_backup_manager.py` |
+| FlightRecorder | In-memory flight log, mock tweak changes | `test_flight_recorder.py` |
+| TweakRegistry | Real tweak_registry.json (read-only), mock .bat execution | `test_tweak_registry_integrity.py` |
+| SystemDetector | Mock WMI/subprocess output for CPU/GPU/RAM | `test_system_detection.py` |
+| BatchParser | Inline .bat content strings | `test_batch_parser.py` |
+| ProfileManager | Real profiles.json (read-only), mock apply | `test_profile_manager.py` |
+| RecommendationService | Constructed `HardwareProfile` dataclass instances | `test_recommendation_service.py` |
+| AdminUtils | Mock `ctypes.windll.shell32` | `test_admin.py` |
+| HelpManager | Real help JSON (read-only) | `test_help_system.py` |
+
+### 9.3 Temporary Directory Strategy
+
+```python
+# Pattern used across all tests
+@pytest.fixture
+def temp_output_dir(tmp_path):
+    """สร้าง isolated temp dir สำหรับ test output — pytest จัดการ cleanup อัตโนมัติ"""
+    output = tmp_path / "test_output"
+    output.mkdir()
+    return output
+```
+
+- `tmp_path` คือ pytest built-in fixture ที่สร้าง unique temporary directory ต่อ test function
+- pytest ลบ temp dirs อัตโนมัติหลัง test session (เก็บไว้ 3 sessions ล่าสุดสำหรับ debug)
+- ไม่ใช้ `os.path.join()` กับ production directories — ป้องกัน accidental data loss
+
+### 9.4 Test Isolation Mechanisms
+
+| กลไก | ใช้กับ | วิธีการ |
+|------|-------|--------|
+| **Function-scope fixtures** | ทุก unit test | สร้างใหม่ทุก test function |
+| **Session-scope fixtures** | Config dirs, project paths | สร้างครั้งเดียว, shared read-only |
+| **Mock patching** | System calls (WMI, registry, subprocess) | `unittest.mock.patch` + `MagicMock` |
+| **Temp directories** | File I/O tests (backup, flight recorder, config) | `tmp_path` fixture |
+| **Marker-based skip** | E2E (requires display), Admin (requires elevation) | `@pytest.mark.e2e`, `@pytest.mark.admin` |
+
+### 9.5 Cleanup Strategy
+
+| ระดับ | เมื่อไหร่ | วิธี |
+|-------|---------|-----|
+| **Per-test** | หลังแต่ละ test function | `tmp_path` auto-cleanup, mock.patch auto-restore |
+| **Per-session** | หลัง test session จบ | `test_config_dir` ลบโดย `tempfile` cleanup |
+| **Manual** | Debug mode | `pytest --basetemp=./tmp_debug` เก็บ temp ไว้ดู |
+| **CI** | หลัง pipeline | Container ถูกลบทั้ง environment |
+
+### 9.6 Test Data Files (Read-Only)
+
+ไฟล์ข้อมูลจริงที่ใช้ใน test (อ่านอย่างเดียว ไม่แก้ไข):
+
+| ไฟล์ | ใช้ใน Test | หมายเหตุ |
+|------|----------|---------|
+| `data/tweak_registry.json` | UT-TW-01~61 | 56 tweaks, integrity validation |
+| `data/profiles.json` | UT-PM-01~07 | 3 profiles (SAFE/COMPETITIVE/EXTREME) |
+| `data/help_content.json` | UT-HS-01~12, IT-HS-01~02 | Bilingual help content |
+| `data/benchmark_database.json` | UT-BM-01~05 | CPU/GPU benchmark scores |
+| `bat/*.bat` | UT-TW (dangerous pattern scan) | 56 batch scripts, read-only scan |
+
+---
+
+## 10. บทบาทการทดสอบ (Testing Roles)
+
+> อ้างอิง ISTQB Foundation — Testing Roles + ISO/IEC 29110-5-1-2 — SI.O5 roles
+
+### 10.1 บทบาทและความรับผิดชอบ
+
+| บทบาท | ผู้รับผิดชอบ | ความรับผิดชอบ |
+|-------|------------|-------------|
+| **Test Designer** | นายพิชญะ เลิศพงศ์พิรุฬห์ (nextzus) | ออกแบบ test strategy, เลือก test techniques, เขียน test cases, กำหนด test data |
+| **Test Executor** | นายพิชญะ เลิศพงศ์พิรุฬห์ (nextzus) | รัน test suites, บันทึกผลลัพธ์, รายงาน defects |
+| **Test Reviewer** | ผศ.ดร.ภัทรหทัย ณ ลำพูน (Advisor) | ตรวจสอบ test plan, review test results, อนุมัติ exit criteria |
+| **Defect Reporter** | นายพิชญะ เลิศพงศ์พิรุฬห์ (nextzus) | บันทึก defect details, classify severity, track resolution |
+
+### 10.2 เหตุผลที่หลายบทบาทอยู่ที่คนเดียว
+
+เนื่องจากโครงงานนี้เป็น **Independent Study (การค้นคว้าอิสระ)** ระดับบัณฑิตศึกษา มีนักพัฒนาเพียง 1 คน จึงรวมบทบาท Test Designer, Test Executor, และ Defect Reporter ไว้ที่ผู้วิจัย ซึ่งสอดคล้องกับ ISO/IEC 29110 Basic Profile สำหรับ Very Small Entities (VSEs) ที่อนุญาตให้สมาชิกทีมรับหลายบทบาทได้
+
+**การลดความเสี่ยงจาก single-person testing:**
+
+| ความเสี่ยง | มาตรการลดความเสี่ยง |
+|-----------|------------------|
+| Confirmation bias (ทดสอบเฉพาะสิ่งที่คิดว่าถูก) | ใช้ systematic techniques (EP, BVA, Decision Table) แทนการทดสอบแบบ ad hoc |
+| Blind spots (มองไม่เห็นข้อผิดพลาดของตัวเอง) | Automated security audit (Bug Hunter), advisor review |
+| Insufficient coverage | Coverage metrics เป็นตัวชี้วัด (≥ 70% statement, ≥ 60% branch) |
+| Test-developer same person | Separation of concerns: test fixtures แยกจาก production code, test data อยู่ใน `tests/` directory แยกต่างหาก |
+
+### 10.3 RACI Matrix
+
+| กิจกรรม | nextzus | Advisor |
+|---------|---------|---------|
+| เขียน Test Plan | **R, A** | C, I |
+| ออกแบบ Test Cases | **R, A** | I |
+| สร้าง Test Data / Fixtures | **R, A** | — |
+| รัน Test Suites | **R, A** | — |
+| บันทึก Test Results | **R, A** | I |
+| รายงาน Defects | **R, A** | I |
+| ตรวจสอบ Test Results | R | **A** |
+| อนุมัติ Exit Criteria | I | **R, A** |
+| อนุมัติ Test Plan | I | **R, A** |
+
+> **R** = Responsible, **A** = Accountable, **C** = Consulted, **I** = Informed
+
+---
+
+## 11. Test Execution Commands
 
 ```powershell
 # Run all tests
@@ -533,7 +754,7 @@ pytest tests/ --skip-e2e -m "not admin" -v
 
 ---
 
-## 9. บันทึกการแก้ไข
+## 12. บันทึกการแก้ไข
 
 | เวอร์ชัน | วันที่ | คำอธิบาย |
 |---------|-------|---------|
@@ -541,3 +762,5 @@ pytest tests/ --skip-e2e -m "not admin" -v
 | 2.0 | 2026-03-04 | ISO29110, detailed procedures, risk-based priority, fixture docs |
 | 2.1 | 2026-03-12 | เพิ่ม 5 test files ใหม่ (FR/BK/TW/AD/HS), ปรับ Test Pyramid counts ให้ตรง (285 unit / 23 int / 64 E2E) |
 | 3.0 | 2026-04-06 | SE academic enrichment: เพิ่ม V&V Distinction (§1.4), Testing Levels U-I-F-S-A-R (§2.4), Test Design Techniques EP/BVA/DT/UCT/Branch/Path (§6), Coverage Hierarchy & DRE Targets (§6.4), อัปเดต header ETVX + cross-refs |
+| 3.1 | 2026-04-10 | Phase 11 update: เพิ่ม RecommendationService ใน Items Under Test + UT-RS test cases 18 รายการ, อัปเดตจำนวน unit tests 285→400+, tweak counts 48→56, SAFE tweak count 17→14, coverage module rename profile_recommender→recommendation_service, อ้างอิง SRS v3.2 + SDD v3.3 |
+| 3.2 | 2026-04-12 | เพิ่ม §8 Test Execution Schedule (timeline, phases, per-level schedule), §9 Test Data Management (mock strategy, tmp_path, cleanup, read-only data files), §10 Testing Roles (RACI matrix, single-person mitigation), อัปเดต ETVX cross-refs SRS v3.3 + SDD v3.4 + Test Record v2.3 |

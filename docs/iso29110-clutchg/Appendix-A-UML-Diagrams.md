@@ -2,7 +2,7 @@
 
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่:** 2026-04-06
-> **อ้างอิง:** UML 2.5.1, SRS v3.1, SDD v3.2, Test Plan v3.0 | SE 701 OO Design
+> **อ้างอิง:** UML 2.5.1, SRS v3.3, SDD v3.4, Test Plan v3.2 | SE 701 OO Design
 
 ---
 
@@ -179,7 +179,7 @@ graph LR
 | **Postcondition** | 1. Tweaks ถูก apply<br/>2. Backup + Restore Point พร้อม<br/>3. FlightRecord JSON บันทึกครบ (rollback ready) |
 | **Alternative** | 3a. ผู้ใช้กด Cancel → กลับหน้า Profiles ไม่มีอะไรเปลี่ยน<br/>6a. Tweak บางตัว fail → บันทึก error, ทำตัวต่อไป |
 | **Exception** | 4a. Backup creation fail → แจ้ง warning, proceed (ไม่ block)<br/>5a. Restore Point fail → ลอง WMIC fallback → log warning<br/>6b. Script file ไม่มี → skip tweak + error log |
-| **Business Rules** | - SAFE: 17 tweaks (LOW risk เท่านั้น)<br/>- COMPETITIVE: 35 tweaks (LOW + MEDIUM)<br/>- EXTREME: 48 tweaks ทั้งหมด (รวม HIGH 3 ตัว) |
+| **Business Rules** | - SAFE: 14 tweaks (LOW risk เท่านั้น)<br/>- COMPETITIVE: 44 tweaks (LOW + MEDIUM)<br/>- EXTREME: 56 tweaks ทั้งหมด (รวม HIGH 3 ตัว) |
 | **NFR** | NFR-03 (reversible), NFR-04 (auto backup), NFR-09 (realistic FPS claim) |
 | **Source** | `core/profile_manager.py` L146-257, `core/backup_manager.py` L73-140, `core/flight_recorder.py` L160-334 |
 
@@ -192,7 +192,7 @@ graph LR
 | **Use Case ID** | UC-05 |
 | **ชื่อ** | Create Custom Preset |
 | **Actor** | Gamer, Power User |
-| **คำอธิบาย** | ผู้ใช้เลือก tweaks ทีละตัวจาก 48 tweaks แล้ว save เป็น custom preset |
+| **คำอธิบาย** | ผู้ใช้เลือก tweaks ทีละตัวจาก 56 tweaks แล้ว save เป็น custom preset |
 | **Trigger** | เปิดหน้า Scripts → เลือก tweaks → กด Save Preset |
 | **Precondition** | หน้า Scripts เปิดอยู่ |
 | **Main Flow** | 1. ผู้ใช้เข้าหน้า Scripts → เห็น 10 categories<br/>2. เลือก tweaks (checkbox) → ดู risk badge + warnings<br/>3. กด "Save as Preset" → ใส่ชื่อ preset<br/>4. ระบบ validate: build_custom_preset(ids) → {tweaks, max_risk, requires_restart, warnings}<br/>5. Save preset ใน config.json<br/>6. แสดง Toast "Preset saved!" |
@@ -227,7 +227,7 @@ graph LR
 | **Use Case ID** | UC-08 |
 | **ชื่อ** | Browse Tweaks by Category |
 | **Actor** | Gamer, Power User |
-| **คำอธิบาย** | ผู้ใช้เรียกดู tweaks ทั้ง 48 ตัว จัดกลุ่มตาม 10 categories |
+| **คำอธิบาย** | ผู้ใช้เรียกดู tweaks ทั้ง 56 ตัว จัดกลุ่มตาม 10 categories |
 | **Trigger** | คลิก sidebar "Scripts" |
 | **Precondition** | ไม่มี |
 | **Main Flow** | 1. ระบบแสดง 10 categories: Telemetry(8), Input(6), Power(7), GPU(8), Network(6), Services(5), Memory(4), Boot(5), Visual(4), Cleanup(3)<br/>2. แต่ละ category มี icon + color + count<br/>3. ผู้ใช้ expand category → เห็น tweaks ในกลุ่ม<br/>4. แต่ละ tweak แสดง: name, risk badge (LOW/MEDIUM/HIGH), checkbox, "?" help button<br/>5. กด "?" → popup: what_it_does, why_it_helps, limitations, warnings, expected_gain |
@@ -476,7 +476,7 @@ graph TB
     subgraph "Business Logic Layer"
         subgraph "Core Managers"
             PM["ProfileManager<br/>528 lines"]
-            TR["TweakRegistry<br/>1013 lines<br/>48 tweaks"]
+            TR["TweakRegistry<br/>1234 lines<br/>56 tweaks"]
             SD["SystemDetector<br/>381 lines"]
             BM["BackupManager<br/>373 lines"]
             FR["FlightRecorder<br/>589 lines"]
@@ -486,7 +486,7 @@ graph TB
             HM["HelpManager<br/>100 lines"]
             BD["BenchmarkDB<br/>450 lines"]
             AC["ActionCatalog"]
-            PR["ProfileRecommender"]
+            RS["RecommendationService<br/>188 lines"]
             SS["SystemSnapshot"]
         end
     end
@@ -537,7 +537,7 @@ graph TB
     PM --> BE
     
     SD --> BD
-    SD --> PR
+    SD --> RS
     
     TR --> AC
     
@@ -591,11 +591,11 @@ sequenceDiagram
     
     Note over PM: Step 3: Get Tweaks
     PM->>TR: get_tweaks_for_preset("competitive")
-    TR-->>PM: List[Tweak] (35 tweaks)
+    TR-->>PM: List[Tweak] (44 tweaks)
     
-    Note over PM: Step 4: Execute Tweaks (loop 35x)
-    loop For each tweak (1..35)
-        PM->>PV: on_progress(i/35 * 100)
+    Note over PM: Step 4: Execute Tweaks (loop 44x)
+    loop For each tweak (1..44)
+        PM->>PV: on_progress(i/44 * 100)
         PV->>User: Update progress bar
         
         PM->>BE: execute("input-optimizer.bat", ":apply_mouse")
@@ -615,10 +615,10 @@ sequenceDiagram
     PM->>FR: finish_recording(success=true)
     FR->>WIN: reg export HKLM → after_HKLM.reg
     FR->>FR: save JSON → change_logs/20260304_221530.json
-    FR-->>PM: SystemSnapshot(35 tweaks recorded)
+    FR-->>PM: SystemSnapshot(44 tweaks recorded)
     
     PM-->>PV: success=true
-    PV->>User: Toast "COMPETITIVE profile applied! 35 tweaks done"
+    PV->>User: Toast "COMPETITIVE profile applied! 44 tweaks done"
 ```
 
 ### 6.2 Sequence Diagram: Per-Tweak Rollback
@@ -637,8 +637,8 @@ sequenceDiagram
     
     User->>RC: Select snapshot "20260304_221530"
     RC->>FR: get_snapshot("20260304_221530")
-    FR-->>RC: SystemSnapshot(35 tweaks)
-    RC->>User: Show 35 TweakChanges with before/after values
+    FR-->>RC: SystemSnapshot(44 tweaks)
+    RC->>User: Show 44 TweakChanges with before/after values
     
     User->>RC: Click "Undo" on "Disable Mouse Acceleration"
     
@@ -661,6 +661,7 @@ sequenceDiagram
     participant PS as psutil
     participant WMI as WMI
     participant BD as BenchmarkDB
+    participant RS as RecommendationService
     participant DV as DashboardView
 
     APP->>APP: threading.Thread(target=_detect_system)
@@ -693,7 +694,12 @@ sequenceDiagram
     Note over SD: Score Calculation
     SD->>SD: total = 27 + 24 + 16 + 10 = 77
     SD->>SD: tier = "enthusiast" (≥70)
-    SD->>SD: recommend = "COMPETITIVE" (desktop)
+    
+    Note over SD,RS: Unified Recommendation
+    SD->>RS: recommend_preset(profile)
+    RS->>RS: _has_sufficient_data() → True (both benchmark_matched)
+    RS->>RS: Primary path: score=77 ≥ 50 → COMPETITIVE
+    RS-->>SD: Recommendation(preset=COMPETITIVE, source=primary, confidence=0.7)
     
     SD-->>APP: SystemProfile(score=77, tier=enthusiast)
     APP->>DV: window.after(0, update_dashboard)
@@ -884,6 +890,21 @@ classDiagram
         +int total_score
     }
 
+    class Recommendation {
+        +str preset
+        +str reason
+        +str source
+        +int total_score
+        +float confidence
+    }
+
+    class RecommendationService {
+        +recommend_preset(profile) Recommendation
+        -_primary_path(profile) Recommendation
+        -_fallback_path(profile) Recommendation
+        -_has_sufficient_data(profile) bool
+    }
+
     TweakRegistry "1" --> "*" Tweak : contains
     FlightRecorder "1" --> "*" SystemSnapshot : manages
     SystemSnapshot "1" --> "*" TweakChange : contains
@@ -892,6 +913,8 @@ classDiagram
     ProfileManager "1" --> "1" FlightRecorder : uses
     BackupManager "1" --> "*" BackupInfo : manages
     SystemDetector "1" --> "1" SystemProfile : creates
+    SystemDetector "1" --> "1" RecommendationService : delegates recommend
+    RecommendationService "1" --> "1" Recommendation : returns
     TweakRegistry "1" --> "1" SystemProfile : filters by
 ```
 
@@ -937,7 +960,7 @@ stateDiagram-v2
     RollbackFailed --> Applied : Tweak still active (manual fix needed)
 
     note right of Registered
-        48 tweaks loaded from
+        56 tweaks loaded from
         TweakRegistry at startup
     end note
 
@@ -1019,7 +1042,7 @@ graph TB
         subgraph "Detection & Analysis"
             DET_SYS["system_info.py"]
             DET_BDB["benchmark_db.py"]
-            DET_REC["profile_recommender.py"]
+            DET_REC["recommendation_service.py"]
         end
         subgraph "Script Interface"
             SCR_PAR["batch_parser.py"]
@@ -1091,12 +1114,165 @@ graph TB
 
 ---
 
+## 10. Deployment Diagram
+
+แสดง Physical Deployment Topology ของระบบ ClutchG บน Windows Desktop Environment ตาม UML 2.5.1 Deployment Diagram notation
+
+> **อ้างอิง:** SDD v3.4 §7 Deployment View, Configuration Plan v2.2 §6 Release Process
+
+### 10.1 Deployment Topology
+
+```mermaid
+graph TB
+    subgraph NODE_PC["<<device>><br/>Windows 10/11 Desktop<br/>x64, RAM ≥ 4 GB, Admin Rights"]
+
+        subgraph ENV_PYTHON["<<execution environment>><br/>Python 3.12 Runtime"]
+            ART_MAIN["<<artifact>><br/>main.py<br/>(Entry Point)"]
+            ART_APP["<<artifact>><br/>app_minimal.py<br/>(App Controller)"]
+
+            subgraph COMP_GUI["<<component>><br/>GUI Layer — CustomTkinter"]
+                ART_VIEWS["<<artifact>><br/>gui/views/<br/>8 Views"]
+                ART_COMP["<<artifact>><br/>gui/components/<br/>12 Components"]
+                ART_THEME["<<artifact>><br/>theme.py + style.py<br/>(Dark Theme Engine)"]
+            end
+
+            subgraph COMP_CORE["<<component>><br/>Core Business Logic"]
+                ART_TWEAKREG["<<artifact>><br/>tweak_registry.py<br/>(56 Tweaks × 10 Categories)"]
+                ART_RECSVC["<<artifact>><br/>recommendation_service.py<br/>(RecommendationService)"]
+                ART_PROFILE["<<artifact>><br/>profile_manager.py<br/>(SAFE/COMPETITIVE/EXTREME)"]
+                ART_PARSER["<<artifact>><br/>batch_parser.py<br/>(Script Discovery)"]
+                ART_BACKUP["<<artifact>><br/>backup_manager.py<br/>(JSON Backup Store)"]
+                ART_SYSINFO["<<artifact>><br/>system_info.py<br/>(Hardware Detection)"]
+            end
+        end
+
+        subgraph ENV_CMD["<<execution environment>><br/>cmd.exe (Administrator)"]
+            ART_OPT["<<artifact>><br/>optimizer.bat v2.0<br/>(Entry Point, 549 lines)"]
+
+            subgraph COMP_BATCH["<<component>><br/>Batch Script Engine — src/"]
+                ART_CORE17["<<artifact>><br/>core/ — 17 Modules<br/>(power, services, registry,<br/>network, GPU, storage, etc.)"]
+                ART_PROFILES["<<artifact>><br/>profiles/<br/>safe / competitive / extreme"]
+                ART_SAFETY["<<artifact>><br/>safety/<br/>validator, rollback,<br/>flight-recorder"]
+                ART_BKSCRIPT["<<artifact>><br/>backup/<br/>backup-registry, restore-point"]
+                ART_LOG["<<artifact>><br/>logging/logger.bat<br/>(Structured Logging)"]
+            end
+        end
+
+        subgraph ENV_OS["<<execution environment>><br/>Windows OS Services"]
+            ART_REG["<<artifact>><br/>Windows Registry<br/>(HKLM\\SYSTEM, HKCU\\Software)"]
+            ART_SVC["<<artifact>><br/>Windows Services<br/>(sc.exe config)"]
+            ART_PS["<<artifact>><br/>PowerShell 5.1+<br/>(Appx removal, restore points)"]
+            ART_WMI["<<artifact>><br/>WMI / CIM<br/>(Hardware queries)"]
+        end
+
+        subgraph ENV_FS["<<datastore>><br/>Local File System"]
+            ART_BKJSON["<<artifact>><br/>backup/*.json<br/>(Registry Snapshots)"]
+            ART_FLIGHT["<<artifact>><br/>logs/flight-recorder.log<br/>(Audit Trail)"]
+            ART_CONFIG["<<artifact>><br/>config.json<br/>(User Preferences)"]
+            ART_FONTS["<<artifact>><br/>fonts/<br/>Figtree TTF, Tabler Icons TTF"]
+            ART_DATA["<<artifact>><br/>data/<br/>help_content.json,<br/>risk_explanations.json"]
+        end
+    end
+
+    %% Dependencies
+    ART_MAIN --> ART_APP
+    ART_APP --> COMP_GUI
+    ART_APP --> COMP_CORE
+    ART_VIEWS --> ART_THEME
+    ART_VIEWS --> ART_COMP
+    ART_RECSVC --> ART_TWEAKREG
+    ART_RECSVC --> ART_SYSINFO
+    ART_PROFILE --> ART_TWEAKREG
+    ART_PARSER --> ART_OPT
+    ART_BACKUP --> ART_BKJSON
+    ART_SYSINFO --> ART_WMI
+
+    ART_OPT --> ART_CORE17
+    ART_OPT --> ART_PROFILES
+    ART_OPT --> ART_SAFETY
+    ART_CORE17 --> ART_REG
+    ART_CORE17 --> ART_SVC
+    ART_SAFETY --> ART_BKSCRIPT
+    ART_BKSCRIPT --> ART_PS
+    ART_LOG --> ART_FLIGHT
+
+    COMP_GUI --> ART_FONTS
+    COMP_GUI --> ART_DATA
+    COMP_CORE --> ART_CONFIG
+
+    style NODE_PC fill:#1a1a2e,stroke:#57c8ff,stroke-width:2px,color:#e0e0e0
+    style ENV_PYTHON fill:#16213e,stroke:#4a9eff,stroke-width:1px,color:#e0e0e0
+    style ENV_CMD fill:#1a1a2e,stroke:#ff6b6b,stroke-width:1px,color:#e0e0e0
+    style ENV_OS fill:#0f3460,stroke:#e94560,stroke-width:1px,color:#e0e0e0
+    style ENV_FS fill:#1a1a2e,stroke:#4ecdc4,stroke-width:1px,color:#e0e0e0
+    style COMP_GUI fill:#162447,stroke:#57c8ff,stroke-width:1px,color:#e0e0e0
+    style COMP_CORE fill:#162447,stroke:#57c8ff,stroke-width:1px,color:#e0e0e0
+    style COMP_BATCH fill:#1a1a2e,stroke:#ff6b6b,stroke-width:1px,color:#e0e0e0
+```
+
+### 10.2 Deployment Specifications
+
+| Node / Environment | Specification | หมายเหตุ |
+|---|---|---|
+| **Windows Desktop** | Windows 10 v1903+ / Windows 11, x64, RAM ≥ 4 GB | ต้องมีสิทธิ์ Administrator สำหรับ batch scripts |
+| **Python 3.12 Runtime** | CPython 3.12+, venv isolated | Dependencies: customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi, tkextrafont |
+| **cmd.exe (Administrator)** | Elevated Command Prompt | optimizer.bat ตรวจสอบ admin rights ก่อนทำงาน |
+| **Windows Registry** | HKLM\SYSTEM, HKLM\SOFTWARE, HKCU\Software | Backup ก่อนแก้ไขทุกครั้ง → backup/*.json |
+| **Windows Services** | sc.exe, net stop/start | เฉพาะ services ที่ผ่าน safety validation เท่านั้น |
+| **PowerShell 5.1+** | System.Management.Automation | ใช้สำหรับ Appx removal, system restore points |
+| **WMI / CIM** | Win32_Processor, Win32_VideoController, etc. | Hardware detection สำหรับ benchmark matching |
+| **Local File System** | %USERPROFILE%, %TEMP%, application directory | flight-recorder.log, backup JSON, config.json |
+
+### 10.3 Artifact Manifest
+
+| Artifact | Type | ขนาด | Deploy Path |
+|---|---|---|---|
+| `main.py` | Python Script | Entry point | `clutchg/src/main.py` |
+| `ClutchG.exe` | PyInstaller Executable | ~45 MB | `clutchg/dist/ClutchG.exe` |
+| `optimizer.bat` | Batch Script | 549 lines | `src/optimizer.bat` |
+| `core/*.bat` | Batch Modules | 17 files | `src/core/` |
+| `profiles/*.bat` | Profile Scripts | 3 files | `src/profiles/` |
+| `safety/*.bat` | Safety Scripts | 4 files | `src/safety/` |
+| `backup/*.bat` | Backup Scripts | 2 files | `src/backup/` |
+| `fonts/*.ttf` | Font Assets | 4 files (Figtree + Tabler) | `clutchg/src/fonts/` |
+| `data/*.json` | Static Data | 2 files | `clutchg/src/data/` |
+| `config.json` | User Config | Runtime-generated | Application directory |
+| `backup/*.json` | Registry Snapshots | Runtime-generated | Application directory |
+| `flight-recorder.log` | Audit Log | Runtime-generated | `logs/` |
+
+### 10.4 Communication Protocols
+
+| Connection | Protocol / Mechanism | ทิศทาง | หมายเหตุ |
+|---|---|---|---|
+| GUI → Batch Scripts | `subprocess.run()` via cmd.exe | Synchronous | batch_parser.py discovers scripts at startup |
+| GUI → Registry | `winreg` (Python stdlib) | Read-only | อ่านค่า current settings เท่านั้น ไม่แก้ไขโดยตรง |
+| Batch → Registry | `reg add` / `reg delete` | Read/Write | ผ่าน safety/validator.bat ก่อนทุกครั้ง |
+| Batch → Services | `sc config` / `net stop` | Write | เฉพาะ services ใน whitelist |
+| GUI → WMI | `wmi` Python package | Read-only | Hardware detection สำหรับ system_info |
+| Batch → File System | `echo >>`, `type`, `copy` | Read/Write | Logging, backup, config |
+| GUI → File System | Python `pathlib` / `json` | Read/Write | Config, backup JSON, log reading |
+
+### 10.5 Deployment Constraints
+
+| ข้อจำกัด | รายละเอียด | ผลกระทบ |
+|---|---|---|
+| **DC-01** Administrator Required | Batch scripts ต้องรันด้วยสิทธิ์ admin | main.py ตรวจสอบ admin check ตั้งแต่ startup |
+| **DC-02** Windows Only | ไม่รองรับ macOS / Linux | ใช้ Windows-specific APIs: winreg, pywin32, WMI |
+| **DC-03** Single Machine | ไม่มี network deployment | Desktop standalone application เท่านั้น |
+| **DC-04** No Auto-Update | ไม่มีระบบ update อัตโนมัติ | Manual update ผ่าน GitHub releases |
+| **DC-05** Antivirus Compatibility | บาง AV อาจ flag batch scripts | ลงนาม code signing หรือ whitelist แนะนำ |
+| **DC-06** Python Version Lock | ต้องใช้ Python 3.12+ | PyInstaller bundle รวม runtime ไว้แล้ว |
+
+---
+
 ## Revision History
 
 | Version | Date | Changes |
 |---------|------|---------|
 | v1.0 | 2026-03-04 | Initial UML diagrams: Context, Use Case, Activity, Component, Sequence, Class |
 | v2.0 | 2026-04-06 | SE 701 enrichment: Include/Extend relationships, emoji removal, State Machine diagram, Package diagram, dependency rules |
+| v3.0 | 2026-04-10 | Phase 11b Unified Recommendation Refactor: tweak counts 48→56, profile counts 17/35/48→14/44/56, RecommendationService replaces ProfileRecommender in Component/Class/Sequence/Package diagrams, Recommendation dataclass + evidence gate added to Class diagram, benchmark_matched fields, all COMPETITIVE tweak references 35→44 |
+| v3.1 | 2026-04-12 | Added §10 Deployment Diagram: deployment topology (mermaid), specifications, artifact manifest, communication protocols, deployment constraints |
 
 ---
 
