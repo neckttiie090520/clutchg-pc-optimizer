@@ -164,12 +164,12 @@ class ClutchGApp:
         """Show non-blocking warning about missing Tabler Icons font"""
         logger.warning(
             "Tabler Icons font not available — icons may display as boxes. "
-            "The font should have been bundled; check tkextrafont installation."
+            "The font should have been bundled; check font files in fonts/ directory."
         )
         if hasattr(self, "toast"):
             self.toast.warning(
                 "Icon font not loaded — icons may show as boxes. "
-                "Ensure tkextrafont is installed: pip install tkextrafont"
+                "Check that tabler-icons.ttf is present in the fonts directory."
             )
 
     def _refresh_window_colors(self):

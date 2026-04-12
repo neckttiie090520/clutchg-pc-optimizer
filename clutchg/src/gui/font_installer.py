@@ -1,8 +1,11 @@
 """
 Font Installer Helper for Tabler Icons
+
 Checks if Tabler Icons font is installed and provides installation instructions.
 The font is bundled with the application as tabler-icons.ttf — this module
 is a fallback for verifying the font loaded correctly.
+
+Fonts are loaded via Windows GDI API (AddFontResourceEx) in font_loader.py.
 """
 
 import platform
@@ -41,7 +44,7 @@ If icons are not displaying correctly, try the following:
 
 1. Ensure the application files are intact (re-download if needed).
 2. The font file is located at: clutchg/src/fonts/tabler-icons.ttf
-3. tkextrafont must be installed: pip install tkextrafont
+3. Fonts are loaded via Windows GDI API — no extra packages needed.
 
 For manual installation (fallback):
 - Download tabler-icons.ttf from: https://github.com/tabler/tabler-icons/releases

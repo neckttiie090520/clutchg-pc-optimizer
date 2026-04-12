@@ -80,10 +80,8 @@ _ctk_datas, _ctk_binaries, _ctk_hiddenimports = collect_all("customtkinter")
 datas     += _ctk_datas
 binaries   = _ctk_binaries
 
-# 5. tkextrafont — collect its package data as well
-_tkx_datas, _tkx_binaries, _tkx_hiddenimports = collect_all("tkextrafont")
-datas    += _tkx_datas
-binaries += _tkx_binaries
+# 5. tkextrafont — REMOVED (replaced by Windows GDI AddFontResourceEx in
+#    font_loader.py — no external dependency needed for font loading)
 
 # ---------------------------------------------------------------------------
 # Hidden imports
@@ -96,10 +94,6 @@ hiddenimports = [
     # --- CustomTkinter ---
     "customtkinter",
     *_ctk_hiddenimports,
-
-    # --- tkextrafont ---
-    "tkextrafont",
-    *_tkx_hiddenimports,
 
     # --- Tkinter internals ---
     "_tkinter",

@@ -135,8 +135,8 @@ class IconProvider:
         """Initialize icon provider and detect available fonts."""
         self.system = platform.system()
         # NOTE: Do NOT cache font availability here — fonts are loaded by
-        # tkextrafont AFTER Tk root exists. Availability is checked lazily
-        # on first use via the property below.
+        # the GDI API (AddFontResourceEx) AFTER Tk root exists. Availability
+        # is checked lazily on first use via the property below.
 
     def _check_font(self, family_name: str) -> bool:
         """Check if a font family is available (Windows only for Segoe)."""
@@ -156,7 +156,7 @@ class IconProvider:
         Check if a font family is installed by querying tkinter font families.
 
         Must pass the Tk root to ``tkfont.families()`` — without it,
-        dynamically loaded fonts (via tkextrafont) are invisible,
+        dynamically loaded fonts (via GDI AddFontResourceEx) are invisible,
         especially in PyInstaller frozen builds.
 
         Args:
