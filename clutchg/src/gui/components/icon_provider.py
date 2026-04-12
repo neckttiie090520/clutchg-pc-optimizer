@@ -155,6 +155,10 @@ class IconProvider:
         """
         Check if a font family is installed by querying tkinter font families.
 
+        Must pass the Tk root to ``tkfont.families()`` — without it,
+        dynamically loaded fonts (via tkextrafont) are invisible,
+        especially in PyInstaller frozen builds.
+
         Args:
             family_name: Font family name to check
 
@@ -162,9 +166,13 @@ class IconProvider:
             True if font is available, False otherwise
         """
         try:
+            import tkinter as tk
             import tkinter.font as tkfont
 
-            available = tkfont.families()
+            root = getattr(tk, "_default_root", None)
+            if root is None:
+                return False
+            available = tkfont.families(root)
             return family_name in available
         except Exception:
             return False
