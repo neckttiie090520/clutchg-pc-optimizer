@@ -1,12 +1,12 @@
-# Complete Repository Ranking - All 28 Windows Optimization Repositories
+# Complete Repository Ranking - All 23 Windows Optimization Repositories
 
 > **Analysis Date:** January 2026
-> **Total Repositories Analyzed:** 28
+> **Total Repositories Analyzed:** 23
 > **Analysis Scope:** Windows 10/11 optimization tools, scripts, and guides
 
 ## Executive Summary
 
-This document provides a full ranking of all 28 Windows optimization repositories analyzed in this research project. Each repository has been evaluated on technical accuracy, safety practices, code quality, effectiveness, and overall recommendation.
+This document provides a full ranking of all 23 Windows optimization repositories analyzed in this research project. Each repository has been evaluated on technical accuracy, safety practices, code quality, effectiveness, and overall recommendation.
 
 ---
 
@@ -40,7 +40,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ### Tier 1: Excellent (9.0-10.0) - Highly Recommended
 
-#### 🥇 #1 WinUtil (ChrisTitusTech/winutil)
+#### #1 WinUtil (ChrisTitusTech/winutil)
 **Score:** 9.5/10 | **Grade:** A+
 
 | Category | Score |
@@ -68,7 +68,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### 🥈 #2 BCDEditTweaks (dubbyOW/BCDEditTweaks)
+#### #2 BCDEditTweaks (dubbyOW/BCDEditTweaks)
 **Score:** 9.0/10 | **Grade:** A
 
 | Category | Score |
@@ -98,7 +98,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ### Tier 2: Very Good (8.0-8.9) - Recommended
 
-#### 🥉 #3 Windows-11-Latency-Optimization (NicholasBly/Windows-11-Latency-Optimization)
+#### #3 Windows-11-Latency-Optimization (NicholasBly/Windows-11-Latency-Optimization)
 **Score:** 8.0/10 | **Grade:** A-
 
 | Category | Score |
@@ -125,6 +125,8 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 **Best For:** Competitive gamers, technical users
 
 ---
+
+### Tier 3: Good (7.0-7.9) - Recommended for Specific Use Cases
 
 #### #4 FR33THY Ultimate Guide (FR33THYFR33THY/Ultimate-Windows-Optimization-Guide)
 **Score:** 7.5/10 | **Grade:** B
@@ -182,8 +184,6 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-### Tier 3: Good (7.0-7.9) - Recommended for Specific Use Cases
-
 #### #6 CS2-Ultimate-Optimization (Precision-Optimize/CS2-Ultimate-Optimization)
 **Score:** 7.0/10 | **Grade:** B
 
@@ -214,7 +214,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-### Tier 4: Adequate to Poor (5.0-6.9) - Use with Caution
+### Tier 4: Adequate (6.0-6.9) - Use with Caution
 
 #### #7 QuickBoost (SanGraphic/QuickBoost)
 **Score:** 6.0/10 | **Grade:** C+
@@ -243,7 +243,75 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #8 Windows-10-tweaks (tcja/Windows-10-tweaks)
+#### #8 windows11 (vacisdev/windows11)
+**Score:** 6.0/10 | **Grade:** C+
+
+| Category | Score |
+|----------|-------|
+| Safety | 5/10 |
+| Effectiveness | 6/10 |
+| Code Quality | 6/10 |
+| Maintainability | 6/10 |
+| Transparency | 7/10 |
+
+**Strengths:**
+- Windows 11 specific optimizations
+- Some legitimate registry tweaks
+- Active repository
+
+**Weaknesses:**
+- Mixed safety of included tweaks
+- Some outdated optimizations
+- Limited documentation on risks
+
+**Use Case:** Windows 11 users wanting basic optimizations
+
+**Best For:** Intermediate users comfortable with registry tweaks
+
+---
+
+### Tier 5: Fair (5.0-5.9) - Significant Concerns
+
+#### #9 TerabyteTweaker (Kawwabi/TerabyteTweaker)
+**Score:** 5.5/10 | **Grade:** C
+
+| Category | Score |
+|----------|-------|
+| Safety | 5/10 |
+| Effectiveness | 5/10 |
+| Code Quality | 6/10 |
+| Maintainability | 5/10 |
+| Transparency | 6/10 |
+
+**Strengths:**
+- Targets low-end systems appropriately
+- Some legitimate performance tweaks
+
+**Weaknesses:**
+- Many placebo tweaks
+- Outdated optimizations
+- Not actively maintained
+- Limited documentation
+
+**Use Case:** Older hardware optimization
+
+**Best For:** Low-end PCs from Windows 7 era
+
+---
+
+#### #10 WIN10-OPTIMIZER (mrandcris/WIN10-OPTIMIZER)
+**Score:** 5.0/10 | **Grade:** C
+
+**Critical Issue:**
+- "Disable Automatic Windows Updates.bat" permanently disables security updates and locks registry to prevent re-enabling
+
+**Recommendation:** Only use Bloatware Deleter.bat and Telemetry Disabler Level 1.cmd (with modifications)
+
+---
+
+### Tier 6: Poor (4.0-4.9) - Not Recommended
+
+#### #11 Windows-10-tweaks (tcja/Windows-10-tweaks)
 **Score:** 4.0/10 | **Grade:** D
 
 | Category | Score |
@@ -272,36 +340,19 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #9 TerabyteTweaker (Kawwabi/TerabyteTweaker)
-**Score:** 5.5/10 | **Grade:** C+
+#### #12 GameOptimizer (vdavidyang/GameOptimizer)
+**Score:** 4.0/10 | **Grade:** D
 
-| Category | Score |
-|----------|-------|
-| Safety | 5/10 |
-| Effectiveness | 5/10 |
-| Code Quality | 6/10 |
-| Maintainability | 5/10 |
-| Transparency | 6/10 |
+**Critical Issue:**
+- Anti-cheat manipulation violates ToS and risks permanent account bans
 
-**Strengths:**
-- Targets low-end systems appropriately
-- Some legitimate performance tweaks
-
-**Weaknesses:**
-- Many placebo tweaks
-- Outdated optimizations
-- Not actively maintained
-- Limited documentation
-
-**Use Case:** Older hardware optimization
-
-**Best For:** Low-end PCs from Windows 7 era
+**Verdict:** **DO NOT USE** - Risk of account bans far outweighs benefits
 
 ---
 
-### Tier 5: Fail (0.0-4.9) - Not Recommended
+### Tier 7: Fail (0.0-3.9) - Dangerous or Ineffective
 
-#### #10 Windows-Tweaks (kubsonxtm/Windows-Tweaks)
+#### #13 Windows-Tweaks (kubsonxtm/Windows-Tweaks)
 **Score:** 3.0/10 | **Grade:** F
 
 | Category | Score |
@@ -322,17 +373,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #11 WIN10-OPTIMIZER (mrandcris/WIN10-OPTIMIZER)
-**Score:** 5.0/10 | **Grade:** C
-
-**Critical Issue:**
-- "Disable Automatic Windows Updates.bat" permanently disables security updates and locks registry to prevent re-enabling
-
-**Recommendation:** Only use Bloatware Deleter.bat and Telemetry Disabler Level 1.cmd (with modifications)
-
----
-
-#### #12 BoosterFPSWin10 (Jackie0X/BoosterFPSWin10)
+#### #14 BoosterFPSWin10 (Jackie0X/BoosterFPSWin10)
 **Score:** 3.0/10 | **Grade:** F
 
 **Critical Issues:**
@@ -346,20 +387,7 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #13 Unlimited-PC-Tips (itz-rj-here/Unlimited-PC-Tips)
-**Score:** 2.0/10 | **Grade:** F
-
-**Critical Issues:**
-- Delete Bloatware.bat DELETES THE WINDOWS START MENU
-- Disables Windows Update completely
-- Promotes piracy tools
-- No error handling, no backups, no undo
-
-**Verdict:** **MALWARE-LIKE BEHAVIOR - DO NOT USE**
-
----
-
-#### #14 Batlez-Tweaks (Batlez/Batlez-Tweaks)
+#### #15 Batlez-Tweaks (Batlez/Batlez-Tweaks)
 **Score:** 3.0/10 | **Grade:** F
 
 **Critical Issues:**
@@ -373,35 +401,34 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #15 EchoX (UnLovedCookie/EchoX)
-**Score:** 1.0/10 | **Grade:** F
+#### #16 Windows-Gaming-Optimization-Script (TheCraZyDuDee)
+**Score:** 3.0/10 | **Grade:** F
 
 **Critical Issues:**
-- **DEPRECATED** by author
-- Deletes CPU microcode updates (removes Spectre/Meltdown protections)
-- Disables Core Isolation and Memory Integrity
-- Removes ALL exploit protections (ASLR, CFG, SEHOP)
-- KBoost keeps GPU at max 24/7 (hardware stress)
+- DWM Disabling suspends winlogon.exe (CRITICAL RISK)
+- Disables Windows Firewall
+- Kills explorer.exe without warning
+- Downloads unverified executables
+- 0-2% FPS improvement (within margin of error)
 
-**Verdict:** **EXTREMELY DANGEROUS - DO NOT USE**
+**Verdict:** **DO NOT USE - Better alternatives exist**
 
 ---
 
-#### #16 Ancels-Performance-Batch (ancel1x/Ancels-Performance-Batch)
-**Score:** 1.0/10 | **Grade:** F
+#### #17 Unlimited-PC-Tips (itz-rj-here/Unlimited-PC-Tips)
+**Score:** 2.0/10 | **Grade:** F
 
 **Critical Issues:**
-- Permanently deletes CPU microcode files
-- Disables ALL Windows exploit protections
-- Disables UAC completely
-- Deletes system files without backup
-- No rollback mechanism
+- Delete Bloatware.bat DELETES THE WINDOWS START MENU
+- Disables Windows Update completely
+- Promotes piracy tools
+- No error handling, no backups, no undo
 
-**Verdict:** **DO NOT USE - Creates security vulnerabilities**
+**Verdict:** **MALWARE-LIKE BEHAVIOR - DO NOT USE**
 
 ---
 
-#### #17 All-Tweaker (scode18/All-Tweaker)
+#### #18 All-Tweaker (scode18/All-Tweaker)
 **Score:** 2.0/10 | **Grade:** F
 
 **Critical Issues:**
@@ -411,16 +438,6 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 - No backup, no undo, no warnings
 
 **Verdict:** **DO NOT USE - Contains illegal tools and dangerous operations**
-
----
-
-#### #18 GameOptimizer (vdavidyang/GameOptimizer)
-**Score:** 4.0/10 | **Grade:** D
-
-**Critical Issue:**
-- Anti-cheat manipulation violates ToS and risks permanent account bans
-
-**Verdict:** **DO NOT USE** - Risk of account bans far outweighs benefits
 
 ---
 
@@ -450,29 +467,31 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #21 awesome-windows11 (awesome-windows11/windows11)
-**Score:** 3.0/10 | **Grade:** F
+#### #21 EchoX (UnLovedCookie/EchoX)
+**Score:** 1.0/10 | **Grade:** F
 
 **Critical Issues:**
-- Mix of safe and extremely dangerous tweaks with no clear separation
-- Disables Windows Defender, Update, and UAC
-- No safety mechanisms or version checks
-- Outdated dangerous scripts still included
+- **DEPRECATED** by author
+- Deletes CPU microcode updates (removes Spectre/Meltdown protections)
+- Disables Core Isolation and Memory Integrity
+- Removes ALL exploit protections (ASLR, CFG, SEHOP)
+- KBoost keeps GPU at max 24/7 (hardware stress)
 
-**Verdict:** **NOT RECOMMENDED - Too easy to accidentally apply dangerous tweaks**
+**Verdict:** **EXTREMELY DANGEROUS - DO NOT USE**
 
 ---
 
-#### #22 Windows (TairikuOokami/Windows)
-**Score:** 0.5/10 | **Grade:** F
+#### #22 Ancels-Performance-Batch (ancel1x/Ancels-Performance-Batch)
+**Score:** 1.0/10 | **Grade:** F
 
 **Critical Issues:**
-- Creates backdoors (replaces utilman.exe/sethc.exe with cmd.exe)
-- Deletes ALL system restore points
-- Hardcoded paths and author-specific configurations
-- Author explicitly warns "DO NOT USE THOSE SCRIPTS !!!!!"
+- Permanently deletes CPU microcode files
+- Disables ALL Windows exploit protections
+- Disables UAC completely
+- Deletes system files without backup
+- No rollback mechanism
 
-**Verdict:** **EXTREMELY DANGEROUS - Author says don't use it**
+**Verdict:** **DO NOT USE - Creates security vulnerabilities**
 
 ---
 
@@ -490,75 +509,30 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ---
 
-#### #24 LynxOptimizer (caxzy/LynxOptimizer)
-**Score:** 0.0/10 | **Grade:** F
-
-**Critical Issue:**
-- **EMPTY REPOSITORY** - No functional code exists
-- README makes false claims about 14 features
-- Historical code was dangerous and ineffective
-
-**Verdict:** **NOT A REAL TOOL - Abandoned placeholder**
-
----
-
-#### #25 Windows-Gaming-Optimization-Script (TheCraZyDuDee)
-**Score:** 3.0/10 | **Grade:** F
-
-**Critical Issues:**
-- DWM Disabling suspends winlogon.exe (CRITICAL RISK)
-- Disables Windows Firewall
-- Kills explorer.exe without warning
-- Downloads unverified executables
-- 0-2% FPS improvement (within margin of error)
-
-**Verdict:** **DO NOT USE - Better alternatives exist**
-
----
-
-#### #26 Windows10MiningTweaksDmW (DeadManWalkingTO/Windows10MiningTweaksDmW)
-**Score:** 3.5/10 | **Grade:** F
-
-**Critical Issues:**
-- Cryptocurrency mining focus (obsolete use case)
-- Many security compromises
-- Outdated for modern Windows
-
-**Verdict:** **OBSOLETE - Not relevant for gaming/general use**
-
----
-
-#### #27 Multi-Repo Analysis (Various)
-**Score:** N/A | **Grade:** N/A
-
-**Note:** This is a comparative analysis document, not a standalone tool
-
----
-
 ## Summary Statistics
 
 ### Grade Distribution
 
 | Grade | Count | Percentage |
 |-------|-------|------------|
-| A+ (9.0-10.0) | 1 | 3.6% |
-| A (8.0-8.9) | 1 | 3.6% |
-| A- (7.5-7.9) | 2 | 7.1% |
-| B (7.0-7.4) | 2 | 7.1% |
-| C+ (6.0-6.9) | 1 | 3.6% |
-| C (5.0-5.9) | 1 | 3.6% |
-| D (4.0-4.9) | 3 | 10.7% |
-| F (0.0-3.9) | 17 | 60.7% |
+| A+ (9.0-10.0) | 1 | 4.3% |
+| A (8.0-8.9) | 1 | 4.3% |
+| A- (7.5-7.9) | 1 | 4.3% |
+| B (7.0-7.4) | 3 | 13.0% |
+| C+ (6.0-6.9) | 2 | 8.7% |
+| C (5.0-5.9) | 2 | 8.7% |
+| D (4.0-4.9) | 2 | 8.7% |
+| F (0.0-3.9) | 11 | 47.8% |
 
 ### Safety Analysis
 
 | Safety Level | Count | Percentage |
 |--------------|-------|------------|
-| **Safe to Use** | 2 | 7.1% |
-| **Mostly Safe** | 4 | 14.3% |
-| **Use with Caution** | 3 | 10.7% |
-| **Dangerous** | 9 | 32.1% |
-| **Extremely Dangerous** | 10 | 35.7% |
+| **Safe to Use** | 2 | 8.7% |
+| **Mostly Safe** | 4 | 17.4% |
+| **Use with Caution** | 2 | 8.7% |
+| **Dangerous** | 7 | 30.4% |
+| **Extremely Dangerous** | 8 | 34.8% |
 
 ### Recommendations by Use Case
 
@@ -574,12 +548,12 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 1. **FR33THY Ultimate Guide** (7.5/10) - Educational approach
 2. **windows10-latency-optimization** (7.5/10) - Technical explanations
 
-#### ❌ Never Use (Under Any Circumstances)
-1. **Windows (TairikuOokami)** - Author warns against it
-2. **EchoX** - Deprecated, removes security protections
-3. **Ancels-Performance-Batch** - Creates vulnerabilities
-4. **Unlimited-PC-Tips** - Deletes Windows Start Menu
-5. **LynxOptimizer** - Empty repository
+#### Never Use (Under Any Circumstances)
+1. **EchoX** - Deprecated, removes security protections
+2. **Ancels-Performance-Batch** - Creates vulnerabilities
+3. **Unlimited-PC-Tips** - Deletes Windows Start Menu
+4. **OptiGreat** - Catastrophic security risk
+5. **EudynOS** - Abandoned and dangerous
 
 ---
 
@@ -587,18 +561,18 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ### Alarming Statistics
 
-- **60.7%** of repositories received a failing grade (F)
-- **67.8%** are dangerous or extremely dangerous
-- Only **7.1%** are safe for general use
-- Only **21.4%** received a B grade or higher
+- **47.8%** of repositories received a failing grade (F)
+- **65.2%** are dangerous or extremely dangerous
+- Only **8.7%** are safe for general use
+- Only **21.7%** received a B grade or higher
 
 ### Common Dangerous Patterns
 
-1. **Windows Defender Disabling** (Found in 17 repos)
-2. **Windows Update Disabling** (Found in 14 repos)
-3. **Security Mitigation Removal** (Found in 9 repos)
-4. **No Backup Mechanism** (Found in 22 repos)
-5. **System File Deletion** (Found in 11 repos)
+1. **Windows Defender Disabling** (Found in 16 repos, 69.6%)
+2. **Windows Update Disabling** (Found in 12 repos, 52.2%)
+3. **Security Mitigation Removal** (Found in 10 repos, 43.5%)
+4. **No Backup Mechanism** (Found in 20 repos, 87.0%)
+5. **System File Deletion** (Found in 9 repos, 39.1%)
 
 ### Positive Patterns
 
@@ -615,18 +589,18 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 ### For Users
 
 **DO:**
-- ✅ Use WinUtil for general optimization
-- ✅ Create system restore points before ANY optimization
-- ✅ Read documentation before running scripts
-- ✅ Research what tweaks actually do
-- ✅ Backup registry before modifications
+- Use WinUtil for general optimization
+- Create system restore points before ANY optimization
+- Read documentation before running scripts
+- Research what tweaks actually do
+- Backup registry before modifications
 
 **DON'T:**
-- ❌ Use tools that disable Windows Defender
-- ❌ Use tools that disable Windows Update permanently
-- ❌ Run scripts without reading them first
-- ❌ Trust claims of "200% FPS increase"
-- ❌ Use deprecated or abandoned tools
+- Use tools that disable Windows Defender
+- Use tools that disable Windows Update permanently
+- Run scripts without reading them first
+- Trust claims of "200% FPS increase"
+- Use deprecated or abandoned tools
 
 ### For Developers
 
@@ -650,10 +624,10 @@ This document provides a full ranking of all 28 Windows optimization repositorie
 
 ## Conclusion
 
-The Windows optimization tool landscape is **dangerously immature**. While excellent tools like **WinUtil** and **BCDEditTweaks** prove that safe, effective optimization is possible, the majority (60.7%) of repositories are failing grades with dangerous practices.
+The Windows optimization tool landscape is **dangerously immature**. While excellent tools like **WinUtil** and **BCDEditTweaks** prove that safe, effective optimization is possible, nearly half (47.8%) of repositories received failing grades with dangerous practices.
 
 **Users must be extremely cautious** when selecting optimization tools. The research shows that:
-- Only 2 out of 28 tools (7.1%) are safe for general use
+- Only 2 out of 23 tools (8.7%) are safe for general use
 - Most tools compromise security for marginal performance gains
 - Many contain actively dangerous operations
 - Abandoned projects remain accessible and dangerous
@@ -662,4 +636,4 @@ The Windows optimization tool landscape is **dangerously immature**. While excel
 
 ---
 
-*This analysis represents the most thorough technical evaluation of Windows optimization repositories to date, with line-by-line analysis of over 50,000 lines of code across 28 repositories.*
+*This analysis represents the most thorough technical evaluation of Windows optimization repositories to date, with line-by-line analysis of over 50,000 lines of code across 23 repositories.*

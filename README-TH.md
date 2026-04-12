@@ -24,14 +24,13 @@
   <img src="https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/tests-477%20passed-2ea44f" alt="Tests">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
-  <img src="https://github.com/neckttiie090520/clutchg-pc-optimizer/actions/workflows/ci.yml/badge.svg" alt="CI">
 </p>
 
 ---
 
 ## ClutchG คืออะไร?
 
-ClutchG เป็นเครื่องมือปรับแต่ง Windows ที่สร้างจากการวิจัยเปรียบเทียบ **เครื่องมือปรับแต่ง 28 ตัว** บน GitHub (โค้ดรวมกว่า 50,000 บรรทัด) จำแนก **48 เทคนิค** ออกเป็น 10 หมวด พร้อมจัดระดับความเสี่ยง เพื่อแยกเทคนิคที่ได้ผลจริงออกจากเทคนิคหลอก
+ClutchG เป็นเครื่องมือปรับแต่ง Windows ที่สร้างจากการวิจัยเปรียบเทียบ **เครื่องมือปรับแต่ง 23 ตัว** แบบ open-source บน GitHub (โค้ดรวมกว่า 50,000 บรรทัด) สำรวจเทคนิคปรับแต่งกว่า **200 รายการ** และจำแนก **56 เทคนิคที่ผ่านการคัดกรอง** ออกเป็น 10 หมวด พร้อมจัดระดับความเสี่ยง 3 ชั้น (ต่ำ / ปานกลาง / สูง) เพื่อแยกเทคนิคที่ได้ผลจริงออกจากเทคนิคหลอกหรือเทคนิคอันตราย
 
 ผลลัพธ์คือ batch optimizer แบบ modular พร้อม GUI สมัยใหม่ ที่ปรับแต่งเฉพาะเทคนิคที่มีหลักฐานรองรับ -- ปลอดภัย โปร่งใส และย้อนกลับได้ทุกขั้นตอน
 
@@ -50,11 +49,12 @@ ClutchG เป็นเครื่องมือปรับแต่ง Windo
 ## จุดเด่น
 
 - **3 โปรไฟล์** -- SAFE, COMPETITIVE, EXTREME จัดเทคนิคตามระดับความเสี่ยง
-- **48 เทคนิคที่ผ่านการคัดกรอง** ครอบคลุม power, GPU, services, network, storage, BCDEdit
+- **56 เทคนิคที่ผ่านการคัดกรอง** ครอบคลุม 10 หมวด: telemetry, input/latency, power, GPU, network, services, memory, boot/BCDEdit, visual effects, cleanup/debloat
 - **ตรวจจับฮาร์ดแวร์อัตโนมัติ** -- ระบุ CPU, GPU, RAM แล้วแนะนำโปรไฟล์ที่เหมาะสม
+- **สารานุกรมเทคนิค** -- ทุกเทคนิคมีเอกสารครบ: ทำอะไร ทำไมถึงช่วย ข้อจำกัด ระดับความเสี่ยง และผลลัพธ์ที่คาดหวัง
 - **Flight Recorder** -- บันทึกทุกการเปลี่ยนแปลงพร้อมค่าก่อน/หลัง
 - **Restore Center** -- ดู timeline การเปลี่ยนแปลงทั้งหมด ย้อนกลับทีละรายการได้
-- **ธีมมืดสมัยใหม่** -- สไตล์ Windows 11 / Sun Valley
+- **ธีมมืดสมัยใหม่** -- สไตล์ Windows 11 / Sun Valley พร้อมฟอนต์ Figtree
 
 ---
 
@@ -168,39 +168,77 @@ python build.py
 clutchg-pc-optimizer/
 ├── src/                              # Batch Optimizer Engine
 │   ├── optimizer.bat                 # จุดเริ่มต้น (v2.0, ต้องมีสิทธิ์ admin)
-│   ├── core/                         # โมดูลปรับแต่ง 17 ตัว
+│   ├── core/                         # โมดูลปรับแต่ง 16 ตัว
 │   ├── profiles/                     # SAFE / COMPETITIVE / EXTREME
 │   ├── safety/                       # ตรวจสอบ, ย้อนกลับ, flight recorder
 │   ├── backup/                       # สำรอง registry, restore point
-│   └── logging/                      # บันทึก log
+│   ├── logging/                      # บันทึก log
+│   ├── ui/                           # ระบบเมนู
+│   └── validation/                   # ตรวจสอบ input และ benchmark
 │
 ├── clutchg/                          # แอปพลิเคชัน GUI (Python)
 │   ├── src/
 │   │   ├── main.py                   # จุดเริ่มต้น
-│   │   ├── core/                     # business logic (14 โมดูล)
+│   │   ├── core/                     # business logic (15 โมดูล)
+│   │   │   ├── tweak_registry.py     # ฐานความรู้กลาง (56 เทคนิค)
+│   │   │   ├── profile_manager.py    # จับคู่โปรไฟล์กับเทคนิค
+│   │   │   ├── batch_parser.py       # ค้นหาเทคนิคจากไฟล์ .bat
+│   │   │   ├── action_catalog.py     # ชุด action สำหรับผู้ใช้
+│   │   │   ├── flight_recorder.py    # บันทึกการเปลี่ยนแปลงพร้อมค่าก่อน/หลัง
+│   │   │   └── ...                   # backup, config, system info ฯลฯ
 │   │   ├── gui/views/               # หน้าจอ 8 หน้า
 │   │   ├── gui/components/          # คอมโพเนนต์ 12 ตัว
-│   │   └── gui/theme.py             # ระบบธีมมืด
-│   ├── tests/                        # ชุดทดสอบ 477 tests
-│   └── build.py                      # สร้างไฟล์ .exe
+│   │   └── gui/theme.py             # ระบบธีมมืด (Sun Valley)
+│   ├── tests/                        # ชุดทดสอบ 477 tests (unit + integration + E2E)
+│   │   ├── unit/                     # ไฟล์ทดสอบ 16 ไฟล์
+│   │   ├── integration/              # ไฟล์ทดสอบ 2 ไฟล์
+│   │   └── e2e/                      # โครงสร้าง Page Object Model
+│   └── build.py                      # สร้างไฟล์ .exe ด้วย PyInstaller
 │
 ├── docs/                             # เอกสารวิจัยและเทคนิค
 │   ├── 01-research-overview.md       # วิธีวิจัย
-│   ├── 02-repo-analysis/             # วิเคราะห์เครื่องมือ 28 ตัว
-│   ├── 03-tweak-taxonomy.md          # จัดหมวดเทคนิคทั้งหมด
-│   ├── 04-risk-classification.md     # จัดระดับความเสี่ยง
+│   ├── 02-repo-analysis/             # วิเคราะห์เครื่องมือ 23 ตัว
+│   ├── 03-tweak-taxonomy.md          # จัดหมวดเทคนิคทั้งหมด (10 หมวด)
+│   ├── 04-risk-classification.md     # เมทริกซ์ประเมินความเสี่ยง
 │   ├── 05-windows-internals.md       # เจาะลึก Windows internals
 │   ├── 06-performance-impact.md      # ผลลัพธ์จริง
-│   └── iso29110-clutchg/             # เอกสาร ISO 29110
+│   ├── 07-best-practices.md          # แนวทางที่แนะนำ
+│   ├── 10-complete-repo-ranking.md   # จัดอันดับเครื่องมือ 23 ตัว พร้อมคะแนน
+│   ├── 15-user-guide-th.md           # คู่มือผู้ใช้ (ไทย)
+│   ├── 16-user-guide-en.md           # คู่มือผู้ใช้ (อังกฤษ)
+│   └── iso29110-clutchg/             # เอกสาร ISO 29110 (10 work products)
 │
-└── .github/workflows/ci.yml         # CI pipeline
+└── UX/                               # ต้นแบบและภาพหน้าจอ UI
 ```
 
 ---
 
 ## งานวิจัย
 
-โปรเจกต์นี้เริ่มจากการวิจัย วิเคราะห์เครื่องมือปรับแต่ง Windows 28 ตัว เพื่อสร้างความเข้าใจที่อิงหลักฐานว่าอะไรได้ผลจริง
+โปรเจกต์นี้เริ่มจากงานวิจัยวิทยานิพนธ์ปริญญาโท สาขาวิศวกรรมซอฟต์แวร์ มหาวิทยาลัยเชียงใหม่ วิเคราะห์เครื่องมือปรับแต่ง Windows 23 ตัว แบบ open-source และให้คะแนนตามกรอบประเมิน 5 ด้าน (ความปลอดภัย, ประสิทธิภาพ, คุณภาพโค้ด, ความโปร่งใส, ความสามารถในการย้อนกลับ)
+
+### ผลการวิจัยสำคัญ
+
+| รายการ | จำนวน |
+|--------|-------|
+| เครื่องมือที่วิเคราะห์ | 23 |
+| เทคนิคปรับแต่งที่สำรวจ | 200+ |
+| เทคนิคที่ผ่านการคัดกรองด้วยหลักฐาน | 45 (22.5%) |
+| เทคนิคที่นำมาใช้ใน ClutchG | 56 |
+| เครื่องมือที่ได้เกรด F (ไม่ผ่าน) | 11 (47.8%) |
+| เครื่องมือที่ปลอดภัยสำหรับผู้ใช้ทั่วไป (เกรด A ขึ้นไป) | 2 (8.7%) |
+| เครื่องมือที่ปิด Windows Defender | 16 (69.6%) |
+| เครื่องมือที่ไม่มีระบบ backup | 20 (87.0%) |
+
+### เครื่องมือที่ได้คะแนนสูงสุด
+
+| อันดับ | เครื่องมือ | คะแนน | เกรด |
+|--------|-----------|-------|------|
+| 1 | WinUtil (ChrisTitusTech) | 9.5 | A+ |
+| 2 | BCDEditTweaks (dubbyOW) | 9.0 | A |
+| 3 | Win11-Latency-Opt (NicholasBly) | 8.0 | A- |
+| 4 | FR33THY Ultimate Guide | 7.5 | B |
+| 5 | win10-latency-opt (denis-g) | 7.5 | B |
 
 ### เทคนิคที่ได้ผลจริง
 
@@ -219,6 +257,16 @@ clutchg-pc-optimizer/
 | "Timer resolution service เพิ่ม FPS" | ล้าสมัย Windows 10 2004 จัดการแบบ per-process แล้ว |
 | "ปิด service 100 ตัว = เร็วขึ้น" | ฟีเจอร์พัง ได้ performance น้อยมาก |
 | "แก้ registry เกี่ยวกับ network ลด ping" | ปัจจัยหลักคือ ISP และ routing ไม่ใช่ registry |
+
+### รูปแบบอันตรายที่พบในเครื่องมือ open-source
+
+| รูปแบบ | สัดส่วนที่พบ |
+|--------|-------------|
+| ปิด Windows Defender | 16/23 (69.6%) |
+| ปิด Windows Update | 12/23 (52.2%) |
+| ลบ exploit mitigations | 10/23 (43.5%) |
+| ไม่มีระบบ backup | 20/23 (87.0%) |
+| ลบไฟล์ระบบ | 9/23 (39.1%) |
 
 ### สิ่งที่ ClutchG ไม่ทำเด็ดขาด
 
@@ -266,7 +314,7 @@ CI รัน unit และ integration tests อัตโนมัติบน 
 - **OS:** Windows 10 22H2 ขึ้นไป หรือ Windows 11
 - **Python:** 3.11+ (สำหรับ GUI)
 - **สิทธิ์ Administrator** สำหรับการปรับแต่ง
-- **Dependencies:** customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi
+- **Dependencies:** customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi, tkextrafont
 
 ---
 
@@ -275,13 +323,16 @@ CI รัน unit และ integration tests อัตโนมัติบน 
 | เอกสาร | คำอธิบาย |
 |--------|---------|
 | [Research Overview](docs/01-research-overview.md) | วิธีวิจัยและขอบเขต |
-| [Repo Analysis](docs/02-repo-analysis/) | วิเคราะห์เครื่องมือ 28 ตัว |
-| [Tweak Taxonomy](docs/03-tweak-taxonomy.md) | ระบบจัดหมวดเทคนิค |
+| [Repo Analysis](docs/02-repo-analysis/) | วิเคราะห์เครื่องมือ 23 ตัว |
+| [Tweak Taxonomy](docs/03-tweak-taxonomy.md) | ระบบจัดหมวดเทคนิค (10 หมวด) |
 | [Risk Classification](docs/04-risk-classification.md) | เมทริกซ์ประเมินความเสี่ยง |
 | [Windows Internals](docs/05-windows-internals.md) | เจาะลึกเทคนิค |
 | [Performance Impact](docs/06-performance-impact.md) | ผลลัพธ์จริง |
 | [Best Practices](docs/07-best-practices.md) | แนวทางที่แนะนำ |
-| [ISO 29110 Work Products](docs/iso29110-clutchg/) | เอกสารวงจรชีวิตซอฟต์แวร์ |
+| [Complete Ranking](docs/10-complete-repo-ranking.md) | จัดอันดับเครื่องมือ 23 ตัว พร้อมคะแนน |
+| [คู่มือผู้ใช้ (ไทย)](docs/15-user-guide-th.md) | คู่มือผู้ใช้ภาษาไทย |
+| [User Guide (EN)](docs/16-user-guide-en.md) | คู่มือผู้ใช้ภาษาอังกฤษ |
+| [ISO 29110 Work Products](docs/iso29110-clutchg/) | เอกสารวงจรชีวิตซอฟต์แวร์ (10 work products) |
 
 ---
 
@@ -293,6 +344,8 @@ CI รัน unit และ integration tests อัตโนมัติบน 
 2. เริ่มจากโปรไฟล์ SAFE
 3. วัดผลก่อนและหลัง
 4. อ่านคำอธิบายของแต่ละเทคนิคก่อนเปิดใช้
+
+ผู้พัฒนาไม่รับผิดชอบต่อปัญหาที่อาจเกิดขึ้นจากการใช้ซอฟต์แวร์นี้
 
 ---
 

@@ -26,7 +26,7 @@
 ## 2. วัตถุประสงค์โครงงาน (Project Objectives)
 
 ### 2.1 Research Objectives
-1. **RO-1:** วิเคราะห์ open-source Windows optimization tools (28 repos) เพื่อหา tweaks ที่มี evidence
+1. **RO-1:** วิเคราะห์ open-source Windows optimization tools (23 repos) เพื่อหา tweaks ที่มี evidence
 2. **RO-2:** สร้าง taxonomy + risk classification framework สำหรับ Windows tweaks
 3. **RO-3:** ประเมินประสิทธิภาพและความปลอดภัยของ tweaks ที่คัดเลือก
 
@@ -46,7 +46,7 @@
 ### 3.1 ในขอบเขต (In Scope)
 | # | Deliverable | คำอธิบาย |
 |---|------------|---------|
-| 1 | Research Analysis | วิเคราะห์ 28 repos → taxonomy 48 tweaks, 10 categories |
+| 1 | Research Analysis | วิเคราะห์ 23 repos → taxonomy 48 tweaks, 10 categories |
 | 2 | Batch Optimizer | .bat scripts สำหรับ optimization (9 core scripts) |
 | 3 | ClutchG GUI | Python GUI (6 views, 13 core modules, 7 components) |
 | 4 | Safety System | BackupManager + FlightRecorder + Restore Center |
@@ -75,7 +75,7 @@
 ClutchG PC Optimizer (IS Project)
 │
 ├── 1.0 Research & Analysis
-│   ├── 1.1 Repository Analysis (28 repos)
+│   ├── 1.1 Repository Analysis (23 repos)
 │   ├── 1.2 Tweak Taxonomy (48 tweaks, 10 categories)
 │   └── 1.3 Risk Classification (LOW/MEDIUM/HIGH)
 │
@@ -148,7 +148,7 @@ ClutchG PC Optimizer (IS Project)
 
 | Phase | WBS | กิจกรรม | Duration | Start | End | Deliverables | Status |
 |-------|-----|---------|----------|-------|-----|-------------|--------|
-| 1 | 1.1-1.4 | Research & Analysis | 8 weeks | 2025-01 | 2025-02 | 01-research-overview, 28 repos analyzed | ✅ |
+| 1 | 1.1-1.4 | Research & Analysis | 8 weeks | 2025-01 | 2025-02 | 01-research-overview, 23 repos analyzed | ✅ |
 | 2 | 1.4 | Taxonomy & Risk | 4 weeks | 2025-03 | 2025-03 | 03-tweak-taxonomy, 04-risk-classification | ✅ |
 | 3 | 2.1-2.4 | Architecture Design | 4 weeks | 2025-04 | 2025-04 | 09-final-architecture | ✅ |
 | 4 | 3.1-3.4 | Batch Optimizer | 8 weeks | 2025-05 | 2025-06 | src/*.bat, profiles, safety scripts | ✅ |

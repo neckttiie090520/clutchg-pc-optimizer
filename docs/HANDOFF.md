@@ -486,9 +486,9 @@ python app_minimal.py
 
 ## 🎓 Context from Research Phase
 
-This project is based on analysis of **28 Windows optimization repositories**:
+This project is based on analysis of **23 Windows optimization repositories**:
 - Only 2 tools received A grades (WinUtil, BCDEditTweaks)
-- 60.7% received failing grades (F)
+- 47.8% received failing grades (F)
 - Many tools use dangerous myths (disable Defender, delete system files)
 - ClutchG focuses on **safe, evidence-based tweaks only**
 

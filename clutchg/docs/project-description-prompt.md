@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-**ClutchG** is a modern, evidence-based Windows PC Optimizer designed for gamers and power users who want to improve system performance safely and transparently. Unlike many optimization tools that rely on myths and dangerous tweaks, ClutchG focuses exclusively on proven, safe optimizations backed by research from 28 Windows optimization repositories.
+**ClutchG** is a modern, evidence-based Windows PC Optimizer designed for gamers and power users who want to improve system performance safely and transparently. Unlike many optimization tools that rely on myths and dangerous tweaks, ClutchG focuses exclusively on proven, safe optimizations backed by research from 23 Windows optimization repositories.
 
 **Current Version:** 1.0.0  
 **Status:** Phase 9 Complete (Help & Information System)  
@@ -153,7 +153,7 @@ clutchg/
 │   │   └── network-manager.bat
 │   └── data/
 │       └── help_content.json       # Help text (EN/TH) (NEW)
-└── docs/                           # Research documentation (28 repos analyzed)
+└── docs/                           # Research documentation (23 repos analyzed)
 ```
 
 ### Technology Stack
@@ -178,9 +178,9 @@ clutchg/
 
 ### What Makes ClutchG Different
 
-**Analysis of 28 Windows Optimization Repositories:**
+**Analysis of 23 Windows Optimization Repositories:**
 - Only 2 tools received A grades (WinUtil, BCDEditTweaks)
-- 60.7% received failing grades (F)
+- 47.8% received failing grades (F)
 - Common issues:
   - Dangerous myths (disable Defender = +30% FPS)
   - Unrealistic claims (200%+ performance boost)

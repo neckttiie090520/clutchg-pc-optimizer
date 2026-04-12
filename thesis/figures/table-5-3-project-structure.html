@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figure 5.3 — ClutchG Project Directory Structure</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 18mm;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    background: #f1f5f9;
+    padding: 32px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .title {
+    text-align: center;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #64748b;
+    font-style: italic;
+  }
+
+  .card {
+    background: #fafbfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+
+  pre {
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #334155;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Tree connector characters */
+  .t { color: #cbd5e1; }
+
+  /* Batch Layer — blue */
+  .b { color: #2563eb; }
+  .b.dir { color: #2563eb; font-weight: 700; }
+
+  /* Python GUI Layer — green */
+  .g { color: #059669; }
+  .g.dir { color: #059669; font-weight: 700; }
+
+  /* Documentation & Data — gray */
+  .d { color: #6b7280; }
+  .d.dir { color: #6b7280; font-weight: 700; }
+
+  /* Root directory */
+  .r { color: #1e293b; font-weight: 700; }
+
+  /* Annotation comments */
+  .n { color: #9ca3af; font-style: italic; font-weight: 400; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    padding: 14px 0 4px;
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    font-size: 12.5px;
+    color: #475569;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .dot-batch  { background: #2563eb; }
+  .dot-python { background: #059669; }
+  .dot-docs   { background: #6b7280; }
+
+  @media print {
+    body {
+      background: #fff;
+      padding: 0;
+    }
+    .card {
+      border: 1px solid #d1d5db;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="title">&#3619;&#3641;&#3611;&#3607;&#3637;&#3656; 5.3 &#3650;&#3588;&#3619;&#3591;&#3626;&#3619;&#3657;&#3634;&#3591;&#3652;&#3604;&#3648;&#3619;&#3585;&#3607;&#3629;&#3619;&#3637;&#3586;&#3629;&#3591;&#3619;&#3632;&#3610;&#3610; ClutchG PC Optimizer</div>
+  <div class="subtitle">Figure 5.3 — ClutchG PC Optimizer: Project Directory Structure</div>
+
+  <div class="card">
+<pre>
+<span class="r">ClutchG/</span>
+<span class="t">&#9500;&#9472;&#9472;</span> <span class="b dir">src/</span>                            <span class="n"># Batch Layer (~5,400 lines)</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="b">optimizer.bat</span>               <span class="n"># Batch entry point</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="b dir">core/</span>                       <span class="n"># 16 optimization modules</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">power-manager.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">bcdedit-manager.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">service-manager.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">gpu-optimizer.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">network-manager.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">input-optimizer.bat</span>
+<span class="t">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="b">...</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="b dir">profiles/</span>                   <span class="n"># 3 preset profiles</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">safe-profile.bat</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">competitive-profile.bat</span>
+<span class="t">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="b">extreme-profile.bat</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="b dir">safety/</span>                     <span class="n"># Validation &amp; rollback</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">validator.bat</span>
+<span class="t">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="b">rollback.bat</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="b dir">backup/</span>                     <span class="n"># Backup &amp; restore</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="b">backup-registry.bat</span>
+<span class="t">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="b">restore-point.bat</span>
+<span class="t">&#9474;   &#9492;&#9472;&#9472;</span> <span class="b dir">logging/</span>
+<span class="t">&#9474;       &#9492;&#9472;&#9472;</span> <span class="b">logger.bat</span>
+<span class="t">&#9500;&#9472;&#9472;</span> <span class="g dir">clutchg/</span>                        <span class="n"># Python GUI Layer (~29,280 lines)</span>
+<span class="t">&#9474;   &#9500;&#9472;&#9472;</span> <span class="g dir">src/</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">main.py</span>                 <span class="n"># Python launcher</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">app_minimal.py</span>          <span class="n"># Application composition root</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g dir">core/</span>                   <span class="n"># 14 Core Managers</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">config.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">system_info.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">profile_manager.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">tweak_registry.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">flight_recorder.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">backup_manager.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">recommendation_service.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="g">...</span>
+<span class="t">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g dir">gui/</span>                    <span class="n"># User interface</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g">theme.py</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="g dir">views/</span>              <span class="n"># 5 main views</span>
+<span class="t">&#9474;   &#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="g dir">components/</span>         <span class="n"># 12 UI components</span>
+<span class="t">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="g dir">utils/</span>                  <span class="n"># Logging, admin checks</span>
+<span class="t">&#9474;   &#9492;&#9472;&#9472;</span> <span class="g dir">tests/</span>                      <span class="n"># 496 test methods</span>
+<span class="t">&#9474;       &#9500;&#9472;&#9472;</span> <span class="g dir">unit/</span>                   <span class="n"># 409 methods</span>
+<span class="t">&#9474;       &#9500;&#9472;&#9472;</span> <span class="g dir">integration/</span>            <span class="n"># 23 methods</span>
+<span class="t">&#9474;       &#9492;&#9472;&#9472;</span> <span class="g dir">e2e/</span>                    <span class="n"># 64 methods</span>
+<span class="t">&#9500;&#9472;&#9472;</span> <span class="d dir">docs/</span>                           <span class="n"># Technical documentation</span>
+<span class="t">&#9474;   &#9492;&#9472;&#9472;</span> <span class="d dir">iso29110-clutchg/</span>           <span class="n"># 10 ISO 29110 documents</span>
+<span class="t">&#9492;&#9472;&#9472;</span> <span class="d dir">data/</span>                           <span class="n"># Runtime data</span>
+    <span class="t">&#9492;&#9472;&#9472;</span> <span class="d dir">backups/</span>                    <span class="n"># Registry backup files</span>
+</pre>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot dot-batch"></span> Batch Layer (src/)</span>
+    <span class="legend-item"><span class="legend-dot dot-python"></span> Python GUI Layer (clutchg/)</span>
+    <span class="legend-item"><span class="legend-dot dot-docs"></span> Documentation &amp; Data (docs/, data/)</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -184,7 +184,7 @@ clutchg/
 | WinUtil | 9.5/10 | 9/10 | 9/10 |
 | Other tools | 3/10 avg | 4/10 | 2/10 |
 
-**Source:** Analysis of 28 Windows optimization repositories
+**Source:** Analysis of 23 Windows optimization repositories
 
 ---
 
@@ -261,7 +261,7 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ## 🙏 Acknowledgments
 
-- **Research** - Based on analysis of 28 Windows optimization tools
+- **Research** - Based on analysis of 23 Windows optimization tools
 - **Inspiration** - WinUtil, BCDEditTweaks, and other safe tools
 - **Framework** - Built with CustomTkinter
 

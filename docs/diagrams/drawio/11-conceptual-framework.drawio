@@ -36,7 +36,7 @@
           <mxGeometry x="60" y="210" width="200" height="25" as="geometry"/>
         </mxCell>
 
-        <mxCell id="r1" value="&lt;b&gt;Open-Source Repo Analysis&lt;/b&gt;&lt;br&gt;&lt;font size=&quot;1&quot;&gt;28 repos analyzed&lt;br&gt;50,000+ lines studied&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=12;fontColor=#333;arcSize=12;" vertex="1" parent="1">
+        <mxCell id="r1" value="&lt;b&gt;Open-Source Repo Analysis&lt;/b&gt;&lt;br&gt;&lt;font size=&quot;1&quot;&gt;23 repos analyzed&lt;br&gt;50,000+ lines studied&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#66BB6A;fontFamily=Segoe UI;fontSize=12;fontColor=#333;arcSize=12;" vertex="1" parent="1">
           <mxGeometry x="100" y="245" width="220" height="70" as="geometry"/>
         </mxCell>
 

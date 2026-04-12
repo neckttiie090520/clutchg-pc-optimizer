@@ -12,7 +12,7 @@
           <mxGeometry x="350" y="50" width="700" height="20" as="geometry"/>
         </mxCell>
 
-        <mxCell id="p1" value="1. Discovery&#xa;Research 28 repos&#xa;Identify 48 tweaks" style="rounded=1;whiteSpace=wrap;fillColor=#e3f2fd;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=11;fontColor=#0d47a1;fontStyle=1;spacingTop=4;" vertex="1" parent="1">
+        <mxCell id="p1" value="1. Discovery&#xa;Research 23 repos&#xa;Identify 48 tweaks" style="rounded=1;whiteSpace=wrap;fillColor=#e3f2fd;strokeColor=#1565c0;fontFamily=Segoe UI;fontSize=11;fontColor=#0d47a1;fontStyle=1;spacingTop=4;" vertex="1" parent="1">
           <mxGeometry x="20" y="100" width="150" height="65" as="geometry"/>
         </mxCell>
         <mxCell id="p2" value="2. Classification&#xa;Assign risk level&#xa;Map to profile" style="rounded=1;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontFamily=Segoe UI;fontSize=11;fontColor=#4a148c;fontStyle=1;spacingTop=4;" vertex="1" parent="1">

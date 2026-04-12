@@ -24,16 +24,15 @@
   <img src="https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/tests-477%20passed-2ea44f" alt="Tests">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
-  <img src="https://github.com/neckttiie090520/clutchg-pc-optimizer/actions/workflows/ci.yml/badge.svg" alt="CI">
 </p>
 
 ---
 
 ## What is ClutchG?
 
-ClutchG is a Windows PC optimization tool built from real research, not myths. We analyzed **28 open-source optimizer repos** (50,000+ lines of code), classified **48 tweaks** into 10 categories, and built a risk framework to separate what actually works from what's placebo.
+ClutchG is a Windows PC optimization tool built from real research, not myths. We analyzed **23 open-source optimizer repositories** on GitHub (50,000+ lines of code), surveyed over **200 optimization techniques**, and classified **56 vetted tweaks** into 10 categories with a 3-tier risk framework (LOW / MEDIUM / HIGH) to separate what actually works from what's placebo or dangerous.
 
-The result: a modular batch optimizer with a modern GUI that applies only evidence-backed tweaks -- safely, transparently, and reversibly.
+The result: a modular batch optimizer with a modern Python GUI that applies only evidence-backed tweaks -- safely, transparently, and reversibly.
 
 ### Key Principles
 
@@ -50,11 +49,12 @@ The result: a modular batch optimizer with a modern GUI that applies only eviden
 ## Features
 
 - **3 Optimization Profiles** -- SAFE, COMPETITIVE, EXTREME with risk-appropriate tweaks
-- **48 Vetted Tweaks** across power, GPU, services, network, storage, BCDEdit, and more
+- **56 Vetted Tweaks** across 10 categories: telemetry, input/latency, power, GPU, network, services, memory, boot/BCDEdit, visual effects, cleanup/debloat
 - **Auto Hardware Detection** -- identifies CPU, GPU, RAM and recommends the right profile
-- **Flight Recorder** -- logs every change with before/after values
+- **Tweak Encyclopedia** -- every tweak has full documentation: what it does, why it helps, limitations, risk level, and expected gain
+- **Flight Recorder** -- logs every change with before/after registry values
 - **Restore Center** -- visual timeline of all changes with per-tweak rollback
-- **Modern Dark Theme** -- Windows 11 / Sun Valley aesthetic
+- **Modern Dark Theme** -- Windows 11 / Sun Valley aesthetic with Figtree typography
 
 ---
 
@@ -168,39 +168,77 @@ Aggressive service management, BCDEdit boot configuration tweaks, full network s
 clutchg-pc-optimizer/
 ├── src/                              # Batch Optimizer Engine
 │   ├── optimizer.bat                 # Entry point (v2.0, requires admin)
-│   ├── core/                         # 17 optimization modules
+│   ├── core/                         # 16 optimization modules
 │   ├── profiles/                     # SAFE / COMPETITIVE / EXTREME
 │   ├── safety/                       # Validator, rollback, flight recorder
 │   ├── backup/                       # Registry backup, restore points
-│   └── logging/                      # Structured logging
+│   ├── logging/                      # Structured logging
+│   ├── ui/                           # Menu system
+│   └── validation/                   # Input & benchmark validation
 │
 ├── clutchg/                          # Python GUI Application
 │   ├── src/
 │   │   ├── main.py                   # Entry point
-│   │   ├── core/                     # Business logic (14 modules)
+│   │   ├── core/                     # Business logic (15 modules)
+│   │   │   ├── tweak_registry.py     # Central knowledge base (56 tweaks)
+│   │   │   ├── profile_manager.py    # Profile ↔ tweak mapping
+│   │   │   ├── batch_parser.py       # Discovers tweaks from .bat scripts
+│   │   │   ├── action_catalog.py     # User-facing action packs
+│   │   │   ├── flight_recorder.py    # Change logging with before/after
+│   │   │   └── ...                   # backup, config, system info, etc.
 │   │   ├── gui/views/               # 8 view screens
 │   │   ├── gui/components/          # 12 reusable components
-│   │   └── gui/theme.py             # Dark theme system
+│   │   └── gui/theme.py             # Dark theme system (Sun Valley)
 │   ├── tests/                        # 477 tests (unit + integration + E2E)
+│   │   ├── unit/                     # 16 test files
+│   │   ├── integration/              # 2 test files
+│   │   └── e2e/                      # Page Object Model structure
 │   └── build.py                      # PyInstaller build script
 │
 ├── docs/                             # Research & Documentation
 │   ├── 01-research-overview.md       # Methodology
-│   ├── 02-repo-analysis/             # 28 individual repo analyses
+│   ├── 02-repo-analysis/             # 23 individual repo analyses
 │   ├── 03-tweak-taxonomy.md          # Complete tweak classification
 │   ├── 04-risk-classification.md     # Risk assessment matrix
 │   ├── 05-windows-internals.md       # Technical deep-dive
 │   ├── 06-performance-impact.md      # Realistic benchmarks
-│   └── iso29110-clutchg/             # ISO 29110 work products
+│   ├── 07-best-practices.md          # Recommended approach
+│   ├── 10-complete-repo-ranking.md   # Full 23-repo ranking with scores
+│   ├── 15-user-guide-th.md           # User guide (Thai)
+│   ├── 16-user-guide-en.md           # User guide (English)
+│   └── iso29110-clutchg/             # 10 ISO 29110 work products
 │
-└── .github/workflows/ci.yml         # CI pipeline
+└── UX/                               # UI design mockups & screenshots
 ```
 
 ---
 
 ## Research
 
-This project started as research. We analyzed 28 Windows optimization repositories and guides to build an evidence-based understanding of what works.
+This project started as academic research for a master's thesis in Software Engineering at Chiang Mai University (CMU). We analyzed 23 Windows optimization repositories and scored them on a 5-dimension framework (Safety, Effectiveness, Code Quality, Transparency, Reversibility).
+
+### Key Findings
+
+| Finding | Number |
+|---------|--------|
+| Repositories analyzed | 23 |
+| Optimization techniques surveyed | 200+ |
+| Techniques that passed evidence screening | 45 (22.5%) |
+| Tweaks implemented in ClutchG | 56 |
+| Repos graded F (Fail) | 11 (47.8%) |
+| Repos safe for general use (A or above) | 2 (8.7%) |
+| Repos that disable Windows Defender | 16 (69.6%) |
+| Repos with no backup mechanism | 20 (87.0%) |
+
+### Top-Ranked Repositories
+
+| Rank | Repository | Score | Grade |
+|------|-----------|-------|-------|
+| 1 | WinUtil (ChrisTitusTech) | 9.5 | A+ |
+| 2 | BCDEditTweaks (dubbyOW) | 9.0 | A |
+| 3 | Win11-Latency-Opt (NicholasBly) | 8.0 | A- |
+| 4 | FR33THY Ultimate Guide | 7.5 | B |
+| 5 | win10-latency-opt (denis-g) | 7.5 | B |
 
 ### What Actually Works
 
@@ -219,6 +257,16 @@ This project started as research. We analyzed 28 Windows optimization repositori
 | "Timer resolution services boost FPS" | Per-process since Windows 10 2004 |
 | "Disabling 100 services = faster" | Breaks features, minimal actual gain |
 | "Network registry tweaks reduce ping" | ISP and routing matter, not registry |
+
+### Dangerous Patterns Found in Open-Source Optimizers
+
+| Pattern | Prevalence |
+|---------|-----------|
+| Disables Windows Defender | 16/23 (69.6%) |
+| Disables Windows Update | 12/23 (52.2%) |
+| Removes exploit mitigations | 10/23 (43.5%) |
+| No backup mechanism | 20/23 (87.0%) |
+| Deletes system files | 9/23 (39.1%) |
 
 ### Never Do These
 
@@ -266,7 +314,7 @@ CI runs unit and integration tests automatically on `windows-latest` via GitHub 
 - **OS:** Windows 10 22H2+ or Windows 11
 - **Python:** 3.11+ (for GUI)
 - **Admin rights** required for optimization
-- **Dependencies:** customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi
+- **Dependencies:** customtkinter, Pillow, psutil, pywin32, py-cpuinfo, wmi, tkextrafont
 
 ---
 
@@ -275,13 +323,16 @@ CI runs unit and integration tests automatically on `windows-latest` via GitHub 
 | Document | Description |
 |----------|-------------|
 | [Research Overview](docs/01-research-overview.md) | Methodology and scope |
-| [Repo Analysis](docs/02-repo-analysis/) | 28 individual tool analyses |
-| [Tweak Taxonomy](docs/03-tweak-taxonomy.md) | Complete classification system |
+| [Repo Analysis](docs/02-repo-analysis/) | 23 individual tool analyses |
+| [Tweak Taxonomy](docs/03-tweak-taxonomy.md) | Complete classification system (10 categories) |
 | [Risk Classification](docs/04-risk-classification.md) | Risk assessment matrix |
 | [Windows Internals](docs/05-windows-internals.md) | Technical deep-dive |
 | [Performance Impact](docs/06-performance-impact.md) | Realistic expectations |
 | [Best Practices](docs/07-best-practices.md) | Recommended approach |
-| [ISO 29110 Work Products](docs/iso29110-clutchg/) | Software lifecycle documents |
+| [Complete Ranking](docs/10-complete-repo-ranking.md) | Full 23-repo scoring and tiers |
+| [User Guide (TH)](docs/15-user-guide-th.md) | Thai user guide |
+| [User Guide (EN)](docs/16-user-guide-en.md) | English user guide |
+| [ISO 29110 Work Products](docs/iso29110-clutchg/) | Software lifecycle documents (10 work products) |
 
 ---
 

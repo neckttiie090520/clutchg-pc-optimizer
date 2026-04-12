@@ -35,7 +35,7 @@
 
 | Phase | กิจกรรม | Plan Start | Actual End | Status | Deliverables | % |
 |-------|---------|-----------|-----------|--------|-------------|---|
-| 1 | Repository Analysis | Jan 2025 | Feb 2025 | ✅ Done | 28 repos analyzed, research docs | 100% |
+| 1 | Repository Analysis | Jan 2025 | Feb 2025 | ✅ Done | 23 repos analyzed, research docs | 100% |
 | 2 | Tweak Taxonomy & Risk | Mar 2025 | Mar 2025 | ✅ Done | taxonomy + risk framework | 100% |
 | 3 | Architecture Design | Apr 2025 | Apr 2025 | ✅ Done | Hybrid architecture (Batch+Python) | 100% |
 | 4 | Batch Optimizer | May 2025 | Jun 2025 | ✅ Done | 9 core .bat scripts, 3 profiles | 100% |

@@ -66,7 +66,7 @@
         <mxCell id="p1_bar" value="" style="rounded=1;whiteSpace=wrap;fillColor=#5C6BC0;strokeColor=#3949AB;arcSize=20;" vertex="1" parent="1">
           <mxGeometry x="240" y="106" width="300" height="22" as="geometry"/>
         </mxCell>
-        <mxCell id="p1_sub1" value="  Repo analysis (28 repos)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#E0E0E0;fontFamily=Segoe UI;fontSize=10;fontColor=#666;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="p1_sub1" value="  Repo analysis (23 repos)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#E0E0E0;fontFamily=Segoe UI;fontSize=10;fontColor=#666;align=left;spacingLeft=16;" vertex="1" parent="1">
           <mxGeometry x="40" y="135" width="200" height="28" as="geometry"/>
         </mxCell>
         <mxCell id="p1_sub1_bar" value="" style="rounded=1;whiteSpace=wrap;fillColor=#9FA8DA;strokeColor=#7986CB;arcSize=20;" vertex="1" parent="1">

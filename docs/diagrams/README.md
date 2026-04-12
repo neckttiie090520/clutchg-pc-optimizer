@@ -224,7 +224,7 @@ Shows `<<artifact>>` and `<<execute>>` stereotypes.
 **Source:** [`drawio/11-conceptual-framework.drawio`](drawio/11-conceptual-framework.drawio)
 
 High-level research framework connecting:
-- **Input:** 28 open-source optimizer repos analyzed, 50,000+ lines reviewed
+- **Input:** 23 open-source optimizer repos analyzed, 50,000+ lines reviewed
 - **Process:** Tweak classification, risk framework, evidence-based filtering
 - **Output:** ClutchG tool (batch engine + GUI), thesis documentation
 

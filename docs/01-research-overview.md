@@ -47,32 +47,27 @@ New framework featuring:
 |---|------------|-----|---------------|
 | 1 | QuickBoost | github.com/SanGraphic/QuickBoost | Gaming optimization |
 | 2 | TerabyteTweaker | github.com/Kawwabi/TerabyteTweaker | System tweaker |
-| 3 | LynxOptimizer | github.com/caxzy/LynxOptimizer | Latency optimization |
-| 4 | FR33THY Ultimate Guide | github.com/FR33THYFR33THY/Ultimate-Windows-Optimization-Guide | Comprehensive guide |
-| 5 | Windows-10-tweaks | github.com/tcja/Windows-10-tweaks | Registry tweaks |
-| 6 | kubsonxtm Windows-Tweaks | github.com/kubsonxtm/Windows-Tweaks | General tweaks |
-| 7 | WIN10-OPTIMIZER | github.com/mrandcris/WIN10-OPTIMIZER | Windows 10 optimizer |
-| 8 | Unlimited-PC-Tips | github.com/itz-rj-here/Unlimited-PC-Tips | PC tips collection |
-| 9 | EudynOS | github.com/KarmaDevelopment/EudynOS | Custom OS |
-| 10 | BoosterFPSWin10 | github.com/Jackie0X/BoosterFPSWin10 | FPS booster |
-| 11 | Google Docs Guide | docs.google.com/document/... | Optimization guide |
-| 12 | windows10-latency-optimization | github.com/denis-g/windows10-latency-optimization | Latency focus |
-| 13 | vacisdev windows11 | github.com/vacisdev/windows11 | Windows 11 tweaks |
-| 14 | Windows10MiningTweaksDmW | github.com/DeadManWalkingTO/Windows10MiningTweaksDmW | Mining tweaks |
-| 15 | Batlez-Tweaks | github.com/Batlez/Batlez-Tweaks | Gaming tweaks |
-| 16 | EchoX | github.com/UnLovedCookie/EchoX | Performance tweaks |
-| 17 | All-Tweaker | github.com/scode18/All-Tweaker | All-in-one tweaker |
-| 18 | BCDEditTweaks | github.com/dubbyOW/BCDEditTweaks | Boot tweaks |
-| 19 | Windows-11-Latency-Optimization | github.com/NicholasBly/Windows-11-Latency-Optimization | Win11 latency |
-| 20 | Windows-Gaming-Optimization-Script | github.com/TheCraZyDuDee/Windows-Gaming-Optimization-Script | Gaming script |
-| 21 | GameOptimizer | github.com/vdavidyang/GameOptimizer | Game optimizer |
-| 22 | Ghost-Optimizer | github.com/louzkk/Ghost-Optimizer | Ghost optimizer |
-| 23 | CS2-Ultimate-Optimization | github.com/Precision-Optimize/CS2-Ultimate-Optimization | CS2 specific |
-| 24 | OptiGreat | github.com/WszystkoiNic/OptiGreat | General optimizer |
-| 25 | winutil | github.com/ChrisTitusTech/winutil | Windows utility |
-| 26 | awesome-windows11 | github.com/awesome-windows11/windows11 | Windows 11 resources |
-| 27 | Ancels-Performance-Batch | github.com/ancel1x/Ancels-Performance-Batch | Performance batch |
-| 28 | TairikuOokami/Windows | github.com/TairikuOokami/Windows | Windows tweaks |
+| 3 | FR33THY Ultimate Guide | github.com/FR33THYFR33THY/Ultimate-Windows-Optimization-Guide | Comprehensive guide |
+| 4 | Windows-10-tweaks | github.com/tcja/Windows-10-tweaks | Registry tweaks |
+| 5 | kubsonxtm Windows-Tweaks | github.com/kubsonxtm/Windows-Tweaks | General tweaks |
+| 6 | WIN10-OPTIMIZER | github.com/mrandcris/WIN10-OPTIMIZER | Windows 10 optimizer |
+| 7 | Unlimited-PC-Tips | github.com/itz-rj-here/Unlimited-PC-Tips | PC tips collection |
+| 8 | EudynOS | github.com/KarmaDevelopment/EudynOS | Custom OS |
+| 9 | BoosterFPSWin10 | github.com/Jackie0X/BoosterFPSWin10 | FPS booster |
+| 10 | windows10-latency-optimization | github.com/denis-g/windows10-latency-optimization | Latency focus |
+| 11 | vacisdev windows11 | github.com/vacisdev/windows11 | Windows 11 tweaks |
+| 12 | Batlez-Tweaks | github.com/Batlez/Batlez-Tweaks | Gaming tweaks |
+| 13 | EchoX | github.com/UnLovedCookie/EchoX | Performance tweaks |
+| 14 | All-Tweaker | github.com/scode18/All-Tweaker | All-in-one tweaker |
+| 15 | BCDEditTweaks | github.com/dubbyOW/BCDEditTweaks | Boot tweaks |
+| 16 | Windows-11-Latency-Optimization | github.com/NicholasBly/Windows-11-Latency-Optimization | Win11 latency |
+| 17 | Windows-Gaming-Optimization-Script | github.com/TheCraZyDuDee/Windows-Gaming-Optimization-Script | Gaming script |
+| 18 | GameOptimizer | github.com/vdavidyang/GameOptimizer | Game optimizer |
+| 19 | Ghost-Optimizer | github.com/louzkk/Ghost-Optimizer | Ghost optimizer |
+| 20 | CS2-Ultimate-Optimization | github.com/Precision-Optimize/CS2-Ultimate-Optimization | CS2 specific |
+| 21 | OptiGreat | github.com/WszystkoiNic/OptiGreat | General optimizer |
+| 22 | winutil | github.com/ChrisTitusTech/winutil | Windows utility |
+| 23 | Ancels-Performance-Batch | github.com/ancel1x/Ancels-Performance-Batch | Performance batch |
 
 ## Tweak Categories
 

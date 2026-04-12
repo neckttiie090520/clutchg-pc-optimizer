@@ -35,7 +35,7 @@
 - ✅ **Reduce latency** (ping, input lag)
 - ✅ **Enhance system responsiveness**
 - ✅ **Work safely** - All changes are reversible
-- ✅ **Use evidence** - Developed from research of 28 repositories
+- ✅ **Use evidence** - Developed from research of 23 repositories
 
 ### 1.2 Core Principles
 
@@ -1044,7 +1044,7 @@ Depends on network/ISP
 ### 13.2 Credits
 
 **Development:**
-- Architecture based on research of 28 Windows optimization repositories
+- Architecture based on research of 23 Windows optimization repositories
 - UI framework: CustomTkinter
 - Icon font: Material Symbols Outlined (Google)
 

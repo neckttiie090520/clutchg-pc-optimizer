@@ -2,7 +2,7 @@
 
 **Date:** 2025-02-02
 **Project:** ClutchG Optimizer v2.0
-**Basis:** research.md + detailed analysis of 28 Windows optimization repositories
+**Basis:** research.md + detailed analysis of 23 Windows optimization repositories
 
 ---
 
@@ -134,7 +134,7 @@ All Phase 1 and Phase 2 optimizations have been successfully implemented based o
 **B. Critical Service Protection**
 - **What:** Whitelist of services that can NEVER be disabled
 - **Protected Services:** WinDefend, wuauserv, CryptSvc, RpcSs, EventLog, TrustedInstaller, BITS, BFE, Dnscache, Sppsvc, SamSs, AppIDSvc, AppReadiness
-- **Evidence:** 17/28 repos disable WinDefend (F grade) - we NEVER do this
+- **Evidence:** 16/23 repos disable WinDefend (F grade) - we NEVER do this
 - **Risk:** Prevents accidental system damage
 - **Implementation:** `src/core/service-manager.bat` (enhanced)
 
@@ -206,7 +206,7 @@ All implementations backed by:
 3. **Feasibility Report**
    - Safety principles
    - Evidence-based approach
-   - 60.7% of tools use placebo or dangerous tweaks
+   - 47.8% of tools use placebo or dangerous tweaks
 
 4. **SpeedGuide Network Data**
    - NetworkThrottlingIndex effectiveness
@@ -267,7 +267,7 @@ To complete the implementation:
 | Myth | Reality | Our Approach |
 |------|---------|--------------|
 | "Disable SysMain for FPS" | Debunked myth, no credible evidence | Keep enabled, document why |
-| "Disable Windows Defender" | Security risk, 17/28 tools do this (F grade) | NEVER disable, use exclusions instead |
+| "Disable Windows Defender" | Security risk, 16/23 tools do this (F grade) | NEVER disable, use exclusions instead |
 | "Force HPET for better timer" | DEGRADES performance on modern CPUs | Explicitly disable HPET forcing |
 | "Disable 100+ services" | Breaks functionality | Whitelist-based protection, safe services only |
 | "Network tweaks reduce ping 100ms" | Placebo, minimal real impact | Evidence-based: 10-50% ping reduction in specific games only |

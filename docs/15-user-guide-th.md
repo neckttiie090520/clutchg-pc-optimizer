@@ -36,7 +36,7 @@
 - ✅ **ลด latency** (ping, input lag)
 - ✅ **ปรับปรุง system responsiveness**
 - ✅ **ทำอย่างปลอดภัย** - ทุกการเปลี่ยนแปลงย้อนกลับได้
-- ✅ **อิงความจริง** - พัฒนาจากการวิจัย 28 repositories
+- ✅ **อิงความจริง** - พัฒนาจากการวิจัย 23 repositories
 
 ### 1.2 หลักการสำคัญ
 
@@ -1045,7 +1045,7 @@ clutchg/data/backups/
 ### 13.2 Credits
 
 **Development:**
-- Architecture based on research of 28 Windows optimization repositories
+- Architecture based on research of 23 Windows optimization repositories
 - UI framework: CustomTkinter
 - Icon font: Material Symbols Outlined (Google)
 

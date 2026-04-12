@@ -156,7 +156,7 @@ bat/ (Git root)
 
 | Baseline | วันที่ | เนื้อหา | Tag |
 |----------|------|---------|-----|
-| BL-1: Research Complete | 2025-02-28 | 28 repos analyzed, taxonomy created | v0.1 |
+| BL-1: Research Complete | 2025-02-28 | 23 repos analyzed, taxonomy created | v0.1 |
 | BL-2: Architecture Complete | 2025-04-30 | Hybrid architecture finalized | v0.5 |
 | BL-3: Batch Optimizer Complete | 2025-06-30 | All .bat scripts + profiles | v1.0 |
 | BL-4: GUI Alpha | 2025-08-31 | Core managers + basic views | v1.5 |

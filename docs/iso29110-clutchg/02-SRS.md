@@ -13,7 +13,7 @@
 ### 1.1 วัตถุประสงค์ของเอกสาร
 เอกสาร SRS ฉบับนี้ระบุความต้องการซอฟต์แวร์อย่างครบถ้วนสำหรับ **ClutchG PC Optimizer** ซึ่งเป็นเครื่องมือ optimization สำหรับ Windows 10/11 ที่ออกแบบตามหลัก **Evidence-Based Optimization** โดยเน้น 3 หลักการสำคัญ:
 1. **Safety-First** — ทุกการเปลี่ยนแปลงต้อง reversible และมี backup
-2. **Evidence-Based** — ทุก tweak ต้องมี evidence จาก 28 repos ที่วิเคราะห์
+2. **Evidence-Based** — ทุก tweak ต้องมี evidence จาก 23 repos ที่วิเคราะห์
 3. **Transparency** — ผู้ใช้ต้องเข้าใจก่อน apply (risk label, detailed explanation)
 
 ### 1.2 ขอบเขต (Scope)
@@ -56,7 +56,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 | # | ขั้นตอน | กิจกรรมใน ClutchG | หลักฐาน |
 |---|---------|-------------------|---------|
 | 1 | **Inception** | ระบุปัญหา: optimizer ส่วนใหญ่ไม่ปลอดภัย ไม่มี evidence | `docs/01-research-overview.md`, thesis proposal |
-| 2 | **Elicitation** | วิเคราะห์ 28 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (28 files), `docs/05-windows-internals.md` |
+| 2 | **Elicitation** | วิเคราะห์ 23 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (28 files), `docs/05-windows-internals.md` |
 | 3 | **Elaboration** | จำแนก 48 tweaks → 10 categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
 | 4 | **Negotiation** | ตกลง scope: 48 tweaks (ตัด placebo ออก), 6 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
 | 5 | **Specification** | เขียน SRS v3.0 ตาม IEEE 830 + ISO 25010 | เอกสารฉบับนี้ |
@@ -106,10 +106,10 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 ## 2. คำอธิบายโดยรวม (Overall Description)
 
 ### 2.1 มุมมองผลิตภัณฑ์ (Product Perspective)
-ClutchG เป็นส่วนหนึ่งของ **Batch Optimizer Research Project** ที่วิเคราะห์ 28 open-source Windows optimization tools จาก GitHub แล้วสังเคราะห์ tweaks ที่มี evidence จริง ออกมาเป็น tool ที่ปลอดภัยและโปร่งใส
+ClutchG เป็นส่วนหนึ่งของ **Batch Optimizer Research Project** ที่วิเคราะห์ 23 open-source Windows optimization tools จาก GitHub แล้วสังเคราะห์ tweaks ที่มี evidence จริง ออกมาเป็น tool ที่ปลอดภัยและโปร่งใส
 
 ```
-Research (28 repos) → Taxonomy (48 tweaks) → Risk Classification → Architecture Design
+Research (23 repos) → Taxonomy (48 tweaks) → Risk Classification → Architecture Design
                                                                          ↓
                                                             ClutchG Application
                                                      ┌──────────────────────────────┐
