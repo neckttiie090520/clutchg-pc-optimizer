@@ -57,16 +57,18 @@ class ClutchGApp:
         register_fonts()
 
         # Set window icon (taskbar + title bar)
-        icon_path = assets_dir() / "icon.png"
-        if icon_path.exists():
+        # Prefer .ico via iconbitmap() — most reliable on Windows frozen builds.
+        # Fall back to iconphoto() with PNG if .ico not available.
+        ico_path = assets_dir() / "icon.ico"
+        png_path = assets_dir() / "icon.png"
+        if ico_path.exists():
             try:
-                from PIL import Image, ImageTk
-
-                icon_img = Image.open(icon_path)
-                self._icon_photo = ImageTk.PhotoImage(icon_img.resize((32, 32)))
-                self.window.iconphoto(False, self._icon_photo)
+                self.window.iconbitmap(str(ico_path))
             except Exception:
-                logger.debug("Could not set window icon")
+                logger.debug("iconbitmap failed, trying iconphoto")
+                self._set_icon_photo(png_path)
+        elif png_path.exists():
+            self._set_icon_photo(png_path)
 
         self._refresh_window_colors()
 
@@ -128,6 +130,17 @@ class ClutchGApp:
             UpdateDialog(self.window, self, info)
         except Exception as e:
             logger.debug(f"Could not show update dialog: {e}")
+
+    def _set_icon_photo(self, png_path: Path) -> None:
+        """Set window icon using iconphoto() with a PNG file."""
+        try:
+            from PIL import Image, ImageTk
+
+            icon_img = Image.open(png_path)
+            self._icon_photo = ImageTk.PhotoImage(icon_img.resize((32, 32)))
+            self.window.iconphoto(False, self._icon_photo)
+        except Exception:
+            logger.debug("Could not set window icon via iconphoto")
 
     def _check_tabler_icons(self) -> bool:
         """Check if Tabler Icons font is available (bundled or system)."""

@@ -61,6 +61,10 @@ _assets = SRC_DIR / "assets"
 if _assets.exists():
     datas.append((str(_assets), "assets"))
 
+# 1b. Bundle icon.ico into assets/ so iconbitmap() works at runtime
+if _icon_ico.exists():
+    datas.append((str(_icon_ico), "assets"))
+
 # 2. Bundled fonts (TTF)
 _fonts = SRC_DIR / "fonts"
 if _fonts.exists():

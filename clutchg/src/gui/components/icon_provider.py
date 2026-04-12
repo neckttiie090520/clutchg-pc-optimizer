@@ -134,15 +134,21 @@ class IconProvider:
     def __init__(self):
         """Initialize icon provider and detect available fonts."""
         self.system = platform.system()
-        self._tabler_available = self._check_font(self.TABLER_FONT)
-        # Segoe presence check kept for future use but not critical
-        self._segmdl2_available = self._check_font(self.SEGOE_FONT)
+        # NOTE: Do NOT cache font availability here — fonts are loaded by
+        # tkextrafont AFTER Tk root exists. Availability is checked lazily
+        # on first use via the property below.
 
     def _check_font(self, family_name: str) -> bool:
         """Check if a font family is available (Windows only for Segoe)."""
         if self.system != "Windows" and family_name == self.SEGOE_FONT:
             return False
         return self._is_font_available(family_name)
+
+    @property
+    def _tabler_available(self) -> bool:
+        """Lazy check — re-queries Tk font families each call so it works
+        even when fonts are loaded after IconProvider is instantiated."""
+        return self._check_font(self.TABLER_FONT)
 
     @staticmethod
     def _is_font_available(family_name: str) -> bool:

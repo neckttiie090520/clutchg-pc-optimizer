@@ -9,7 +9,7 @@
 ;     → dist/ClutchG/ must exist before running this script
 ;
 ; Output:
-;   installer/output/ClutchG-Setup-1.0.0.exe
+;   installer/output/ClutchG-Setup-1.0.1.exe
 ;
 ; To build the installer:
 ;   installer\build-installer.bat
@@ -18,7 +18,7 @@
 ; ============================================================
 
 #define AppName      "ClutchG"
-#define AppVersion   "1.0.0"
+#define AppVersion   "1.0.1"
 #define AppPublisher "ClutchG Project"
 #define AppURL       "https://github.com/neckttiie090520/clutchg-pc-optimizer"
 #define AppExeName   "ClutchG.exe"
@@ -147,6 +147,6 @@ end;
 // ──────────────────────────────────────────────────────────
 // Auto-update support:
 //   The updater.py in ClutchG launches this installer with:
-//     ClutchG-Setup-1.0.0.exe /SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS
+//     ClutchG-Setup-1.0.1.exe /SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS
 //   Those flags are handled natively by Inno Setup.
 // ──────────────────────────────────────────────────────────
