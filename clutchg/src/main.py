@@ -11,8 +11,9 @@ import os
 import argparse
 from pathlib import Path
 
-# Add src directory to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add src directory to path (PyInstaller already sets sys._MEIPASS)
+if not getattr(sys, "frozen", False):
+    sys.path.insert(0, str(Path(__file__).parent))
 
 from app_minimal import ClutchGApp
 from utils.admin import AdminChecker

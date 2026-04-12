@@ -5,8 +5,8 @@ Collapsible sidebar with animated transitions and hover effects
 
 import customtkinter as ctk
 import logging
-from pathlib import Path
 from PIL import Image
+from core.paths import assets_dir
 from gui.theme import theme_manager, SIZES, RADIUS, NAV_ICONS, ANIMATION
 from gui.style import font
 from gui.components.tooltip import ToolTipBinder
@@ -90,7 +90,7 @@ class EnhancedSidebar(ctk.CTkFrame):
         logo_frame.grid_columnconfigure(0, weight=0)  # icon
         logo_frame.grid_columnconfigure(1, weight=1)  # name
 
-        icon_path = Path(__file__).parent.parent.parent / "assets" / "icon.png"
+        icon_path = assets_dir() / "icon.png"
         if icon_path.exists():
             self._logo_image = ctk.CTkImage(
                 light_image=Image.open(icon_path),

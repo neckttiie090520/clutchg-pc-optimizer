@@ -6,6 +6,7 @@ Updated: 2026-02-10 (Bug fixes: duplicate labels, missing create_content, duplic
 
 import customtkinter as ctk
 from pathlib import Path
+from core.paths import assets_dir
 from typing import TYPE_CHECKING, List, Tuple
 import logging
 from PIL import Image
@@ -325,7 +326,7 @@ class DashboardView(ctk.CTkFrame):
         # Load hardware PNG images (28x28 for card header)
         # Source PNGs are pre-tinted #b0b0b0 for dark theme visibility
         _hw_size = 28
-        _assets = Path(__file__).parent.parent.parent / "assets"
+        _assets = assets_dir()
         _hw_imgs: dict = {}
         for key, fname in [
             ("cpu", "hw-cpu.png"),

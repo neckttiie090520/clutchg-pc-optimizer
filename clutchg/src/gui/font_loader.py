@@ -15,17 +15,27 @@ import platform
 from pathlib import Path
 from typing import Optional
 
+from core.paths import fonts_dir
+
 logger = logging.getLogger(__name__)
 
-_font_dir = Path(__file__).parent.parent / "fonts"
+_font_dir: Optional[Path] = None  # Lazy — resolved on first use
 _loaded_font_objects: list = []  # Keep references alive
 _font_family: Optional[str] = None
 _tabler_icons_loaded: bool = False
 
 
+def _get_font_dir() -> Path:
+    """Return the font directory, caching the result."""
+    global _font_dir
+    if _font_dir is None:
+        _font_dir = fonts_dir()
+    return _font_dir
+
+
 def get_font_path(filename: str) -> Optional[Path]:
     """Get absolute path to a bundled font file."""
-    path = _font_dir / filename
+    path = _get_font_dir() / filename
     return path if path.exists() else None
 
 

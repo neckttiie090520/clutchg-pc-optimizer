@@ -14,6 +14,7 @@ from typing import Callable, Dict, Iterable, List, Literal, Optional, Sequence, 
 from urllib.parse import unquote, urlparse
 import webbrowser
 
+from core.paths import project_root as _project_root, repo_root as _repo_root
 from core.tweak_registry import Tweak, TweakRegistry, get_tweak_registry
 
 
@@ -75,20 +76,26 @@ class ActionCatalog:
         actions: Optional[Sequence[ActionDefinition]] = None,
     ) -> None:
         self.registry = registry or get_tweak_registry()
-        self.project_root = Path(__file__).resolve().parents[2]  # clutchg/
-        self.repo_root = self.project_root.parent  # repository root
+        self.project_root = _project_root()  # clutchg/
+        self.repo_root = _repo_root()  # repository root
         self.allowed_file_roots = (
             self.project_root.resolve(),
             (self.repo_root / "docs").resolve(),
         )
 
-        self._actions: Tuple[ActionDefinition, ...] = tuple(actions or self._build_actions())
+        self._actions: Tuple[ActionDefinition, ...] = tuple(
+            actions or self._build_actions()
+        )
         self._index: Dict[str, ActionDefinition] = {a.id: a for a in self._actions}
 
     def _build_actions(self) -> Tuple[ActionDefinition, ...]:
         """Build V1 action mapping (decision-complete set)."""
-        docs_user_guide = (self.repo_root / "docs" / "16-user-guide-en.md").resolve().as_uri()
-        docs_quick_ref = (self.repo_root / "docs" / "clutchg_quick_reference.md").resolve().as_uri()
+        docs_user_guide = (
+            (self.repo_root / "docs" / "16-user-guide-en.md").resolve().as_uri()
+        )
+        docs_quick_ref = (
+            (self.repo_root / "docs" / "clutchg_quick_reference.md").resolve().as_uri()
+        )
         clutchg_readme = (self.project_root / "README.md").resolve().as_uri()
 
         return (
@@ -139,7 +146,12 @@ class ActionCatalog:
                 description="Memory-related tweaks for lower stutter on heavy workloads.",
                 kind="tweak_pack",
                 risk="MEDIUM",
-                tweak_ids=("mem_svchost", "mem_paging_exec", "mem_large_cache", "mem_paging_combining"),
+                tweak_ids=(
+                    "mem_svchost",
+                    "mem_paging_exec",
+                    "mem_large_cache",
+                    "mem_paging_combining",
+                ),
             ),
             ActionDefinition(
                 id="qa_advanced_bcd_latency_safe",
@@ -148,7 +160,12 @@ class ActionCatalog:
                 description="Safe subset of BCDEdit latency-oriented options.",
                 kind="tweak_pack",
                 risk="MEDIUM",
-                tweak_ids=("bcd_dynamic_tick", "bcd_tsc_sync", "bcd_x2apic", "bcd_configaccess"),
+                tweak_ids=(
+                    "bcd_dynamic_tick",
+                    "bcd_tsc_sync",
+                    "bcd_x2apic",
+                    "bcd_configaccess",
+                ),
             ),
             ActionDefinition(
                 id="qa_advanced_nvidia_consistency",
@@ -185,7 +202,12 @@ class ActionCatalog:
                 description="Reduce visual effects for snappier UI and lower GPU overhead.",
                 kind="tweak_pack",
                 risk="LOW",
-                tweak_ids=("vis_animations", "vis_transparency", "vis_visual_fx", "vis_drag_full"),
+                tweak_ids=(
+                    "vis_animations",
+                    "vis_transparency",
+                    "vis_visual_fx",
+                    "vis_drag_full",
+                ),
             ),
             ActionDefinition(
                 id="qa_windows_network_reliability",
@@ -294,10 +316,18 @@ class ActionCatalog:
     def get_action(self, action_id: str) -> Optional[ActionDefinition]:
         return self._index.get(action_id)
 
-    def get_actions(self, group: str, system_profile: Optional[object] = None) -> List[ActionDefinition]:
-        return [a for a in self._actions if a.group == group and self.is_visible(a, system_profile)]
+    def get_actions(
+        self, group: str, system_profile: Optional[object] = None
+    ) -> List[ActionDefinition]:
+        return [
+            a
+            for a in self._actions
+            if a.group == group and self.is_visible(a, system_profile)
+        ]
 
-    def is_visible(self, action: ActionDefinition, system_profile: Optional[object] = None) -> bool:
+    def is_visible(
+        self, action: ActionDefinition, system_profile: Optional[object] = None
+    ) -> bool:
         if not action.requires_nvidia:
             return True
         if not system_profile:
@@ -330,7 +360,9 @@ class ActionCatalog:
             seen_ids.add(action.id)
 
             if action.group not in self.GROUPS:
-                errors.append(f"Action '{action.id}' has unknown group '{action.group}'")
+                errors.append(
+                    f"Action '{action.id}' has unknown group '{action.group}'"
+                )
 
             if action.kind == "tweak_pack":
                 if not action.tweak_ids:
@@ -340,18 +372,28 @@ class ActionCatalog:
                 for tid in action.tweak_ids:
                     tweak = self.registry.get_tweak(tid)
                     if not tweak:
-                        errors.append(f"Action '{action.id}' references unknown tweak '{tid}'")
+                        errors.append(
+                            f"Action '{action.id}' references unknown tweak '{tid}'"
+                        )
                         continue
                     if tweak.risk_level.upper() == "HIGH":
-                        errors.append(f"Action '{action.id}' includes HIGH risk tweak '{tid}'")
+                        errors.append(
+                            f"Action '{action.id}' includes HIGH risk tweak '{tid}'"
+                        )
 
             elif action.kind == "external_link":
                 if action.tweak_ids:
-                    errors.append(f"Action '{action.id}' external_link cannot define tweak_ids")
+                    errors.append(
+                        f"Action '{action.id}' external_link cannot define tweak_ids"
+                    )
                 if not action.url:
-                    errors.append(f"Action '{action.id}' external_link must include url")
+                    errors.append(
+                        f"Action '{action.id}' external_link must include url"
+                    )
                 elif not self.is_trusted_url(action.url):
-                    errors.append(f"Action '{action.id}' uses non-trusted url '{action.url}'")
+                    errors.append(
+                        f"Action '{action.id}' uses non-trusted url '{action.url}'"
+                    )
             else:
                 errors.append(f"Action '{action.id}' has invalid kind '{action.kind}'")
 
@@ -382,6 +424,7 @@ class ActionCatalog:
         def default_opener(url: str) -> bool:
             import os
             import platform
+
             try:
                 # os.startfile is more reliable on Windows
                 if platform.system() == "Windows":
@@ -389,7 +432,7 @@ class ActionCatalog:
                     return True
             except Exception:
                 pass
-            
+
             # Fallback
             try:
                 return webbrowser.open(url, new=2)
@@ -410,13 +453,17 @@ class ActionCatalog:
             host = (parsed.netloc or "").lower()
             if not host:
                 return False
-            return any(host == d or host.endswith(f".{d}") for d in self.TRUSTED_DOMAINS)
+            return any(
+                host == d or host.endswith(f".{d}") for d in self.TRUSTED_DOMAINS
+            )
 
         if scheme == "file":
             candidate = self._path_from_file_url(url)
             if not candidate:
                 return False
-            return any(candidate.is_relative_to(root) for root in self.allowed_file_roots)
+            return any(
+                candidate.is_relative_to(root) for root in self.allowed_file_roots
+            )
 
         return False
 
@@ -437,4 +484,3 @@ class ActionCatalog:
             if RISK_ORDER.get(level, 0) > RISK_ORDER.get(max_level, 0):
                 max_level = level
         return max_level  # type: ignore[return-value]
-

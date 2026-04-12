@@ -6,6 +6,7 @@ import webbrowser
 import customtkinter as ctk
 from typing import TYPE_CHECKING
 
+from core.paths import assets_dir
 from gui.theme import COLORS, SPACING, RADIUS
 from gui.style import font, bind_dynamic_wraplength
 from gui.components.icon_provider import get_icon
@@ -37,6 +38,8 @@ class SettingsView(ctk.CTkFrame):
             "confirm_actions_desc": "Ask for confirmation before running tweaks",
             "flight_recorder": "Flight Recorder",
             "flight_recorder_desc": "Log every change for easy rollback and debugging",
+            "check_updates": "Check for Updates",
+            "check_updates_desc": "Automatically check for new versions on startup",
             "about": "About",
             "about_tagline": "A Windows optimizer built for gamers who want real performance gains, not snake oil.",
             "about_version": "v1.0.0 · Windows 10/11",
@@ -52,6 +55,8 @@ class SettingsView(ctk.CTkFrame):
             "confirm_actions_desc": "ถามยืนยันก่อนรัน Tweak",
             "flight_recorder": "Flight Recorder",
             "flight_recorder_desc": "บันทึกทุกการเปลี่ยนแปลงเพื่อ rollback ได้ง่าย",
+            "check_updates": "Check for Updates",
+            "check_updates_desc": "ตรวจสอบเวอร์ชันใหม่อัตโนมัติตอนเปิดโปรแกรม",
             "about": "About",
             "about_tagline": "โปรแกรม Optimize Windows สำหรับเกมเมอร์ที่ต้องการผลลัพธ์จริง ไม่ใช่ snake oil",
             "about_version": "v1.0.0 · Windows 10/11",
@@ -325,6 +330,30 @@ class SettingsView(ctk.CTkFrame):
             label=self._ui("flight_recorder"),
             description=self._ui("flight_recorder_desc"),
             control_builder=_build_flight_recorder,
+        )
+
+        # Check for updates
+        self.check_updates_var = ctk.BooleanVar(
+            value=self.config.get("check_updates", True)
+        )
+
+        def _build_check_updates(frame):
+            ctk.CTkSwitch(
+                frame,
+                text="",
+                variable=self.check_updates_var,
+                fg_color=COLORS["bg_tertiary"],
+                progress_color=COLORS["accent"],
+                button_color=COLORS["text_primary"],
+                button_hover_color=COLORS["accent_hover"],
+                command=self.save_config,
+            ).pack()
+
+        self._setting_row(
+            parent,
+            label=self._ui("check_updates"),
+            description=self._ui("check_updates_desc"),
+            control_builder=_build_check_updates,
             is_last=True,
         )
 
@@ -334,7 +363,6 @@ class SettingsView(ctk.CTkFrame):
 
     def create_about(self, parent):
         """About section with app logo, name, version, tagline, and links."""
-        from pathlib import Path
         from PIL import Image
 
         frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -342,7 +370,7 @@ class SettingsView(ctk.CTkFrame):
         frame.grid_columnconfigure(1, weight=1)
 
         # App logo (48x48)
-        logo_path = Path(__file__).parent.parent.parent / "assets" / "icon.png"
+        logo_path = assets_dir() / "icon.png"
         try:
             pil_img = Image.open(logo_path).resize((48, 48), Image.LANCZOS)
             logo_img = ctk.CTkImage(
@@ -442,5 +470,6 @@ class SettingsView(ctk.CTkFrame):
         self.config["auto_backup"] = self.auto_backup_var.get()
         self.config["confirm_actions"] = self.confirm_var.get()
         self.config["flight_recorder"] = self.flight_recorder_var.get()
+        self.config["check_updates"] = self.check_updates_var.get()
 
         self.app.config_manager.save_config(self.config)

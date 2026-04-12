@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 
+from core.paths import config_dir as _default_config_dir
+
 
 class ConfigManager:
     """Manages application configuration"""
@@ -19,8 +21,8 @@ class ConfigManager:
             config_dir: Configuration directory (default: ./config)
         """
         if config_dir is None:
-            # Default to config directory relative to project root
-            config_dir = Path(__file__).parent.parent.parent / "config"
+            # Default to config directory from centralized paths
+            config_dir = _default_config_dir()
 
         self.config_dir = Path(config_dir)
         self.config_file = self.config_dir / "default_config.json"
@@ -178,4 +180,7 @@ class ConfigManager:
             # Accessibility settings
             "reduce_motion": False,  # Reduce animations for motion-sensitive users
             "high_contrast": False,  # High contrast mode for accessibility
+            # Auto-update settings
+            "check_updates": True,  # Check for new versions on startup
+            "last_update_check": 0.0,  # Unix timestamp of last check (float)
         }

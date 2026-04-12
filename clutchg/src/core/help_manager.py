@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
+from core.paths import data_file
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -36,7 +37,7 @@ class HelpManager:
             language: Default language (en or th)
         """
         if help_file is None:
-            help_file = Path(__file__).parent.parent / "data" / "help_content.json"
+            help_file = data_file("help_content.json")
 
         self.help_file = Path(help_file)
         self.language = language

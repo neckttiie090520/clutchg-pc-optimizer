@@ -12,6 +12,7 @@ from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 
+from core.paths import flight_recorder_dir
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -19,6 +20,7 @@ logger = get_logger(__name__)
 
 class ChangeCategory(Enum):
     """Categories of system changes"""
+
     REGISTRY = "registry"
     SERVICE = "service"
     BCDEDIT = "bcdedit"
@@ -30,6 +32,7 @@ class ChangeCategory(Enum):
 
 class RiskLevel(Enum):
     """Risk levels for changes"""
+
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
@@ -43,6 +46,7 @@ class TweakChange:
     Tracks what changed, from what value to what value, and metadata
     for rollback capability.
     """
+
     name: str  # Human-readable name (e.g., "Enable HAGS")
     category: ChangeCategory  # Type of change
     key_path: str  # Registry key or config path
@@ -62,18 +66,18 @@ class TweakChange:
         """Convert to dictionary for JSON serialization"""
         data = asdict(self)
         # Convert enums to strings
-        data['category'] = self.category.value
-        data['risk_level'] = self.risk_level.value
-        data['timestamp'] = self.timestamp.isoformat()
+        data["category"] = self.category.value
+        data["risk_level"] = self.risk_level.value
+        data["timestamp"] = self.timestamp.isoformat()
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'TweakChange':
+    def from_dict(cls, data: Dict[str, Any]) -> "TweakChange":
         """Create from dictionary (JSON deserialization)"""
         # Convert strings back to enums
-        data['category'] = ChangeCategory(data['category'])
-        data['risk_level'] = RiskLevel(data['risk_level'])
-        data['timestamp'] = datetime.fromisoformat(data['timestamp'])
+        data["category"] = ChangeCategory(data["category"])
+        data["risk_level"] = RiskLevel(data["risk_level"])
+        data["timestamp"] = datetime.fromisoformat(data["timestamp"])
         return cls(**data)
 
 
@@ -84,6 +88,7 @@ class SystemSnapshot:
 
     Contains all changes made during a profile application or operation.
     """
+
     snapshot_id: str  # Unique identifier (timestamp-based)
     timestamp: datetime
     operation_type: str  # "profile_applied", "manual_tweak", "restore"
@@ -97,30 +102,30 @@ class SystemSnapshot:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
-            'snapshot_id': self.snapshot_id,
-            'timestamp': self.timestamp.isoformat(),
-            'operation_type': self.operation_type,
-            'profile': self.profile,
-            'tweaks': [tweak.to_dict() for tweak in self.tweaks],
-            'pre_snapshot_path': self.pre_snapshot_path,
-            'post_snapshot_path': self.post_snapshot_path,
-            'success': self.success,
-            'error_message': self.error_message,
+            "snapshot_id": self.snapshot_id,
+            "timestamp": self.timestamp.isoformat(),
+            "operation_type": self.operation_type,
+            "profile": self.profile,
+            "tweaks": [tweak.to_dict() for tweak in self.tweaks],
+            "pre_snapshot_path": self.pre_snapshot_path,
+            "post_snapshot_path": self.post_snapshot_path,
+            "success": self.success,
+            "error_message": self.error_message,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'SystemSnapshot':
+    def from_dict(cls, data: Dict[str, Any]) -> "SystemSnapshot":
         """Create from dictionary"""
         return cls(
-            snapshot_id=data['snapshot_id'],
-            timestamp=datetime.fromisoformat(data['timestamp']),
-            operation_type=data['operation_type'],
-            profile=data['profile'],
-            tweaks=[TweakChange.from_dict(t) for t in data['tweaks']],
-            pre_snapshot_path=data.get('pre_snapshot_path'),
-            post_snapshot_path=data.get('post_snapshot_path'),
-            success=data['success'],
-            error_message=data.get('error_message', ''),
+            snapshot_id=data["snapshot_id"],
+            timestamp=datetime.fromisoformat(data["timestamp"]),
+            operation_type=data["operation_type"],
+            profile=data["profile"],
+            tweaks=[TweakChange.from_dict(t) for t in data["tweaks"]],
+            pre_snapshot_path=data.get("pre_snapshot_path"),
+            post_snapshot_path=data.get("post_snapshot_path"),
+            success=data["success"],
+            error_message=data.get("error_message", ""),
         )
 
 
@@ -286,9 +291,7 @@ class FlightRecorder:
         """
         full_key = f"{key_path}\\{value_name}"
         # Both /v and /d values are quoted to handle names/data containing spaces.
-        rollback_cmd = (
-            f'reg add "{key_path}" /v "{value_name}" /t {value_type} /d "{old_value}" /f'
-        )
+        rollback_cmd = f'reg add "{key_path}" /v "{value_name}" /t {value_type} /d "{old_value}" /f'
 
         return self.record_change(
             name=name,
@@ -381,7 +384,9 @@ class FlightRecorder:
         Yields:
             SystemSnapshot for recording
         """
-        snapshot = self.start_recording(operation_type, profile, create_registry_snapshot)
+        snapshot = self.start_recording(
+            operation_type, profile, create_registry_snapshot
+        )
         try:
             yield snapshot
         except Exception as e:
@@ -409,7 +414,7 @@ class FlightRecorder:
             return None
 
         try:
-            with open(snapshot_path, 'r', encoding='utf-8') as f:
+            with open(snapshot_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             return SystemSnapshot.from_dict(data)
         except Exception as e:
@@ -437,9 +442,7 @@ class FlightRecorder:
 
         return snapshots
 
-    def compare_snapshots(
-        self, before_id: str, after_id: str
-    ) -> List[TweakChange]:
+    def compare_snapshots(self, before_id: str, after_id: str) -> List[TweakChange]:
         """
         Compare two snapshots and return the differences.
 
@@ -532,7 +535,7 @@ class FlightRecorder:
                 "pause",
             ]
 
-            output_path.write_text("\r\n".join(lines), encoding='utf-8')
+            output_path.write_text("\r\n".join(lines), encoding="utf-8")
 
             logger.info(f"Generated rollback script: {output_path}")
             return output_path
@@ -589,7 +592,7 @@ class FlightRecorder:
         snapshot_path = self.logs_dir / f"{snapshot.snapshot_id}.json"
 
         try:
-            with open(snapshot_path, 'w', encoding='utf-8') as f:
+            with open(snapshot_path, "w", encoding="utf-8") as f:
                 json.dump(snapshot.to_dict(), f, indent=2, ensure_ascii=False)
             logger.debug(f"Saved snapshot: {snapshot_path}")
         except Exception as e:
@@ -605,10 +608,10 @@ class FlightRecorder:
         """Auto-generate a rollback command for the given change category."""
         if category == ChangeCategory.REGISTRY:
             # key_path format: HKLM\path\to\key\ValueName
-            parts = key_path.split('\\')
+            parts = key_path.split("\\")
             if len(parts) >= 2:
                 value_name = parts[-1]
-                key_path_only = '\\'.join(parts[:-1])
+                key_path_only = "\\".join(parts[:-1])
                 # Quote /v and /d to handle names/data with spaces
                 return (
                     f'reg add "{key_path_only}" /v "{value_name}"'
@@ -662,7 +665,7 @@ def get_flight_recorder(storage_dir: Optional[Path] = None) -> FlightRecorder:
 
     if _flight_recorder_instance is None:
         if storage_dir is None:
-            storage_dir = Path(__file__).parent.parent.parent / "data" / "flight_recorder"
+            storage_dir = flight_recorder_dir()
         _flight_recorder_instance = FlightRecorder(storage_dir)
 
     return _flight_recorder_instance

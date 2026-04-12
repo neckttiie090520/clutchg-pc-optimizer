@@ -7,6 +7,7 @@ Updated: 2026-02-03 (Redesign)
 import customtkinter as ctk
 from pathlib import Path
 from typing import Optional
+from core.paths import assets_dir, batch_scripts_dir
 from gui.theme import theme_manager
 from core.config import ConfigManager
 from core.system_info import SystemDetector
@@ -29,7 +30,7 @@ class ClutchGApp:
         theme_manager.set_theme(saved_theme, saved_accent)
 
         # Init Managers
-        self.batch_scripts_dir = Path(__file__).parent.parent.parent / "src"
+        self.batch_scripts_dir = batch_scripts_dir()
         from core.profile_manager import ProfileManager
         from core.help_manager import HelpManager
         from core.action_catalog import ActionCatalog
@@ -56,7 +57,7 @@ class ClutchGApp:
         register_fonts()
 
         # Set window icon (taskbar + title bar)
-        icon_path = Path(__file__).parent / "assets" / "icon.png"
+        icon_path = assets_dir() / "icon.png"
         if icon_path.exists():
             try:
                 from PIL import Image, ImageTk
@@ -93,8 +94,40 @@ class ClutchGApp:
         if not self.tabler_icons_available:
             self._show_font_warning()
 
-    def get_version(self):
-        return "1.0.0"
+        # Auto-update check (non-blocking, respects cooldown + opt-out)
+        self._init_update_checker()
+
+    def get_version(self) -> str:
+        from __init__ import __version__
+
+        return __version__
+
+    # ------------------------------------------------------------------
+    # Auto-update
+    # ------------------------------------------------------------------
+
+    def _init_update_checker(self):
+        """Start a non-blocking update check (respects cooldown + opt-out)."""
+        try:
+            from core.updater import AsyncUpdateChecker
+
+            self._async_updater = AsyncUpdateChecker(
+                self.window, self.get_version(), self.config_manager
+            )
+            self._async_updater.check_async(
+                on_update_available=self._show_update_dialog
+            )
+        except Exception as e:
+            logger.debug(f"Update checker init skipped: {e}")
+
+    def _show_update_dialog(self, info):
+        """Show the update notification dialog on the main thread."""
+        try:
+            from gui.components.update_dialog import UpdateDialog
+
+            UpdateDialog(self.window, self, info)
+        except Exception as e:
+            logger.debug(f"Could not show update dialog: {e}")
 
     def _check_tabler_icons(self) -> bool:
         """Check if Tabler Icons font is available (bundled or system)."""
