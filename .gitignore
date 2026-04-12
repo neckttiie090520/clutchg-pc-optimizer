@@ -12,6 +12,7 @@ __pycache__/
 dist/
 build/
 *.spec
+!clutchg/ClutchG.spec
 *.manifest
 
 # ---------- Virtual Environment ----------
