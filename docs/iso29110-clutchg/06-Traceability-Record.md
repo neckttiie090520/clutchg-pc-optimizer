@@ -1,10 +1,10 @@
 # 06 — บันทึกความสอดคล้อง (Traceability Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O3 (Software Traceability)
-> **เวอร์ชัน:** 2.2
+> **เวอร์ชัน:** 2.3
 > **ETVX:** Entry = SRS v3.2 + SDD v3.3 approved; Task = Map FR→Design→Code→Test for all requirements; Verification = Coverage ≥ 85%; Exit = All P0 FRs traced, gaps documented
 > **อ้างอิง SE:** SE 721 (Requirements Engineering — Traceability), SE 725 (V&V — Requirements-based Testing)
-> **Cross-ref:** SRS v3.2 (`02-SRS.md`), SDD v3.3 (`03-SDD.md`), Test Plan v3.1 (`04-Test-Plan.md`), Test Record v2.3 (`05-Test-Record.md`)
+> **Cross-ref:** SRS v3.2 (`02-SRS.md`), SDD v3.3 (`03-SDD.md`), Test Plan v3.1 (`04-Test-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Batch V&V Test Plan v1.0 (`12-Batch-VV-Test-Plan.md`), Batch V&V Test Record v1.0 (`12-Batch-VV-Test-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่:** 2026-03-12 | **ผู้จัดทำ:** nextzus
 
@@ -113,6 +113,23 @@ Requirements Traceability คือความสามารถในการ
 | FR-BS-03 Real-time output | BatchExecutor | `core/batch_executor.py` | — |
 | FR-BS-04 Validate before exec | ProfileManager | `core/profile_manager.py` L263-278 | UT-PM-07 |
 
+### 1.7 FR-BAT: Batch Script Engine (Hyper-V V&V)
+
+> **ที่มา:** Batch V&V Test Plan v1.0 (`12-Batch-VV-Test-Plan.md`) — black-box system-level tests executed on Hyper-V Gen1 VM (Windows 11 23H2 x64)
+
+| FR | Script | Verification Command | Test Case |
+|----|--------|---------------------|-----------|
+| FR-21 Disable telemetry data collection | `registry-utils.bat`, `telemetry-blocker.bat` | `reg query AllowTelemetry` → `0x0`; `reg query AdvertisingInfo` → `0x0`; `reg query PublishUserActivities` → `0x0` | TC-BAT-001, TC-BAT-002, TC-BAT-003 |
+| FR-22 Disable unnecessary services | `service-manager.bat` | `sc qc DiagTrack` → DISABLED; `sc qc XblAuthManager` → DISABLED; `sc qc WSearch` → DEMAND_START | TC-BAT-004, TC-BAT-005, TC-BAT-006 |
+| FR-23 Apply BCDEdit boot tweaks | `bcdedit-manager.bat` | `bcdedit \| findstr disabledynamictick` → Yes; `tscsyncpolicy` → Enhanced; `hypervisorlaunchtype` → Off (EXTREME) | TC-BAT-008, TC-BAT-009, TC-BAT-010 |
+| FR-24 Optimize network parameters | `network-optimizer-enhanced.bat` | `reg query NetworkThrottlingIndex` → `0xffffffff`; TCP autotuninglevel → `normal` | TC-BAT-012, TC-BAT-013 |
+| FR-25 Enable GPU hardware scheduling | `gpu-optimizer.bat` | `reg query HwSchMode` → `0x2` | TC-BAT-014 |
+| FR-26 Apply MMCSS / gaming priority | `registry-utils.bat` | `reg query Tasks\Games GPU Priority` → `0x8`; `Win32PrioritySeparation` → `0x26` | TC-BAT-016, TC-BAT-017 |
+| FR-27 Never disable critical security services | `service-manager.bat` | `sc query WinDefend` → RUNNING (untouched) | TC-BAT-007 |
+| FR-28 Optimize input device queue size | `registry-utils.bat` | `reg query MouseDataQueueSize` → `0x10` | TC-BAT-018 |
+| FR-29 Rollback / restore all changes | `rollback.bat`, `bcdedit-manager.bat` | All keys restored to baseline; BCD entries removed | TC-BAT-011, TC-BAT-019, TC-BAT-020 |
+| FR-30 Validate changes after apply | All scripts | Spot-check `reg query` + `sc qc` + `bcdedit` after each apply | All TC-BAT-001~020 (post-execution verify step) |
+
 ---
 
 ## 2. Backward Traceability: Test → Code → Design → Requirement
@@ -134,6 +151,7 @@ Requirements Traceability คือความสามารถในการ
 | test_tweak_registry_integrity.py | 61 | FR-TW-01~07, FR-SF-13, NFR-01~03 |
 | test_help_system.py | 12 | FR-UI-05, FR-UI-08, NFR-06, NFR-08 |
 | test_recommendation_service.py | 18 | FR-SD-07, FR-TW-06 |
+| 12-Batch-VV-Test-Record.md | 20 (TC-BAT-001~020) | FR-21~FR-30 |
 
 ### 2.2 Integration Tests → Requirements
 
@@ -160,10 +178,11 @@ Requirements Traceability คือความสามารถในการ
 | FR-UI (User Interface) | 13 | 10 | 3 | 76.9% |
 | FR-BS (Batch Scripts) | 4 | 4 | 0 | 100.0% |
 | FR-AD (Admin Utilities) | 2 | 2 | 0 | 100.0% |
-| **รวม** | **59** | **52** | **7** | **88.1%** |
+| FR-BAT (Batch Engine) | 10 | 10 | 0 | 100.0% |
+| **รวม** | **69** | **62** | **7** | **89.9%** |
 
 > **หมายเหตุ:** FR-AD เป็น requirement ที่เพิ่มขึ้นโดยนัยจาก Security Audit (CR-004)
-> ตัวเลขปรับจาก 57 → 59 FRs (เพิ่ม FR-AD-01, FR-AD-02)
+> ตัวเลขปรับจาก 59 → 69 FRs (เพิ่ม FR-21~FR-30 จาก Batch V&V Testing phase)
 
 ### 3.2 FRs Without Automated Tests
 
@@ -413,7 +432,7 @@ Requirements Traceability คือความสามารถในการ
 | P3 | FR-SD-09 | เพิ่ม threading test ด้วย `threading.Event` + 5s timeout (accept flakiness risk) | Backlog | Developer |
 | Monitor | FR-UI-07, FR-UI-09, FR-UI-11 | คงใช้ E2E with display + visual inspection — ไม่สามารถ automate บน headless Windows CI | ไม่มีแผน automate | — |
 
-> **หมายเหตุ:** P1 items (FR-PM-09, FR-PM-10) จะเพิ่ม automated coverage จาก 88.1% เป็น ~91.5% (54/59) หากดำเนินการ ส่วน 3 UI FRs ยอมรับเป็น manual test เนื่องจาก platform limitation ของ CustomTkinter + headless CI
+> **หมายเหตุ:** P1 items (FR-PM-09, FR-PM-10) จะเพิ่ม automated coverage จาก 89.9% เป็น ~91.3% (64/69) หากดำเนินการ ส่วน 3 UI FRs ยอมรับเป็น manual test เนื่องจาก platform limitation ของ CustomTkinter + headless CI
 
 #### 3.5.4 Risk Assessment: ผลกระทบของ 7 Untested FRs
 
@@ -443,6 +462,7 @@ Requirements Traceability คือความสามารถในการ
 | Tweak count | SRS: 56 tweaks | SDD: 56 tweaks in registry | ✅ ตรง | |
 | Change Requests | CR-001~004 | Traceability: CR impacts traced | ✅ ตรง | |
 | Architecture pattern | SDD: Layered + MVC hybrid | Test Plan: test by layer | ✅ ตรง | |
+| Batch V&V TCs | Batch V&V Test Plan v1.0: 20 planned | Batch V&V Test Record v1.0: 20 executed | ✅ ตรง | |
 
 ### 4.1 Cross-Document Version Alignment
 
@@ -459,14 +479,14 @@ Requirements Traceability คือความสามารถในการ
 
 | Metric | ค่า | เป้าหมาย | สถานะ |
 |--------|-----|---------|-------|
-| Total FRs traced | 52/59 | ≥ 85% | ✅ 88.1% |
-| FRs with automated tests | 52 | — | |
+| Total FRs traced | 62/69 | ≥ 85% | ✅ 89.9% |
+| FRs with automated tests | 62 | — | |
 | FRs with manual tests only | 7 | ≤ 10 | ✅ |
 | NFRs testable | 17/17 | 100% | ✅ 100% (13 automated + 4 manual/review) |
 | Horizontal consistency issues | 1 minor (FR count reconciliation) | 0 critical | ✅ |
 | Gold plating detected | 0 | 0 | ✅ ไม่มี code ที่ไม่มี FR รองรับ |
 
-> **สรุป:** ระบบ traceability ของ ClutchG ครอบคลุม 88.1% ของ FRs ด้วย automated tests ส่วนที่เหลือ 7 FRs มีการทดสอบด้วยวิธี manual ทั้งหมด ไม่พบ gold plating
+> **สรุป:** ระบบ traceability ของ ClutchG ครอบคลุม 89.9% ของ FRs ด้วย automated tests ส่วนที่เหลือ 7 FRs มีการทดสอบด้วยวิธี manual ทั้งหมด ไม่พบ gold plating
 
 ---
 
@@ -478,3 +498,4 @@ Requirements Traceability คือความสามารถในการ
 | 2.0 | 2026-04-06 | nextzus | เสริม SE academic content: ทฤษฎี Traceability (SE 721), §4 Horizontal Traceability, §5 Consolidated RTM Summary, header ETVX + cross-refs |
 | 2.1 | 2026-04-10 | nextzus | Phase 11 Recommendation Refactor: FR-SD-07 → RecommendationService + UT-RS-01~18, tweak counts 48→56, profile counts 17/35/48→14/44/56, test counts 308→496+, FR-TW-06 delegation, backward trace for test_recommendation_service.py, version alignment SRS v3.2/SDD v3.3/Test Plan v3.1/Test Record v2.2 |
 | 2.2 | 2026-04-12 | nextzus | เพิ่ม §3.3 NFR Forward Traceability (17 NFRs × 8 ISO 25010 categories), §3.4 CR-to-FR Impact Mapping (4 CRs reconciled to canonical FR IDs), §3.5 Gap Remediation Plan (7 untested FRs — classification, per-FR detail, priority timeline, risk assessment); อัปเดต §5 NFR row จาก "4/6 groups ⚠️ Partial" → "17/17 ✅ 100%"; Test Record cross-ref อัปเดตเป็น v2.3 |
+| 2.3 | 2026-04-12 | nextzus | เพิ่ม §1.7 FR-BAT Batch Script Engine traceability (FR-21~FR-30 → TC-BAT-001~020); อัปเดต backward traceability §2.1 (เพิ่ม 12-Batch-VV-Test-Record.md row), coverage summary §3.1 (FR-BAT group + รวม 59→69 FRs, 52→62 with tests, 88.1%→89.9%), horizontal traceability §4 (Batch V&V row), RTM summary §5 (62/69, 89.9%); อัปเดต cross-ref header |

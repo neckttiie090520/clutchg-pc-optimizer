@@ -1,12 +1,12 @@
 # 08 — บันทึกสถานะความก้าวหน้า (Progress Status Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — PM.O6 (Progress Status Record)
-> **เวอร์ชันเอกสาร:** v3.2
+> **เวอร์ชันเอกสาร:** v3.3
 > **ETVX:** Entry = Phase plan approved; Task = Track PV/EV/AC, report variances, update milestones; Verification = EVM indicators calculated + variance explained; Exit = Stakeholder review completed
 > **อ้างอิง SE:** SE 781 (Project Management — EVM, CPM), SE 725 PM Sessions (Risk Monitoring, Variance Analysis)
-> **Cross-ref:** Project Plan v3.1 (`01-Project-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Change Request v2.1 (`07-Change-Request.md`), Traceability Record v2.2 (`06-Traceability-Record.md`)
+> **Cross-ref:** Project Plan v3.1 (`01-Project-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Change Request v2.1 (`07-Change-Request.md`), Traceability Record v2.3 (`06-Traceability-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **วันที่อัปเดตล่าสุด:** 2026-04-06
+> **วันที่อัปเดตล่าสุด:** 2026-04-12
 
 ---
 
@@ -22,10 +22,10 @@
 |--------|-----|
 | ระยะเวลาที่ผ่านมา | 14 / 15 เดือน (Jan 2025 — Mar 2026) |
 | Phases Complete | 11 / 12 |
-| Work Products | 10 / 10 (ISO29110) |
+| Work Products | 12 / 12 (ISO29110) |
 | Source Code | ~56,000 lines (Python + Batch) |
-| Test Cases | 496+ collected (400+ unit, 23 integration, 64 E2E) |
-| Test Pass Rate | 100% (432+ passed, 0 failed, 64 skipped headless) |
+| Test Cases | 516+ collected (400+ unit, 23 integration, 64 E2E, 20 Batch V&V) |
+| Test Pass Rate | 100% (432+ passed, 0 failed, 64 skipped headless; 20 Batch V&V TCs also 100% pass on Hyper-V Gen1) |
 | Code Coverage | ~65%+ core total; highlights: recommendation_service 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%, admin 79% |
 | Open Defects | 0 HIGH, 0 MEDIUM |
 
@@ -48,6 +48,7 @@
 | 11 | Documentation | Feb 2026 | Mar 2026 | ✅ Done | ISO29110 WPs v3.1, Thesis Ch6+Ch7 Draft 3.0 | 100% |
 | 11a | Security Audit & Test Expansion | Mar 2026 | Mar 2026 | ✅ Done | 28 items resolved, +160 unit tests, GPUtil removed | 100% |
 | 11b | Unified Recommendation Refactor | Apr 2026 | Apr 2026 | ✅ Done | RecommendationService (188 lines), 56 tweaks, +18 UT-RS tests, ISO docs v3.x | 100% |
+| 11c | Batch V&V Testing | Apr 2026 | Apr 2026 | ✅ Done | Batch V&V Test Plan v1.0 + Test Record v1.0 (20 TCs, 100% pass, Hyper-V Gen1) | 100% |
 | 12 | Final Delivery | Apr 2026 |  | ⏳ Pending | Final IS document | 0% |
 
 ---
@@ -80,11 +81,13 @@
 | 03 | SDD | SI.O3 | 3.3 | ~660 lines | ✅ Complete | 2026-04-10 |
 | 04 | Test Plan | SI.O5 | 3.1 | ~570 lines | ✅ Complete | 2026-04-10 |
 | 05 | Test Record | SI.O5 | 2.2 | ~505 lines | ✅ Complete | 2026-04-10 |
-| 06 | Traceability Record | SI.O3 | 2.1 | ~241 lines | ✅ Complete | 2026-04-10 |
+| 06 | Traceability Record | SI.O3 | 2.3 | ~260 lines | ✅ Complete | 2026-04-12 |
 | 07 | Change Request | PM.O4 | 2.1 | ~460 lines | ✅ Complete | 2026-04-06 |
-| 08 | Progress Status | PM.O6 | 3.1 | ~250 lines | ✅ Complete | 2026-04-10 |
+| 08 | Progress Status | PM.O6 | 3.3 | ~280 lines | ✅ Complete | 2026-04-12 |
 | 09 | Configuration Plan | PM.O2/O3 | 2.1 | ~190 lines | ✅ Complete | 2026-03-12 |
 | 10 | User Manual | SI.O6 | 3.0 | ~450 lines | ✅ Complete | 2026-04-12 |
+| 11 | Batch V&V Test Plan | SI.O5 | 1.0 | ~180 lines | ✅ Complete | 2026-04-12 |
+| 12 | Batch V&V Test Record | SI.O5 | 1.0 | ~220 lines | ✅ Complete | 2026-04-12 |
 
 ### 4.2 Thesis Chapters
 
@@ -114,7 +117,7 @@
 
 | Metric | Phase 4 | Phase 8 | Phase 10 | Current | Target |
 |--------|---------|---------|----------|---------|--------|
-| # Tests | 0 | 49 | 49 | 496+ collected | ≥ 50 |
+| # Tests | 0 | 49 | 49 | 516+ collected | ≥ 50 |
 | Pass Rate | — | 95.9% | 95.9% | 100% (432+/432+ runnable) | ≥ 95% |
 | Coverage | — | ~68% | ~72% | ~65% core; 85–92% for key modules* | ≥ 70% |
 | # Tweaks | 20 | 40 | 48 | 56 | 56 |
@@ -128,6 +131,7 @@
 > GPUtil removed from requirements.txt; system_info.py uses 3-strategy storage detection.
 > Top coverage: recommendation_service 92%, help_manager 89%, system_snapshot 88%,
 > batch_executor 85%, config 83%, admin 79%, batch_parser 84%, system_info 71%.
+> Batch V&V (Phase 11c) added 20 test cases executed on Hyper-V Gen1, Windows 11 23H2 x64 VM — all 20 PASS.
 
 ---
 
@@ -252,7 +256,7 @@
 | R-07 | ผู้ใช้ไม่เข้าใจ risk level ของ tweaks | 9 (Medium) | Mitigate | ✅ Resolved | 2025-12 | Traffic light risk display (Green/Yellow/Red) + 3-field explanation per tweak (what_it_does, why_it_helps, limitations) |
 | R-08 | Batch scripts ไม่ทำงานบน Windows 11 | 8 (Medium) | Mitigate | ✅ Resolved | 2025-11 | `system-detect.bat` แยก Win10/Win11 paths; OS-specific tweak filtering ใน TweakRegistry |
 | R-09 | Library dependency ถูก deprecate (GPUtil) | 9 (Medium) | Avoid | ✅ Resolved | 2026-01 | ลบ GPUtil dependency; refactor `system_info.py` ใช้ 3-strategy detection (WMI → Get-PhysicalDisk → psutil fallback); CR-002 |
-| R-10 | Thesis defense ไม่ผ่าน | 5 (Medium) | Mitigate | ⚠️ Monitor | — | จัดทำเอกสาร ISO 29110 ครบ 10 WPs; ทดสอบ 496+ tests; Traceability coverage 88.1%; เตรียม defense presentation |
+| R-10 | Thesis defense ไม่ผ่าน | 5 (Medium) | Mitigate | ⚠️ Monitor | — | จัดทำเอกสาร ISO 29110 ครบ 12 WPs; ทดสอบ 516+ tests; Traceability coverage 89.9%; เตรียม defense presentation |
 
 ### 8.2 Risk Trend Summary
 
@@ -279,7 +283,7 @@ Risk Resolution Timeline:
 | Risk | Residual Score | Justification |
 |------|---------------|---------------|
 | R-05 (CustomTkinter) | 4 (Low) | ทดสอบแล้วบน 2 OS versions หลัก; fallback strategy คือ revert เป็น standard Tkinter widgets ถ้าพบปัญหาวิกฤต; issue เหลือแค่ DPI cosmetic |
-| R-10 (Thesis defense) | 3 (Low) | เอกสาร ISO ครบ 10 ชุด; test coverage สูง; traceability matrix verified; advisor review ผ่าน preliminary; เหลือ defense presentation |
+| R-10 (Thesis defense) | 3 (Low) | เอกสาร ISO ครบ 12 ชุด; test coverage สูง; traceability matrix verified; advisor review ผ่าน preliminary; เหลือ defense presentation |
 
 ---
 
@@ -361,3 +365,4 @@ Risk Resolution Timeline:
 | v3.0 | 2026-04-06 | nextzus | เพิ่ม EVM (SE 781): budget baseline, PV/EV/AC, CV/SV/CPI/SPI, forecast metrics, phase-by-phase tracking; ETVX header; อัปเดต Work Product versions |
 | v3.1 | 2026-04-10 | nextzus | Phase 11b Unified Recommendation Refactor: เพิ่ม Phase 11b row, อัปเดต test counts (372→496+), tweak counts (48→56), modules (13→14), views (6→5), coverage highlight (recommendation_service), ISO doc versions (SRS v3.2, SDD v3.3, Test Plan v3.1, Test Record v2.2, Traceability v2.1) |
 | v3.2 | 2026-04-12 | nextzus | เพิ่ม §8 Risk Monitoring Log (10 risks, chronological tracking, residual assessment), §9 Decisions & Action Items Log (8 architectural decisions, 11 action items), §10 Meeting & Review Records (7 advisor meetings, 9 self-review milestones); อัปเดต cross-refs (Project Plan v3.1, Test Record v2.3, Traceability v2.2) |
+| v3.3 | 2026-04-12 | nextzus | เพิ่ม Phase 11c Batch V&V Testing, doc rows 11–12 (12-Batch-VV-Test-Plan.md + 12-Batch-VV-Test-Record.md), อัปเดต test counts 496→516+, Work Products 10→12, coverage 88.1%→89.9%, cross-ref Traceability v2.3 |
