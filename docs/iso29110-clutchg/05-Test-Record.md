@@ -1,7 +1,7 @@
 # 05 — บันทึกผลการทดสอบ (Test Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5
-> **เวอร์ชัน:** 2.2
+> **เวอร์ชัน:** 2.3
 > **ETVX:** Entry = Test Plan v3.1 approved; Task = Execute tests per plan; Verification = Coverage + pass rate; Exit = All P0 paths pass, DRE ≥ 85%
 > **อ้างอิง SE:** SE 725 (V&V), SE 702 (DRE/CoSQ)
 > **Cross-ref:** Test Plan v3.1 (`04-Test-Plan.md`), SRS v3.2 (`02-SRS.md`), SDD v3.3 (`03-SDD.md`)

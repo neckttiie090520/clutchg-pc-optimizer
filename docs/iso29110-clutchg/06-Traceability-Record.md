@@ -1,7 +1,7 @@
 # 06 — บันทึกความสอดคล้อง (Traceability Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O3 (Software Traceability)
-> **เวอร์ชัน:** 2.3
+> **เวอร์ชัน:** 2.4
 > **ETVX:** Entry = SRS v3.2 + SDD v3.3 approved; Task = Map FR→Design→Code→Test for all requirements; Verification = Coverage ≥ 85%; Exit = All P0 FRs traced, gaps documented
 > **อ้างอิง SE:** SE 721 (Requirements Engineering — Traceability), SE 725 (V&V — Requirements-based Testing)
 > **Cross-ref:** SRS v3.2 (`02-SRS.md`), SDD v3.3 (`03-SDD.md`), Test Plan v3.1 (`04-Test-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Batch V&V Test Plan v1.0 (`12-Batch-VV-Test-Plan.md`), Batch V&V Test Record v1.0 (`12-Batch-VV-Test-Record.md`)
@@ -275,7 +275,7 @@ Requirements Traceability คือความสามารถในการ
 
 ### 3.4 CR-to-FR Impact Mapping (Change Request → Requirement Traceability)
 
-> **ที่มา:** 07-Change-Request.md v2.1 — 4 CRs (CR-001~CR-004), ทั้งหมด accepted/closed
+> **ที่มา:** 07-Change-Request.md v2.3 — 4 CRs (CR-001~CR-004), ทั้งหมด accepted/closed
 > **วัตถุประสงค์:** แสดงผลกระทบของ Change Requests ต่อ Functional Requirements ในระบบ traceability โดยเชื่อมโยง CR IDs เข้ากับ canonical FR IDs ที่ใช้ใน §1 ของเอกสารนี้
 
 #### 3.4.1 CR-001: Unified Backup & Restore Center (MEDIUM, Phase 9)
@@ -454,7 +454,7 @@ Requirements Traceability คือความสามารถในการ
 |-----------|-------------|--------------|-----------|---------|
 | จำนวน FR ทั้งหมด | SRS: 63 FRs (MoSCoW) | Traceability: 59 FRs | ⚠️ ต่าง | SRS นับรวม Won't=5 + admin FRs ที่เพิ่มภายหลัง — ตัวเลข reconcile ได้ |
 | จำนวน NFR | SRS: 17 NFRs | Test Plan: 17 NFRs | ✅ ตรง | |
-| จำนวน Test Cases | Test Plan: 496+ planned | Test Record: 496+ executed | ✅ ตรง | |
+| จำนวน Test Cases | Test Plan: 516+ planned | Test Record: 516+ executed | ✅ ตรง | |
 | Coverage target | Test Plan: ≥ 60% core | Test Record: ~65% core | ✅ ผ่าน | |
 | DRE target | Test Plan: ≥ 85% | Test Record: 100% (pre-release) | ✅ ผ่าน | |
 | 10 Risk items | Project Plan: 10 risks | Progress Status: 10 risks | ✅ ตรง | 8 resolved, 2 monitoring |
@@ -471,7 +471,7 @@ Requirements Traceability คือความสามารถในการ
 | SRS | v3.2 | ✅ อ้างอิงถูกต้อง |
 | SDD | v3.3 | ✅ อ้างอิงถูกต้อง |
 | Test Plan | v3.1 | ✅ อ้างอิงถูกต้อง |
-| Test Record | v2.2 | ✅ อ้างอิงถูกต้อง |
+| Test Record | v2.3 | ✅ อ้างอิงถูกต้อง |
 
 ---
 
@@ -499,3 +499,4 @@ Requirements Traceability คือความสามารถในการ
 | 2.1 | 2026-04-10 | nextzus | Phase 11 Recommendation Refactor: FR-SD-07 → RecommendationService + UT-RS-01~18, tweak counts 48→56, profile counts 17/35/48→14/44/56, test counts 308→496+, FR-TW-06 delegation, backward trace for test_recommendation_service.py, version alignment SRS v3.2/SDD v3.3/Test Plan v3.1/Test Record v2.2 |
 | 2.2 | 2026-04-12 | nextzus | เพิ่ม §3.3 NFR Forward Traceability (17 NFRs × 8 ISO 25010 categories), §3.4 CR-to-FR Impact Mapping (4 CRs reconciled to canonical FR IDs), §3.5 Gap Remediation Plan (7 untested FRs — classification, per-FR detail, priority timeline, risk assessment); อัปเดต §5 NFR row จาก "4/6 groups ⚠️ Partial" → "17/17 ✅ 100%"; Test Record cross-ref อัปเดตเป็น v2.3 |
 | 2.3 | 2026-04-12 | nextzus | เพิ่ม §1.7 FR-BAT Batch Script Engine traceability (FR-21~FR-30 → TC-BAT-001~020); อัปเดต backward traceability §2.1 (เพิ่ม 12-Batch-VV-Test-Record.md row), coverage summary §3.1 (FR-BAT group + รวม 59→69 FRs, 52→62 with tests, 88.1%→89.9%), horizontal traceability §4 (Batch V&V row), RTM summary §5 (62/69, 89.9%); อัปเดต cross-ref header |
+| 2.4 | 2026-04-12 | nextzus | อัปเดต §4.1 Test Record version v2.2→v2.3, test count 496→516+ ใน §4 horizontal traceability, CR ref v2.1→v2.3 ใน §3.4 |

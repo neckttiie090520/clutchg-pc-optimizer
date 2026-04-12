@@ -1,10 +1,10 @@
 # 07 — คำขอเปลี่ยนแปลง (Software Change Request)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2:2011 — PM.O3, Table 23
-> **เวอร์ชันเอกสาร:** v2.2
+> **เวอร์ชันเอกสาร:** v2.3
 > **ETVX:** Entry = Change identified + Impact assessed; Task = Analyze, approve, implement, verify; Verification = Regression tests pass; Exit = CR closed + Traceability updated
 > **อ้างอิง SE:** SE 702 (Configuration Management — Change Control), SE 721 (Requirements Management — Change Control process)
-> **Cross-ref:** SRS v3.3 (`02-SRS.md`), SDD v3.4 (`03-SDD.md`), Traceability v2.2 (`06-Traceability-Record.md`), Test Record v2.3 (`05-Test-Record.md`)
+> **Cross-ref:** SRS v3.3 (`02-SRS.md`), SDD v3.4 (`03-SDD.md`), Traceability v2.3 (`06-Traceability-Record.md`), Test Record v2.3 (`05-Test-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่อัปเดตล่าสุด:** 2026-04-12
 
@@ -504,7 +504,7 @@
 | NFR ที่ได้รับผลกระทบ | 1 |
 | **รวม Requirements ที่เกี่ยวข้อง** | **10** |
 
-> **Cross-reference:** ดูรายละเอียด Forward/Backward Traceability ใน `06-Traceability-Record.md` v2.2 §3–§4
+> **Cross-reference:** ดูรายละเอียด Forward/Backward Traceability ใน `06-Traceability-Record.md` v2.3 §3–§4
 
 ---
 
@@ -538,3 +538,4 @@
 | v2.0 | 2026-03-12 | nextzus | เพิ่ม CR-002, CR-003, CR-004, อัปเดตตารางสรุป |
 | v2.1 | 2026-04-06 | nextzus | เพิ่มกระบวนการ CCB (SE 702), ตาราง Effort Estimation, CR-to-FR Traceability, ETVX header |
 | v2.2 | 2026-04-12 | nextzus | เพิ่ม Post-Implementation Review ทุก CR (CR-001~CR-004), แก้ไข stale version refs (SRS v3.1→v3.3, Traceability v2.0→v2.2), เพิ่มส่วน Rejected CR documentation, อัปเดต cross-ref header |
+| v2.3 | 2026-04-12 | nextzus | อัปเดต cross-ref Traceability v2.2→v2.3 (header + footer §4 cross-reference) |

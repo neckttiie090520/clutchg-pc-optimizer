@@ -3,7 +3,7 @@
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5 (Software Testing)
 > **ETVX:** Entry = Batch scripts in `src/` complete + VM snapshot clean | Task = Execute batch V&V tests in isolated VM | Verify = All 20 TCs executed, expected registry/service states confirmed | Exit = 12-Batch-VV-Test-Record.md signed off
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 1.0 | **วันที่:** 2026-04-12 | **อ้างอิง SRS:** v3.3 | **อ้างอิง SDD:** v3.4
+> **เวอร์ชัน:** 1.1 | **วันที่:** 2026-04-12 | **อ้างอิง SRS:** v3.3 | **อ้างอิง SDD:** v3.4
 > **อ้างอิง:** ISO/IEC 29110-5-1-2 SI.O5, IEEE 829-2008, ISTQB Foundation, SE 725 (V&V Sessions)
 
 ---
@@ -66,7 +66,7 @@ All tests run inside an **isolated Hyper-V Gen1 VM** (Windows 11 23H2 x64) on th
 |-----------|-------|
 | VM Generation | Gen1 (Legacy BIOS) |
 | OS | Windows 11 23H2 x64 |
-| vCPUs | 4 |
+| vCPUs | 2 |
 | RAM | 4 GB |
 | VHDX | 60 GB dynamic |
 | Network | Internal/NAT (isolated) |
@@ -717,10 +717,16 @@ bcdedit /enum {current} | findstr /i "disabledynamictick"
 | `03-SDD.md` | v3.4 | Software Design Document |
 | `04-Test-Plan.md` | v3.2 | Python layer test plan (separate) |
 | `05-Test-Record.md` | v2.3 | Python test records |
-| `12-Batch-VV-Test-Record.md` | — | **Batch V&V test record** (to be created post-execution) |
+| `12-Batch-VV-Test-Record.md` | v1.0 | Batch V&V test record — 20 TCs executed, 20 PASS (Hyper-V Gen1, 2026-04-12) |
 | `scripts/vm-testing/Create-TestVM-Gen1.ps1` | — | VM creation script |
 
 ---
 
+## 10. ประวัติการแก้ไขเอกสาร (Revision History)
+
+| เวอร์ชัน | วันที่ | ผู้แก้ไข | รายละเอียด |
+|----------|--------|---------|-----------|
+| v1.0 | 2026-04-12 | nextzus | สร้างเอกสารเริ่มต้น — 20 TCs ครอบคลุม SAFE/COMPETITIVE/EXTREME profiles + rollback verification |
+| v1.1 | 2026-04-12 | nextzus | แก้ไข vCPUs 4→2 (ตรงกับ Test Record), อัปเดต Related Documents §9 (Test Record v1.0, 20 PASS), ลบ placeholder note |
+
 *Document prepared by: ClutchG research team*
-*Next step: Execute TCs in Hyper-V VM → record results in `12-Batch-VV-Test-Record.md`*

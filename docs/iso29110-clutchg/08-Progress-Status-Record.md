@@ -1,10 +1,10 @@
 # 08 — บันทึกสถานะความก้าวหน้า (Progress Status Record)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — PM.O6 (Progress Status Record)
-> **เวอร์ชันเอกสาร:** v3.3
+> **เวอร์ชันเอกสาร:** v3.4
 > **ETVX:** Entry = Phase plan approved; Task = Track PV/EV/AC, report variances, update milestones; Verification = EVM indicators calculated + variance explained; Exit = Stakeholder review completed
 > **อ้างอิง SE:** SE 781 (Project Management — EVM, CPM), SE 725 PM Sessions (Risk Monitoring, Variance Analysis)
-> **Cross-ref:** Project Plan v3.1 (`01-Project-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Change Request v2.1 (`07-Change-Request.md`), Traceability Record v2.3 (`06-Traceability-Record.md`)
+> **Cross-ref:** Project Plan v3.1 (`01-Project-Plan.md`), Test Record v2.3 (`05-Test-Record.md`), Change Request v2.3 (`07-Change-Request.md`), Traceability Record v2.4 (`06-Traceability-Record.md`)
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่อัปเดตล่าสุด:** 2026-04-12
 
@@ -80,9 +80,9 @@
 | 02 | SRS | SI.O2 | 3.2 | ~605 lines | ✅ Complete | 2026-04-10 |
 | 03 | SDD | SI.O3 | 3.3 | ~660 lines | ✅ Complete | 2026-04-10 |
 | 04 | Test Plan | SI.O5 | 3.1 | ~570 lines | ✅ Complete | 2026-04-10 |
-| 05 | Test Record | SI.O5 | 2.2 | ~505 lines | ✅ Complete | 2026-04-10 |
+| 05 | Test Record | SI.O5 | 2.3 | ~505 lines | ✅ Complete | 2026-04-10 |
 | 06 | Traceability Record | SI.O3 | 2.3 | ~260 lines | ✅ Complete | 2026-04-12 |
-| 07 | Change Request | PM.O4 | 2.1 | ~460 lines | ✅ Complete | 2026-04-06 |
+| 07 | Change Request | PM.O4 | 2.3 | ~460 lines | ✅ Complete | 2026-04-12 |
 | 08 | Progress Status | PM.O6 | 3.3 | ~280 lines | ✅ Complete | 2026-04-12 |
 | 09 | Configuration Plan | PM.O2/O3 | 2.1 | ~190 lines | ✅ Complete | 2026-03-12 |
 | 10 | User Manual | SI.O6 | 3.0 | ~450 lines | ✅ Complete | 2026-04-12 |
@@ -318,7 +318,7 @@ Risk Resolution Timeline:
 | AI-08 | 2026-03 | Security Audit + fix all findings (Phase 11a) | nextzus | 2026-03 | ✅ Done | 2026-03 |
 | AI-09 | 2026-03 | อัปเดต ISO 29110 documents ให้ consistent | nextzus | 2026-04 | ✅ Done | 2026-04 |
 | AI-10 | 2026-04 | เตรียม thesis defense presentation | nextzus | 2026-04 | 🔄 In Progress | — |
-| AI-11 | 2026-04 | Final ISO document gap-filling + consistency check | nextzus | 2026-04 | 🔄 In Progress | — |
+| AI-11 | 2026-04 | Final ISO document gap-filling + consistency check | nextzus | 2026-04 | ✅ Done | 2026-04-12 |
 
 ---
 
@@ -350,7 +350,7 @@ Risk Resolution Timeline:
 | M5 — Test Baseline | 2026-01 | 372 tests passing | ✅ Pass | Proceed to security audit |
 | M6 — Security Audit | 2026-03 | 28/28 security checklist PASS | ✅ Pass | Update ISO docs |
 | M7 — Refactoring Complete | 2026-03 | RecommendationService extracted, 496+ tests | ✅ Pass | Final documentation |
-| M8 — ISO Documents Complete | 2026-04 | 10 WPs reviewed for completeness | 🔄 In Progress | Gap-filling round (current task) |
+| M8 — ISO Documents Complete | 2026-04 | 12 WPs reviewed for completeness | ✅ Pass | Gap-filling complete — all versions consistent |
 | M9 — Thesis Defense | 2026-04 | Defense presentation + Q&A | ⏳ Pending | — |
 
 ---
@@ -366,3 +366,4 @@ Risk Resolution Timeline:
 | v3.1 | 2026-04-10 | nextzus | Phase 11b Unified Recommendation Refactor: เพิ่ม Phase 11b row, อัปเดต test counts (372→496+), tweak counts (48→56), modules (13→14), views (6→5), coverage highlight (recommendation_service), ISO doc versions (SRS v3.2, SDD v3.3, Test Plan v3.1, Test Record v2.2, Traceability v2.1) |
 | v3.2 | 2026-04-12 | nextzus | เพิ่ม §8 Risk Monitoring Log (10 risks, chronological tracking, residual assessment), §9 Decisions & Action Items Log (8 architectural decisions, 11 action items), §10 Meeting & Review Records (7 advisor meetings, 9 self-review milestones); อัปเดต cross-refs (Project Plan v3.1, Test Record v2.3, Traceability v2.2) |
 | v3.3 | 2026-04-12 | nextzus | เพิ่ม Phase 11c Batch V&V Testing, doc rows 11–12 (12-Batch-VV-Test-Plan.md + 12-Batch-VV-Test-Record.md), อัปเดต test counts 496→516+, Work Products 10→12, coverage 88.1%→89.9%, cross-ref Traceability v2.3 |
+| v3.4 | 2026-04-12 | nextzus | อัปเดต §4.1 Work Product versions (Test Record v2.2→v2.3, CR v2.1→v2.3), cross-ref CR v2.1→v2.3 + Traceability v2.3→v2.4, ปิด AI-11 (✅ Done 2026-04-12), อัปเดต M8 self-review (10→12 WPs, 🔄→✅) |

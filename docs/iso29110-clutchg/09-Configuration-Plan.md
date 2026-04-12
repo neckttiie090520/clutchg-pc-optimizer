@@ -1,12 +1,12 @@
 # 09 — แผนการกำหนดค่า (Configuration Management Plan)
 
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — PM.O2/PM.O3
-> **Version:** 2.2
+> **Version:** 2.3
 > **โครงงาน:** ClutchG PC Optimizer v2.0
 > **วันที่:** 2026-03-12
 > **ETVX Compliance:** Entry = Project Plan approved; Task = PM.2.2 Configuration Management; Verification = CI audit checklist; Exit = Baselines established, CIs tracked
 > **ทฤษฎีอ้างอิง:** SE 702 — Software Process Management (ICSA Framework, Baseline Management, FCA/PCA Audit)
-> **เอกสารที่เกี่ยวข้อง:** Project Plan v3.1 (`01`), SRS v3.2 (`02`), SDD v3.3 (`03`), Test Plan v3.1 (`04`), Test Record v2.3 (`05`), Traceability v2.2 (`06`), Change Request v2.1 (`07`), Progress Status v3.2 (`08`)
+> **เอกสารที่เกี่ยวข้อง:** Project Plan v3.1 (`01`), SRS v3.2 (`02`), SDD v3.3 (`03`), Test Plan v3.1 (`04`), Test Record v2.3 (`05`), Traceability v2.4 (`06`), Change Request v2.3 (`07`), Progress Status v3.4 (`08`)
 
 ---
 
@@ -581,3 +581,4 @@ git clone <remote-url> clutchg-recovery
 | v2.0 | 2026-04-06 | nextzus | เพิ่ม ICSA framework (§1.2), CI naming convention (§2.1), priority classification (§2.2), CI count แก้เป็น 34, Status Accounting (§7), FCA/PCA Audit (§8), ICSA-to-Git mapping (§9), ICSA compliance summary (§10), cross-refs to all WPs |
 | v2.1 | 2026-04-10 | nextzus | Phase 11 update: เพิ่ม CI-CORE-11 (recommendation_service.py), tweak count 48→56, CI count 34→35, test count 285→400+, อัปเดต WP versions (SRS v3.2, SDD v3.3, Test Plan v3.1, Test Record v2.2, Traceability v2.1, Progress v3.1), FCA/PCA metrics อัปเดต |
 | v2.2 | 2026-04-14 | nextzus | เพิ่ม §5.4–5.6 Formal Release Process / Release Notes Template / Release History, §7.4 Key CI Change History, §11 Repository Disaster Recovery Plan; อัปเดต WP versions ใน §7.1 (Project Plan v3.1, Test Record v2.3, Traceability v2.2, Progress Status v3.2, Config Plan v2.2) + header cross-refs |
+| v2.3 | 2026-04-12 | nextzus | อัปเดต header cross-refs: Traceability v2.2→v2.4, Change Request v2.1→v2.3, Progress Status v3.2→v3.4 ให้สอดคล้องกับ WP versions ปัจจุบัน |
