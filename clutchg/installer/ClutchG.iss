@@ -18,7 +18,7 @@
 ; ============================================================
 
 #define AppName      "ClutchG"
-#define AppVersion   "1.0.0"
+#define AppVersion   "1.0.1"
 #define AppPublisher "ClutchG Project"
 #define AppURL       "https://github.com/neckttiie090520/clutchg-pc-optimizer"
 #define AppExeName   "ClutchG.exe"

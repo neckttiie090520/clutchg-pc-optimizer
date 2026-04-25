@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 @dataclass
 class ExecutionResult:
     """Result of batch script execution"""
+
     success: bool
     output: str
     errors: str
@@ -26,9 +27,11 @@ class ExecutionResult:
 class BatchExecutor:
     """Executes batch scripts with monitoring capabilities"""
 
-    def __init__(self,
-                 on_output: Optional[Callable[[str], None]] = None,
-                 on_progress: Optional[Callable[[int], None]] = None):
+    def __init__(
+        self,
+        on_output: Optional[Callable[[str], None]] = None,
+        on_progress: Optional[Callable[[int], None]] = None,
+    ):
         """
         Initialize batch executor
 
@@ -41,10 +44,13 @@ class BatchExecutor:
         self.process: Optional[subprocess.Popen] = None
         self._cancelled = False
 
-    def execute(self,
-                script_path: Path,
-                args: Optional[list] = None,                elevated: bool = True,
-                timeout: int = 300) -> ExecutionResult:
+    def execute(
+        self,
+        script_path: Path,
+        args: Optional[list] = None,
+        elevated: bool = True,
+        timeout: int = 300,
+    ) -> ExecutionResult:
         """
         Execute a batch script synchronously.
 
@@ -80,6 +86,7 @@ class BatchExecutor:
 
         # Validate script for dangerous patterns before executing.
         from core.batch_parser import BatchParser
+
         try:
             # BatchParser requires a directory; pass the script's parent.
             parser = BatchParser(script_path.parent)
@@ -94,7 +101,9 @@ class BatchExecutor:
                     duration=0,
                 )
         except Exception as validation_err:
-            logger.warning(f"Could not validate script (proceeding with caution): {validation_err}")
+            logger.warning(
+                f"Could not validate script (proceeding with caution): {validation_err}"
+            )
 
         # Prepare command
         cmd = [str(script_path)]
@@ -110,12 +119,12 @@ class BatchExecutor:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW,
+                creationflags=subprocess.CREATE_NEW_CONSOLE,
             )
 
             # Read output in real-time
             def read_stream(stream, is_error: bool = False) -> None:
-                for line in iter(stream.readline, ''):
+                for line in iter(stream.readline, ""):
                     if line:
                         line = line.rstrip()
                         if is_error:
@@ -156,8 +165,8 @@ class BatchExecutor:
 
             return ExecutionResult(
                 success=success,
-                output='\n'.join(output_lines),
-                errors='\n'.join(error_lines),
+                output="\n".join(output_lines),
+                errors="\n".join(error_lines),
                 return_code=return_code,
                 duration=duration,
             )
@@ -180,7 +189,7 @@ class BatchExecutor:
             self.cancel()
             return ExecutionResult(
                 success=False,
-                output='\n'.join(output_lines),
+                output="\n".join(output_lines),
                 errors=f"Script timed out after {timeout} seconds",
                 return_code=-1,
                 duration=timeout,
@@ -196,9 +205,11 @@ class BatchExecutor:
                 duration=time.time() - start_time,
             )
 
-    def execute_async(self,
-                      script_path: Path,
-                      on_complete: Optional[Callable[[ExecutionResult], None]] = None) -> None:
+    def execute_async(
+        self,
+        script_path: Path,
+        on_complete: Optional[Callable[[ExecutionResult], None]] = None,
+    ) -> None:
         """
         Execute script asynchronously in a separate thread.
 
@@ -206,6 +217,7 @@ class BatchExecutor:
             script_path: Path to .bat file
             on_complete: Callback when execution completes
         """
+
         def run() -> None:
             result = self.execute(script_path)
             if on_complete:

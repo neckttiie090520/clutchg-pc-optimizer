@@ -139,7 +139,7 @@ def build() -> None:
         "  %APPDATA%\\ClutchG\\\n\n"
         "## Support\n\n"
         "https://github.com/neckttiie090520/clutchg-pc-optimizer\n\n"
-        "---\nClutchG v1.0.0\n"
+        "---\nClutchG v1.0.1\n"
     )
     readme_file = bundle_dir / "README.txt"
     readme_file.write_text(readme_content, encoding="utf-8")
