@@ -367,7 +367,6 @@ E2E tests ทั้งหมด 64 tests ถูก skip ในสภาพแว
 ## 6. ตัวชี้วัดคุณภาพ (Quality Metrics)
 
 > อ้างอิงกรอบแนวคิด: Cost of Software Quality (CoSQ) และ Defect Removal Effectiveness (DRE) จาก SE 702 Software Process Management
-> แหล่งข้อมูลฉบับเต็ม: `docs/se-academic/06-quality-metrics.md`
 
 ### 6.1 Defect Removal Effectiveness (DRE)
 

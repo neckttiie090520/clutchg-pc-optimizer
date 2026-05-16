@@ -3,7 +3,7 @@
 > **มาตรฐาน:** ISO/IEC 29110-5-1-2 — SI.O5 (Software Testing)
 > **ETVX:** Entry = SRS v3.3 approved + SDD v3.4 reviewed | Task = Execute test levels | Verify = Coverage ≥ 70%, DRE target 100% | Exit = Test Record v2.3 signed-off
 > **โครงงาน:** ClutchG PC Optimizer v2.0
-> **เวอร์ชัน:** 3.2 | **วันที่:** 2026-04-12 | **อ้างอิง SRS:** v3.3 | **อ้างอิง SDD:** v3.4
+> **เวอร์ชัน:** 3.3 | **วันที่:** 2026-05-16 | **อ้างอิง SRS:** v3.3 | **อ้างอิง SDD:** v3.4
 > **อ้างอิง:** IEEE 829-2008, ISTQB Foundation, SE 725 (V&V Sessions), SE 701 (Testing Chapters)
 
 ---
@@ -339,7 +339,6 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 ## 6. เทคนิคการออกแบบกรณีทดสอบ (Test Design Techniques)
 
 > อ้างอิง SE 725 — V&V Sessions + SE 701 — Testing Chapters
-> เอกสารเชิงลึก: `docs/se-academic/12-test-design-techniques.md`
 
 ### 6.1 Black-box Techniques
 
@@ -414,6 +413,45 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 
 **Use Case Test Cases Generated:** **8 test cases**
 
+#### 6.1.5 State Transition Testing
+
+ออกแบบ test cases จาก State Machine Diagram — ทดสอบว่า object เปลี่ยน state ถูกต้องตามที่กำหนด ครอบคลุม valid transitions, invalid transitions, และ guard conditions
+
+> **อ้างอิง:** Tweak Lifecycle State Machine Diagram (Appendix A §8) — 11 states, 16 transitions
+
+**State Transition Table (จาก State Machine Diagram):**
+
+| Current State | Event / Trigger | Guard Condition | Next State |
+|--------------|----------------|-----------------|------------|
+| Registered | SystemDetector confirms match | OS/HW compatible | Compatible |
+| Registered | OS/HW mismatch detected | — | Incompatible |
+| Compatible | User checks / Profile auto-select | — | Selected |
+| Compatible | User browses | — | Compatible (self-loop) |
+| Selected | User clicks Apply | — | Validating |
+| Selected | User unchecks | — | Compatible |
+| Validating | Validator passes | admin=Y, scripts exist | Applying |
+| Validating | Validation fails | admin=N / script missing | Selected |
+| Applying | BatchExecutor success | exit_code=0 | Applied |
+| Applying | BatchExecutor error | exit_code≠0 | Failed |
+| Applied | User clicks Undo / Rollback All | — | RollingBack |
+| Applied | System reboot | tweak persists | Applied (self-loop) |
+| Failed | User retries | — | Selected |
+| Failed | User dismisses error | — | [*] (terminal) |
+| RollingBack | reg add old_value succeeds | access OK | Reverted |
+| RollingBack | reg add fails | access denied | RollbackFailed |
+
+**State Transition Test Cases:**
+
+| TC-ID | Type | Current State | Event | Guard | Expected Next State | Module Under Test |
+|-------|------|--------------|-------|-------|-------------------|------------------|
+| TC-ST-01 | Valid | Registered | OS/HW match | compatible=True | Compatible | `TweakRegistry.filter_compatible()` |
+| TC-ST-02 | Valid | Selected | Apply | admin=Y, scripts exist | Validating → Applying → Applied | `ProfileManager.apply_profile()` |
+| TC-ST-03 | Valid | Applied | Undo | rollback_command valid | RollingBack → Reverted | `FlightRecorder.rollback()` |
+| TC-ST-04 | Invalid | Validating | Apply bypass | admin=N | Stay Validating (reject) | `ProfileManager._validate()` |
+| TC-ST-05 | Guard | Applying | Execute | script missing mid-run | Failed | `BatchExecutor.execute()` |
+
+**State Transition Test Cases Generated:** **5 test cases**
+
 ### 6.2 White-box Techniques
 
 #### 6.2.1 Statement & Branch Coverage
@@ -433,6 +471,36 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 | TC-BR-04 | 85 | Branch 4 → "enthusiast" | Yes |
 
 Branch Coverage: 4/4 = **100%**
+
+**ตัวอย่าง Condition Coverage: `apply_profile()` precondition guard**
+
+```python
+# profile_manager.py — simplified precondition
+if admin and scripts_exist and detection_done:   # 3 sub-conditions
+    proceed_to_apply()
+else:
+    show_error()
+```
+
+Condition Coverage ต้องการให้แต่ละ **boolean sub-condition** เป็น True อย่างน้อย 1 ครั้ง และ False อย่างน้อย 1 ครั้ง (ไม่ใช่ทั้ง expression)
+
+| TC | admin | scripts_exist | detection_done | Whole Expression | Covered Conditions |
+|----|-------|--------------|----------------|-----------------|-------------------|
+| TC-CC-01 | T | T | T | T → apply | 3T covered |
+| TC-CC-02 | F | F | F | F → error | 3F covered |
+
+Minimum test cases: **2** (เพียงพอสำหรับ Condition Coverage เพราะทุก sub-condition เป็น T และ F แล้ว)
+
+**เปรียบเทียบ Coverage Hierarchy:**
+
+| Technique | ต้องการ | TC ขั้นต่ำ | ความแรง |
+|-----------|---------|----------|---------|
+| Statement | Execute ทุก statement | 1 (if-else both hit) | Weakest |
+| Branch | True/False ของ **ทั้ง if** | 2 (TTT + FFF) | Medium |
+| Condition | True/False ของ **แต่ละ sub-condition** | 2 (TTT + FFF) | Stronger than Branch |
+| Path | ทุก combination | 8 (2³) | Strongest |
+
+> **หมายเหตุ:** สำหรับ compound AND เช่นนี้ Branch กับ Condition ใช้ TC เท่ากัน (2) แต่ถ้าเป็น `if (A or B)` Branch Coverage ใช้ 2 TC ส่วน Condition Coverage ต้อง (T,F), (F,T), (F,F) = 3 TC — Condition Coverage จึง stronger กว่า Branch Coverage ในกรณีทั่วไป
 
 #### 6.2.2 Path Coverage
 
@@ -454,20 +522,22 @@ Branch Coverage: 4/4 = **100%**
 | **Boundary Value Analysis** | 24 | Score boundaries, sub-scores, max records |
 | **Decision Table** | 9 | Profile apply, tweak compatibility |
 | **Use Case Testing** | 8 | UC-03 Apply Profile flows |
+| **State Transition Testing** | 5 | Tweak Lifecycle state machine (Appendix A §8) |
 | **Branch Coverage** | 7 | get_tier(), create_backup() |
+| **Condition Coverage** | 2 | apply_profile() precondition guard |
 | **Path Coverage** | 6 | apply_profile() paths |
-| **รวมทั้งหมด** | **71 example test cases** | |
+| **รวมทั้งหมด** | **78 example test cases** | |
 
 **หลักเลือกเทคนิค:**
 - Input มี ranges ชัดเจน → EP + BVA
 - หลาย conditions ร่วมกัน → Decision Table
 - มี Use Case Description → Use Case Testing
-- ต้องการ code coverage → Statement + Branch
+- มี State Machine Diagram → State Transition Testing
+- ต้องการ code coverage → Statement + Branch + Condition
 
 ### 6.4 Coverage Hierarchy & DRE Targets
 
 > อ้างอิง SE 702 — CoSQ/DRE + SE 725 — Coverage Levels
-> เอกสารเชิงลึก: `docs/se-academic/06-quality-metrics.md`, `docs/se-academic/11-vv-strategy.md`
 
 #### Coverage Hierarchy (SE 725)
 
@@ -764,3 +834,4 @@ pytest tests/ --skip-e2e -m "not admin" -v
 | 3.0 | 2026-04-06 | SE academic enrichment: เพิ่ม V&V Distinction (§1.4), Testing Levels U-I-F-S-A-R (§2.4), Test Design Techniques EP/BVA/DT/UCT/Branch/Path (§6), Coverage Hierarchy & DRE Targets (§6.4), อัปเดต header ETVX + cross-refs |
 | 3.1 | 2026-04-10 | Phase 11 update: เพิ่ม RecommendationService ใน Items Under Test + UT-RS test cases 18 รายการ, อัปเดตจำนวน unit tests 285→400+, tweak counts 48→56, SAFE tweak count 17→14, coverage module rename profile_recommender→recommendation_service, อ้างอิง SRS v3.2 + SDD v3.3 |
 | 3.2 | 2026-04-12 | เพิ่ม §8 Test Execution Schedule (timeline, phases, per-level schedule), §9 Test Data Management (mock strategy, tmp_path, cleanup, read-only data files), §10 Testing Roles (RACI matrix, single-person mitigation), อัปเดต ETVX cross-refs SRS v3.3 + SDD v3.4 + Test Record v2.3 |
+| 3.3 | 2026-05-16 | V&V exam prep: เพิ่ม §6.1.5 State Transition Testing (5 TC from State Machine), §6.2.1 Condition Coverage worked example, อัปเดต §6.3 summary 71→78 TC, ลบ dangling se-academic refs |

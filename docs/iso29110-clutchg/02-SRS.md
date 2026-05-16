@@ -63,7 +63,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 | 6 | **Validation** | อาจารย์ review SRS, สร้าง test cases จาก FRs, Traceability Matrix | `06-Traceability-Record.md`, 496+ test cases |
 | 7 | **Management** | จัดการเปลี่ยนแปลงผ่าน Change Requests + SRS versioning | `07-Change-Request.md` (4 CRs), SRS v1.0→v2.0→v3.0 |
 
-> **อ้างอิงทฤษฎี:** `docs/se-academic/08-requirements-analysis.md` — รายละเอียดการประยุกต์ RE 7-Step กับ ClutchG
+> **อ้างอิงทฤษฎี:** SE 721 — Requirements Engineering 7-Step Process (Inception → Management)
 
 ### 1.6 Requirements Pyramid
 
@@ -99,7 +99,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
     └──────────────────────────────────────────────┘
 ```
 
-> **อ้างอิง:** Requirements Pyramid (SE 721), `docs/se-academic/10-nfr-specification.md` Section 4
+> **อ้างอิง:** Requirements Pyramid (SE 721) — NFR Specification with SMART Fit Criteria
 
 ---
 
@@ -165,7 +165,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 | **Won't** | 5 | 7.9% | Auto-update, ARM support, Cloud sync, Windows 7/8 support, IDE-style UI |
 | **รวม** | **63** | 100% | — |
 
-**หลักการจัดลำดับ:** Must = ระบบทำงานไม่ได้ถ้าขาด, Should = เพิ่มประสิทธิภาพการใช้งาน, Could = มีเวลาเหลือจึงทำ, Won't = ตัดออกจาก scope ชัดเจน (ดู Negotiation ใน `docs/se-academic/08-requirements-analysis.md` Section 2.4)
+**หลักการจัดลำดับ:** Must = ระบบทำงานไม่ได้ถ้าขาด, Should = เพิ่มประสิทธิภาพการใช้งาน, Could = มีเวลาเหลือจึงทำ, Won't = ตัดออกจาก scope ชัดเจน (ดู Negotiation ใน SE 721 — Requirements Negotiation Phase)
 
 ### 3.1 FR-SD: System Detection (ตรวจจับระบบ)
 
@@ -274,8 +274,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 
 ## 4. ความต้องการไม่เชิงหน้าที่ (Non-Functional Requirements)
 
-> **กรอบอ้างอิง:** ISO/IEC 25010 Product Quality Model — 8 คุณลักษณะคุณภาพ
-> **รายละเอียดเพิ่มเติม:** `docs/se-academic/10-nfr-specification.md` (17 NFRs พร้อม SMART Fit Criteria)
+> **กรอบอ้างอิง:** ISO/IEC 25010 Product Quality Model — 8 คุณลักษณะคุณภาพ (SE 721 — NFR Specification)
 
 ### 4.1 Security (NFR-01, NFR-02)
 
@@ -433,7 +432,6 @@ class SystemSnapshot:
 ## 6. Use Cases
 
 > **อ้างอิงทฤษฎี:** SE 721 — Use Case Modeling (Include/Extend/System Boundary)
-> **เอกสารฉบับเต็ม:** `docs/se-academic/09-use-case-catalog.md`
 
 ### 6.0 Use Case Catalog
 
@@ -507,7 +505,7 @@ ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น
 | UC-07 (Import) | **<<extend>>** UC-05 (Custom Preset) | เมื่อผู้ใช้มี JSON file |
 | UC-14 (Export Script) | **<<extend>>** UC-11 (View Backup) | เมื่อผู้ใช้ต้องการ manual rollback script |
 
-> **หมายเหตุ:** เอกสาร `docs/se-academic/09-use-case-catalog.md` มี Use Case Description แบบ fully-dressed ครบทั้ง 5 flows หลัก (UC-01, UC-03, UC-08, UC-12, UC-15) พร้อม Activity Diagram ด้านล่างนี้เลือกแสดง 3 flows สำคัญที่สุด
+> **หมายเหตู:** Use Case Description แบบ fully-dressed ครบทั้ง 5 flows หลัก (UC-01, UC-03, UC-08, UC-12, UC-15) พร้อม Activity Diagram ด้านล่างนี้เลือกแสดง 3 flows สำคัญที่สุด
 
 ### UC-01: Apply Optimization Profile
 
@@ -541,7 +539,6 @@ ClutchG มีทั้งหมด **16 Use Cases** จำแนกเป็น
 ### 6.4 Quality Gateway — Fit Criteria Validation
 
 > **อ้างอิงทฤษฎี:** SE 721 — Requirements Validation (7 Quality Checks)
-> **แหล่งข้อมูล:** `docs/se-academic/08-requirements-analysis.md` Section 2.6
 
 การประกัน คุณภาพ requirements ใช้ **Quality Gateway** ตรวจสอบ 7 ด้านตามที่ SE 721 กำหนด:
 
