@@ -114,12 +114,17 @@ class BatchExecutor:
         output_lines: list = []
         error_lines: list = []
         try:
+            si = subprocess.STARTUPINFO()
+            si.dwFlags = subprocess.STARTF_USESHOWWINDOW
+            si.wShowWindow = subprocess.SW_HIDE
+
             self.process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 creationflags=subprocess.CREATE_NEW_CONSOLE,
+                startupinfo=si,
             )
 
             # Read output in real-time

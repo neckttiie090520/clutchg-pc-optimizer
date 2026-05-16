@@ -42,7 +42,7 @@ class SettingsView(ctk.CTkFrame):
             "check_updates_desc": "Automatically check for new versions on startup",
             "about": "About",
             "about_tagline": "A Windows optimizer built for gamers who want real performance gains, not snake oil.",
-            "about_version": "v1.0.1 · Windows 10/11",
+            "about_version": "v1.0.2 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
         },
         "th": {
@@ -59,7 +59,7 @@ class SettingsView(ctk.CTkFrame):
             "check_updates_desc": "ตรวจสอบเวอร์ชันใหม่อัตโนมัติตอนเปิดโปรแกรม",
             "about": "About",
             "about_tagline": "โปรแกรม Optimize Windows สำหรับเกมเมอร์ที่ต้องการผลลัพธ์จริง ไม่ใช่ snake oil",
-            "about_version": "v1.0.1 · Windows 10/11",
+            "about_version": "v1.0.2 · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
         },
     }
