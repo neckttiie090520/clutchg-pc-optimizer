@@ -238,6 +238,50 @@ goto :eof
 
 ---
 
+## Branching Strategy (2-branch)
+
+```
+develop  ← ทำงานทุกอย่างที่นี่ (dev + test)
+   │
+   └──→ PR → main  ← production + release only
+```
+
+| Branch | Purpose | Rules |
+|--------|---------|-------|
+| `develop` | ทำงาน, dev, test | push ได้ตรง, commit ตรง, ไม่ต้อง PR |
+| `main` | production, release | **ต้องผ่าน PR** จาก develop, มี branch protection (1 approval), ห้าม force push |
+
+### Workflow
+1. **ทำงานบน `develop`**: commit, push, ทดสอบได้ตรง
+2. **เมื่อพร้อม release**: สร้าง PR จาก `develop` → `main`, review, merge
+3. **หลัง merge**: สร้าง GitHub Release พร้อม tag (`v1.x.x`)
+4. **Hotfix**: สร้าง branch จาก `main`, fix, merge กลับ, merge เข้า `develop` ด้วย
+
+### Commands
+```bash
+# เริ่มงาน
+git checkout develop
+git pull origin develop
+
+# ทำงานเสร็จ → push
+git add . && git commit -m "ข้อความ"
+git push origin develop
+
+# พร้อม release → สร้าง PR
+gh pr create --base main --head develop --title "Release v1.x.x"
+
+# Hotfix (กรณีฉุกเฉิน)
+git checkout main
+git checkout -b hotfix/description
+# ... fix ...
+git push origin hotfix/description
+gh pr create --base main --title "Hotfix: description"
+# หลัง merge → sync กลับ develop
+git checkout develop && git merge main && git push origin develop
+```
+
+---
+
 ## Agent Change Strategy
 
 | Area | Rule |

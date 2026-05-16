@@ -17,7 +17,7 @@ on:
       - 'clutchg/**'
       - '.github/workflows/**'
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     paths:
       - 'clutchg/**'
       - '.github/workflows/**'
