@@ -276,7 +276,6 @@ Start──►│ 1.1  │────►│ 1.2  │────►│ 1.3  │
 | **EAC** | BAC / CPI | **1,294 hours** | จะเสร็จใต้ budget |
 | **TCPI** | (BAC − EV) / (BAC − AC) | **0.65** | เหลือน้อย ทำสบาย |
 
-**ดูรายละเอียด EVM Phase-by-Phase Tracking ที่ `docs/se-academic/14-risk-register-evm.md`**
 **ดูรายละเอียด Progress Status ที่ `08-Progress-Status-Record.md`**
 
 ---
@@ -364,7 +363,7 @@ Impact ↑
 
 - Resolved: 8/10 (80%) | Monitoring: 2/10 (20%) | Open: 0/10 (0%)
 - ใช้กลยุทธ์ AMTA: Avoid (1), Mitigate (8), Accept (1)
-- ดูรายละเอียดที่ `docs/se-academic/14-risk-register-evm.md`
+- ดูรายละเอียดที่ SE 781 — Risk Register & EVM Tracking
 
 ---
 
@@ -420,7 +419,6 @@ Impact ↑
 ## 13. PMBOK Process Groups Mapping
 
 > **อ้างอิง:** SE 781 — PMBOK 5 Process Groups (I-P-E-M&C-C) ประยุกต์กับ ClutchG
-> **รายละเอียดเพิ่มเติม:** `docs/se-academic/13-project-management.md` Section 1.2
 
 ### 13.1 Initiating
 

@@ -806,7 +806,7 @@ ClutchG ใช้หลัก **Defense in Depth** — มีกลไกป้�
 
 ## 9. สรุปการประเมินสถาปัตยกรรม (Architecture Evaluation)
 
-> **อ้างอิง:** `docs/se-academic/02-architecture-evaluation.md` — วิเคราะห์ตามเกณฑ์ SE 701
+> **อ้างอิง:** SE 701 — Architecture Evaluation Criteria (coupling, cohesion, layering)
 
 ### 7.1 จุดแข็ง
 

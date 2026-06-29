@@ -2,8 +2,8 @@
 
 > All notable changes to the ClutchG PC Optimizer project.
 >
-> Period: 13 March 2026 — 10 April 2026
-> Commits: 86 (initial commit `c48a8e3` through `f24f7a1`)
+> Period: 13 March 2026 — 16 May 2026
+> Commits: 90 (initial commit `c48a8e3` through `2ad569f`)
 
 ---
 
@@ -20,7 +20,8 @@
 9. [Phase 9 — Thesis Diagrams (18 Diagrams)](#phase-9--thesis-diagrams-18-diagrams)
 10. [Phase 10 — ISO 29110 Academic Documents](#phase-10--iso-29110-academic-documents)
 11. [Phase 11 — Recommendation System Refactor](#phase-11--recommendation-system-refactor)
-12. [Appendix A — Commit Log](#appendix-a--commit-log)
+12. [Phase 12 — V&V Exam Prep & Build Fix](#phase-12--vv-exam-prep--build-fix)
+13. [Appendix A — Commit Log](#appendix-a--commit-log)
 
 ---
 
@@ -350,9 +351,106 @@ Created unified recommendation service to replace dual-authority pattern.
 
 ---
 
+## Phase 12 — V&V Exam Prep & Build Fix
+
+**Date:** 16 May 2026
+**Commits:** `99b9728`, `a4a5116`, `2ad569f` + 2 releases (v1.0.1, v1.0.2)
+
+### 12.1 ISO 29110 Cross-Check & Version Consistency (`99b9728`)
+
+Fixed version inconsistencies across 6 ISO documents:
+
+| File | Before | After |
+|------|--------|-------|
+| `05-Test-Record.md` | v2.2 (header) | v2.3 |
+| `06-Traceability-Record.md` | v2.3 | v2.4 |
+| `07-Change-Request.md` | v2.2 | v2.3 |
+| `08-Progress-Status-Record.md` | v3.3 | v3.4 |
+| `09-Configuration-Plan.md` | v2.2 | v2.3 (stale cross-refs fixed) |
+| `12-Batch-VV-Test-Plan.md` | v1.0 | v1.1 |
+
+All cross-references between documents now consistent (SRS v3.3, SDD v3.4, Test Plan v3.2, Test Record v2.3).
+
+### 12.2 Build Bug Fix — Batch Scripts Not Executing (v1.0.1 → v1.0.2)
+
+**Root cause:** `batch_executor.py` used `subprocess.CREATE_NO_WINDOW` flag, which prevents `cmd.exe` from having any console in a PyInstaller `console=False` (windowed) build. Batch scripts silently failed.
+
+**Fix v1.0.1** — Changed to `CREATE_NEW_CONSOLE` (console visible but working)
+**Fix v1.0.2** — Changed to `CREATE_NEW_CONSOLE` + `STARTUPINFO(SW_HIDE)` (console created but hidden, output captured via pipes → displayed in existing `ExecutionDialog`)
+
+| File | Change |
+|------|--------|
+| `clutchg/src/core/batch_executor.py` | `CREATE_NO_WINDOW` → `CREATE_NEW_CONSOLE` + `SW_HIDE` |
+| `clutchg/src/__init__.py` | Version 1.0.0 → 1.0.2 |
+| `clutchg/version_info.txt` | FileVersion/ProductVersion → 1.0.2 |
+| `clutchg/src/gui/views/settings_minimal.py` | About version → v1.0.2 |
+| `clutchg/src/core/config.py` | Default config version → 1.0.2 |
+| `clutchg/build.py` | README version → v1.0.2 |
+| `clutchg/installer/ClutchG.iss` | AppVersion → 1.0.2 |
+
+**Releases:** [v1.0.1](https://github.com/neckttiie090520/clutchg-pc-optimizer/releases/tag/v1.0.1), [v1.0.2](https://github.com/neckttiie090520/clutchg-pc-optimizer/releases/tag/v1.0.2)
+
+### 12.3 Branching Strategy — develop/main (`a4a5116`)
+
+- Created `develop` branch for dev/test work
+- Branch protection on `main`: requires PR + 1 approval, no force push
+- Updated `AGENTS.md` with 2-branch workflow documentation
+- CI workflow (`.github/workflows/ci.yml`) updated to trigger on both branches
+
+```
+develop  ← dev + test (push directly)
+   │
+   └──→ PR → main  ← production (requires approval)
+```
+
+### 12.4 V&V Exam Prep — Test Plan Enrichment (`2ad569f`)
+
+Added missing test design techniques for SE 725 V&V exam defense:
+
+**Added §6.1.5 State Transition Testing:**
+- 16-row state transition table derived from Tweak Lifecycle State Machine Diagram (Appendix A §8)
+- 5 test cases covering: valid transitions, invalid transitions, guard conditions
+- References 11 states: Registered → Compatible → Selected → Validating → Applying → Applied → RollingBack → Reverted (with error branches to Incompatible, Failed, RollbackFailed)
+
+**Added Condition Coverage worked example in §6.2.1:**
+- `if admin and scripts_exist and detection_done` compound boolean example
+- Shows TTT/FFF minimum test cases vs Branch Coverage
+- Comparison table: Statement < Branch < Condition < Path (with TC counts)
+
+**Updated §6.3 summary:** 71 → 78 example test cases (added State Transition 5 + Condition Coverage 2)
+
+**Removed dangling `docs/se-academic/` references** — 14 references across 5 ISO docs:
+- `01-Project-Plan.md` (3 refs), `02-SRS.md` (6 refs), `03-SDD.md` (1 ref), `04-Test-Plan.md` (2 refs), `05-Test-Record.md` (1 ref)
+- All replaced with inline course references (SE 701/702/721/725/781)
+
+**Version:** Test Plan v3.2 → v3.3
+
+### 12.5 V&V Coverage Audit Summary
+
+| SE 725 Concept | Status | Where Documented |
+|---------------|--------|-----------------|
+| V&V Distinction | COVERED | Test Plan §1.4 |
+| 6 Testing Levels (U-I-F-S-A-R) | COVERED | Test Plan §2.4 |
+| Equivalence Partitioning | COVERED | Test Plan §6.1.1 |
+| Boundary Value Analysis | COVERED | Test Plan §6.1.2 |
+| Decision Table Testing | COVERED | Test Plan §6.1.3 |
+| Use Case Testing | COVERED | Test Plan §6.1.4 |
+| State Transition Testing | COVERED | Test Plan §6.1.5 (new) |
+| Statement & Branch Coverage | COVERED | Test Plan §6.2.1 |
+| Condition Coverage | COVERED | Test Plan §6.2.1 (new) |
+| Path Coverage | COVERED | Test Plan §6.2.2 |
+| Coverage Hierarchy | COVERED | Test Plan §6.4 |
+| DRE (100%) | COVERED | Test Plan §6.4 |
+| Defect Density (13.6/KLOC) | COVERED | Test Record §6 |
+| CoSQ (542h) | COVERED | Test Record §6 |
+| QA vs QC | COVERED | Test Record §6 |
+| Traceability (89.9%) | COVERED | Traceability Record |
+
+---
+
 ## Appendix A — Commit Log
 
-Full chronological commit history (83 commits):
+Full chronological commit history (90 commits):
 
 ```
 c48a8e3  2026-03-13  Initial commit: ClutchG PC Optimizer v2.0
@@ -444,6 +542,9 @@ b93e59e  2026-04-06  add SE academic content to 9 ISO 29110 documents
 cfb02e1  2026-04-10  refactor recommendation system: unified recommend_preset() + benchmark_matched gate
 6fd00b3  2026-04-10  update diagram 15 (new recommendation flow) + add 16b tech stack + fix README gallery
 f24f7a1  2026-04-10  add CHANGELOG + update mapping.md + add ISO doc 11 (PC Score System)
+99b9728  2026-05-16  fix ISO doc version inconsistencies across 6 documents
+a4a5116  2026-05-16  fix build bug (batch executor) + v1.0.2 release + branching strategy
+2ad569f  2026-05-16  เพิ่ม State Transition Testing + Condition Coverage ใน Test Plan, ลบ se-academic refs
 ```
 
 ---
@@ -452,15 +553,13 @@ f24f7a1  2026-04-10  add CHANGELOG + update mapping.md + add ISO doc 11 (PC Scor
 
 | Metric | Value |
 |--------|-------|
-| Total commits | 86 |
-| Date range | 13 Mar — 10 Apr 2026 (29 days) |
-| Files in initial commit | 229 |
-| Lines in initial commit | ~77,000 |
-| Test baseline (initial) | ~300 tests |
-| Test baseline (current) | 477 passed, 64 skipped |
+| Total commits | 90 |
+| Date range | 13 Mar 2026 — 16 May 2026 (65 days) |
+| Latest version | v1.0.2 |
+| Test baseline | 477 passed, 64 skipped |
 | Diagrams created | 18 (draw.io + PNG) |
-| ISO 29110 documents | 11 |
+| ISO 29110 documents | 12 |
 | Views redesigned | 8/8 (100%) |
-| Icon migrations | 2 (Segoe MDL2 → Material Symbols → Tabler) |
-| Theme changes | 1 (Tokyo Night → Sun Valley/Windows 11 dark) |
-| Font changes | 1 (Inter/Tahoma → Figtree bundled) |
+| Test design techniques documented | 8 (EP, BVA, Decision Table, Use Case, State Transition, Branch, Condition, Path) |
+| Releases | 3 (v1.0.0, v1.0.1, v1.0.2) |
+| Branches | 2 (develop + main with protection) |

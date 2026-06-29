@@ -2,13 +2,18 @@
 Auto-Update System for ClutchG
 
 Checks GitHub Releases API for new versions, downloads the installer,
-and launches it. Uses only stdlib (urllib) — no external dependencies.
+launches it, and **restarts the app automatically** after install completes.
+
+Uses only stdlib (urllib, winreg, subprocess) — no external dependencies.
 
 Flow:
     1. check_for_update() → queries GitHub API for latest release
     2. If newer version found → returns UpdateInfo
     3. download_update() → downloads .exe to temp dir with progress callback
-    4. install_update() → launches Inno Setup installer and exits app
+    4. install_update() → launches Inno Setup installer, spawns a detached
+       relauncher script, then exits the app
+    5. Relauncher waits for the installer to finish, locates the new
+       ClutchG.exe (via registry + filesystem fallbacks), and launches it
 
 Rate limiting:
     - Checks at most once per COOLDOWN_HOURS (default 6)
@@ -44,6 +49,12 @@ API_URL = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/releases/l
 ASSET_PATTERN = ".exe"  # Match installer asset by extension
 COOLDOWN_HOURS = 6  # Minimum hours between update checks
 REQUEST_TIMEOUT = 15  # Seconds for API/download timeout
+
+# Inno Setup identity — used to locate install path after update
+# Mirrors installer/ClutchG.iss AppId (without surrounding braces here)
+INNO_APP_ID = "{B4C9E2A1-3D7F-4E8B-A5C0-2F1D6E9B0374}"
+APP_EXE_NAME = "ClutchG.exe"
+APP_DIR_NAME = "ClutchG"
 
 
 # ============================================================================
@@ -103,11 +114,13 @@ def parse_version(version_str: str) -> tuple:
     Handles: "1.0.0", "v1.0.0", "1.2", "1.2.3.4"
 
     Args:
-        version_str: Version string to parse
+        version_str: Version string to parse (None is tolerated)
 
     Returns:
-        Tuple of integers for comparison
+        Tuple of integers for comparison; (0,) on parse failure
     """
+    if version_str is None:
+        return (0,)
     # Strip leading 'v' or 'V'
     cleaned = version_str.strip().lstrip("vV")
     try:
@@ -326,51 +339,259 @@ class UpdateChecker:
         """Cancel an in-progress download (thread-safe)."""
         self._cancel_download = True
 
-    def install_update(self, installer_path: Path, silent: bool = False) -> None:
+    def install_update(self, installer_path: Path, silent: bool = False) -> bool:
         """
-        Launch the downloaded installer and exit the app.
+        Launch the downloaded installer, restart the app afterwards.
+
+        Spawns a detached relauncher script that polls by process name
+        (not PID — robust against UAC elevation which respawns the
+        installer with a new PID), then starts the newly installed
+        ClutchG.exe from the install location (registry-backed lookup
+        with Program Files and per-user fallbacks).
 
         For Inno Setup installers:
             - No flags → normal interactive installer
             - /SILENT → minimal UI, shows progress bar
             - /VERYSILENT → completely hidden
             - /CLOSEAPPLICATIONS → auto-close running instance
+            - /RESTARTAPPLICATIONS → ask installer to restart closed apps
 
         Args:
             installer_path: Path to the downloaded .exe
             silent: If True, run with /SILENT flag
+
+        Returns:
+            True if installer was launched successfully, False on failure.
+            The caller can use this to revert UI state if launch fails.
         """
         if not installer_path.exists():
             logger.error(f"Installer not found: {installer_path}")
-            return
+            return False
 
         cmd = [str(installer_path)]
         if silent:
             cmd.append("/SILENT")
-        # Always ask Inno Setup to close the running app
+        # Ask Inno Setup to close the running app and restart it after install
         cmd.append("/CLOSEAPPLICATIONS")
+        cmd.append("/RESTARTAPPLICATIONS")
 
         logger.info(f"Launching installer: {' '.join(cmd)}")
 
         try:
-            # Detach the installer process so it survives our exit
-            # CREATE_NEW_PROCESS_GROUP on Windows ensures this
+            # Detach the installer so it survives our exit
             creation_flags = 0
             if sys.platform == "win32":
                 creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
-            subprocess.Popen(
+            proc = subprocess.Popen(
                 cmd,
                 creationflags=creation_flags,
                 close_fds=True,
             )
+            logger.info(f"Installer started, launcher PID={proc.pid}")
+
+            # Spawn a detached relauncher. We pass the installer FILENAME
+            # (not PID) so the relauncher can survive UAC elevation —
+            # elevation respawns the installer with a new PID, but the
+            # process name stays the same.
+            self._spawn_relauncher(installer_path.name)
+
         except Exception as exc:
             logger.error(f"Failed to launch installer: {exc}")
+            return False
+
+        # Give the installer a moment to start, then exit.
+        # The relauncher (detached cmd) will outlive us and relaunch
+        # ClutchG.exe once the installer process disappears.
+        logger.info("Exiting app for update installation; relauncher will restart ClutchG")
+        sys.exit(0)
+
+    def _spawn_relauncher(self, installer_name: str) -> None:
+        """
+        Write a temp .cmd file that waits for the installer to finish,
+        then launches the new ClutchG.exe. Spawn it detached so it
+        survives our sys.exit().
+
+        The script self-deletes after running.
+
+        Args:
+            installer_name: Filename of the installer (e.g. ClutchG-Setup-1.0.2.exe).
+                Used to poll by name — robust against UAC elevation.
+        """
+        try:
+            script_path = self._create_relauncher_script(installer_name)
+        except Exception as exc:
+            logger.warning(f"Could not create relauncher script: {exc}")
             return
 
-        # Give the installer a moment to start, then exit
-        logger.info("Exiting app for update installation...")
-        sys.exit(0)
+        try:
+            # DETACHED_PROCESS (0x00000008) + CREATE_NEW_PROCESS_GROUP (0x00000200)
+            # ensures the cmd window stays hidden and survives parent exit
+            creation_flags = 0
+            if sys.platform == "win32":
+                creation_flags = (
+                    subprocess.DETACHED_PROCESS
+                    | subprocess.CREATE_NEW_PROCESS_GROUP
+                )
+
+            subprocess.Popen(
+                ["cmd.exe", "/c", str(script_path)],
+                creationflags=creation_flags,
+                close_fds=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            logger.info(f"Relauncher spawned: {script_path}")
+        except Exception as exc:
+            logger.warning(f"Could not spawn relauncher: {exc}")
+
+    @staticmethod
+    def _create_relauncher_script(installer_name: str) -> Path:
+        """
+        Generate the .cmd relauncher script in the system temp dir.
+
+        Polling strategy:
+          1. Polls by process NAME (findstr ClutchG-Setup) instead of PID,
+             because UAC elevation respawns the installer with a new PID.
+          2. Has a 30-second startup window for the installer to appear
+             (handles slow UAC prompt response).
+          3. Has a 10-minute maximum wait (600s) before giving up.
+          4. After installer exits, waits 2s for file handles to release.
+          5. Locates ClutchG.exe via registry, then Program Files, then per-user.
+          6. Launches it via `start`.
+          7. Self-deletes.
+
+        Args:
+            installer_name: Filename of the installer (e.g. ClutchG-Setup-1.0.2.exe).
+                The "ClutchG-Setup" prefix is used for name-based polling.
+
+        Returns:
+            Path to the generated .cmd script.
+        """
+        download_dir = Path(tempfile.gettempdir()) / "clutchg_updates"
+        download_dir.mkdir(exist_ok=True)
+        # Stable filename so we don't accumulate copies across runs
+        script_path = download_dir / "relaunch.cmd"
+
+        uninstall_key_hklm = (
+            rf"HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\{INNO_APP_ID}_is1"
+        )
+        uninstall_key_hkcu = (
+            rf"HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\{INNO_APP_ID}_is1"
+        )
+
+        script = f"""@echo off
+:: ClutchG auto-update relauncher (auto-generated; self-deletes)
+:: Polls by installer process name (NOT PID) so it survives UAC elevation.
+:: UAC re-spawns the elevated installer with a new PID, but the process
+:: name stays the same.
+setlocal enabledelayedexpansion
+
+:: Phase 1: wait up to 30s for installer to appear in process list.
+:: (Handles UAC prompt delay.)
+set "STARTUP_WAIT=0"
+:startup_loop
+tasklist 2>nul | findstr /i "ClutchG-Setup" >nul
+if errorlevel 1 (
+    set /a STARTUP_WAIT+=1
+    if !STARTUP_WAIT! geq 30 goto launch
+    timeout /t 1 /nobreak >nul
+    goto startup_loop
+)
+
+:: Phase 2: installer found. Wait for it to finish (max 10 minutes = 600s).
+set "INSTALL_WAIT=0"
+:install_loop
+tasklist 2>nul | findstr /i "ClutchG-Setup" >nul
+if not errorlevel 1 (
+    set /a INSTALL_WAIT+=1
+    if !INSTALL_WAIT! geq 600 goto launch
+    timeout /t 1 /nobreak >nul
+    goto install_loop
+)
+
+:launch
+:: Installer finished - give it a moment to release file handles
+timeout /t 2 /nobreak >nul
+
+:: Locate ClutchG.exe
+set "CLUTCHG_EXE="
+
+:: 1. Try registry InstallLocation (admin install: HKLM)
+for /f "tokens=2,*" %%a in ('reg query "{uninstall_key_hklm}" /v InstallLocation 2^>nul ^| findstr InstallLocation') do (
+    if exist "%%b{APP_EXE_NAME}" set "CLUTCHG_EXE=%%b{APP_EXE_NAME}"
+)
+
+:: 2. Try HKCU (per-user install)
+if not defined CLUTCHG_EXE (
+    for /f "tokens=2,*" %%a in ('reg query "{uninstall_key_hkcu}" /v InstallLocation 2^>nul ^| findstr InstallLocation') do (
+        if exist "%%b{APP_EXE_NAME}" set "CLUTCHG_EXE=%%b{APP_EXE_NAME}"
+    )
+)
+
+:: 3. Default Program Files
+if not defined CLUTCHG_EXE if exist "%ProgramFiles%\\{APP_DIR_NAME}\\{APP_EXE_NAME}" set "CLUTCHG_EXE=%ProgramFiles%\\{APP_DIR_NAME}\\{APP_EXE_NAME}"
+if not defined CLUTCHG_EXE if exist "%ProgramFiles(x86)%\\{APP_DIR_NAME}\\{APP_EXE_NAME}" set "CLUTCHG_EXE=%ProgramFiles(x86)%\\{APP_DIR_NAME}\\{APP_EXE_NAME}"
+
+:: 4. Per-user Programs
+if not defined CLUTCHG_EXE if exist "%LOCALAPPDATA%\\Programs\\{APP_DIR_NAME}\\{APP_EXE_NAME}" set "CLUTCHG_EXE=%LOCALAPPDATA%\\Programs\\{APP_DIR_NAME}\\{APP_EXE_NAME}"
+
+:: Launch if found
+if defined CLUTCHG_EXE (
+    start "" "%CLUTCHG_EXE%"
+)
+
+:: Self-delete
+endlocal
+(del "%~f0") 2>nul
+"""
+        script_path.write_text(script, encoding="ascii")
+        return script_path
+
+    @staticmethod
+    def find_installed_clutchg_exe() -> Optional[Path]:
+        """
+        Locate the installed ClutchG.exe on this machine.
+
+        Lookup order:
+          1. HKLM uninstall key InstallLocation (admin install)
+          2. HKCU uninstall key InstallLocation (per-user install)
+          3. Default Program Files paths
+          4. %LOCALAPPDATA%\\Programs\\ClutchG
+
+        Returns:
+            Path to ClutchG.exe if found, None otherwise.
+        """
+        import winreg
+
+        # 1 & 2: registry
+        for hive, root in (
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+            (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Uninstall"),
+        ):
+            key_path = f"{root}\\{INNO_APP_ID}_is1"
+            try:
+                with winreg.OpenKey(hive, key_path) as key:
+                    install_loc, _ = winreg.QueryValueEx(key, "InstallLocation")
+                    if install_loc:
+                        candidate = Path(install_loc) / APP_EXE_NAME
+                        if candidate.exists():
+                            return candidate
+            except OSError:
+                continue
+
+        # 3 & 4: filesystem fallbacks
+        candidates = [
+            Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / APP_DIR_NAME / APP_EXE_NAME,
+            Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / APP_DIR_NAME / APP_EXE_NAME,
+            Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / APP_DIR_NAME / APP_EXE_NAME,
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+
+        return None
 
     # ── Private helpers ───────────────────────────────────────────────
 
@@ -529,6 +750,11 @@ class AsyncUpdateChecker:
         """Cancel an in-progress download."""
         self.checker.cancel_download()
 
-    def install(self, installer_path: Path, silent: bool = False):
-        """Launch installer and exit."""
-        self.checker.install_update(installer_path, silent=silent)
+    def install(self, installer_path: Path, silent: bool = False) -> bool:
+        """Launch installer and exit app.
+
+        Returns:
+            True if installer launched (app will exit shortly after),
+            False if launch failed. Caller should revert UI on False.
+        """
+        return self.checker.install_update(installer_path, silent=silent)

@@ -32,6 +32,8 @@ _ICON_CLOSE = "\ueb55"  # x
 _ICON_EXTERNAL = "\uea99"  # external-link
 _ICON_ROCKET = "\uec90"  # rocket
 _ICON_CHECK = "\uea67"  # circle-check
+_ICON_SPINNER = "\uf5a0"  # loader-2 (rotating)
+_ICON_INFO = "\ueab2"  # info-circle
 
 
 class UpdateDialog(ctk.CTkToplevel):
@@ -42,6 +44,7 @@ class UpdateDialog(ctk.CTkToplevel):
         - "notify": Shows version info and release notes
         - "downloading": Shows progress bar during download
         - "ready": Download complete, ready to install
+        - "installing": Installer is running, app will restart soon
         - "error": Download failed, offer retry
     """
 
@@ -332,7 +335,7 @@ class UpdateDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_frame,
-            text=f"{_ICON_ROCKET}  Install Now",
+            text=f"{_ICON_ROCKET}  Install & Restart",
             font=font("button"),
             fg_color=COLORS["accent"],
             hover_color=COLORS["accent_hover"],
@@ -341,6 +344,51 @@ class UpdateDialog(ctk.CTkToplevel):
             height=36,
             command=self._install_now,
         ).pack(side="right")
+
+    # ── State: Installing ────────────────────────────────────────────
+
+    def _build_installing_state(self):
+        """Build the 'installer is running, app will restart' UI."""
+        self._clear_content()
+
+        container = ctk.CTkFrame(self, fg_color="transparent")
+        container.pack(fill="both", expand=True, padx=24, pady=20)
+
+        # Spinner icon (static — Tk doesn't animate glyphs, but the rocket
+        # signals "restart coming")
+        ctk.CTkLabel(
+            container,
+            text=_ICON_ROCKET,
+            font=ctk.CTkFont(family=_ICON_FONT, size=48),
+            text_color=COLORS["accent"],
+        ).pack(pady=(SPACING["lg"], SPACING["sm"]))
+
+        ctk.CTkLabel(
+            container,
+            text="Installing Update",
+            font=font("h3"),
+            text_color=COLORS["text_primary"],
+        ).pack(pady=(0, SPACING["sm"]))
+
+        ctk.CTkLabel(
+            container,
+            text=(
+                "ClutchG is closing so the installer can replace files.\n"
+                "The app will restart automatically when the installer finishes."
+            ),
+            font=font("body_small"),
+            text_color=COLORS["text_secondary"],
+            justify="center",
+        ).pack(pady=(0, SPACING["md"]))
+
+        # Info banner: if the user has unsaved work, they have a moment
+        ctk.CTkLabel(
+            container,
+            text=f"{_ICON_INFO}  Closing in a moment...",
+            font=font("caption"),
+            text_color=COLORS["text_muted"],
+            justify="center",
+        ).pack(side="bottom", pady=(0, SPACING["sm"]))
 
     # ── State: Error ──────────────────────────────────────────────────
 
@@ -442,9 +490,41 @@ class UpdateDialog(ctk.CTkToplevel):
         self._on_close()
 
     def _install_now(self):
-        """Launch installer and exit app."""
-        if self._installer_path and hasattr(self.app, "_async_updater"):
-            self.app._async_updater.install(self._installer_path, silent=False)
+        """Switch to Installing state, then launch installer + relauncher."""
+        # Bail out cleanly if preconditions are missing
+        if not self._installer_path:
+            self._build_error_state(
+                "Installer file is missing.\n"
+                "Please download the update again."
+            )
+            return
+
+        if not hasattr(self.app, "_async_updater"):
+            self._build_error_state(
+                "Update system is not available.\n"
+                "Please install the update manually from the download folder."
+            )
+            return
+
+        # Show "Installing" state first so the user sees feedback before
+        # the installer closes us. update_idletasks forces immediate redraw.
+        self._build_installing_state()
+        self.update_idletasks()
+
+        # Defer the actual install call so the UI has a chance to paint.
+        # 300ms is enough for Tk to flush the new state to screen.
+        def _do_install():
+            # install() returns False if launch failed; in that case the
+            # app does NOT exit, so we need to revert the UI to error state.
+            ok = self.app._async_updater.install(self._installer_path, silent=False)
+            if not ok:
+                self._build_error_state(
+                    "Could not launch the installer.\n"
+                    "The downloaded file may be corrupted. "
+                    "Try downloading again."
+                )
+
+        self.after(300, _do_install)
 
     def _on_close(self):
         """Close the dialog."""
