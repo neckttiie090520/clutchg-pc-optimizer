@@ -357,8 +357,10 @@ class TestConfigSchemaValidation:
 
         validated = manager._validate_config(partial_config)
 
-        # Missing keys should have defaults
-        assert validated["version"] == "1.0.0"
+        # Missing keys should have defaults — read dynamically so the
+        # test does not break on every version bump
+        expected_defaults = manager.get_default_config()
+        assert validated["version"] == expected_defaults["version"]
         assert validated["theme"] == "modern"
         assert validated["auto_backup"] is True
 
