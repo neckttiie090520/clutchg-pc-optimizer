@@ -44,13 +44,23 @@ jobs:
             clutchg/requirements.txt
             clutchg/requirements-test.txt
 
-      # ---- Install Inno Setup ----
-      - name: Install Inno Setup 6
+      # ---- Install Inno Setup (if not preinstalled on runner) ----
+      - name: Ensure Inno Setup 6
         shell: pwsh
         run: |
-          choco install innosetup --version=6.4.3 -y --no-progress
-          # Verify ISCC is on PATH
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /? 2>&1 | Select-Object -First 1
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (Test-Path $iscc) {
+            $ver = (& $iscc /? 2>&1 | Select-String -Pattern "Inno Setup" | Select-Object -First 1)
+            Write-Output "Inno Setup already installed: $ver"
+          } else {
+            Write-Output "Installing Inno Setup via Chocolatey..."
+            choco install innosetup -y --no-progress
+          }
+          # Final sanity check
+          if (-not (Test-Path $iscc)) {
+            Write-Error "ISCC.exe not found at $iscc"
+            exit 1
+          }
 
       # ---- Install dependencies ----
       - name: Install runtime dependencies
