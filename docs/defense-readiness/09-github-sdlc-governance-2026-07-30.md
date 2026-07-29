@@ -76,6 +76,29 @@ Initial placement:
 
 Do not assign a due date until the researcher and advisor approve one.
 
+### 4.1 Idempotent setup utility
+
+The tracked utility `.github/tools/setup_github_project.py` prints the desired state without network mutation by default:
+
+```bash
+python .github/tools/setup_github_project.py
+```
+
+Run its offline tests with:
+
+```bash
+python -m unittest discover -s tests/unit -p "test_setup_github_project.py" -v
+```
+
+After browser authorization, reconcile the Project, fields, repository link, Issues #5–#11, and PR #12:
+
+```bash
+gh auth refresh -h github.com -s read:project,project
+python .github/tools/setup_github_project.py --apply
+```
+
+Apply mode reads the existing Project, fields, and items before each create/add operation. A repeated run adds only missing resources. If the token lacks Project scope, the first list operation fails before any mutation.
+
 ## 5. Branch and PR policy
 
 - Never push directly to `main`.
