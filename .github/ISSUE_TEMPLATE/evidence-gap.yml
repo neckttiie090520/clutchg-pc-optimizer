@@ -1,0 +1,61 @@
+name: Evidence or thesis gap
+description: Track a requirement, V&V, ISO 29110, or defense-readiness gap
+title: "[Evidence] "
+labels: ["type: evidence", "status: triage"]
+body:
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim or work product
+      description: Identify the requirement, thesis claim, diagram, test record, or ISO 29110 work product.
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current evidence and gap
+      description: State what is verified, historical, external, or missing. Include repository-relative references.
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence_state
+    attributes:
+      label: Evidence state
+      options:
+        - AUTOMATED_VERIFIED
+        - HISTORICAL_VERIFIED
+        - EXTERNAL_VERIFICATION_REQUIRED
+        - HUMAN_SIGN_OFF_REQUIRED
+    validations:
+      required: true
+  - type: dropdown
+    id: lifecycle
+    attributes:
+      label: SDLC / ISO 29110 area
+      options:
+        - Requirements
+        - Design
+        - Construction
+        - Integration
+        - Verification and validation
+        - Deployment and release
+        - Maintenance and change control
+        - Thesis and defense governance
+    validations:
+      required: true
+  - type: textarea
+    id: closure
+    attributes:
+      label: Closure evidence
+      description: Define the retained artifact, reviewer, and acceptance criteria required for Done.
+    validations:
+      required: true
+  - type: checkboxes
+    id: human
+    attributes:
+      label: Human responsibility
+      options:
+        - label: The owner and required human/external sign-off are identified.
+          required: true
+        - label: No unsupported result or participant value is proposed.
+          required: true
