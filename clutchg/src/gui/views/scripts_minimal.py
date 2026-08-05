@@ -23,9 +23,9 @@ from gui.style import font, bind_dynamic_wraplength
 from gui.components.glass_card import GlassCard
 from gui.components.enhanced_button import EnhancedButton
 from gui.components.execution_dialog import ExecutionDialog
-from gui.components.refined_dialog import show_confirmation
+from gui.components.refined_dialog import show_confirmation, show_info
 from core.tweak_registry import get_tweak_registry, Tweak, TWEAK_CATEGORIES
-from core.action_catalog import ActionCatalog, ActionDefinition
+from core.action_catalog import ActionCatalog, ActionDefinition, TweakExecutionCatalog
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -53,56 +53,6 @@ def get_risk_display(level: str) -> dict:
             "label": "High Risk",
         }
     return {"bg": COLORS["bg_card"], "fg": COLORS["text_secondary"], "label": "N/A"}
-
-
-# Preset definitions
-PRESET_INFO = {
-    "safe": {
-        "icon": ICON("verified_user"),
-        "title": "Safe",
-        "subtitle": "Evidence-based, fully reversible",
-        "fps": "+3-5 FPS",
-        "risk": "LOW",
-        "color": "#22C55E",
-        "dim": "#1a2e1f",
-        "desc": "Stable everyday tweaks. Zero risk of breaking anything. Good for most users.",
-        "restart": "No",
-        "risk_bar_pct": 0.15,
-        "services_disabled": "0",
-        "registry_changes": "4",
-        "bcdedit_changes": "0",
-    },
-    "competitive": {
-        "icon": ICON("speed"),
-        "title": "Competitive",
-        "subtitle": "Tuned for ranked play",
-        "fps": "+8-15 FPS",
-        "risk": "MEDIUM",
-        "color": "#F59E0B",
-        "dim": "#2e2510",
-        "desc": "Aggressive tuning for esports. Disables some background services. May need restart.",
-        "restart": "Maybe",
-        "risk_bar_pct": 0.50,
-        "services_disabled": "6",
-        "registry_changes": "12",
-        "bcdedit_changes": "2",
-    },
-    "extreme": {
-        "icon": ICON("local_fire_department"),
-        "title": "Extreme",
-        "subtitle": "Max squeeze, advanced users only",
-        "fps": "+15-25 FPS",
-        "risk": "HIGH",
-        "color": "#EF4444",
-        "dim": "#2e1616",
-        "desc": "Max performance. Strips system to bare minimum. Requires restart. Know what you're doing.",
-        "restart": "Yes",
-        "risk_bar_pct": 0.85,
-        "services_disabled": "14",
-        "registry_changes": "22",
-        "bcdedit_changes": "5",
-    },
-}
 
 
 class ScriptsView(ctk.CTkFrame):
@@ -272,7 +222,7 @@ class ScriptsView(ctk.CTkFrame):
             "quick_restart_yes": "Yes",
             "quick_restart_no": "No",
             "quick_backup_enabled": "Enabled",
-            "quick_backup_disabled": "Disabled",
+            "quick_backup_required": "Required",
             "quick_catalog_error": "Quick Actions unavailable due to catalog validation issues.",
             "quick_catalog_details": "Please review action catalog integrity before running actions.",
             "quick_link_confirm": "Open this trusted link?\n\n{url}",
@@ -307,7 +257,7 @@ class ScriptsView(ctk.CTkFrame):
             "quick_restart_yes": "Yes",
             "quick_restart_no": "No",
             "quick_backup_enabled": "Enabled",
-            "quick_backup_disabled": "Disabled",
+            "quick_backup_required": "Required",
             "quick_catalog_error": "Quick Actions unavailable due to catalog validation issues.",
             "quick_catalog_details": "Please review action catalog integrity before running actions.",
             "quick_link_confirm": "Open this trusted link?\n\n{url}",
@@ -325,6 +275,10 @@ class ScriptsView(ctk.CTkFrame):
         self.action_catalog = getattr(
             self.app, "action_catalog", None
         ) or ActionCatalog(self.registry)
+        self.execution_catalog = getattr(
+            self.app.profile_manager, "execution_catalog", None
+        ) or TweakExecutionCatalog(self.app.batch_scripts_dir)
+        self.selectable_tweak_ids = self.execution_catalog.standard_tweak_ids
         self.quick_actions_errors: List[str] = list(
             getattr(self.app, "action_catalog_errors", [])
         )
@@ -365,76 +319,63 @@ class ScriptsView(ctk.CTkFrame):
         return font("body", size=size, weight=weight)
 
     def _get_preset_info(self) -> dict:
-        """Get localized preset information with stats for profile cards.
-        NOTE: 'risk' key must be the canonical key ("LOW"/"MEDIUM"/"HIGH"),
-        NOT the display label — _create_preset_card looks it up in _get_risk_colors().
-        """
-        return {
-            "safe": {
-                "icon": ICON("verified_user"),
-                "title": self._ui("safe_title"),
-                "subtitle": self._ui("safe_subtitle"),
-                "fps": "+3-5 FPS",
-                "risk": "LOW",
-                "color": COLORS.get("success", "#22C55E"),
-                "dim": COLORS.get("success_dim", "#1a2e1f"),
-                "desc": self._ui("safe_desc"),
-                "restart": self._ui("restart_no"),
-                "risk_bar_pct": 0.15,
-                "benefits": [
-                    self._ui("safe_b1"),
-                    self._ui("safe_b2"),
-                    self._ui("safe_b3"),
-                    self._ui("safe_b4"),
-                ],
-                # Compare data
-                "services_disabled": 0,
-                "registry_changes": 4,
-                "bcdedit_changes": 0,
-            },
-            "competitive": {
-                "icon": ICON("speed"),
-                "title": self._ui("comp_title"),
-                "subtitle": self._ui("comp_subtitle"),
-                "fps": "+8-15 FPS",
-                "risk": "MEDIUM",
-                "color": COLORS.get("warning", "#F59E0B"),
-                "dim": COLORS.get("warning_dim", "#2e2510"),
-                "desc": self._ui("comp_desc"),
-                "restart": self._ui("restart_maybe"),
-                "risk_bar_pct": 0.50,
-                "benefits": [
-                    self._ui("comp_b1"),
-                    self._ui("comp_b2"),
-                    self._ui("comp_b3"),
-                    self._ui("comp_b4"),
-                ],
-                "services_disabled": 6,
-                "registry_changes": 12,
-                "bcdedit_changes": 2,
-            },
-            "extreme": {
-                "icon": ICON("local_fire_department"),
-                "title": self._ui("ext_title"),
-                "subtitle": self._ui("ext_subtitle"),
-                "fps": "+15-25 FPS",
-                "risk": "HIGH",
-                "color": COLORS.get("danger", "#EF4444"),
-                "dim": COLORS.get("danger_dim", "#2e1616"),
-                "desc": self._ui("ext_desc"),
-                "restart": self._ui("restart_yes"),
-                "risk_bar_pct": 0.85,
-                "benefits": [
-                    self._ui("ext_b1"),
-                    self._ui("ext_b2"),
-                    self._ui("ext_b3"),
-                    self._ui("ext_b4"),
-                ],
-                "services_disabled": 14,
-                "registry_changes": 22,
-                "bcdedit_changes": 5,
-            },
+        """Build profile cards from the canonical execution manifests."""
+        icons = {
+            "safe": ICON("verified_user"),
+            "competitive": ICON("speed"),
+            "extreme": ICON("local_fire_department"),
         }
+        colors = {
+            "LOW": (
+                COLORS.get("success", "#22C55E"),
+                COLORS.get("success_dim", "#1a2e1f"),
+                0.2,
+            ),
+            "MEDIUM": (
+                COLORS.get("warning", "#F59E0B"),
+                COLORS.get("warning_dim", "#2e2510"),
+                0.5,
+            ),
+            "HIGH": (
+                COLORS.get("danger", "#EF4444"),
+                COLORS.get("danger_dim", "#2e1616"),
+                0.85,
+            ),
+        }
+        info = {}
+        for key in ("safe", "competitive", "extreme"):
+            profile = self.app.profile_manager.get_profile(key.upper())
+            if profile is None:
+                continue
+            risk = profile.risk_level.value.upper()
+            color, dim, risk_bar_pct = colors[risk]
+            operations = list(profile.operations)
+            info[key] = {
+                "icon": icons[key],
+                "title": profile.name.title(),
+                "subtitle": "Audited module transaction",
+                "fps": "Measure on device",
+                "risk": risk,
+                "color": color,
+                "dim": dim,
+                "desc": profile.description,
+                "restart": (
+                    self._ui("restart_yes")
+                    if profile.requires_restart
+                    else self._ui("restart_no")
+                ),
+                "risk_bar_pct": risk_bar_pct,
+                "benefits": operations,
+                "operations": operations,
+                "services_disabled": (
+                    "Guarded" if "core/service-manager.bat" in profile.scripts else "No"
+                ),
+                "registry_changes": "Transaction scoped",
+                "bcdedit_changes": (
+                    "7 settings" if "core/bcdedit-manager.bat" in profile.scripts else "No"
+                ),
+            }
+        return info
 
     def _get_risk_colors(self) -> dict:
         """Get risk level colors from theme tokens (not hard-coded hex)."""
@@ -472,8 +413,11 @@ class ScriptsView(ctk.CTkFrame):
         ).grid(row=0, column=0, sticky="w")
 
         all_tweaks = self.registry.get_all_tweaks()
+        active_categories = {
+            tweak.category for tweak in all_tweaks if tweak.category in TWEAK_CATEGORIES
+        }
         stats_text = self._ui(
-            "stats", tweaks=len(all_tweaks), categories=len(TWEAK_CATEGORIES)
+            "stats", tweaks=len(all_tweaks), categories=len(active_categories)
         )
         ctk.CTkLabel(
             hdr,
@@ -851,8 +795,9 @@ class ScriptsView(ctk.CTkFrame):
         desc_lbl.pack(anchor="w", padx=SPACING["md"], fill="x")
         bind_dynamic_wraplength(card, desc_lbl)
 
+        tweak_label = "tweak" if summary.tweak_count == 1 else "tweaks"
         helper_text = action.helper_text or (
-            f"{summary.tweak_count} tweaks"
+            f"{summary.tweak_count} {tweak_label}"
             if action.kind == "tweak_pack"
             else "Trusted curated link"
         )
@@ -878,7 +823,7 @@ class ScriptsView(ctk.CTkFrame):
         if action.kind == "tweak_pack":
             ctk.CTkLabel(
                 meta,
-                text=f"  {summary.tweak_count} tweaks  ",
+                text=f"  {summary.tweak_count} {tweak_label}  ",
                 font=ctk.CTkFont(size=10),
                 fg_color=COLORS["bg_card"],
                 text_color=COLORS["text_secondary"],
@@ -909,7 +854,6 @@ class ScriptsView(ctk.CTkFrame):
 
     def _run_quick_tweak_pack(self, action: ActionDefinition):
         summary = self.action_catalog.summarize(action)
-        auto_backup = bool(self.app.config.get("auto_backup", True))
 
         confirm_body = self._ui("quick_confirm_body").format(
             title=action.title,
@@ -919,9 +863,7 @@ class ScriptsView(ctk.CTkFrame):
             restart=self._ui("quick_restart_yes")
             if summary.requires_restart
             else self._ui("quick_restart_no"),
-            backup=self._ui("quick_backup_enabled")
-            if auto_backup
-            else self._ui("quick_backup_disabled"),
+            backup=self._ui("quick_backup_required"),
         )
         risk = (
             summary.max_risk if summary.max_risk in ("LOW", "MEDIUM", "HIGH") else "LOW"
@@ -936,6 +878,7 @@ class ScriptsView(ctk.CTkFrame):
             return
 
         dialog = ExecutionDialog(self, action.title)
+        dialog.set_cancel_handler(self.app.profile_manager.cancel_current_execution)
         dialog.add_output(f"[Action] {action.title}")
         dialog.add_output(f"[Group] {action.group}")
         dialog.add_output(f"[Tweaks] {', '.join(action.tweak_ids)}")
@@ -957,8 +900,9 @@ class ScriptsView(ctk.CTkFrame):
                 list(action.tweak_ids),
                 on_output=dialog.add_output,
                 on_progress=dialog.set_progress,
+                cancellation_event=dialog.cancellation_event,
                 on_tweak_status=dialog.add_tweak_status,
-                auto_backup=auto_backup,
+                auto_backup=True,
             )
 
             # After snapshot + diff
@@ -1059,9 +1003,14 @@ class ScriptsView(ctk.CTkFrame):
         # Row 1: Hero card (recommended preset — full width)
         if rec_key in preset_info:
             hero_info = preset_info[rec_key]
-            hero_tweaks = self.registry.get_tweaks_for_preset(rec_key)
+            hero_operations = hero_info["operations"]
             hero_card = self._create_hero_card(
-                self.content, hero_info, hero_tweaks, rec_key, rec_reason, rec_score
+                self.content,
+                hero_info,
+                hero_operations,
+                rec_key,
+                rec_reason,
+                rec_score,
             )
             hero_card.grid(row=1, column=0, sticky="ew", pady=(0, 16))
 
@@ -1075,9 +1024,8 @@ class ScriptsView(ctk.CTkFrame):
 
             for col_idx, sec_key in enumerate(secondary_keys):
                 sec_info = preset_info[sec_key]
-                sec_tweaks = self.registry.get_tweaks_for_preset(sec_key)
                 sec_card = self._create_secondary_card(
-                    sec_grid, sec_info, sec_tweaks, sec_key
+                    sec_grid, sec_info, sec_info["operations"], sec_key
                 )
                 padx = (0, 8) if col_idx == 0 else (8, 0)
                 sec_card.grid(row=0, column=col_idx, sticky="nsew", padx=padx)
@@ -1090,7 +1038,7 @@ class ScriptsView(ctk.CTkFrame):
         self,
         parent,
         info: dict,
-        tweaks: List[Tweak],
+        operations: List[str],
         preset_key: str,
         reason: str,
         score: int = 0,
@@ -1205,7 +1153,7 @@ class ScriptsView(ctk.CTkFrame):
         restart_val = info.get("restart", "No")
         inline_stats = (
             f"{info['risk']}  \u2022  "
-            f"{len(tweaks)} {self._ui('stat_tweaks')}  \u2022  "
+            f"{len(operations)} {self._ui('stat_tweaks')}  \u2022  "
             f"{self._ui('stat_restart')}: {restart_val}"
         )
         ctk.CTkLabel(
@@ -1282,7 +1230,7 @@ class ScriptsView(ctk.CTkFrame):
         self,
         parent,
         info: dict,
-        tweaks: List[Tweak],
+        operations: List[str],
         preset_key: str,
     ):
         """Compact vertical card for non-recommended presets.
@@ -1374,7 +1322,7 @@ class ScriptsView(ctk.CTkFrame):
         # ── Row 3: Quick info line ──
         restart_val = info.get("restart", "No")
         quick_info = (
-            f"{len(tweaks)} {self._ui('stat_tweaks')}"
+            f"{len(operations)} {self._ui('stat_tweaks')}"
             f"  \u2022  {self._ui('stat_restart')}: {restart_val}"
         )
         ctk.CTkLabel(
@@ -1518,7 +1466,6 @@ class ScriptsView(ctk.CTkFrame):
         ]
 
         presets = list(preset_info.values())
-        preset_keys = list(preset_info.keys())
         for r_idx, (label, key) in enumerate(rows_data):
             # Each data row occupies 2 grid rows: content + separator
             grid_row = 2 + r_idx * 2
@@ -1542,8 +1489,7 @@ class ScriptsView(ctk.CTkFrame):
             # Value cells (cols 1-3) — weight 600 = bold
             for c_idx, p_info in enumerate(presets):
                 if key == "tweaks":
-                    tweaks = self.registry.get_tweaks_for_preset(preset_keys[c_idx])
-                    val = str(len(tweaks))
+                    val = str(len(p_info["operations"]))
                 elif key == "fps":
                     val = p_info["fps"]
                 else:
@@ -1604,7 +1550,7 @@ class ScriptsView(ctk.CTkFrame):
         self,
         parent,
         info: dict,
-        tweaks: List[Tweak],
+        operations: List[str],
         preset_key: str,
         is_recommended: bool,
         reason: str,
@@ -1701,7 +1647,7 @@ class ScriptsView(ctk.CTkFrame):
         stats_frame.grid_columnconfigure(1, weight=1)
 
         stats = [
-            (self._ui("stat_tweaks"), str(len(tweaks)), None, None),
+            (self._ui("stat_tweaks"), str(len(operations)), None, None),
             (
                 self._ui("stat_gain"),
                 info["fps"],
@@ -1831,10 +1777,18 @@ class ScriptsView(ctk.CTkFrame):
         return card
 
     def _show_preset_tweaks(self, preset_key: str):
-        """Switch to custom tab with preset's tweaks pre-selected"""
-        tweaks = self.registry.get_tweaks_for_preset(preset_key)
-        self.selected_tweaks = {t.id for t in tweaks}
-        self._switch_tab("custom")
+        """Show the canonical module operations for one profile."""
+        profile = self.app.profile_manager.get_profile(preset_key.upper())
+        if profile is None:
+            return
+        operations = "\n".join(f"• {operation}" for operation in profile.operations)
+        restart = "Yes" if profile.requires_restart else "No"
+        show_info(
+            self.app.window,
+            f"{profile.display_name} — Execution Manifest",
+            f"{profile.description}\n\n{operations}\n\nRestart required: {restart}\n"
+            "Recovery snapshot: Required",
+        )
 
     def _apply_preset(self, preset_key: str):
         """Apply a preset profile"""
@@ -1842,6 +1796,9 @@ class ScriptsView(ctk.CTkFrame):
             profile = self.app.profile_manager.get_profile(preset_key.upper())
             if profile:
                 dialog = ExecutionDialog(self, profile)
+                dialog.set_cancel_handler(
+                    self.app.profile_manager.cancel_current_execution
+                )
 
                 def run():
                     # Before snapshot
@@ -1859,6 +1816,7 @@ class ScriptsView(ctk.CTkFrame):
                         profile,
                         on_output=dialog.add_output,
                         on_progress=dialog.set_progress,
+                        cancellation_event=dialog.cancellation_event,
                     )
 
                     # After snapshot + diff
@@ -1972,8 +1930,9 @@ class ScriptsView(ctk.CTkFrame):
         bar.grid_columnconfigure(1, weight=1)
 
         count = len(self.selected_tweaks)
+        tweak_label = "tweak" if count == 1 else "tweaks"
         label_text = (
-            f"  {count} tweaks selected"
+            f"  {count} {tweak_label} selected"
             if count > 0
             else "  Select tweaks to apply optimizations"
         )
@@ -2036,7 +1995,7 @@ class ScriptsView(ctk.CTkFrame):
 
         self.apply_btn = ctk.CTkButton(
             btn_frame,
-            text=f"Apply {count} Tweaks",
+            text=f"Apply {count} {tweak_label.title()}",
             font=font("button"),
             fg_color=COLORS["accent"] if count > 0 else COLORS["bg_card"],
             text_color="#000000" if count > 0 else COLORS["text_tertiary"],
@@ -2629,7 +2588,10 @@ class ScriptsView(ctk.CTkFrame):
         [Toggle] Name                     Gain  -  Risk  -  Restart  Learn More >
         Click row → opens detail panel on the right.
         """
-        is_selected = tweak.id in self.selected_tweaks
+        is_selectable = tweak.id in self.selectable_tweak_ids
+        if not is_selectable:
+            self.selected_tweaks.discard(tweak.id)
+        is_selected = is_selectable and tweak.id in self.selected_tweaks
         is_detail_active = (
             hasattr(self, "detail_tweak_id") and self.detail_tweak_id == tweak.id
         )
@@ -2678,13 +2640,15 @@ class ScriptsView(ctk.CTkFrame):
             button_color=COLORS["text_secondary"],  # knob off
             button_hover_color=COLORS["text_primary"],  # knob hover
             command=lambda tid=tweak.id, v=var: self._toggle_tweak(tid, v),
+            state="normal" if is_selectable else "disabled",
         )
         toggle.grid(row=0, column=0, sticky="w", padx=(8, 4), pady=4)
 
         # Name — slightly heavier for visual balance on the left
+        display_name = tweak.name if is_selectable else f"{tweak.name}  ·  Learn Only"
         name_lbl = ctk.CTkLabel(
             row,
-            text=tweak.name,
+            text=display_name,
             font=ctk.CTkFont(size=13, weight="bold")
             if is_selected
             else ctk.CTkFont(size=13),
@@ -2778,7 +2742,12 @@ class ScriptsView(ctk.CTkFrame):
         return row
 
     def _toggle_tweak(self, tweak_id: str, var: ctk.BooleanVar):
-        """Toggle a tweak selection"""
+        """Toggle an audited tweak selection."""
+        if tweak_id not in self.selectable_tweak_ids:
+            var.set(False)
+            self.selected_tweaks.discard(tweak_id)
+            self._update_selection_count()
+            return
         if var.get():
             self.selected_tweaks.add(tweak_id)
         else:
@@ -2789,9 +2758,10 @@ class ScriptsView(ctk.CTkFrame):
     def _update_selection_count(self):
         """Update the selection count label and apply button"""
         count = len(self.selected_tweaks)
+        tweak_label = "tweak" if count == 1 else "tweaks"
         if hasattr(self, "selection_label"):
             label_text = (
-                f"  {count} tweaks selected"
+                f"  {count} {tweak_label} selected"
                 if count > 0
                 else "  Select tweaks to apply optimizations"
             )
@@ -2801,7 +2771,7 @@ class ScriptsView(ctk.CTkFrame):
             )
         if hasattr(self, "apply_btn"):
             self.apply_btn.configure(
-                text=f"Apply {count} Tweaks",
+                text=f"Apply {count} {tweak_label.title()}",
                 fg_color=COLORS["accent"] if count > 0 else COLORS["bg_card"],
                 text_color="#FFFFFF" if count > 0 else COLORS["text_tertiary"],
                 state="normal" if count > 0 else "disabled",
@@ -3077,8 +3047,15 @@ class ScriptsView(ctk.CTkFrame):
         if not self.selected_tweaks:
             return
         try:
-            ids = list(self.selected_tweaks)
+            ids = sorted(self.selected_tweaks & self.selectable_tweak_ids)
+            if not ids:
+                self.selected_tweaks.clear()
+                self._update_selection_count()
+                return
             dialog = ExecutionDialog(self, f"Custom ({len(ids)} tweaks)")
+            dialog.set_cancel_handler(
+                self.app.profile_manager.cancel_current_execution
+            )
 
             def run():
                 # Before snapshot
@@ -3096,6 +3073,7 @@ class ScriptsView(ctk.CTkFrame):
                     ids,
                     on_output=dialog.add_output,
                     on_progress=dialog.set_progress,
+                    cancellation_event=dialog.cancellation_event,
                     on_tweak_status=dialog.add_tweak_status,
                 )
 

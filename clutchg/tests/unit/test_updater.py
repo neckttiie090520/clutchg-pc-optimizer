@@ -196,49 +196,103 @@ class TestShouldCheck:
 @pytest.mark.unit
 class TestFindInstallerAsset:
 
-    def test_finds_exe_asset(self):
+    @staticmethod
+    def _asset(version="1.0.0", **overrides):
+        name = f"ClutchG-Setup-{version}.exe"
+        asset = {
+            "name": name,
+            "browser_download_url": (
+                "https://github.com/neckttiie090520/clutchg-pc-optimizer/"
+                f"releases/download/v{version}/{name}"
+            ),
+            "state": "uploaded",
+        }
+        asset.update(overrides)
+        return asset
+
+    def test_finds_exact_versioned_release_asset(self):
         assets = [
             {"name": "ClutchG-1.0.0.zip", "browser_download_url": "x"},
-            {"name": "ClutchG-Setup-1.0.0.exe", "browser_download_url": "y"},
+            self._asset(),
         ]
-        checker = UpdateChecker("1.0.0")
-        result = checker._find_installer_asset(assets)
-        assert result is not None
-        assert result["name"] == "ClutchG-Setup-1.0.0.exe"
+        result = UpdateChecker("1.0.0")._find_installer_asset(assets)
+        assert result == assets[1]
 
-    def test_returns_none_when_no_exe(self):
+    def test_returns_none_when_no_exact_installer(self):
         assets = [
             {"name": "source.zip", "browser_download_url": "x"},
             {"name": "checksums.txt", "browser_download_url": "y"},
         ]
-        checker = UpdateChecker("1.0.0")
-        assert checker._find_installer_asset(assets) is None
+        assert UpdateChecker("1.0.0")._find_installer_asset(assets) is None
 
     def test_empty_list_returns_none(self):
         assert UpdateChecker("1.0.0")._find_installer_asset([]) is None
 
-    def test_case_insensitive_extension(self):
-        assets = [{"name": "ClutchG.EXE", "browser_download_url": "x"}]
-        checker = UpdateChecker("1.0.0")
-        assert checker._find_installer_asset(assets) is not None
+    def test_rejects_case_or_filename_variants(self):
+        asset = self._asset(name="CLUTCHG-SETUP-1.0.0.EXE")
+        assert UpdateChecker("1.0.0")._find_installer_asset([asset]) is None
 
-    def test_picks_first_exe_when_multiple(self):
-        assets = [
-            {"name": "a.exe", "browser_download_url": "x"},
-            {"name": "b.exe", "browser_download_url": "y"},
-        ]
-        checker = UpdateChecker("1.0.0")
-        result = checker._find_installer_asset(assets)
-        assert result["name"] == "a.exe"
+    def test_rejects_duplicate_exact_assets(self):
+        asset = self._asset()
+        assert UpdateChecker("1.0.0")._find_installer_asset([asset, dict(asset)]) is None
 
-    def test_asset_missing_name_key_skipped(self):
-        assets = [
-            {"browser_download_url": "x"},  # no name
-            {"name": "good.exe", "browser_download_url": "y"},
-        ]
+    def test_rejects_wrong_version_or_host(self):
         checker = UpdateChecker("1.0.0")
-        result = checker._find_installer_asset(assets)
-        assert result["name"] == "good.exe"
+        assert checker._find_installer_asset([self._asset("1.1.0")]) is None
+        wrong_host = self._asset(
+            browser_download_url=(
+                "https://example.com/neckttiie090520/clutchg-pc-optimizer/"
+                "releases/download/v1.0.0/ClutchG-Setup-1.0.0.exe"
+            )
+        )
+        assert checker._find_installer_asset([wrong_host]) is None
+
+    def test_asset_missing_name_key_is_rejected(self):
+        assert UpdateChecker("1.0.0")._find_installer_asset(
+            [{"browser_download_url": "x"}]
+        ) is None
+
+
+@pytest.mark.unit
+class TestUniqueDownloadDirectory:
+
+    def test_each_download_uses_a_unique_attempt_directory(self, tmp_path):
+        payload = b"signed-installer-placeholder"
+        info = _make_info(
+            download_url=(
+                "https://github.com/neckttiie090520/clutchg-pc-optimizer/"
+                "releases/download/v1.1.0/ClutchG-Setup-1.1.0.exe"
+            ),
+            asset_size=len(payload),
+        )
+        attempt = 0
+
+        def _mkdtemp(prefix):
+            nonlocal attempt
+            attempt += 1
+            path = tmp_path / f"{prefix}{attempt}"
+            path.mkdir()
+            return str(path)
+
+        def _response():
+            response = MagicMock()
+            response.headers = {"Content-Length": str(len(payload))}
+            response.read.side_effect = [payload, b""]
+            response.__enter__.return_value = response
+            return response
+
+        checker = UpdateChecker("1.0.0")
+        with patch("core.updater.tempfile.mkdtemp", side_effect=_mkdtemp), patch(
+            "core.updater.urlopen", side_effect=[_response(), _response()]
+        ):
+            first = checker.download_update(info)
+            second = checker.download_update(info)
+
+        assert first is not None
+        assert second is not None
+        assert first.parent != second.parent
+        assert first.parent.name.startswith("clutchg-update-")
+        assert second.parent.name.startswith("clutchg-update-")
 
 
 # ---------------------------------------------------------------------------
@@ -345,149 +399,63 @@ class TestCleanupFile:
 @pytest.mark.unit
 class TestCreateRelauncherScript:
 
-    def test_returns_path_in_temp_dir(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
+    @staticmethod
+    def _create(tmp_path):
+        staging_dir = tmp_path / "update-test"
+        staging_dir.mkdir()
+        path = UpdateChecker._create_relauncher_script(
+            staging_dir, "ClutchG-Setup-1.0.2.exe"
         )
-        path = UpdateChecker._create_relauncher_script("ClutchG-Setup-1.0.2.exe")
-        assert path.parent == tmp_path / "clutchg_updates"
+        return staging_dir, path, path.read_text("ascii")
+
+    def test_returns_relauncher_inside_staging(self, tmp_path):
+        staging_dir, path, _ = self._create(tmp_path)
+        assert path == staging_dir / "relaunch.cmd"
         assert path.exists()
 
-    def test_filename_is_stable_relaunch_cmd(self, tmp_path, monkeypatch):
-        # Stable filename means we don't accumulate copies across runs
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        path = UpdateChecker._create_relauncher_script("ClutchG-Setup-1.0.2.exe")
-        assert path.name == "relaunch.cmd"
-
-    def test_script_uses_name_based_polling_not_pid(self, tmp_path, monkeypatch):
-        """Critical: must NOT poll by PID because UAC elevation respawns
-        the installer with a different PID. Must poll by name instead."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
-        # Polling uses findstr on process name
+    def test_script_uses_name_based_polling_not_pid(self, tmp_path):
+        _, _, content = self._create(tmp_path)
         assert "findstr" in content
-        assert "ClutchG-Setup" in content
-        # Must NOT use PID-based polling
+        assert "ClutchG-Setup-1.0.2.exe" in content
         assert "PID eq" not in content
         assert "INSTALLER_PID=" not in content
 
-    def test_script_has_startup_window_for_uac(self, tmp_path, monkeypatch):
-        """Must wait for installer to appear (handles slow UAC prompt)."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
+    def test_script_waits_with_bounded_timeouts(self, tmp_path):
+        _, _, content = self._create(tmp_path)
         assert ":startup_loop" in content
         assert "STARTUP_WAIT" in content
-
-    def test_script_has_install_wait_loop(self, tmp_path, monkeypatch):
-        """Must have a loop that waits for installer to finish."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
         assert ":install_loop" in content
         assert "INSTALL_WAIT" in content
-
-    def test_script_has_max_timeout(self, tmp_path, monkeypatch):
-        """Must not wait forever — 600s (10 min) cap."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
         assert "600" in content
 
-    def test_script_queries_uninstall_registry(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
+    def test_script_locates_and_launches_installed_app(self, tmp_path):
+        _, _, content = self._create(tmp_path)
         assert INNO_APP_ID in content
-        assert "InstallLocation" in content
-
-    def test_script_queries_both_hklm_and_hkcu(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
         assert "HKLM" in content
         assert "HKCU" in content
-
-    def test_script_launches_clutchg_exe(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
+        assert "InstallLocation" in content
+        assert "ProgramFiles" in content
+        assert "LOCALAPPDATA" in content
+        assert APP_DIR_NAME in content
         assert APP_EXE_NAME in content
         assert 'start ""' in content
 
-    def test_script_self_deletes(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
-        assert 'del "%~f0"' in content
+    def test_script_cleans_installer_script_and_staging_dir(self, tmp_path):
+        _, _, content = self._create(tmp_path)
+        assert 'del /f /q "%~dp0ClutchG-Setup-1.0.2.exe"' in content
+        assert 'del /f /q "%~f0"' in content
+        assert 'rd "%%~fD"' in content
 
-    def test_script_uses_program_files_fallback(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
-        assert "ProgramFiles" in content
-        assert APP_DIR_NAME in content
-
-    def test_script_uses_localappdata_fallback(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
-        assert "LOCALAPPDATA" in content
-
-    def test_script_is_ascii_only(self, tmp_path, monkeypatch):
-        """Must be ASCII — em dashes or other Unicode crash cmd.exe on
-        some locales and write_text(encoding='ascii')."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
-        # If this read succeeds, the file is ASCII-clean
-        assert len(content) > 100
-
-    def test_script_uses_delayed_expansion(self, tmp_path, monkeypatch):
-        """Must use enabledelayedexpansion for the counter variables."""
-        monkeypatch.setattr(
-            "core.updater.tempfile.gettempdir", lambda: str(tmp_path)
-        )
-        content = UpdateChecker._create_relauncher_script(
-            "ClutchG-Setup-1.0.2.exe"
-        ).read_text("ascii")
+    def test_script_is_ascii_and_uses_delayed_expansion(self, tmp_path):
+        _, path, content = self._create(tmp_path)
+        assert path.read_bytes().decode("ascii").replace("\r\n", "\n") == content
         assert "enabledelayedexpansion" in content
+
+    def test_rejects_missing_staging_directory(self, tmp_path):
+        with pytest.raises(ValueError):
+            UpdateChecker._create_relauncher_script(
+                tmp_path / "missing", "ClutchG-Setup-1.0.2.exe"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -606,30 +574,239 @@ class TestUpdateInfo:
 @pytest.mark.unit
 class TestInstallUpdateReturnContract:
 
+    @staticmethod
+    def _installer(tmp_path, version="1.1.0"):
+        download_dir = tmp_path / "clutchg-update-download"
+        download_dir.mkdir()
+        path = download_dir / f"ClutchG-Setup-{version}.exe"
+        path.write_bytes(b"signed installer bytes")
+        return path
+
     def test_returns_false_when_installer_missing(self, tmp_path):
         checker = UpdateChecker("1.0.0")
         result = checker.install_update(tmp_path / "nonexistent.exe")
         assert result is False
 
-    def test_returns_false_when_popen_raises(self, tmp_path):
+    def test_staging_failure_aborts_before_copy_or_launch(self, tmp_path):
         checker = UpdateChecker("1.0.0")
-        fake_exe = tmp_path / "fake.exe"
-        fake_exe.write_text("dummy")
+        installer = self._installer(tmp_path)
+        with patch.object(
+            checker, "_create_secure_staging_dir", return_value=None
+        ), patch("core.updater.shutil.copyfile") as copyfile, patch(
+            "core.updater.subprocess.Popen"
+        ) as popen:
+            assert checker.install_update(installer) is False
+        copyfile.assert_not_called()
+        popen.assert_not_called()
+        assert not installer.exists()
 
-        with patch("core.updater.subprocess.Popen", side_effect=OSError("denied")):
-            result = checker.install_update(fake_exe)
-
-        assert result is False
-
-    def test_does_not_spawn_relauncher_when_popen_fails(self, tmp_path):
+    def test_verifies_staged_copy_and_cleans_on_rejection(self, tmp_path):
         checker = UpdateChecker("1.0.0")
-        fake_exe = tmp_path / "fake.exe"
-        fake_exe.write_text("dummy")
+        installer = self._installer(tmp_path)
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        staged_installer = staging_dir / installer.name
+        with patch.object(
+            checker, "_create_secure_staging_dir", return_value=staging_dir
+        ), patch.object(
+            checker, "verify_installer", return_value=False
+        ) as verify, patch("core.updater.subprocess.Popen") as popen:
+            assert checker.install_update(installer) is False
+        verify.assert_called_once_with(staged_installer)
+        popen.assert_not_called()
+        assert not staging_dir.exists()
+        assert not installer.exists()
 
-        with patch("core.updater.subprocess.Popen", side_effect=OSError("denied")):
-            with patch.object(checker, "_spawn_relauncher") as mock_spawn:
-                checker.install_update(fake_exe)
-                mock_spawn.assert_not_called()
+    def test_final_fingerprint_mismatch_prevents_launch(self, tmp_path):
+        checker = UpdateChecker("1.0.0")
+        installer = self._installer(tmp_path)
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        relauncher = staging_dir / "relaunch.cmd"
+        with patch.object(
+            checker, "_create_secure_staging_dir", return_value=staging_dir
+        ), patch.object(
+            checker, "verify_installer", return_value=True
+        ), patch.object(
+            checker, "_sha256_file", side_effect=["same", "same", "changed"]
+        ), patch.object(
+            checker, "_create_relauncher_script", return_value=relauncher
+        ), patch("core.updater.subprocess.Popen") as popen:
+            assert checker.install_update(installer) is False
+        popen.assert_not_called()
+        assert not staging_dir.exists()
+        assert not installer.exists()
+
+    def test_handoff_failure_stops_started_staged_installer(self, tmp_path):
+        checker = UpdateChecker("1.0.0")
+        installer = self._installer(tmp_path)
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        relauncher = staging_dir / "relaunch.cmd"
+        process = MagicMock(pid=123)
+        with patch.object(
+            checker, "_create_secure_staging_dir", return_value=staging_dir
+        ), patch.object(checker, "verify_installer", return_value=True), patch.object(
+            checker, "_create_relauncher_script", return_value=relauncher
+        ), patch("core.updater.subprocess.Popen", return_value=process), patch.object(
+            checker, "_spawn_relauncher_script", return_value=False
+        ):
+            assert checker.install_update(installer) is False
+        process.terminate.assert_called_once_with()
+        process.wait.assert_called_once_with(timeout=5)
+        assert not staging_dir.exists()
+        assert not installer.exists()
+
+    def test_success_launches_staged_path_and_hands_off_cleanup(self, tmp_path):
+        checker = UpdateChecker("1.0.0")
+        installer = self._installer(tmp_path)
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        staged_installer = staging_dir / installer.name
+        relauncher = staging_dir / "relaunch.cmd"
+        process = MagicMock(pid=123)
+        with patch.object(
+            checker, "_create_secure_staging_dir", return_value=staging_dir
+        ), patch.object(
+            checker, "verify_installer", return_value=True
+        ) as verify, patch.object(
+            checker, "_create_relauncher_script", return_value=relauncher
+        ), patch("core.updater.subprocess.Popen", return_value=process) as popen, patch.object(
+            checker, "_spawn_relauncher_script", return_value=True
+        ) as spawn:
+            assert checker.install_update(installer, silent=True) is True
+        verify.assert_called_once_with(staged_installer)
+        command = popen.call_args.args[0]
+        assert command == [
+            str(staged_installer),
+            "/SILENT",
+            "/CLOSEAPPLICATIONS",
+            "/CLUTCHGUPDATE",
+        ]
+        spawn.assert_called_once_with(relauncher)
+        assert staged_installer.exists()
+        assert not installer.exists()
+
+
+@pytest.mark.unit
+class TestSecureStaging:
+
+    def test_root_acl_failure_aborts_before_child_creation(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setenv("ProgramData", str(tmp_path))
+        staging_root = tmp_path / "ClutchG" / "Updates"
+        with patch("core.updater.sys.platform", "win32"), patch.object(
+            UpdateChecker, "_is_reparse_point", return_value=False
+        ), patch.object(
+            UpdateChecker, "_secure_staging_dir", return_value=False
+        ) as secure:
+            assert UpdateChecker._create_secure_staging_dir() is None
+        secure.assert_called_once_with(staging_root)
+        assert not list(staging_root.glob("update-*"))
+
+    def test_child_acl_failure_removes_unique_staging(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setenv("ProgramData", str(tmp_path))
+        staging_root = tmp_path / "ClutchG" / "Updates"
+        staging_dir = staging_root / f"update-{'a' * 32}"
+        with patch("core.updater.sys.platform", "win32"), patch(
+            "core.updater.secrets.token_hex", return_value="a" * 32
+        ), patch.object(
+            UpdateChecker, "_is_reparse_point", return_value=False
+        ), patch.object(
+            UpdateChecker, "_secure_staging_dir", side_effect=[True, False]
+        ) as secure:
+            assert UpdateChecker._create_secure_staging_dir() is None
+        assert secure.call_args_list == [
+            ((staging_root,),),
+            ((staging_dir,),),
+        ]
+        assert not staging_dir.exists()
+
+    def test_create_secure_staging_hardens_root_and_unique_child(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setenv("ProgramData", str(tmp_path))
+        staging_root = tmp_path / "ClutchG" / "Updates"
+        staging_dir = staging_root / f"update-{'b' * 32}"
+        with patch("core.updater.sys.platform", "win32"), patch(
+            "core.updater.secrets.token_hex", return_value="b" * 32
+        ), patch.object(
+            UpdateChecker, "_is_reparse_point", return_value=False
+        ), patch.object(
+            UpdateChecker, "_secure_staging_dir", return_value=True
+        ) as secure:
+            assert UpdateChecker._create_secure_staging_dir() == staging_dir
+        assert secure.call_args_list == [
+            ((staging_root,),),
+            ((staging_dir,),),
+        ]
+        assert staging_dir.is_dir()
+
+    def test_secure_staging_applies_acl_integrity_and_verifies(self, tmp_path):
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        success = MagicMock(returncode=0, stdout="", stderr="")
+        with patch("core.updater.subprocess.run", return_value=success) as run:
+            assert UpdateChecker._secure_staging_dir(staging_dir) is True
+        assert run.call_count == 3
+        commands = [call.args[0] for call in run.call_args_list]
+        assert commands[0][0] == "icacls.exe"
+        assert "/inheritance:r" in commands[0]
+        assert "*S-1-5-18:(OI)(CI)F" in commands[0]
+        assert "*S-1-5-32-544:(OI)(CI)F" in commands[0]
+        assert "/setintegritylevel" in commands[1]
+        assert commands[2][0] == "powershell.exe"
+
+    def test_secure_staging_fails_closed_on_acl_command_error(self, tmp_path):
+        staging_dir = tmp_path / "staging"
+        staging_dir.mkdir()
+        failure = MagicMock(returncode=5, stdout="", stderr="denied")
+        with patch("core.updater.subprocess.run", return_value=failure):
+            assert UpdateChecker._secure_staging_dir(staging_dir) is False
+
+
+@pytest.mark.unit
+class TestInstallerAuthenticodeVerification:
+
+    def test_accepts_trusted_expected_publisher_and_matching_version(self, tmp_path):
+        checker = UpdateChecker("1.0.0")
+        installer = TestInstallUpdateReturnContract._installer(tmp_path)
+        with patch("core.updater.sys.platform", "win32"), patch(
+            "core.updater._win_verify_trust", return_value=True
+        ), patch.object(
+            checker,
+            "_get_installer_metadata",
+            return_value=("CN=ClutchG Project", "1.1.0"),
+        ):
+            assert checker.verify_installer(installer) is True
+
+    def test_rejects_untrusted_signature_before_metadata_read(self, tmp_path):
+        checker = UpdateChecker("1.0.0")
+        installer = TestInstallUpdateReturnContract._installer(tmp_path)
+        with patch("core.updater.sys.platform", "win32"), patch(
+            "core.updater._win_verify_trust", return_value=False
+        ), patch.object(checker, "_get_installer_metadata") as metadata:
+            assert checker.verify_installer(installer) is False
+        metadata.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "metadata",
+        [
+            ("CN=Unexpected Publisher", "1.1.0"),
+            ("CN=ClutchG Project", "9.9.9"),
+            None,
+        ],
+    )
+    def test_rejects_publisher_version_or_metadata_mismatch(self, tmp_path, metadata):
+        checker = UpdateChecker("1.0.0")
+        installer = TestInstallUpdateReturnContract._installer(tmp_path)
+        with patch("core.updater.sys.platform", "win32"), patch(
+            "core.updater._win_verify_trust", return_value=True
+        ), patch.object(checker, "_get_installer_metadata", return_value=metadata):
+            assert checker.verify_installer(installer) is False
 
 
 # ---------------------------------------------------------------------------

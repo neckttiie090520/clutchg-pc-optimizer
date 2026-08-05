@@ -9,6 +9,7 @@ Integrates with core/updater.py's AsyncUpdateChecker.
 
 from __future__ import annotations
 
+import logging
 import webbrowser
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
@@ -18,6 +19,8 @@ import customtkinter as ctk
 from gui.theme import COLORS, SPACING, RADIUS
 from gui.style import font, bind_dynamic_wraplength
 from gui.components.icon_provider import get_icon
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from app_minimal import ClutchGApp
@@ -54,6 +57,7 @@ class UpdateDialog(ctk.CTkToplevel):
         self.app = app
         self.info = info
         self._installer_path: Optional[Path] = None
+        self._install_handoff_complete = False
 
         # Window setup
         self.title("Update Available")
@@ -513,18 +517,27 @@ class UpdateDialog(ctk.CTkToplevel):
 
         # Defer the actual install call so the UI has a chance to paint.
         # 300ms is enough for Tk to flush the new state to screen.
-        def _do_install():
-            # install() returns False if launch failed; in that case the
-            # app does NOT exit, so we need to revert the UI to error state.
-            ok = self.app._async_updater.install(self._installer_path, silent=False)
-            if not ok:
-                self._build_error_state(
-                    "Could not launch the installer.\n"
-                    "The downloaded file may be corrupted. "
-                    "Try downloading again."
-                )
+        self.after(300, self._perform_install_handoff)
 
-        self.after(300, _do_install)
+    def _perform_install_handoff(self):
+        """Launch once and close the app only after the verified handoff succeeds."""
+        if self._install_handoff_complete:
+            return
+
+        ok = self.app._async_updater.install(self._installer_path, silent=False)
+        if not ok:
+            self._build_error_state(
+                "Could not launch the installer.\n"
+                "The downloaded file may be corrupted. "
+                "Try downloading again."
+            )
+            return
+
+        self._install_handoff_complete = True
+        try:
+            self.app.window.destroy()
+        except Exception as exc:
+            logger.error("Installer handoff succeeded but app shutdown failed: %s", exc)
 
     def _on_close(self):
         """Close the dialog."""
