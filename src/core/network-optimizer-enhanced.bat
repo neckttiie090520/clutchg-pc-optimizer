@@ -120,46 +120,6 @@ set /a TWEAK_SUCCESS+=1
 goto :eof
 
 :: ============================================================================
-:: Set DNS Preset
-:: Usage: call :set_dns_preset "cloudflare" | "google" | "quad9"
-:: ============================================================================
-:set_dns_preset
-set "DNS_PRESET=%~1"
-
-if /i "%DNS_PRESET%"=="cloudflare" (
-    set "DNS1=1.1.1.1"
-    set "DNS2=1.0.0.1"
-    set "DNS_NAME=Cloudflare"
-) else if /i "%DNS_PRESET%"=="google" (
-    set "DNS1=8.8.8.8"
-    set "DNS2=8.8.4.4"
-    set "DNS_NAME=Google"
-) else if /i "%DNS_PRESET%"=="quad9" (
-    set "DNS1=9.9.9.9"
-    set "DNS2=149.112.112.112"
-    set "DNS_NAME=Quad9"
-) else (
-    set "DNS1=1.1.1.1"
-    set "DNS2=8.8.8.8"
-    set "DNS_NAME=Mixed (Cloudflare+Google)"
-)
-
-:: Apply to all connected adapters
-for /f "tokens=*" %%a in ('netsh interface show interface ^| findstr /i "Connected"') do (
-    for /f "tokens=4" %%b in ("%%a") do (
-        netsh interface ipv4 set dns name="%%b" static %DNS1% primary >nul 2>&1
-        netsh interface ipv4 add dns name="%%b" %DNS2% index=2 >nul 2>&1
-    )
-)
-
-:: Flush DNS after changing
-ipconfig /flushdns >nul 2>&1
-
-call "%LOGGING_DIR%\logger.bat" :log_tweak "DNS set to %DNS_NAME% (%DNS1%, %DNS2%)" "SUCCESS"
-set /a TWEAK_SUCCESS+=1
-goto :eof
-
-:: ============================================================================
 :: Disable Network Throttling
 :: ============================================================================
 :disable_network_throttling

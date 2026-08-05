@@ -22,10 +22,10 @@
 if "%~1"=="" goto :usage
 if "%~1"=="apply_storage_tweaks" goto :apply_storage_tweaks
 if "%~1"=="enable_storage_sense" goto :enable_storage_sense
-if "%~1"":"configure_storage_sense" goto :configure_storage_sense
+if "%~1"=="configure_storage_sense" goto :configure_storage_sense
 if "%~1"=="cleanup_temp_files" goto :cleanup_temp_files
 if "%~1"=="document_sysmain" goto :document_sysmain
-goto :usage
+goto :usage_error
 
 :usage
 echo Usage: storage-optimizer.bat [command]
@@ -36,7 +36,11 @@ echo   enable_storage_sense     - Enable Storage Sense
 echo   configure_storage_sense  - Configure Storage Sense settings
 echo   cleanup_temp_files       - Clean temporary files
 echo   document_sysmain         - Display SysMain documentation
-goto :eof
+exit /b 0
+
+:usage_error
+call :usage
+exit /b 2
 
 :: ============================================================================
 :: Apply All Storage Optimizations

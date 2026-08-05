@@ -8,7 +8,7 @@ if "%~1"==":apply_safe_tweaks" goto :apply_safe_tweaks
 if "%~1"==":apply_advanced_tweaks" goto :apply_advanced_tweaks
 if "%~1"==":reset_all" goto :reset_all
 if "%~1"==":export_current" goto :export_current
-goto :eof
+exit /b 0
 
 :apply_safe_tweaks
 :: ============================================
@@ -16,85 +16,31 @@ goto :eof
 :: system security. They can improve timer
 :: consistency and multi-core coordination.
 :: ============================================
+set "MODULE_FAILURES=0"
 
 :: Disable dynamic tick (consistent timer behavior)
-:: Benefit: More predictable tick timing
-:: Trade-off: Slightly higher power consumption
-bcdedit /set disabledynamictick yes >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "disabledynamictick=yes" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "disabledynamictick=yes" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "disabledynamictick" "yes"
 
 :: Use platform tick (hardware timer)
-:: Benefit: More accurate timer resolution
-bcdedit /set useplatformtick yes >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "useplatformtick=yes" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "useplatformtick=yes" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "useplatformtick" "yes"
 
 :: Enhanced TSC synchronization
-:: Benefit: Better multi-core timer coordination
-bcdedit /set tscsyncpolicy enhanced >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "tscsyncpolicy=enhanced" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "tscsyncpolicy=enhanced" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "tscsyncpolicy" "enhanced"
 
 :: Disable legacy APIC mode (modern interrupt handling)
-:: Benefit: More efficient interrupt processing
-bcdedit /set uselegacyapicmode no >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "uselegacyapicmode=no" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "uselegacyapicmode=no" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "uselegacyapicmode" "no"
 
 :: Optimize logical processor handling
-bcdedit /set usephysicaldestination no >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "usephysicaldestination=no" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "usephysicaldestination=no" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "usephysicaldestination" "no"
 
 :: Enable x2APIC mode (improved interrupt handling on modern CPUs)
-:: Source: Ghost-Optimizer (performanceapply)
-bcdedit /set x2apicpolicy Enable >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "x2apicpolicy=Enable" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "x2apicpolicy=Enable" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "x2apicpolicy" "Enable"
 
 :: Set configaccesspolicy to default (faster MMIO access)
-:: Source: Ghost-Optimizer (performanceapply)
-bcdedit /set configaccesspolicy Default >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "configaccesspolicy=Default" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "configaccesspolicy=Default" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "configaccesspolicy" "Default"
 
-goto :eof
+if %MODULE_FAILURES% GTR 0 exit /b 1
+exit /b 0
 
 :apply_advanced_tweaks
 :: ============================================
@@ -102,10 +48,8 @@ goto :eof
 :: They should only be applied by users who
 :: understand the implications.
 :: ============================================
+set "MODULE_FAILURES=0"
 
-:: Disable hypervisor (if not using VMs)
-:: Benefit: Removes virtualization overhead
-:: Trade-off: Breaks WSL2, Docker, Hyper-V
 echo.
 echo  NOTE: Disabling hypervisor will break:
 echo        - WSL2 (Windows Subsystem for Linux 2)
@@ -114,56 +58,87 @@ echo        - Hyper-V virtual machines
 echo        - Windows Sandbox
 echo.
 
-bcdedit /set hypervisorlaunchtype off >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "hypervisorlaunchtype=off" "SUCCESS"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_bcdedit "hypervisorlaunchtype=off" "FAILED"
-    set /a TWEAK_FAILED+=1
-)
+call :bcd_set "hypervisorlaunchtype" "off"
 
-goto :eof
+if %MODULE_FAILURES% GTR 0 exit /b 1
+exit /b 0
 
 :reset_all
 :: ============================================
 :: Reset all BCDEdit values to Windows defaults
 :: ============================================
-
+set "MODULE_FAILURES=0"
 echo     Resetting BCDEdit to defaults...
 
-bcdedit /deletevalue disabledynamictick >nul 2>&1
-bcdedit /deletevalue useplatformtick >nul 2>&1
-bcdedit /deletevalue tscsyncpolicy >nul 2>&1
-bcdedit /deletevalue uselegacyapicmode >nul 2>&1
-bcdedit /deletevalue usephysicaldestination >nul 2>&1
-bcdedit /deletevalue x2apicpolicy >nul 2>&1
-bcdedit /deletevalue configaccesspolicy >nul 2>&1
-bcdedit /deletevalue hypervisorlaunchtype >nul 2>&1
+call :bcd_delete "disabledynamictick"
+call :bcd_delete "useplatformtick"
+call :bcd_delete "tscsyncpolicy"
+call :bcd_delete "uselegacyapicmode"
+call :bcd_delete "usephysicaldestination"
+call :bcd_delete "x2apicpolicy"
+call :bcd_delete "configaccesspolicy"
+call :bcd_delete "hypervisorlaunchtype"
 
 :: Reset security values to safe defaults
-bcdedit /set nx OptIn >nul 2>&1
-bcdedit /set nointegritychecks off >nul 2>&1
-bcdedit /set testsigning off >nul 2>&1
+call :bcd_set "nx" "OptIn"
+call :bcd_set "nointegritychecks" "off"
+call :bcd_set "testsigning" "off"
 
+if %MODULE_FAILURES% GTR 0 (
+    call :log_bcdedit "Reset all values" "FAILED"
+    exit /b 1
+)
 call :log_bcdedit "Reset all values" "SUCCESS"
-goto :eof
+exit /b 0
 
 :export_current
-:: Export current BCD configuration
+set "MODULE_FAILURES=0"
 if not defined BACKUP_FOLDER set "BACKUP_FOLDER=%~dp0..\backups\manual"
-mkdir "%BACKUP_FOLDER%" 2>nul
-bcdedit /export "%BACKUP_FOLDER%\bcd_backup" >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call :log_bcdedit "Exported BCD to %BACKUP_FOLDER%\bcd_backup" "SUCCESS"
-) else (
-    call :log_bcdedit "Failed to export BCD" "FAILED"
+if not exist "%BACKUP_FOLDER%" mkdir "%BACKUP_FOLDER%" >nul 2>&1
+if errorlevel 1 (
+    call :log_bcdedit "Failed to create backup folder %BACKUP_FOLDER%" "FAILED"
+    set /a MODULE_FAILURES+=1
 )
-goto :eof
+if %MODULE_FAILURES% EQU 0 (
+    bcdedit /export "%BACKUP_FOLDER%\bcd_backup" >nul 2>&1
+    if errorlevel 1 (
+        call :log_bcdedit "Failed to export BCD" "FAILED"
+        set /a MODULE_FAILURES+=1
+        set /a TWEAK_FAILED+=1
+    )
+)
+if %MODULE_FAILURES% GTR 0 exit /b 1
+call :log_bcdedit "Exported BCD to %BACKUP_FOLDER%\bcd_backup" "SUCCESS"
+set /a TWEAK_SUCCESS+=1
+exit /b 0
+
+:bcd_set
+bcdedit /set %~1 %~2 >nul 2>&1
+if errorlevel 1 (
+    call :log_bcdedit "%~1=%~2" "FAILED"
+    set /a MODULE_FAILURES+=1
+    set /a TWEAK_FAILED+=1
+    exit /b 1
+)
+call :log_bcdedit "%~1=%~2" "SUCCESS"
+set /a TWEAK_SUCCESS+=1
+exit /b 0
+
+:bcd_delete
+bcdedit /deletevalue %~1 >nul 2>&1
+if errorlevel 1 (
+    call :log_bcdedit "delete %~1" "FAILED"
+    set /a MODULE_FAILURES+=1
+    set /a TWEAK_FAILED+=1
+    exit /b 1
+)
+call :log_bcdedit "delete %~1" "SUCCESS"
+set /a TWEAK_SUCCESS+=1
+exit /b 0
 
 :log_bcdedit
 if defined LOGFILE (
     echo [%TIME%] [BCDEdit] %~1: %~2 >> "%LOGFILE%"
 )
 echo     [BCDEdit] %~1: %~2
-goto :eof
+exit /b 0
