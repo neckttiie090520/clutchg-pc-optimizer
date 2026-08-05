@@ -145,7 +145,7 @@ if "!PLAN_MODE!"=="1" (
 if !RETURN_CODE! EQU 0 (
     echo     Backup transaction committed: !BACKUP_ID!
 ) else (
-    echo ERROR: Backup transaction failed with !BACKUP_FAILED! component error(s).
+    echo ERROR: Backup transaction failed with !BACKUP_FAILED! component error^(s^).
 )
 exit /b !RETURN_CODE!
 

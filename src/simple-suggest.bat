@@ -240,10 +240,10 @@ echo %GREEN%▶ SAFE Profile%RESET%
 echo.
 echo %YELLOW%Why SAFE?%RESET%
 if %IS_LAPTOP%==1 (
-    echo   - %RED%Laptop detected%RESET% (heat concerns)
+    echo   - %RED%Laptop detected%RESET% ^(heat concerns^)
 )
 if %RAM_TOTAL_GB% LSS 16 (
-    echo   - %RED%Low RAM%RESET% (%RAM_TOTAL_GB% GB)
+    echo   - %RED%Low RAM%RESET% ^(%RAM_TOTAL_GB% GB^)
 )
 if "%PERFORMANCE_TIER%"=="Entry-Level" (
     echo   - Entry-level system
@@ -266,7 +266,7 @@ if "%GPU_VENDOR%"=="NVIDIA" (
     echo   NVIDIA Control Panel → Adjust image settings with preview:
     echo   - Power management mode: %GREEN%Prefer maximum performance%RESET%
     if %SUGGEST_COMPETITIVE%==1 (
-        echo   - Low Latency Mode: %GREEN%Ultra%RESET% (or On)
+        echo   - Low Latency Mode: %GREEN%Ultra%RESET% ^(or On^)
         echo   - Max Frame Rate: %GREEN%Off%RESET%
     )
     if %SUGGEST_EXTREME%==1 (
@@ -321,7 +321,7 @@ if %SUGGEST_COMPETITIVE%==1 (
 if %SUGGEST_EXTREME%==1 (
     echo   Power plan: %GREEN%Ultimate Performance%RESET%
     echo   Minimum processor state: %GREEN%100%%RESET%
-    echo   EPP (Energy Performance Preference): %GREEN%0 (Max Performance)%RESET%
+    echo   EPP ^(Energy Performance Preference^): %GREEN%0 ^(Max Performance^)%RESET%
     echo   Disable all power saving features
     echo   %RED%⚠️  Warning: High heat generation%RESET%
     echo.
@@ -341,7 +341,7 @@ echo   - Enhanced TSC sync: %CYAN%bcdedit /set tscsyncpolicy enhanced%RESET%
 echo.
 
 if %SUGGEST_EXTREME%==1 (
-    echo   %RED%Advanced tweak (EXTREME only):%RESET%
+    echo   %RED%Advanced tweak ^(EXTREME only^):%RESET%
     echo   - Disable hypervisor: %CYAN%bcdedit /set hypervisorlaunchtype off%RESET%
     echo   %RED%⚠️  Breaks WSL2/Docker/Hyper-V%RESET%
     echo.
@@ -357,12 +357,12 @@ echo.
 echo   Safe to disable:
 echo   - Telemetry services (DiagTrack, dmwappushservice)
 if %SUGGEST_COMPETITIVE%==1 (
-    echo   - Xbox services (if not gaming on Xbox)
+    echo   - Xbox services ^(if not gaming on Xbox^)
 )
 
 if %SUGGEST_EXTREME%==1 (
-    echo   - Windows Search (Start menu search won't work)
-    echo   - Print Spooler (can't print)
+    echo   - Windows Search ^(Start menu search won't work^)
+    echo   - Print Spooler ^(can't print^)
     echo   - 10+ optional services
 )
 
@@ -389,7 +389,7 @@ if %SUGGEST_COMPETITIVE%==1 (
 )
 
 if %SUGGEST_EXTREME%==1 (
-    echo   %RED%Advanced tweaks (EXTREME only):%RESET%
+    echo   %RED%Advanced tweaks ^(EXTREME only^):%RESET%
     echo   - Network stack optimization
     echo   - File system optimization
     echo   - Disable Prefetch/Superfetch
@@ -407,7 +407,7 @@ echo   Input optimization:
 echo   - Enhanced Pointer Precision: %GREEN%Off%RESET% (Mouse Settings)
 echo   - Raw input: %GREEN%On%RESET% (in-game settings)
 if %SUGGEST_COMPETITIVE%==1 (
-    echo   - Mouse polling rate: %GREEN%1000Hz%RESET% (if supported)
+    echo   - Mouse polling rate: %GREEN%1000Hz%RESET% ^(if supported^)
 )
 echo.
 
@@ -442,7 +442,7 @@ if %IS_LAPTOP%==1 (
 )
 
 if %RAM_TOTAL_GB% LSS 16 (
-    echo %RED%⚠️  WARNING: Low RAM (%RAM_TOTAL_GB% GB)%RESET%
+    echo %RED%⚠️  WARNING: Low RAM ^(%RAM_TOTAL_GB% GB^)%RESET%
     echo   - EXTREME profile not recommended
     echo   - Keep some background services enabled
     echo   - Monitor RAM usage

@@ -134,3 +134,76 @@ class TestPlanModeGating:
             encoding="utf-8",
         )
         assert _reachable_mutations_in_plan_mode(safe) == []
+
+
+@pytest.mark.unit
+class TestBatchRuntimeRegressions:
+    """Three defects that made the engine fail at runtime while passing every
+    static check. Each was found only by actually executing plan mode.
+    """
+
+    ALL_BATCH = tuple(sorted((REPO_ROOT / "src").rglob("*.bat")))
+
+    @pytest.mark.parametrize(
+        "script", ALL_BATCH, ids=lambda p: p.name
+    )
+    def test_file_uses_crlf_line_endings(self, script):
+        """CMD mis-parses these scripts when they are stored LF-only.
+
+        ``backup-registry.bat`` failed with "The system cannot find the batch
+        label specified - create_backup" purely because the file had been
+        rewritten with bare LF endings; converting to CRLF fixed it with no other
+        change. Fourteen scripts were affected, including every safety-critical
+        one. Small synthetic fixtures do NOT reproduce this — only the real files
+        with their nested blocks do — so the guarantee is asserted on the shipped
+        files rather than inferred.
+        """
+        raw = script.read_bytes()
+        assert b"\r\n" in raw, f"{script.name} is LF-only; CMD will mis-parse it"
+        bare = raw.count(b"\n") - raw.count(b"\r\n")
+        assert bare == 0, f"{script.name} has {bare} bare-LF line(s)"
+
+    @pytest.mark.parametrize(
+        "script", ALL_BATCH, ids=lambda p: p.name
+    )
+    def test_no_unescaped_parenthesis_in_echo_inside_a_block(self, script):
+        """``echo … error(s).`` inside ``( )`` aborts the block.
+
+        CMD closes the enclosing block at the bare ``)`` and then chokes on the
+        remainder, producing ". was unexpected at this time" and exit code 255 —
+        which is exactly what a completed backup transaction returned before this
+        was fixed. The parenthesis must be escaped as ``^(`` / ``^)``.
+        """
+        lines = script.read_text(encoding="utf-8", errors="ignore").replace("\r\n", "\n").split("\n")
+        offenders = []
+        depth = 0
+        for number, line in enumerate(lines, start=1):
+            stripped = line.strip()
+            if re.match(r"^:", stripped):
+                depth = 0
+            if depth > 0 and re.match(r"^\s*echo\b", line, re.IGNORECASE):
+                payload = re.sub(r"\^[()]", "", line).split("echo", 1)[1]
+                if re.search(r"[()]", payload):
+                    offenders.append(f"{script.name}:{number}: {stripped[:70]}")
+            depth += line.count("(") - line.count(")")
+            depth -= line.count("^(") - line.count("^)")
+            depth = max(depth, 0)
+        assert not offenders, "unescaped parenthesis inside a block:\n" + "\n".join(offenders)
+
+    @pytest.mark.parametrize(
+        "script", ALL_BATCH, ids=lambda p: p.name
+    )
+    def test_find_is_fully_qualified(self, script):
+        r"""A bare ``find`` resolves to GNU find when Git Bash is on PATH.
+
+        ``rollback.bat`` used ``for /f %%N in ('find /v /c "" < file')`` to count
+        lines. With GNU find first on PATH that becomes a filesystem walk: the
+        restore hung until killed, emitting ``find: '/v': No such file``. Any use
+        must name ``%SystemRoot%\System32\find.exe``.
+        """
+        content = script.read_text(encoding="utf-8", errors="ignore")
+        bare = re.findall(r"'find\s+/|\|\s*find\s+/", content)
+        assert not bare, (
+            f"{script.name} calls bare 'find'; qualify it as "
+            r"%SystemRoot%\System32\find.exe so GNU find cannot shadow it"
+        )

@@ -107,7 +107,7 @@ if "!PLAN_MODE!"=="1" (
 if !RETURN_CODE! EQU 0 (
     echo Restore completed for !BACKUP_ID!. A restart is required.
 ) else (
-    echo ERROR: Restore finished with !RESTORE_FAILED! component error(s).
+    echo ERROR: Restore finished with !RESTORE_FAILED! component error^(s^).
 )
 exit /b !RETURN_CODE!
 
@@ -330,7 +330,10 @@ set "STATE_LINE_COUNT="
 set /a KEY_STATE_LINES=0
 set /a VALUE_STATE_LINES=0
 set /a DATA_STATE_LINES=0
-for /f %%N in ('find /v /c "" ^< "!STATE_FILE!"') do set "STATE_LINE_COUNT=%%N"
+:: %SystemRoot%\System32 is qualified deliberately: a bare "find" resolves to
+:: GNU find when Git Bash or similar is on PATH, which takes different switches
+:: and scans the filesystem instead of counting lines — the restore then hangs.
+for /f %%N in ('%SystemRoot%\System32\find.exe /v /c "" ^< "!STATE_FILE!"') do set "STATE_LINE_COUNT=%%N"
 for /f "tokens=1,2 delims==" %%A in ('findstr /r /x /c:"key_existed=[01]" "!STATE_FILE!" 2^>nul') do (
     set /a KEY_STATE_LINES+=1
     set "KEY_EXISTED=%%B"
