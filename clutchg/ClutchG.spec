@@ -123,7 +123,6 @@ hiddenimports = [
 
     # --- CPU info ---
     "cpuinfo",
-    "cpuinfo._cpuinfo",
 
     # --- Pillow ---
     "PIL",

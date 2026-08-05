@@ -41,10 +41,14 @@ class AdminChecker:
             return True
 
         try:
-            # Build a properly-quoted parameter string so that paths containing
-            # spaces are passed correctly to the elevated process.
-            script = os.path.abspath(sys.argv[0])
-            params = subprocess.list2cmdline([script] + sys.argv[1:])
+            # Frozen builds relaunch the executable directly; source mode must
+            # include the Python script path before its command-line options.
+            if getattr(sys, "frozen", False):
+                args = sys.argv[1:]
+            else:
+                script = os.path.abspath(sys.argv[0])
+                args = [script] + sys.argv[1:]
+            params = subprocess.list2cmdline(args)
 
             # Request elevation via ShellExecuteW with the "runas" verb.
             ret = ctypes.windll.shell32.ShellExecuteW(

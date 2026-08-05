@@ -1,17 +1,6 @@
 # ============================================================
-# ClutchG PC Optimizer — Release Pipeline
-# GitHub Actions workflow for building and releasing
+# ClutchG PC Optimizer — fail-closed release pipeline
 # ============================================================
-#
-# Triggered by version tags (v1.0.0, v1.2.3, etc.)
-# Builds ClutchG via PyInstaller, packages as Inno Setup
-# installer, and creates a GitHub Release with the installer
-# attached as an asset.
-#
-# The Inno Setup installer is required (not bare .exe) because
-# the auto-update relauncher relies on the registry entry
-# (HKLM\...\Uninstall\{AppId}_is1\InstallLocation) written by
-# Inno Setup to locate the new binary after update.
 
 name: Release
 
@@ -25,18 +14,19 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Build and Release (Windows)
+    name: Build, Sign, and Release (Windows)
     runs-on: windows-latest
     timeout-minutes: 30
+    env:
+      EXPECTED_PUBLISHER: CN=ClutchG Project
+      SIGNING_CERTIFICATE_PATH: ${{ runner.temp }}\clutchg-signing.pfx
 
     steps:
-      # ---- Checkout ----
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      # ---- Python setup ----
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -44,32 +34,67 @@ jobs:
             clutchg/requirements.txt
             clutchg/requirements-test.txt
 
-      # ---- Install Inno Setup (if not preinstalled on runner) ----
+      - name: Validate tag and version parity
+        id: identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = '${{ github.ref_name }}'
+          if ($tag -notmatch '^v(\d+\.\d+\.\d+)$') {
+            throw "Release tag must be exactly vMAJOR.MINOR.PATCH: $tag"
+          }
+          $version = $Matches[1]
+
+          $versionPy = Get-Content 'clutchg/src/version.py' -Raw
+          if ($versionPy -notmatch '__version__\s*=\s*"(\d+\.\d+\.\d+)"') {
+            throw 'Could not read clutchg/src/version.py version'
+          }
+          $pythonVersion = $Matches[1]
+
+          $iss = Get-Content 'clutchg/installer/ClutchG.iss' -Raw
+          if ($iss -notmatch '(?m)^#define AppVersion\s+"(\d+\.\d+\.\d+)"\s*$') {
+            throw 'Could not read installer AppVersion'
+          }
+          $installerVersion = $Matches[1]
+
+          $versionInfo = Get-Content 'clutchg/version_info.txt' -Raw
+          if ($versionInfo -notmatch "StringStruct\(u'FileVersion',\s+u'(\d+\.\d+\.\d+)'\)") {
+            throw 'Could not read PE FileVersion'
+          }
+          $fileVersion = $Matches[1]
+          if ($versionInfo -notmatch "StringStruct\(u'ProductVersion',\s+u'(\d+\.\d+\.\d+)'\)") {
+            throw 'Could not read PE ProductVersion'
+          }
+          $productVersion = $Matches[1]
+
+          $versions = @($pythonVersion, $installerVersion, $fileVersion, $productVersion)
+          if (@($versions | Where-Object { $_ -ne $version }).Count -ne 0) {
+            throw "Version mismatch: tag=$version python=$pythonVersion installer=$installerVersion file=$fileVersion product=$productVersion"
+          }
+
+          $installer = "clutchg/installer/output/ClutchG-Setup-$version.exe"
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "installer=$installer" >> $env:GITHUB_OUTPUT
+          "RELEASE_VERSION=$version" >> $env:GITHUB_ENV
+          Write-Output "Validated release identity v$version"
+
       - name: Ensure Inno Setup 6
         shell: pwsh
         run: |
-          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-          if (Test-Path $iscc) {
-            $ver = (& $iscc /? 2>&1 | Select-String -Pattern "Inno Setup" | Select-Object -First 1)
-            Write-Output "Inno Setup already installed: $ver"
-          } else {
-            Write-Output "Installing Inno Setup via Chocolatey..."
-            choco install innosetup -y --no-progress
-          }
-          # Final sanity check
+          $ErrorActionPreference = 'Stop'
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) {
-            Write-Error "ISCC.exe not found at $iscc"
-            exit 1
+            choco install innosetup -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Chocolatey failed to install Inno Setup' }
           }
+          if (-not (Test-Path $iscc)) { throw "ISCC.exe not found at $iscc" }
 
-      # ---- Install dependencies ----
       - name: Install runtime dependencies
         run: pip install -r clutchg/requirements.txt
 
       - name: Install test dependencies
         run: pip install -r clutchg/requirements-test.txt
 
-      # ---- Run tests before building ----
       - name: Run tests
         working-directory: clutchg
         run: >
@@ -77,51 +102,180 @@ jobs:
           --skip-slow --skip-e2e
           -q --tb=short
 
-      # ---- Build exe via PyInstaller ----
-      - name: Build ClutchG.exe (PyInstaller)
+      - name: Build ClutchG.exe
         working-directory: clutchg
         run: python build.py
 
-      # ---- Verify PyInstaller output ----
-      - name: Verify PyInstaller output
+      - name: Prepare signing certificate
         shell: pwsh
+        env:
+          SIGNING_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_BASE64 }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
         run: |
-          if (Test-Path "clutchg\dist\ClutchG\ClutchG.exe") {
-            $size = (Get-Item "clutchg\dist\ClutchG\ClutchG.exe").Length / 1MB
-            Write-Output "ClutchG.exe built successfully ($([math]::Round($size, 1)) MB)"
-          } else {
-            Write-Error "PyInstaller build failed — clutchg\dist\ClutchG\ClutchG.exe not found"
-            exit 1
+          $ErrorActionPreference = 'Stop'
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERTIFICATE_BASE64)) {
+            throw 'WINDOWS_SIGNING_CERTIFICATE_BASE64 is not provisioned'
+          }
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERTIFICATE_PASSWORD)) {
+            throw 'WINDOWS_SIGNING_CERTIFICATE_PASSWORD is not provisioned'
           }
 
-      # ---- Build Inno Setup installer ----
+          if (Test-Path -LiteralPath $env:SIGNING_CERTIFICATE_PATH) {
+            Remove-Item -LiteralPath $env:SIGNING_CERTIFICATE_PATH -Force
+          }
+          try {
+            [IO.File]::WriteAllBytes(
+              $env:SIGNING_CERTIFICATE_PATH,
+              [Convert]::FromBase64String($env:SIGNING_CERTIFICATE_BASE64)
+            )
+          } catch {
+            throw "Signing certificate secret is not valid Base64: $_"
+          }
+
+          $flags = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::EphemeralKeySet
+          $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new(
+            $env:SIGNING_CERTIFICATE_PATH,
+            $env:SIGNING_CERTIFICATE_PASSWORD,
+            $flags
+          )
+          if (-not $certificate.HasPrivateKey) { throw 'Signing PFX has no private key' }
+          if ($certificate.Subject -ne $env:EXPECTED_PUBLISHER) {
+            throw "Signing publisher mismatch: expected '$env:EXPECTED_PUBLISHER', got '$($certificate.Subject)'"
+          }
+
+          $kitsRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
+          $signtool = Get-ChildItem $kitsRoot -Filter signtool.exe -Recurse -ErrorAction Stop |
+            Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if (-not $signtool) { throw '64-bit signtool.exe was not found' }
+
+          "SIGNTOOL_PATH=$($signtool.FullName)" >> $env:GITHUB_ENV
+
+      - name: Sign and verify ClutchG.exe
+        shell: pwsh
+        env:
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = (Resolve-Path 'clutchg/dist/ClutchG/ClutchG.exe').Path
+          $peVersion = (Get-Item $exe).VersionInfo.ProductVersion.Trim()
+          if ($peVersion -ne $env:RELEASE_VERSION) {
+            throw "ClutchG.exe ProductVersion mismatch: $peVersion"
+          }
+
+          & $env:SIGNTOOL_PATH sign /fd SHA256 /td SHA256 /tr 'http://timestamp.digicert.com' /f $env:SIGNING_CERTIFICATE_PATH /p $env:SIGNING_CERTIFICATE_PASSWORD $exe
+          if ($LASTEXITCODE -ne 0) { throw 'signtool failed for ClutchG.exe' }
+
+          $signature = Get-AuthenticodeSignature -LiteralPath $exe
+          if ($signature.Status -ne 'Valid' -or $null -eq $signature.SignerCertificate) {
+            throw "ClutchG.exe Authenticode status is $($signature.Status)"
+          }
+          if ($signature.SignerCertificate.Subject -ne $env:EXPECTED_PUBLISHER) {
+            throw "ClutchG.exe publisher mismatch: $($signature.SignerCertificate.Subject)"
+          }
+
+      - name: Remove app signing material
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path -LiteralPath $env:SIGNING_CERTIFICATE_PATH) {
+            Remove-Item -LiteralPath $env:SIGNING_CERTIFICATE_PATH -Force
+          }
+
       - name: Build Inno Setup installer
         shell: pwsh
         run: |
-          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-          & $iscc "clutchg\installer\ClutchG.iss"
+          $ErrorActionPreference = 'Stop'
+          $output = 'clutchg/installer/output'
+          New-Item -ItemType Directory -Force -Path $output | Out-Null
+          Get-ChildItem $output -Filter 'ClutchG-Setup-*.exe' -ErrorAction SilentlyContinue | Remove-Item -Force
 
-      # ---- Verify installer output ----
-      - name: Verify installer output
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          & $iscc 'clutchg/installer/ClutchG.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup build failed' }
+
+      - name: Prepare installer signing certificate
         shell: pwsh
+        env:
+          SIGNING_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_BASE64 }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
         run: |
-          $installer = Get-ChildItem "clutchg\installer\output\ClutchG-Setup-*.exe" | Select-Object -First 1
-          if ($installer) {
-            $size = $installer.Length / 1MB
-            Write-Output "Installer built: $($installer.Name) ($([math]::Round($size, 1)) MB)"
-            Write-Output "INSTALLER_PATH=$($installer.FullName)" >> $env:GITHUB_ENV
-          } else {
-            Write-Error "Inno Setup build failed — no ClutchG-Setup-*.exe found"
-            exit 1
+          $ErrorActionPreference = 'Stop'
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERTIFICATE_BASE64)) {
+            throw 'WINDOWS_SIGNING_CERTIFICATE_BASE64 is not provisioned'
+          }
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERTIFICATE_PASSWORD)) {
+            throw 'WINDOWS_SIGNING_CERTIFICATE_PASSWORD is not provisioned'
+          }
+          if (Test-Path -LiteralPath $env:SIGNING_CERTIFICATE_PATH) {
+            Remove-Item -LiteralPath $env:SIGNING_CERTIFICATE_PATH -Force
+          }
+          try {
+            [IO.File]::WriteAllBytes(
+              $env:SIGNING_CERTIFICATE_PATH,
+              [Convert]::FromBase64String($env:SIGNING_CERTIFICATE_BASE64)
+            )
+          } catch {
+            throw "Signing certificate secret is not valid Base64: $_"
+          }
+          $flags = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::EphemeralKeySet
+          $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new(
+            $env:SIGNING_CERTIFICATE_PATH,
+            $env:SIGNING_CERTIFICATE_PASSWORD,
+            $flags
+          )
+          if (-not $certificate.HasPrivateKey) { throw 'Signing PFX has no private key' }
+          if ($certificate.Subject -ne $env:EXPECTED_PUBLISHER) {
+            throw "Signing publisher mismatch: expected '$env:EXPECTED_PUBLISHER', got '$($certificate.Subject)'"
           }
 
-      # ---- Create GitHub Release with installer asset ----
+      - name: Sign and verify exact installer
+        shell: pwsh
+        env:
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $expectedRelative = '${{ steps.identity.outputs.installer }}'
+          $expected = Join-Path $env:GITHUB_WORKSPACE $expectedRelative
+          $assets = @(Get-ChildItem 'clutchg/installer/output' -Filter '*.exe' -File)
+          if ($assets.Count -ne 1) {
+            throw "Expected exactly one installer executable, found $($assets.Count)"
+          }
+          if ($assets[0].FullName -ne $expected) {
+            throw "Unexpected installer asset: $($assets[0].Name)"
+          }
+
+          $peVersion = $assets[0].VersionInfo.ProductVersion.Trim()
+          if ($peVersion -ne $env:RELEASE_VERSION) {
+            throw "Installer ProductVersion mismatch: $peVersion"
+          }
+
+          & $env:SIGNTOOL_PATH sign /fd SHA256 /td SHA256 /tr 'http://timestamp.digicert.com' /f $env:SIGNING_CERTIFICATE_PATH /p $env:SIGNING_CERTIFICATE_PASSWORD $expected
+          if ($LASTEXITCODE -ne 0) { throw 'signtool failed for installer' }
+
+          $signature = Get-AuthenticodeSignature -LiteralPath $expected
+          if ($signature.Status -ne 'Valid' -or $null -eq $signature.SignerCertificate) {
+            throw "Installer Authenticode status is $($signature.Status)"
+          }
+          if ($signature.SignerCertificate.Subject -ne $env:EXPECTED_PUBLISHER) {
+            throw "Installer publisher mismatch: $($signature.SignerCertificate.Subject)"
+          }
+
+      - name: Remove signing material
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path -LiteralPath $env:SIGNING_CERTIFICATE_PATH) {
+            Remove-Item -LiteralPath $env:SIGNING_CERTIFICATE_PATH -Force
+          }
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           tag_name: ${{ github.ref_name }}
           name: ClutchG ${{ github.ref_name }}
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+          prerelease: false
           generate_release_notes: true
-          files: clutchg/installer/output/ClutchG-Setup-*.exe
+          files: ${{ steps.identity.outputs.installer }}
