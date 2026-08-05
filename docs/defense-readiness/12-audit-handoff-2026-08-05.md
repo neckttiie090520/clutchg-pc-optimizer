@@ -4,7 +4,7 @@
 > **Project:** ClutchG PC Optimizer
 > **Session scope:** end-to-end audit against SE / SDLC / ISO 29110, adversarial bug hunt, three scrutiny passes
 > **Evidence status:** `AUTOMATED_VERIFIED` for static and unit scope; `EXTERNAL_VERIFICATION_REQUIRED` for privileged Windows mutation, rollback, and packaged-installer behaviour
-> **Repository state:** committed and pushed as 8 commits on `audit/project-verification-2026-07-29`, released as **v1.0.4**, open for review as PR #13 into `develop` (mergeable). Not yet merged.
+> **Repository state:** `audit/project-verification-2026-07-29`, 22 commits ahead of `main`, released as **v1.0.4**, open for review as PR #13 into `develop` (mergeable). Not yet merged. The final V&V commit (`d2c7c53`, service capture) and this handoff update are committed locally and not yet pushed.
 
 ---
 
@@ -24,9 +24,9 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 1043 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 1047 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 1066 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 1070 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
 | Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
@@ -155,10 +155,11 @@ Verification now stands in three layers. The first two are complete; the third i
 
 | Layer | Proves | Status |
 |---|---|---|
-| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1066 tests |
+| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1070 tests |
 | Plan-mode execution | Dispatch, validation, manifest shape, control flow, the full 19/18-component plans | **Complete** — both engines rc=0, nothing mutated |
 | Scratch-key round-trip | `reg add`/`reg delete` genuinely restore captured value state (15 of 19 components) | **Complete** — 3/3 cases pass |
 | Scratch-scheme round-trip | `powercfg /getactivescheme` capture and `/setactive` restore (1 further component) | **Complete** — reactivation verified; `/export` needs elevation |
+| Service capture round-trip | `sc qc` / `sc query` / `reg query` capture produces a state file the restore parser accepts, and a start type that maps to a legal `sc config` argument | **Complete (capture half)** — `sc config` itself needs elevation |
 | VM privileged run | `bcdedit /import` and `sc config` against real machine state (2 components) | **Outstanding** |
 
 What the VM run still needs to cover, now narrowed to two components:
@@ -199,16 +200,19 @@ CASE|existing_value|PASS|restored=0x7          value was 0x7, mutated to 999, re
 CASE|absent_value|PASS|value-removed-key-kept  value absent, added, then removed; key preserved
 CASE|absent_key|PASS|key-removed               key absent, created, then removed entirely
 CASE|power_scheme|PARTIAL|export-needs-elevation|guid-capture-and-reactivate-verified
-RESULT|passed=3|partial=1|failed=0
+CASE|service_capture|PARTIAL|sc-config-needs-elevation|capture-round-trips-to-arg-disabled
+RESULT|passed=3|partial=2|failed=0
 ```
 
 All three registry recovery cases the engine implements round-trip correctly against the real registry. The scratch key was confirmed absent before the run and absent after.
 
 **The power scheme is verified the same way.** `powercfg /duplicatescheme` creates a throwaway scheme, the harness activates it, then runs the engine's real capture (`getactivescheme` → `active_power_guid.txt`) and restore (read the file, shape-check the GUID, `setactive`). The original scheme is reactivated and the copy deleted; the active scheme and scheme count were both confirmed unchanged after the run. Only `powercfg /export` of the `.pow` blob is out of reach — it needs `SeBackupPrivilege` and fails `0x522` unelevated — so that one step is reported `PARTIAL` rather than counted as a pass. Failure to reactivate the original scheme is still a hard failure even in that path, which a contract test asserts.
 
-Two things make this trustworthy rather than theatre. It was **mutation-tested**: replacing `/d "!VALUE_DATA!"` with `/d 0` in the restore makes case 1 fail with `data=0x0|expected=0x7`, so the harness can detect a broken mechanism. And because a verbatim copy can fossilise, `tests/unit/test_recovery_mechanism_contract.py` asserts every capture and restore statement — registry and power scheme alike — still appears in **both** the harness and the shipped engine, and that the harness writes only to the scratch key. Seventeen cases, itself mutation-tested by introducing drift and confirming the contract fails.
+Two things make this trustworthy rather than theatre. It was **mutation-tested**: replacing `/d "!VALUE_DATA!"` with `/d 0` in the restore makes case 1 fail with `data=0x0|expected=0x7`, so the harness can detect a broken mechanism. And because a verbatim copy can fossilise, `tests/unit/test_recovery_mechanism_contract.py` asserts every capture and restore statement — registry, power scheme, and service alike — still appears in **both** the harness and the shipped engine, and that the harness writes only to the scratch key. Twenty-one cases, itself mutation-tested by introducing drift and confirming the contract fails.
 
-**What genuinely still needs a VM.** Two components remain: `bcdedit /import` restoring the boot configuration, and `sc config` returning a service to its recorded start type. Both mutate machine-wide state with no safe scratch equivalent — `sc create` needs elevation, so a throwaway service cannot be made here. Note also one cosmetic artefact: the harness emits `The system cannot find the drive specified.` on stderr from the unelevated `/export` attempt. It survives redirection because CMD emits it directly; exit status and machine state are both verifiably correct, so it is noise rather than a failure.
+**The service component is verified as far as it can be without elevation.** `sc config` needs administrator rights and `sc create` does too, so no throwaway service can be made here and the restore half cannot execute. The *capture* half is entirely read-only — `sc qc`, `sc query`, `reg query` — so the harness runs the engine's real capture block against `Spooler`, writes the state file, then parses it back with `rollback.bat::restore_one_service`'s own logic and checks the captured start type maps to a legal `sc config` argument. That closes the "capture writes something restore cannot read" failure mode. It is reported `PARTIAL`, never counted as a pass, and a contract test asserts the case body increments `CASES_PARTIAL` and never `CASES_PASSED`.
+
+**What genuinely still needs a VM.** Two mutations remain unexecuted: `bcdedit /import` restoring the boot configuration, and `sc config` returning a service to its recorded start type. Both mutate machine-wide state with no safe scratch equivalent. Note also one cosmetic artefact: the harness emits `The system cannot find the drive specified.` on stderr from the unelevated `/export` attempt. It survives redirection because CMD emits it directly; exit status and machine state are both verifiably correct, so it is noise rather than a failure.
 
 To reproduce:
 
@@ -247,7 +251,7 @@ Deliberately **not** fixed. The product's non-negotiable constraint is that ever
 Stated plainly so they are not discovered by a reviewer instead.
 
 1. **Sub-agent dispatch was unreliable; the affected lenses were then covered directly.** Multiple dispatched review agents terminated on API quota errors or stopped without reporting. The two substantive lenses they were meant to cover — GUI/threading and batch-engine semantics — were subsequently completed by direct review (see §5.1 and §5.2) and both produced findings. What did *not* happen is the independent-corroboration layer: every finding in this record was verified by reading code and running read-only probes, but by one reviewer rather than two. Treat the findings as verified and the *absence* of further findings as less certain.
-2. **Privileged execution is partial.** See §7.1. Plan mode and the scratch-key round-trip are real executions, so registry restore is no longer a static-analysis claim. The three machine-wide components — BCD, service start types, power scheme — remain unexecuted and are still static claims.
+2. **Privileged execution is partial.** See §7.1. Plan mode, the scratch-key round-trip, the scratch-scheme round-trip, and the service capture round-trip are real executions, so registry restore and power-scheme reactivation are no longer static-analysis claims. Two machine-wide mutations remain unexecuted and are still static claims: `bcdedit /import` and `sc config`.
 3. **E2E suite unexercised.** 64 tests require a desktop session and were collected, not run.
 4. **Two exploit-demonstration commands were blocked** by the permission classifier and were not retried. The evidence already gathered was sufficient; working around the denial would have been the wrong move.
 5. **Awaiting review, not merged.** The work is committed in eight reviewable slices and pushed; PR #13 into `develop` is mergeable. Merging is a human decision. The branch was cut from `main` rather than `develop`, so `develop`'s auto-update commit (`6061e48`) conflicted with the updater hardening in this audit — resolved by taking the audit side after verifying function-by-function that it is a strict superset (`develop`'s `_spawn_relauncher` is the same relauncher, split into `_create_relauncher_script` + `_spawn_relauncher_script`), plus twelve functions `develop` lacks including Authenticode verification and the ACL-locked staging directory. `src/__init__.py` was resolved to import from the canonical `version.py` rather than either side's hard-coded literal.
@@ -257,7 +261,7 @@ Stated plainly so they are not discovered by a reviewer instead.
 ## 9. Suggested next actions, in order
 
 1. Review PR #13 and §7.2's retention decision, then merge into `develop`.
-2. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the remaining gate** — now scoped to the BCD, service, and power-scheme components only; the registry path is verified.
+2. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the remaining gate** — now scoped to two mutations only, `bcdedit /import` and `sc config`; the registry, power-scheme, and service-capture paths are verified here.
 3. Tag `v1.0.4` on `develop` once merged — the release workflow cross-checks all four version surfaces and will fail the build on any mismatch.
 4. `gh auth refresh -h github.com -s project` and create the Project.
 5. Advisor review and mock defence.
