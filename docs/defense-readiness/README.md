@@ -1,6 +1,6 @@
 # ClutchG Defense Readiness Pack
 
-**Current evidence date:** 2026-07-30  
+**Current evidence date:** 2026-08-06 (เอกสารหมายเลข 13–15; หมายเลข 01–12 ที่ลงวันที่ 2026-07-30 เป็น snapshot ของรอบนั้น อ่านเป็น historical change evidence)  
 **Purpose:** ชุดอ้างอิงสำหรับเตรียมสอบที่แยกข้อเท็จจริงที่ตรวจอัตโนมัติ หลักฐานภายนอก และงานที่ผู้วิจัยต้องลงนามเอง
 
 ## เอกสารในชุด
@@ -17,6 +17,9 @@
 10. [GitHub SDLC/ISO 29110 Governance](09-github-sdlc-governance-2026-07-30.md) — milestone, Issues #5–#11, PR #12 และ Project setup gate
 11. [De-AI Scan Report](10-de-ai-scan-report-2026-07-30.md) — scan-only findings ของ canonical root chapters; raw diagnostics อยู่ที่ `10-de-ai-scan-raw-2026-07-30.json`
 12. [Human Action Register](11-human-action-register-2026-07-30.md) — H-01…H-21 พร้อม owner, prerequisite, exit evidence และลำดับปิดงาน
+13. [Audit Handoff Record](12-audit-handoff-2026-08-05.md) — สิ่งที่ audit รอบนี้พิสูจน์ได้จริง, security correction, recovery reachability และงานที่เหลือของมนุษย์
+14. [Regression and Validation Report](13-regression-validation-report-2026-08-06.md) — closing validation pass, coverage สองสโคป, targeted re-scan, read-only runtime V&V และ residual risk register R-01…R-09
+15. [Evidence Manifest (current)](14-evidence-manifest-2026-08-06.json) — SHA-256 ของ artifact ปัจจุบันพร้อม revision, ตัวเลข validation และ residual risks แบบ machine-readable; สร้างใหม่ด้วย `python docs/defense-readiness/build-evidence-manifest.py`
 
 ## Source-of-truth order
 
@@ -28,7 +31,7 @@
 4. ISO/IEC 29110 work products ที่ปรับฐานหลักฐานแล้ว
 5. เอกสาร audit เก่า ใช้เป็น historical change evidence เท่านั้น
 
-ผลล่าสุดที่ใช้ในชุดนี้คือ release-equivalent suite: **765 collected, 762 passed, 3 skipped, 0 failed; total Python coverage 39%**. ผล Hyper-V 20/20 วันที่ 2026-04-12 เป็น historical V&V และไม่ใช้แทน current-source Sandbox revalidation
+ผลล่าสุดที่ใช้ในชุดนี้คือ revision `8359915` วันที่ 2026-08-06: **unit 1055 passed, integration 23 passed, combined 1078 passed, 0 failed; core-layer coverage 81% (target ≥70%), repository-wide 40%** — ดูรายละเอียดและวิธี reproduce ที่เอกสารหมายเลข 14. ตัวเลข **765 collected / 39%** ของ 2026-07-30 เป็น baseline เก่า ห้ามอ้างเป็นผลปัจจุบัน. ผล Hyper-V 20/20 วันที่ 2026-04-12 เป็น historical V&V และไม่ใช้แทน current-source Sandbox revalidation
 
 ## Status vocabulary
 

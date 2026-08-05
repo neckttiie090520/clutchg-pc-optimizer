@@ -1,0 +1,250 @@
+{
+ "schema_version": "1.1",
+ "generated_at": "2026-08-06T00:00:00+07:00",
+ "revision": "83599156d73b99c1acdf966157e17ba9035a1669",
+ "branch": "audit/project-verification-2026-07-29",
+ "commits_ahead_of_main": 23,
+ "environment": {
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.14.2",
+  "pytest": "9.0.2"
+ },
+ "validation": {
+  "unit": {
+   "passed": 1055,
+   "failed": 0
+  },
+  "integration": {
+   "passed": 23,
+   "failed": 0
+  },
+  "combined": {
+   "passed": 1078,
+   "failed": 0
+  },
+  "e2e": {
+   "collected": 64,
+   "run": 0,
+   "reason": "requires a live Windows desktop session"
+  },
+  "coverage_core_percent": 81,
+  "coverage_repository_percent": 40,
+  "coverage_core_target_percent": 70,
+  "compileall": "clean",
+  "targeted_rescan": {
+   "remediated_paths": {
+    "passed": 242,
+    "failed": 0
+   },
+   "security_and_durability": {
+    "passed": 131,
+    "deselected": 916,
+    "failed": 0
+   },
+   "truthfulness_guards": {
+    "passed": 118,
+    "failed": 0
+   }
+  },
+  "readonly_runtime_vv": {
+   "harness": "clutchg/tests/vv/verify-recovery-mechanism.bat",
+   "passed": 3,
+   "partial": 2,
+   "failed": 0,
+   "cases": {
+    "existing_value": "PASS",
+    "absent_value": "PASS",
+    "absent_key": "PASS",
+    "power_scheme": "PARTIAL:export-needs-elevation",
+    "service_capture": "PARTIAL:sc-config-needs-elevation"
+   }
+  },
+  "plan_mode": {
+   "backup": "rc=0 state=COMMITTED success=19 failed=0",
+   "rollback": "rc=0 state=COMPLETED success=18 failed=0",
+   "host_mutated": false
+  }
+ },
+ "residual_risks": [
+  {
+   "id": "R-01",
+   "summary": "bcdedit /import never executed against a real boot configuration",
+   "status": "EXTERNAL_VERIFICATION_REQUIRED"
+  },
+  {
+   "id": "R-02",
+   "summary": "sc config restore never executed; capture verified, restore not",
+   "status": "EXTERNAL_VERIFICATION_REQUIRED"
+  },
+  {
+   "id": "R-03",
+   "summary": "64 E2E tests collected, never run",
+   "status": "EXTERNAL_VERIFICATION_REQUIRED"
+  },
+  {
+   "id": "R-04",
+   "summary": "packaged installer signing and release provenance unverified",
+   "status": "EXTERNAL_VERIFICATION_REQUIRED"
+  },
+  {
+   "id": "R-05",
+   "summary": "journaled batch transactions accumulate without bound",
+   "status": "OPEN_BY_DECISION"
+  },
+  {
+   "id": "R-06",
+   "summary": "max_backups config key is read by nothing; negative values accepted",
+   "status": "OPEN_LOW"
+  },
+  {
+   "id": "R-07",
+   "summary": "findings verified by one reviewer, not two",
+   "status": "OPEN"
+  },
+  {
+   "id": "R-08",
+   "summary": "updater 66%, system_info 64%, paths 63% core coverage; privilege- and platform-bounded",
+   "status": "EXTERNAL_VERIFICATION_REQUIRED"
+  },
+  {
+   "id": "R-09",
+   "summary": "working tree not frozen; PR #13 into develop mergeable but not merged",
+   "status": "HUMAN_SIGN_OFF_REQUIRED"
+  }
+ ],
+ "scope": "Closing validation of the remediation recorded in 12-audit-handoff-2026-08-05.md.",
+ "source_state": "Working tree not frozen; hashes identify artifact contents at this revision, not a signed release baseline.",
+ "missing_artifacts": [],
+ "artifacts": [
+  {
+   "path": "docs/defense-readiness/README.md",
+   "sha256": "26ad79553471e283efc0c55a31b9401d5a3203e6195c76c597c575a1a5440ee6",
+   "bytes": 7130
+  },
+  {
+   "path": "docs/defense-readiness/01-current-evidence-matrix-2026-07-30.md",
+   "sha256": "cd1bd3741f321e74dd7f5635a471efad2e1f8d1eacee3fb077fe6bfe1218c892",
+   "bytes": 12078
+  },
+  {
+   "path": "docs/defense-readiness/02-defense-question-bank-2026-07-30.md",
+   "sha256": "b9dc02ec9d4e7ab1baad0671b0939571c102dbe6fb72559274b22dfd13f19bcb",
+   "bytes": 21821
+  },
+  {
+   "path": "docs/defense-readiness/03-human-validation-checklist-2026-07-30.md",
+   "sha256": "fd1a4725cafebca78845b24aa5313fdf7bc2e5933a78cf9b0f7784974febc65f",
+   "bytes": 10320
+  },
+  {
+   "path": "docs/defense-readiness/04-github-project-backlog-draft-2026-07-30.md",
+   "sha256": "ba22357324a5652ece9b7f321083f93c5b4b6fcb5a480e106994ca33201e98d7",
+   "bytes": 8084
+  },
+  {
+   "path": "docs/defense-readiness/05-read-only-thesis-audit-appendix-2026-07-30.md",
+   "sha256": "22fbfd98b2afd95338400d0e197ef35c30d193f67f0ca50af61156290b6ba83c",
+   "bytes": 13518
+  },
+  {
+   "path": "docs/defense-readiness/06-evidence-manifest-2026-07-30.json",
+   "sha256": "58e879561d6213b3fa25f3d2a4bad3917866f2d51ca0e089566212cfcd7d4f6e",
+   "bytes": 2647
+  },
+  {
+   "path": "docs/defense-readiness/07-thesis-toolchain-integration-plan-2026-07-30.md",
+   "sha256": "bd7de4d6d300ba1515ff78f07e17beafa730773f40c4e25bfd690c421fa27cdf",
+   "bytes": 3470
+  },
+  {
+   "path": "docs/defense-readiness/08-de-ai-editorial-protocol-2026-07-30.md",
+   "sha256": "3564894caf631e82de56916d177a79456d33db539c3a0d302f46b882d695725f",
+   "bytes": 7176
+  },
+  {
+   "path": "docs/defense-readiness/09-github-sdlc-governance-2026-07-30.md",
+   "sha256": "ff6db3b0b4a05dd75a845cbb688ef33da7ceda0bdda55d0e8ec1cd52e0ec6615",
+   "bytes": 8260
+  },
+  {
+   "path": "docs/defense-readiness/10-de-ai-scan-raw-2026-07-30.json",
+   "sha256": "7172327fa88ed934456d3be6c1790ba30b288e9e7a022810fd876de7a2e27cbc",
+   "bytes": 15195
+  },
+  {
+   "path": "docs/defense-readiness/10-de-ai-scan-report-2026-07-30.md",
+   "sha256": "11940642231affecd7cde48d7d8a4d48187cd4467b2ae75ec0cacb9e7a67d864",
+   "bytes": 6505
+  },
+  {
+   "path": "docs/defense-readiness/11-human-action-register-2026-07-30.md",
+   "sha256": "b3752fdc6d16c536061c69c206ee20ed172b63665bfd8838a03a0d24f9c9488d",
+   "bytes": 9752
+  },
+  {
+   "path": "docs/defense-readiness/12-audit-handoff-2026-08-05.md",
+   "sha256": "8d20882dbba8e6dc57173d59a80eff20c6c6c6bdf4214a254e0bbf6ed03369a7",
+   "bytes": 29461
+  },
+  {
+   "path": "docs/defense-readiness/13-regression-validation-report-2026-08-06.md",
+   "sha256": "9ca4149d94d520ce321f53d5ac88aefe5d746e8bc4811c716800d7ac258ec869",
+   "bytes": 13703
+  },
+  {
+   "path": "clutchg/tests/vv/verify-recovery-mechanism.bat",
+   "sha256": "e907781ec2a394eb297be52efa3777d2cb7c119abd00892bd7568516270aa6ad",
+   "bytes": 12666
+  },
+  {
+   "path": "clutchg/tests/unit/test_recovery_mechanism_contract.py",
+   "sha256": "635844c0405ad3d1e4991159a7e138a10e3eb697cf266c3a44a7505da1634a63",
+   "bytes": 11766
+  },
+  {
+   "path": "clutchg/tests/unit/test_plan_mode_gating.py",
+   "sha256": "f16bafacf07a6c61f4132ae534c11f2b6ab2133a7683ba8a4d32cdb45cc6ad49",
+   "bytes": 8724
+  },
+  {
+   "path": "clutchg/tests/unit/test_iso_metric_currency.py",
+   "sha256": "65f58d6fd20f5d1378f23276d37fd788be2ab5eccf7b9fad65a57926a38be437",
+   "bytes": 10069
+  },
+  {
+   "path": "clutchg/tests/unit/test_registry_claim_fidelity.py",
+   "sha256": "4d2df1b7a39130434fc59edb81b620e8a838195f2fa6a30b440f7903e7616494",
+   "bytes": 6931
+  },
+  {
+   "path": "clutchg/tests/unit/test_traceability_record_fidelity.py",
+   "sha256": "92a614cc5c4e84a9276bb247faaa5467fc247a8f0ddd89bc01c3117d96f0a581",
+   "bytes": 2682
+  },
+  {
+   "path": "src/backup/backup-registry.bat",
+   "sha256": "7ff95924a90add538403c915dcf9a39d05b66f131b13b2c8e512c3785c1311c0",
+   "bytes": 14134
+  },
+  {
+   "path": "src/safety/rollback.bat",
+   "sha256": "59face46606056bdf5c7e288571943b1caa25fb64e5b8fd46682b1f0876fdbf7",
+   "bytes": 23367
+  },
+  {
+   "path": "clutchg/src/core/batch_executor.py",
+   "sha256": "e45c038129914afc079f49442021a6b76fcb72d5b6d4e52734e886fc56786b54",
+   "bytes": 13243
+  },
+  {
+   "path": "clutchg/src/core/backup_manager.py",
+   "sha256": "67c1b754b415cc6ab42485fddd4b07cd81512d8bb25f6f8385e5dddc2e7cd168",
+   "bytes": 26533
+  },
+  {
+   "path": "clutchg/src/core/action_catalog.py",
+   "sha256": "ec84e1b096a15bdc18295dbd352505603fdeac4a73e98174db00b36e203da8a0",
+   "bytes": 25849
+  }
+ ]
+}

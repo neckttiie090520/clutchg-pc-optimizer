@@ -12,6 +12,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ISO_DIR = REPO_ROOT / "docs" / "iso29110-clutchg"
+DEFENSE_DIR = REPO_ROOT / "docs" / "defense-readiness"
 UNIT_DIR = REPO_ROOT / "clutchg" / "tests" / "unit"
 INTEGRATION_DIR = REPO_ROOT / "clutchg" / "tests" / "integration"
 
@@ -40,6 +41,23 @@ DOCUMENTS = (
     "08-Progress-Status-Record.md",
     "09-Configuration-Plan.md",
 )
+
+# The defense-readiness pack quotes the same measured figures to a panel, so it
+# needs the same guard. Only the documents that assert the *current* state are
+# listed: the 2026-07-30 files are a dated snapshot of that round and legitimately
+# carry the figures of the day, which is why they are excluded rather than fixed.
+DEFENSE_DOCUMENTS = (
+    "README.md",
+    "12-audit-handoff-2026-08-05.md",
+    "13-regression-validation-report-2026-08-06.md",
+)
+
+
+def _document_path(document: str) -> Path:
+    return (DEFENSE_DIR if document in DEFENSE_DOCUMENTS else ISO_DIR) / document
+
+
+ALL_DOCUMENTS = DOCUMENTS + DEFENSE_DOCUMENTS
 
 
 def _is_history_line(line: str) -> bool:
@@ -81,10 +99,10 @@ def _count_test_functions(directory: Path) -> int:
 
 @pytest.mark.unit
 class TestIsoMetricCurrency:
-    @pytest.mark.parametrize("document", DOCUMENTS)
+    @pytest.mark.parametrize("document", ALL_DOCUMENTS)
     def test_no_superseded_metric_is_stated_as_current(self, document):
-        path = ISO_DIR / document
-        assert path.is_file(), f"Missing ISO work product: {document}"
+        path = _document_path(document)
+        assert path.is_file(), f"Missing work product: {document}"
 
         offenders = []
         for number, line in enumerate(
@@ -105,7 +123,7 @@ class TestIsoMetricCurrency:
         assert unit_defined >= 300, unit_defined
         assert integration_defined >= 10, integration_defined
 
-    @pytest.mark.parametrize("document", DOCUMENTS)
+    @pytest.mark.parametrize("document", ALL_DOCUMENTS)
     def test_no_recorded_total_exceeds_the_collectable_suite(self, document):
         """A recorded pass count must be achievable by the tests that exist.
 
@@ -119,7 +137,7 @@ class TestIsoMetricCurrency:
             COLLECTED_PER_DEFINED_HEADROOM
             * (_count_test_functions(UNIT_DIR) + _count_test_functions(INTEGRATION_DIR))
         ) + EXTERNALLY_COUNTED_CASES
-        path = ISO_DIR / document
+        path = _document_path(document)
         offenders = []
         for number, line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1
@@ -177,3 +195,37 @@ class TestGuardDiscriminates:
 
     def test_bare_stale_token_is_caught(self):
         assert _stale_tokens_in("| Current | 400+ tests | |") == ["400+"]
+
+    def test_the_defense_pack_is_actually_scanned(self):
+        """The defense documents must be reachable, or the extension is decoration.
+
+        A path typo would make every defense-document parametrisation resolve to a
+        missing file — which the assertion inside the guard would catch — but a
+        directory that silently exists with no matching names would not. This pins
+        both: each listed defense document resolves under ``defense-readiness`` and
+        exists on disk.
+        """
+        assert DEFENSE_DOCUMENTS, "the defense pack must not be empty"
+        for document in DEFENSE_DOCUMENTS:
+            path = _document_path(document)
+            assert path.parent == DEFENSE_DIR, (
+                f"{document} resolved to {path.parent}, not the defense pack"
+            )
+            assert path.is_file(), f"missing defense document: {document}"
+
+    def test_a_stale_claim_in_a_defense_document_would_be_caught(self):
+        """Proves the rules applied to the defense pack can fail.
+
+        Read the real document and confirm it is clean, then confirm the same
+        scanner flags an injected violation. Without the second half, a passing
+        result would be indistinguishable from a scanner that inspects nothing.
+        """
+        path = _document_path("13-regression-validation-report-2026-08-06.md")
+        real = path.read_text(encoding="utf-8").splitlines()
+        assert not [line for line in real if _stale_tokens_in(line)]
+
+        injected = "| Unit tests | 400+ passed | current |"
+        assert _stale_tokens_in(injected) == ["400+"]
+        assert not _is_history_line(injected), (
+            "an injected current-state row must not be exempted as history"
+        )

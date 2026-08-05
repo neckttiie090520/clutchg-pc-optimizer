@@ -24,12 +24,12 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 1047 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 1055 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 1070 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 1078 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
-| Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
+| Repository-wide coverage | 40% | `cd clutchg && python -m pytest tests/unit tests/integration` |
 | Syntax | clean | `python -m compileall -q clutchg/src` |
 | Tweak registry | 44 records — LOW 34, MEDIUM 9, HIGH 1 | `core/tweak_registry.py` |
 | Audited executable contracts | 3 | `core/action_catalog.py` |
@@ -155,7 +155,7 @@ Verification now stands in three layers. The first two are complete; the third i
 
 | Layer | Proves | Status |
 |---|---|---|
-| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1070 tests |
+| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1078 tests |
 | Plan-mode execution | Dispatch, validation, manifest shape, control flow, the full 19/18-component plans | **Complete** — both engines rc=0, nothing mutated |
 | Scratch-key round-trip | `reg add`/`reg delete` genuinely restore captured value state (15 of 19 components) | **Complete** — 3/3 cases pass |
 | Scratch-scheme round-trip | `powercfg /getactivescheme` capture and `/setactive` restore (1 further component) | **Complete** — reactivation verified; `/export` needs elevation |
