@@ -24,9 +24,9 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 1026 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 1038 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 1049 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 1061 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
 | Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
@@ -149,13 +149,22 @@ Seven records asserted behaviour the engine does not implement. All were correct
 
 These cannot be closed by tooling and are the gate to defence readiness.
 
-### 7.1 Privileged runtime verification (highest priority)
+### 7.1 Privileged runtime verification
 
-Everything in §3–§6 is static and unit-level. **No privileged mutation has been executed on a host.** Required before any thesis claim of runtime validation:
+Verification now stands in three layers. The first two are complete; the third is what remains.
+
+| Layer | Proves | Status |
+|---|---|---|
+| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1061 tests |
+| Plan-mode execution | Dispatch, validation, manifest shape, control flow, the full 19/18-component plans | **Complete** — both engines rc=0, nothing mutated |
+| Scratch-key round-trip | `reg add`/`reg delete` genuinely restore captured value state (15 of 19 components) | **Complete** — 3/3 cases pass |
+| VM privileged run | `bcdedit /import`, `sc config`, `powercfg /setactive` against real machine state | **Outstanding** |
+
+What the VM run still needs to cover, now narrowed to the three machine-wide components:
 
 1. In a disposable Windows Sandbox or VM, run each of the three audited actions.
-2. Preserve the committed backup ID, `manifest.ini`, `journal.log`, and before/after registry evidence.
-3. Restore the exact backup leaf and confirm every captured value returns to its original existence and data state.
+2. Preserve the committed backup ID, `manifest.ini`, `journal.log`, and before/after evidence for the BCD store, the affected services' start types, and the active power scheme GUID.
+3. Restore the exact backup leaf and confirm each of those three returns to its recorded state. (The registry components are already verified — see the scratch-key result below.)
 4. Test cancellation and an injected command failure *after* snapshot commit.
 5. Record exact counts, durations, and environment.
 
@@ -180,9 +189,30 @@ No parse errors, no label-resolution errors, and nothing written to `BACKUPS_DIR
 
 Notably the first two meant a **committed** backup transaction still reported failure, and the third made restore hang — all three sat in the recovery path this audit exists to certify, and none was visible to any static or unit check. Each is now pinned by a regression test that runs against every shipped `.bat` file rather than a fixture.
 
-**What plan mode still does not establish.** It proves dispatch, argument validation, manifest shape, control flow, and now the full 19-component plan for backup and 18 for restore. It does **not** prove that `reg add` restores the captured value, that `bcdedit /import` succeeds, or that a service returns to its recorded start type. Those need the VM. Plan mode substantially de-risks that run — it would have caught all three defects above before anyone booted a VM — but it does not replace it.
+**What plan mode still does not establish — and what now does.** Plan mode proves dispatch, argument validation, manifest shape, control flow, and the full 19-component backup plan and 18-component restore plan. It never calls `reg add`, so it cannot prove the capture/restore pair actually round-trips a value.
 
-To reproduce from an elevated `cmd.exe`:
+That claim is now verified independently, without a VM. `clutchg/tests/vv/verify-recovery-mechanism.bat` copies the capture block from `backup-registry.bat::backup_registry_value` and the restore block from `rollback.bat::restore_registry_value` **verbatim**, then drives them against a scratch key it creates and deletes — `HKCU\Software\ClutchG-VV-Scratch`. No real Windows setting is touched, so it is safe on a development machine. Result (2026-08-05):
+
+```
+CASE|existing_value|PASS|restored=0x7          value was 0x7, mutated to 999, restored to 0x7
+CASE|absent_value|PASS|value-removed-key-kept  value absent, added, then removed; key preserved
+CASE|absent_key|PASS|key-removed               key absent, created, then removed entirely
+RESULT|passed=3|failed=0
+```
+
+All three recovery cases the engine implements round-trip correctly against the real registry. The scratch key was confirmed absent before the run and absent after.
+
+Two things make this trustworthy rather than theatre. It was **mutation-tested**: replacing `/d "!VALUE_DATA!"` with `/d 0` in the restore makes case 1 fail with `data=0x0|expected=0x7`, so the harness can detect a broken mechanism. And because a verbatim copy can fossilise, `tests/unit/test_recovery_mechanism_contract.py` asserts every capture and restore statement still appears in **both** the harness and the shipped engine, and that the harness writes only to the scratch key — 12 cases, itself mutation-tested by introducing drift and confirming the contract fails.
+
+**What genuinely still needs a VM.** Three things remain outside what a scratch key can prove: `bcdedit /import` restoring the boot configuration, `sc config` returning a service to its recorded start type, and `powercfg /setactive` reactivating the captured scheme. Each mutates machine-wide state with no safe scratch equivalent. The registry path — which is 15 of the 19 components — is now verified.
+
+To reproduce:
+
+```
+clutchg\tests\vv\verify-recovery-mechanism.bat %TEMP%\clutchg-vv-state
+```
+
+And for plan mode, from an elevated `cmd.exe`:
 
 ```
 set CLUTCHG_DRY_RUN=1
@@ -213,7 +243,7 @@ Deliberately **not** fixed. The product's non-negotiable constraint is that ever
 Stated plainly so they are not discovered by a reviewer instead.
 
 1. **Sub-agent dispatch was unreliable; the affected lenses were then covered directly.** Multiple dispatched review agents terminated on API quota errors or stopped without reporting. The two substantive lenses they were meant to cover — GUI/threading and batch-engine semantics — were subsequently completed by direct review (see §5.1 and §5.2) and both produced findings. What did *not* happen is the independent-corroboration layer: every finding in this record was verified by reading code and running read-only probes, but by one reviewer rather than two. Treat the findings as verified and the *absence* of further findings as less certain.
-2. **No privileged execution.** See §7.1. Any statement about rollback behaviour is a static-analysis claim.
+2. **Privileged execution is partial.** See §7.1. Plan mode and the scratch-key round-trip are real executions, so registry restore is no longer a static-analysis claim. The three machine-wide components — BCD, service start types, power scheme — remain unexecuted and are still static claims.
 3. **E2E suite unexercised.** 64 tests require a desktop session and were collected, not run.
 4. **Two exploit-demonstration commands were blocked** by the permission classifier and were not retried. The evidence already gathered was sufficient; working around the denial would have been the wrong move.
 5. **Awaiting review, not merged.** The work is committed in eight reviewable slices and pushed; PR #13 into `develop` is mergeable. Merging is a human decision. The branch was cut from `main` rather than `develop`, so `develop`'s auto-update commit (`6061e48`) conflicted with the updater hardening in this audit — resolved by taking the audit side after verifying function-by-function that it is a strict superset (`develop`'s `_spawn_relauncher` is the same relauncher, split into `_create_relauncher_script` + `_spawn_relauncher_script`), plus twelve functions `develop` lacks including Authenticode verification and the ACL-locked staging directory. `src/__init__.py` was resolved to import from the canonical `version.py` rather than either side's hard-coded literal.
@@ -223,7 +253,7 @@ Stated plainly so they are not discovered by a reviewer instead.
 ## 9. Suggested next actions, in order
 
 1. Review PR #13 and §7.2's retention decision, then merge into `develop`.
-2. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the gate**; everything above it is static and unit-level.
+2. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the remaining gate** — now scoped to the BCD, service, and power-scheme components only; the registry path is verified.
 3. Tag `v1.0.4` on `develop` once merged — the release workflow cross-checks all four version surfaces and will fail the build on any mismatch.
 4. `gh auth refresh -h github.com -s project` and create the Project.
 5. Advisor review and mock defence.
