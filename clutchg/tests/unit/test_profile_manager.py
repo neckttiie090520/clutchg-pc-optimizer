@@ -5,9 +5,12 @@ Migrated from test_core.py to use pytest framework.
 Tests profile management and script association.
 """
 
+import json
 import pytest
 import sys
+import threading
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
@@ -17,9 +20,9 @@ from core.profile_manager import ProfileManager
 
 # Module-level fixtures (available to all test classes)
 @pytest.fixture
-def scripts_dir():
-    """Get scripts directory path"""
-    return Path(__file__).parent.parent.parent.parent / "src"
+def scripts_dir(tmp_path):
+    """Provide an isolated scripts directory; tests must never modify repo source."""
+    return tmp_path / "scripts"
 
 
 @pytest.fixture
@@ -79,9 +82,11 @@ class TestProfileManager:
             assert isinstance(profile.expected_fps_gain, tuple)
             assert len(profile.expected_fps_gain) == 2
 
-            # Should have scripts list
+            # Should have scripts and a user-visible execution manifest
             assert profile.scripts is not None
             assert isinstance(profile.scripts, list)
+            assert profile.operations
+            assert isinstance(profile.operations, tuple)
 
             # Should have requires_restart flag
             assert isinstance(profile.requires_restart, bool)
@@ -118,16 +123,30 @@ class TestProfileManager:
         assert fps_gains["EXTREME"][1] >= fps_gains["COMPETITIVE"][1]
 
     def test_profile_scripts(self, manager):
-        """Test that profiles have associated scripts"""
+        """Profiles expose exact distinct module manifests."""
+        expected_scripts = {
+            "SAFE": {
+                "core/power-manager.bat",
+                "profiles/safe-profile.bat",
+            },
+            "COMPETITIVE": {
+                "core/power-manager.bat",
+                "core/service-manager.bat",
+                "profiles/competitive-profile.bat",
+            },
+            "EXTREME": {
+                "core/power-manager.bat",
+                "core/bcdedit-manager.bat",
+                "core/service-manager.bat",
+                "profiles/extreme-profile.bat",
+            },
+        }
+
         profiles = manager.get_all_profiles()
-
         for profile in profiles:
-            # All profiles should have at least some scripts
-            # (or at minimum, scripts field should exist)
-            assert profile.scripts is not None
+            assert set(profile.scripts) == expected_scripts[profile.name]
 
-            # Scripts should be a list
-            assert isinstance(profile.scripts, list)
+        assert len({tuple(profile.operations) for profile in profiles}) == 3
 
 
 @pytest.mark.unit
@@ -249,103 +268,83 @@ class TestVerifyScripts:
 
 
 @pytest.mark.unit
-class TestApplyProfileMocked:
-    """Test apply_profile() with mocked dependencies"""
+class TestApplyProfileTransaction:
+    """Profiles execute once through the mandatory transaction owner."""
 
-    def test_apply_profile_without_backup(self, manager, tmp_path, monkeypatch):
-        """Test applying profile without auto-backup"""
-        from unittest.mock import MagicMock
+    @staticmethod
+    def _write_orchestrator(manager):
+        orchestrator = manager.scripts_dir / "optimizer.bat"
+        orchestrator.parent.mkdir(parents=True, exist_ok=True)
+        orchestrator.write_text("@echo off\n", encoding="utf-8")
+        return orchestrator
+
+    def test_profile_rejects_disabled_recovery_before_executor(self, manager):
+        profile = manager.get_profile("SAFE")
+
+        with patch("core.profile_manager.BatchExecutor") as executor_cls:
+            result = manager.apply_profile(profile, auto_backup=False)
+
+        assert result.success is False
+        assert "cannot be disabled" in result.errors.lower()
+        executor_cls.assert_not_called()
+
+    @pytest.mark.parametrize("profile_name", ["SAFE", "COMPETITIVE", "EXTREME"])
+    def test_profile_dispatches_exactly_one_optimizer_transaction(
+        self, manager, profile_name
+    ):
         from core.batch_executor import ExecutionResult
-        
-        # Mock executor to avoid running real scripts
-        mock_result = ExecutionResult(
-            success=True,
-            output="Mock output",
-            errors="",
-            return_code=0,
-            duration=0.1
+
+        orchestrator = self._write_orchestrator(manager)
+        success = ExecutionResult(True, "done", "", 0, 0.1)
+
+        with patch("core.profile_manager.BatchExecutor") as executor_cls:
+            executor_cls.return_value.execute.return_value = success
+            result = manager.apply_profile(manager.get_profile(profile_name))
+
+        assert result is success
+        executor_cls.assert_called_once()
+        executor_cls.return_value.execute.assert_called_once_with(
+            orchestrator,
+            args=["apply-profile", profile_name],
         )
-        
-        mock_executor = MagicMock()
-        mock_executor.execute.return_value = mock_result
-        
-        # Replace executor
-        manager.executor = mock_executor
-        
-        # Create fake scripts
-        profile = manager.get_profile("SAFE")
-        for script_rel in profile.scripts:
-            script_path = manager.scripts_dir / script_rel
-            script_path.parent.mkdir(parents=True, exist_ok=True)
-            script_path.write_text("@echo off\necho test")
-        
-        # Apply without backup
-        result = manager.apply_profile(profile, auto_backup=False)
-        
-        assert result is not None
-        assert isinstance(result, ExecutionResult)
+        assert manager.get_active_profile() == profile_name
 
-    def test_apply_profile_sets_active(self, manager, monkeypatch):
-        """Test that successful apply_profile sets active_profile"""
-        from unittest.mock import MagicMock
+    def test_failed_transaction_does_not_set_active_profile(self, manager):
         from core.batch_executor import ExecutionResult
-        
-        mock_result = ExecutionResult(success=True, output="", errors="", return_code=0, duration=0.1)
-        mock_executor = MagicMock()
-        mock_executor.execute.return_value = mock_result
-        manager.executor = mock_executor
-        
-        profile = manager.get_profile("SAFE")
-        
-        # Create fake scripts
-        for script_rel in profile.scripts:
-            script_path = manager.scripts_dir / script_rel
-            script_path.parent.mkdir(parents=True, exist_ok=True)
-            script_path.write_text("@echo off")
-        
-        result = manager.apply_profile(profile, auto_backup=False)
-        
-        if result.success:
-            assert manager.get_active_profile() == "SAFE"
 
-    def test_apply_profile_with_callbacks(self, manager, monkeypatch):
-        """Test apply_profile with output and progress callbacks"""
-        from unittest.mock import MagicMock
+        self._write_orchestrator(manager)
+        failure = ExecutionResult(False, "", "module failed", 1, 0.1)
+
+        with patch("core.profile_manager.BatchExecutor") as executor_cls:
+            executor_cls.return_value.execute.return_value = failure
+            result = manager.apply_profile(manager.get_profile("SAFE"))
+
+        assert result is failure
+        assert manager.get_active_profile() is None
+
+    def test_profile_callbacks_are_bound_to_transaction_executor(self, manager):
         from core.batch_executor import ExecutionResult
-        
-        mock_result = ExecutionResult(success=True, output="test", errors="", return_code=0, duration=0.1)
-        mock_executor = MagicMock()
-        mock_executor.execute.return_value = mock_result
-        manager.executor = mock_executor
-        
-        profile = manager.get_profile("SAFE")
-        
-        # Create fake scripts
-        for script_rel in profile.scripts:
-            script_path = manager.scripts_dir / script_rel
-            script_path.parent.mkdir(parents=True, exist_ok=True)
-            script_path.write_text("@echo off")
-        
+
+        self._write_orchestrator(manager)
+        success = ExecutionResult(True, "done", "", 0, 0.1)
         output_lines = []
         progress_values = []
-        
-        def on_output(line):
-            output_lines.append(line)
-        
-        def on_progress(pct):
-            progress_values.append(pct)
-        
-        result = manager.apply_profile(
-            profile,
-            on_output=on_output,
-            on_progress=on_progress,
-            auto_backup=False
+
+        with patch("core.profile_manager.BatchExecutor") as executor_cls:
+            executor_cls.return_value.execute.return_value = success
+            result = manager.apply_profile(
+                manager.get_profile("SAFE"),
+                on_output=output_lines.append,
+                on_progress=progress_values.append,
+            )
+
+        assert result.success is True
+        executor_cls.assert_called_once_with(
+            on_output=output_lines.append,
+            on_progress=progress_values.append,
         )
-        
-        # Callbacks should have been called
-        assert len(output_lines) > 0
-        assert len(progress_values) > 0
-        assert 100 in progress_values  # Final progress
+        assert output_lines
+        assert progress_values == [0, 100]
 
 
 @pytest.mark.unit
@@ -397,6 +396,105 @@ class TestApplyTweaksMocked:
             
             assert result is not None
             assert isinstance(result, ExecutionResult)
+
+
+@pytest.mark.unit
+class TestSharedExecutionGate:
+    """Profile and tweak jobs share one cancellation-aware mutation slot."""
+
+    def test_tweak_job_is_rejected_while_profile_slot_is_held(self, manager):
+        assert manager._begin_execution() is True
+        try:
+            result = manager.apply_tweaks(["tel_xbox_dvr"], auto_backup=False)
+        finally:
+            manager._end_execution()
+
+        assert result.success is False
+        assert "already in progress" in result.errors.lower()
+
+    def test_cancel_current_execution_forwards_to_active_executor(self, manager):
+        executor = MagicMock()
+        assert manager._begin_execution() is True
+        manager._active_executor = executor
+        try:
+            assert manager.cancel_current_execution() is True
+            assert manager._cancel_requested.is_set()
+            executor.cancel.assert_called_once_with()
+        finally:
+            manager._end_execution()
+
+    def test_validation_failure_releases_tweak_slot(self, manager):
+        result = manager.apply_tweaks(["does_not_exist"], auto_backup=False)
+
+        assert result.success is False
+        assert manager._is_executing is False
+        assert manager._execution_lock.acquire(blocking=False) is True
+        manager._execution_lock.release()
+
+    def test_cancel_without_active_job_returns_false(self, manager):
+        assert manager.cancel_current_execution() is False
+
+    def test_cancel_between_executor_creation_and_publication_prevents_spawn(
+        self, manager
+    ):
+        optimizer = manager.scripts_dir / "optimizer.bat"
+        optimizer.parent.mkdir(parents=True, exist_ok=True)
+        optimizer.write_text("@echo off\nexit /b 0\n", encoding="utf-8")
+        executor = MagicMock()
+
+        def construct_executor(*args, **kwargs):
+            assert manager.cancel_current_execution() is True
+            return executor
+
+        with patch(
+            "core.profile_manager.BatchExecutor", side_effect=construct_executor
+        ):
+            result = manager.apply_profile(manager.get_profile("SAFE"))
+
+        assert result.success is False
+        assert "cancelled" in result.errors.lower()
+        executor.cancel.assert_called_once_with()
+        executor.execute.assert_not_called()
+        assert manager._is_executing is False
+
+    def test_profile_pre_cancel_stops_before_backup_or_executor(self, manager):
+        cancellation_event = threading.Event()
+        cancellation_event.set()
+        profile = manager.get_profile("SAFE")
+
+        with (
+            patch("core.backup_manager.BackupManager") as backup_manager,
+            patch("core.profile_manager.BatchExecutor") as executor,
+        ):
+            result = manager.apply_profile(
+                profile,
+                cancellation_event=cancellation_event,
+            )
+
+        assert result.success is False
+        assert "cancelled" in result.errors.lower()
+        backup_manager.assert_not_called()
+        executor.assert_not_called()
+        assert manager._is_executing is False
+
+    def test_tweak_pre_cancel_stops_before_backup_or_executor(self, manager):
+        cancellation_event = threading.Event()
+        cancellation_event.set()
+
+        with (
+            patch("core.backup_manager.BackupManager") as backup_manager,
+            patch("core.profile_manager.BatchExecutor") as executor,
+        ):
+            result = manager.apply_tweaks(
+                ["tel_xbox_dvr"],
+                cancellation_event=cancellation_event,
+            )
+
+        assert result.success is False
+        assert "cancelled" in result.errors.lower()
+        backup_manager.assert_not_called()
+        executor.assert_not_called()
+        assert manager._is_executing is False
 
 
 @pytest.mark.unit
@@ -520,3 +618,67 @@ class TestExportImportPreset:
             assert imported["tweak_ids"] == original_tweaks
         finally:
             manager.import_preset_from_file = original_method
+
+
+@pytest.mark.unit
+class TestCustomPresetPersistence:
+    """A corrupt presets file must not be silently converted into data loss.
+
+    The original code swallowed a read failure and treated the file as empty,
+    then wrote back only the new entry — discarding every other saved preset
+    with nothing logged. The write was also non-atomic, so an interruption left
+    truncated JSON that ``load_custom_presets`` reads as "no presets at all".
+    """
+
+    @staticmethod
+    def _manager():
+        from core.profile_manager import ProfileManager
+
+        return ProfileManager(batch_scripts_dir=Path("../src"))
+
+    def test_saving_a_preset_preserves_the_others(self, tmp_path):
+        presets_file = tmp_path / "custom_presets.json"
+        with patch(
+            "core.profile_manager.custom_presets_file", return_value=presets_file
+        ):
+            manager = self._manager()
+            assert manager.save_custom_preset("alpha", ["t1"]) is True
+            assert manager.save_custom_preset("beta", ["t2"]) is True
+
+            stored = json.loads(presets_file.read_text(encoding="utf-8"))
+            assert sorted(stored) == ["alpha", "beta"]
+
+    def test_unreadable_file_is_refused_rather_than_overwritten(self, tmp_path):
+        presets_file = tmp_path / "custom_presets.json"
+        truncated = '{"alpha": ["t1"], "beta": '
+        presets_file.write_text(truncated, encoding="utf-8")
+
+        with patch(
+            "core.profile_manager.custom_presets_file", return_value=presets_file
+        ):
+            manager = self._manager()
+            assert manager.save_custom_preset("gamma", ["t3"]) is False
+
+        assert presets_file.read_text(encoding="utf-8") == truncated
+
+    def test_non_object_file_is_refused(self, tmp_path):
+        presets_file = tmp_path / "custom_presets.json"
+        presets_file.write_text('["not", "an", "object"]', encoding="utf-8")
+
+        with patch(
+            "core.profile_manager.custom_presets_file", return_value=presets_file
+        ):
+            manager = self._manager()
+            assert manager.save_custom_preset("gamma", ["t3"]) is False
+
+    def test_write_leaves_no_temporary_file_behind(self, tmp_path):
+        presets_file = tmp_path / "custom_presets.json"
+        with patch(
+            "core.profile_manager.custom_presets_file", return_value=presets_file
+        ):
+            self._manager().save_custom_preset("alpha", ["t1"])
+
+        strays = [
+            p.name for p in tmp_path.iterdir() if p.name.startswith(".custom_presets-")
+        ]
+        assert strays == []

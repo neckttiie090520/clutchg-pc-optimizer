@@ -9,12 +9,15 @@ from typing import Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+import os
+import tempfile
 import threading
 
+from core.action_catalog import TweakExecutionCatalog
 from core.batch_executor import BatchExecutor, ExecutionResult
 from core.batch_parser import BatchParser, BatchScript
 from core.paths import config_dir as _default_config_dir, custom_presets_file
-from core.tweak_registry import get_tweak_registry, TweakRegistry, Tweak
+from core.tweak_registry import get_tweak_registry, TweakRegistry
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -37,8 +40,9 @@ class Profile:
     description: str
     icon: str
     risk_level: RiskLevel
-    expected_fps_gain: tuple[int, int]  # (min, max)
-    scripts: List[str]  # Relative paths to batch files
+    expected_fps_gain: tuple[int, int]  # Historical compatibility; zero means measure.
+    scripts: List[str]  # Relative paths participating in this profile.
+    operations: tuple[str, ...]  # User-visible canonical execution manifest.
     warnings: List[str]
     requires_restart: bool
     requires_confirmation: bool = False
@@ -57,15 +61,87 @@ class ProfileManager:
         self.scripts_dir = Path(batch_scripts_dir)
         self.parser = BatchParser(self.scripts_dir)
         self.executor = BatchExecutor()
+        self.execution_catalog = TweakExecutionCatalog(self.scripts_dir)
         self.profiles = self._load_profiles()
         self.active_profile: Optional[str] = None
 
-        # BUG-014 FIX: Add execution lock to prevent concurrent profile application
-        # Prevents race conditions when multiple threads try to apply profiles
+        # Shared admission gate for every profile/tweak transaction.
         self._execution_lock = threading.Lock()
+        self._execution_state_lock = threading.Lock()
         self._is_executing = False
+        self._active_executor: Optional[BatchExecutor] = None
+        self._cancel_requested = threading.Event()
 
         logger.info("Profile manager initialized")
+
+    def _begin_execution(self) -> bool:
+        """Atomically claim the single system-mutation execution slot."""
+        if not self._execution_lock.acquire(blocking=False):
+            return False
+        with self._execution_state_lock:
+            self._is_executing = True
+            self._active_executor = None
+            self._cancel_requested.clear()
+        return True
+
+    def _end_execution(self) -> None:
+        """Release the execution slot after clearing cancellation state."""
+        with self._execution_state_lock:
+            self._active_executor = None
+            self._cancel_requested.clear()
+            self._is_executing = False
+        self._execution_lock.release()
+
+    def _activate_executor(self, executor: BatchExecutor) -> bool:
+        """Publish an executor atomically with respect to cancellation."""
+        with self._execution_state_lock:
+            if not self._is_executing:
+                return False
+            self._active_executor = executor
+            cancelled = self._cancel_requested.is_set()
+        if cancelled:
+            executor.cancel()
+            return False
+        return True
+
+    def cancel_current_execution(self) -> bool:
+        """Request cancellation and terminate the currently active batch process."""
+        with self._execution_state_lock:
+            if not self._is_executing:
+                return False
+            self._cancel_requested.set()
+            executor = self._active_executor
+        if executor is not None:
+            executor.cancel()
+        return True
+
+    def _is_cancelled(
+        self, cancellation_event: Optional[threading.Event] = None
+    ) -> bool:
+        """Merge a caller-owned early-cancel event into the active transaction."""
+        if cancellation_event is not None and cancellation_event.is_set():
+            self._cancel_requested.set()
+        return self._cancel_requested.is_set()
+
+    @staticmethod
+    def _busy_result() -> ExecutionResult:
+        return ExecutionResult(
+            success=False,
+            output="",
+            errors="Another profile or tweak application is already in progress",
+            return_code=-1,
+            duration=0,
+        )
+
+    @staticmethod
+    def _cancelled_result(duration: float = 0) -> ExecutionResult:
+        return ExecutionResult(
+            success=False,
+            output="",
+            errors="Execution cancelled by user",
+            return_code=-1,
+            duration=duration,
+        )
 
     def _load_profiles(self) -> Dict[str, Profile]:
         """Load profile definitions"""
@@ -73,35 +149,39 @@ class ProfileManager:
             "SAFE": Profile(
                 name="SAFE",
                 display_name="Safe Mode",
-                description="Minimal optimizations with maximum safety",
+                description="Activate the built-in High Performance power scheme",
                 icon="🛡️",
                 risk_level=RiskLevel.LOW,
-                expected_fps_gain=(2, 5),
+                expected_fps_gain=(0, 0),
                 scripts=[
                     "core/power-manager.bat",
                     "profiles/safe-profile.bat",
                 ],
-                warnings=["A system restart is recommended after applying changes"],
+                operations=("Activate High Performance power scheme",),
+                warnings=["Power consumption and heat may increase"],
                 requires_restart=False,
                 requires_confirmation=False,
             ),
             "COMPETITIVE": Profile(
                 name="COMPETITIVE",
                 display_name="Competitive Mode",
-                description="Balanced performance optimizations",
+                description="Power scheme plus guarded non-critical service tuning",
                 icon="⚔️",
                 risk_level=RiskLevel.MEDIUM,
-                expected_fps_gain=(5, 10),
+                expected_fps_gain=(0, 0),
                 scripts=[
                     "core/power-manager.bat",
                     "core/service-manager.bat",
-                    "core/network-manager.bat",
                     "profiles/competitive-profile.bat",
                 ],
+                operations=(
+                    "Activate High Performance power scheme",
+                    "Tune non-critical services with hardware guards",
+                ),
                 warnings=[
-                    "Some services will be disabled",
-                    "Network settings will be modified",
-                    "A system restart is required",
+                    "Some non-critical services will be disabled or set to manual",
+                    "Search, Xbox, printing, location, or device features may change",
+                    "A restart is recommended",
                 ],
                 requires_restart=True,
                 requires_confirmation=False,
@@ -109,23 +189,25 @@ class ProfileManager:
             "EXTREME": Profile(
                 name="EXTREME",
                 display_name="Extreme Mode",
-                description="Aggressive performance optimizations",
+                description="Maximum audited profile: power, guarded services, and BCD tuning",
                 icon="🔥",
                 risk_level=RiskLevel.HIGH,
-                expected_fps_gain=(10, 15),
+                expected_fps_gain=(0, 0),
                 scripts=[
                     "core/power-manager.bat",
                     "core/bcdedit-manager.bat",
                     "core/service-manager.bat",
-                    "core/network-manager.bat",
                     "profiles/extreme-profile.bat",
                 ],
+                operations=(
+                    "Activate High Performance power scheme",
+                    "Tune non-critical services with hardware guards",
+                    "Apply seven reversible BCDEdit settings",
+                ),
                 warnings=[
-                    "⚠️ EXTREME profile applies aggressive optimizations",
-                    "May cause system instability on some configurations",
-                    "Extensive service disabling may break functionality",
-                    "BCDEdit changes require system restart",
-                    "Recommended for advanced users only",
+                    "Changes boot configuration and requires a restart",
+                    "Some non-critical services will be disabled or set to manual",
+                    "Use the committed recovery snapshot if compatibility degrades",
                 ],
                 requires_restart=True,
                 requires_confirmation=True,
@@ -154,6 +236,8 @@ class ProfileManager:
         on_output: Optional[Callable] = None,
         on_progress: Optional[Callable] = None,
         auto_backup: bool = True,
+        *,
+        cancellation_event: Optional[threading.Event] = None,
     ) -> ExecutionResult:
         """
         Apply an optimization profile
@@ -167,25 +251,20 @@ class ProfileManager:
         Returns:
             ExecutionResult with overall result
         """
-        # BUG-014 FIX: Prevent concurrent profile application
-        if self._is_executing:
-            logger.warning("Profile application already in progress")
-            return ExecutionResult(
-                success=False,
-                output="",
-                errors="Profile application already in progress",
-                return_code=-1,
-                duration=0,
-            )
+        if not self._begin_execution():
+            logger.warning("Another profile or tweak application is already in progress")
+            return self._busy_result()
 
-        with self._execution_lock:
-            self._is_executing = True
-            try:
-                return self._do_apply_profile(
-                    profile, on_output, on_progress, auto_backup
-                )
-            finally:
-                self._is_executing = False
+        try:
+            return self._do_apply_profile(
+                profile,
+                on_output,
+                on_progress,
+                auto_backup,
+                cancellation_event,
+            )
+        finally:
+            self._end_execution()
 
     def _do_apply_profile(
         self,
@@ -193,109 +272,68 @@ class ProfileManager:
         on_output: Optional[Callable] = None,
         on_progress: Optional[Callable] = None,
         auto_backup: bool = True,
+        cancellation_event: Optional[threading.Event] = None,
     ) -> ExecutionResult:
-        """Internal method to apply profile (called with lock held)"""
-        logger.info(f"Applying profile: {profile.name}")
+        """Apply one profile through the transactional optimizer entrypoint."""
         import time
 
         profile_start = time.time()
+        if self._is_cancelled(cancellation_event):
+            return self._cancelled_result(time.time() - profile_start)
 
-        # Create backup first
-        if auto_backup:
-            if on_output:
-                on_output("📦 Creating backup before applying profile...")
+        canonical_profile = self.profiles.get(profile.name.upper())
+        if canonical_profile is None or canonical_profile is not profile:
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors="Unknown or non-canonical profile",
+                return_code=-1,
+                duration=time.time() - profile_start,
+            )
+        if not auto_backup:
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors="Profile recovery transaction cannot be disabled",
+                return_code=-1,
+                duration=time.time() - profile_start,
+            )
 
-            try:
-                from core.backup_manager import BackupManager
-
-                backup_mgr = BackupManager()
-                backup = backup_mgr.create_backup(
-                    name=f"Pre_{profile.name}_Profile",
-                    profile=profile.name,
-                    create_restore_point=True,
-                    backup_registry=True,
-                    description=f"Auto-backup before applying {profile.name} profile",
-                )
-
-                if backup:
-                    if on_output:
-                        on_output(f"✅ Backup created: {backup.id}")
-                else:
-                    if on_output:
-                        on_output("⚠️ Backup creation failed, continuing anyway...")
-
-            except Exception as e:
-                logger.warning(f"Auto-backup failed: {e}")
-                if on_output:
-                    on_output(f"⚠️ Backup failed: {e}, continuing...")
+        optimizer_path = self.scripts_dir / "optimizer.bat"
+        if not optimizer_path.is_file():
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors=f"Profile orchestrator not found: {optimizer_path}",
+                return_code=-1,
+                duration=time.time() - profile_start,
+            )
 
         if on_output:
             on_output("")
-            on_output("🚀 Starting profile application...")
+            on_output("🚀 Starting transactional profile application...")
             on_output("")
-
-        # Create executor with callbacks
-        executor = BatchExecutor(on_output=on_output, on_progress=on_progress)
-
-        total_scripts = len(profile.scripts)
-        successful = 0
-        failed = 0
-        all_output = []
-        all_errors = []
-
-        for idx, script_rel_path in enumerate(profile.scripts):
-            script_path = self.scripts_dir / script_rel_path
-
-            logger.info(f"Executing script {idx + 1}/{total_scripts}: {script_path}")
-
-            # Update progress
-            if on_progress:
-                progress = int((idx / total_scripts) * 100)
-                on_progress(progress)
-
-            # Check if script exists
-            if not script_path.exists():
-                logger.error(f"Script not found: {script_path}")
-                failed += 1
-                all_errors.append(f"Script not found: {script_rel_path}")
-                continue
-
-            # Execute script
-            result = executor.execute(script_path)
-
-            if result.success:
-                successful += 1
-                logger.info(f"✓ Script completed successfully: {script_rel_path}")
-            else:
-                failed += 1
-                logger.error(f"✗ Script failed: {script_rel_path}")
-
-            all_output.append(result.output)
-            if result.errors:
-                all_errors.append(result.errors)
-
-        # Final progress
         if on_progress:
-            on_progress(100)
+            on_progress(0)
 
-        # Overall result
-        overall_success = failed == 0
-
-        logger.info(
-            f"Profile application complete: {successful} successful, {failed} failed"
+        executor = BatchExecutor(on_output=on_output, on_progress=on_progress)
+        if not self._activate_executor(executor):
+            return self._cancelled_result(time.time() - profile_start)
+        result = executor.execute(
+            optimizer_path,
+            args=["apply-profile", canonical_profile.name],
         )
+        if self._is_cancelled(cancellation_event):
+            return self._cancelled_result(time.time() - profile_start)
 
-        # Set as active profile if successful
-        if overall_success:
-            self.active_profile = profile.name
-
-        return ExecutionResult(
-            success=overall_success,
-            output="\n".join(all_output),
-            errors="\n".join(all_errors),
-            return_code=0 if overall_success else 1,
-            duration=time.time() - profile_start,
-        )
+        if result.success:
+            self.active_profile = canonical_profile.name
+            if on_progress:
+                on_progress(100)
+            logger.info("Profile transaction completed: %s", canonical_profile.name)
+        else:
+            logger.error("Profile transaction failed: %s", canonical_profile.name)
+        return result
 
     def get_active_profile(self) -> Optional[str]:
         """Get currently active profile name"""
@@ -329,114 +367,140 @@ class ProfileManager:
         on_progress: Optional[Callable] = None,
         on_tweak_status: Optional[Callable] = None,
         auto_backup: bool = True,
+        *,
+        consented_contract_ids: Optional[List[str]] = None,
+        cancellation_event: Optional[threading.Event] = None,
     ) -> ExecutionResult:
-        """
-        Apply individual tweaks by their IDs.
+        """Apply selected tweaks through the shared mutation execution slot."""
+        if not self._begin_execution():
+            logger.warning("Another profile or tweak application is already in progress")
+            return self._busy_result()
 
-        Args:
-            tweak_ids: List of tweak IDs to apply
-            on_output: Callback for output lines
-            on_progress: Callback for progress updates (0-100)
-            on_tweak_status: Callback (tweak_name: str, success: bool) per tweak
-            auto_backup: Create backup before applying
-        """
-        registry = get_tweak_registry()
+        try:
+            return self._do_apply_tweaks(
+                tweak_ids,
+                on_output,
+                on_progress,
+                on_tweak_status,
+                auto_backup,
+                consented_contract_ids,
+                cancellation_event,
+            )
+        finally:
+            self._end_execution()
+
+    def _do_apply_tweaks(
+        self,
+        tweak_ids: List[str],
+        on_output: Optional[Callable],
+        on_progress: Optional[Callable],
+        on_tweak_status: Optional[Callable],
+        auto_backup: bool,
+        consented_contract_ids: Optional[List[str]],
+        cancellation_event: Optional[threading.Event],
+    ) -> ExecutionResult:
+        """Resolve and execute audited tweak contracts while the slot is held."""
         import time
 
         tweaks_start = time.time()
-        if auto_backup:
-            if on_output:
-                on_output("📦 Creating backup before applying tweaks...")
-            try:
-                from core.backup_manager import BackupManager
+        if self._is_cancelled(cancellation_event):
+            return self._cancelled_result(time.time() - tweaks_start)
 
-                backup_mgr = BackupManager()
-                backup = backup_mgr.create_backup(
-                    name="Pre_Custom_Tweaks",
-                    profile="CUSTOM",
-                    create_restore_point=True,
-                    backup_registry=True,
-                    description=f"Auto-backup before applying {len(tweak_ids)} custom tweaks",
-                )
-                if backup and on_output:
-                    on_output(f"✅ Backup created: {backup.id}")
-            except Exception as e:
-                logger.warning(f"Auto-backup failed: {e}")
-                if on_output:
-                    on_output(f"⚠️ Backup failed: {e}, continuing...")
+        plan, validation_errors = self.execution_catalog.resolve(
+            tweak_ids,
+            consented_contract_ids or (),
+        )
+        if validation_errors:
+            error_msg = "; ".join(validation_errors)
+            logger.error(f"Pre-validation failed: {error_msg}")
+            if on_output:
+                on_output("❌ Tweak execution plan is not safe:")
+                for error in validation_errors:
+                    on_output(f"   • {error}")
+                on_output("Aborting. No changes were made to the system.")
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors=error_msg,
+                return_code=-1,
+                duration=time.time() - tweaks_start,
+            )
+
+        if self._is_cancelled(cancellation_event):
+            return self._cancelled_result(time.time() - tweaks_start)
+
+        if not auto_backup:
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors="Tweak recovery transaction cannot be disabled",
+                return_code=-1,
+                duration=time.time() - tweaks_start,
+            )
+
+        executor = BatchExecutor(on_output=on_output, on_progress=on_progress)
+        if not self._activate_executor(executor):
+            return self._cancelled_result(time.time() - tweaks_start)
+        snapshot_path = self.scripts_dir / "safety" / "flight-recorder.bat"
+        if not snapshot_path.is_file():
+            return ExecutionResult(
+                success=False,
+                output="",
+                errors=f"Recovery orchestrator not found: {snapshot_path}",
+                return_code=-1,
+                duration=time.time() - tweaks_start,
+            )
+
+        if on_output:
+            on_output("📦 Creating committed recovery snapshot...")
+        snapshot_result = executor.execute(snapshot_path, args=["create_snapshot"])
+        if not snapshot_result.success:
+            error_msg = "Recovery snapshot failed; tweak application aborted"
+            logger.error(error_msg)
+            return ExecutionResult(
+                success=False,
+                output=snapshot_result.output,
+                errors=snapshot_result.errors or error_msg,
+                return_code=snapshot_result.return_code,
+                duration=time.time() - tweaks_start,
+            )
+
+        if self._is_cancelled(cancellation_event):
+            return self._cancelled_result(time.time() - tweaks_start)
 
         if on_output:
             on_output("")
             on_output(f"🚀 Applying {len(tweak_ids)} tweaks...")
             on_output("")
 
-        # Group tweaks by bat_script to batch execution
-        script_groups: Dict[str, List[Tweak]] = {}
-        unknown_ids = []
-        for tid in tweak_ids:
-            tweak = registry.get_tweak(tid)
-            if not tweak:
-                unknown_ids.append(tid)
-                continue
-            key = tweak.bat_script
-            if key not in script_groups:
-                script_groups[key] = []
-            script_groups[key].append(tweak)
-
-        if unknown_ids:
-            if on_output:
-                for uid in unknown_ids:
-                    on_output(f"⚠️ Unknown tweak: {uid}")
-
-        # Pre-execution validation: check all scripts exist before starting
-        missing_scripts = [
-            s for s in script_groups if not (self.scripts_dir / s).exists()
-        ]
-        if missing_scripts:
-            error_msg = f"Missing scripts: {', '.join(missing_scripts)}"
-            logger.error(f"Pre-validation failed: {error_msg}")
-            if on_output:
-                on_output(
-                    f"❌ Pre-validation failed — {len(missing_scripts)} script(s) not found:"
-                )
-                for ms in missing_scripts:
-                    on_output(f"   • {ms}")
-                on_output("")
-                on_output("Aborting. No changes were made to the system.")
-            return ExecutionResult(
-                success=False, output="", errors=error_msg, return_code=-1, duration=0
-            )
-
-        executor = BatchExecutor(on_output=on_output, on_progress=on_progress)
-
-        # Count total tweaks for per-tweak progress
-        total_tweaks = sum(len(t) for t in script_groups.values())
+        registry = get_tweak_registry()
+        total_tweaks = sum(len(action.contract.tweak_ids) for action in plan)
         tweaks_done = 0
         successful = 0
         failed = 0
         all_output = []
         all_errors = []
 
-        for idx, (script_rel, tweaks) in enumerate(script_groups.items()):
-            script_path = self.scripts_dir / script_rel
+        for action in plan:
+            if self._is_cancelled(cancellation_event):
+                return self._cancelled_result(time.time() - tweaks_start)
 
-            # Execute the script
-            result = executor.execute(script_path)
+            script_path = self.scripts_dir / action.contract.script
+            result = executor.execute(script_path, args=[action.accepted_argument])
+            if self._is_cancelled(cancellation_event):
+                return self._cancelled_result(time.time() - tweaks_start)
 
-            for t in tweaks:
+            for tweak_id in action.contract.tweak_ids:
+                tweak = registry.get_tweak(tweak_id)
+                tweak_name = tweak.name if tweak else tweak_id
                 ok = result.success
                 tweaks_done += 1
-
                 if ok:
                     successful += 1
                 else:
                     failed += 1
-
-                # Per-tweak status callback
                 if on_tweak_status:
-                    on_tweak_status(t.name, ok)
-
-                # Per-tweak progress (more granular than per-script)
+                    on_tweak_status(tweak_name, ok)
                 if on_progress:
                     on_progress(int((tweaks_done / max(total_tweaks, 1)) * 100))
 
@@ -448,16 +512,13 @@ class ProfileManager:
             on_progress(100)
 
         overall_success = failed == 0
-
         if on_output:
             on_output("")
             on_output(
                 f"{'✅' if overall_success else '⚠️'} "
                 f"Complete: {successful} applied, {failed} failed"
             )
-
         logger.info(f"Custom tweaks: {successful} applied, {failed} failed")
-
         return ExecutionResult(
             success=overall_success,
             output="\n".join(all_output),
@@ -467,26 +528,62 @@ class ProfileManager:
         )
 
     def save_custom_preset(self, name: str, tweak_ids: List[str]) -> bool:
-        """Save a custom preset to config"""
+        """Save a custom preset, preserving the presets already stored.
+
+        Two hazards are handled explicitly. A read failure is logged rather than
+        swallowed, because silently treating a corrupt file as empty would
+        discard every other saved preset on the next write. And the write is
+        atomic (temporary file plus ``os.replace``) so an interruption cannot
+        leave truncated JSON that ``load_custom_presets`` would then read as "no
+        presets at all".
+        """
         config_path = custom_presets_file()
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
-        presets = {}
+        presets: Dict[str, List[str]] = {}
         if config_path.exists():
             try:
-                presets = json.loads(config_path.read_text())
-            except Exception:
-                pass
+                loaded = json.loads(config_path.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    presets = loaded
+                else:
+                    logger.error(
+                        f"Custom presets file is not an object; refusing to "
+                        f"overwrite it: {config_path}"
+                    )
+                    return False
+            except Exception as e:
+                logger.error(
+                    f"Could not read existing custom presets ({e}); refusing to "
+                    f"overwrite and lose them: {config_path}"
+                )
+                return False
 
         presets[name] = tweak_ids
 
+        temporary_path = None
         try:
-            config_path.write_text(json.dumps(presets, indent=2))
+            handle, temporary_name = tempfile.mkstemp(
+                dir=config_path.parent, prefix=".custom_presets-", suffix=".tmp"
+            )
+            temporary_path = Path(temporary_name)
+            with os.fdopen(handle, "w", encoding="utf-8") as f:
+                json.dump(presets, f, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temporary_path, config_path)
+            temporary_path = None
             logger.info(f"Saved custom preset '{name}' with {len(tweak_ids)} tweaks")
             return True
         except Exception as e:
             logger.error(f"Failed to save preset: {e}")
             return False
+        finally:
+            if temporary_path is not None and temporary_path.exists():
+                try:
+                    temporary_path.unlink()
+                except OSError:
+                    logger.warning(f"Could not remove {temporary_path}")
 
     def load_custom_presets(self) -> Dict[str, List[str]]:
         """Load all saved custom presets"""
