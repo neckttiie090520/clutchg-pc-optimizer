@@ -26,6 +26,13 @@ STALE_TOKENS = ("400+", "496+", "516+", "~65% core", "432+")
 # meaningful algebraically instead.
 COLLECTED_PER_DEFINED_HEADROOM = 1.5
 
+# The documents legitimately quote totals that include suites this harness cannot
+# count by parsing ``def`` lines: the E2E suite (requires a live desktop session)
+# and the Batch V&V test cases (executed manually in a VM and recorded in
+# 12-Batch-VV-Test-Record.md). The ceiling must allow for them or it flags a
+# truthful figure — which is how it first failed.
+EXTERNALLY_COUNTED_CASES = 64 + 20
+
 DOCUMENTS = (
     "04-Test-Plan.md",
     "05-Test-Record.md",
@@ -111,7 +118,7 @@ class TestIsoMetricCurrency:
         collectable_ceiling = int(
             COLLECTED_PER_DEFINED_HEADROOM
             * (_count_test_functions(UNIT_DIR) + _count_test_functions(INTEGRATION_DIR))
-        )
+        ) + EXTERNALLY_COUNTED_CASES
         path = ISO_DIR / document
         offenders = []
         for number, line in enumerate(

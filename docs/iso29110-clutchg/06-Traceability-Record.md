@@ -458,7 +458,7 @@ Config, flight-recorder, and help-system integration coverage is provided by the
 |-----------|-------------|--------------|-----------|---------|
 | จำนวน FR ทั้งหมด | SRS: 63 FRs (MoSCoW) | Traceability: 59 FRs | ⚠️ ต่าง | SRS นับรวม Won't=5 + admin FRs ที่เพิ่มภายหลัง — ตัวเลข reconcile ได้ |
 | จำนวน NFR | SRS: 17 NFRs | Test Plan: 17 NFRs | ✅ ตรง | |
-| จำนวน Test Cases | Test Plan: 939 unit + 23 integration | Test Record: 962 executed, 0 failed | ✅ ตรง | |
+| จำนวน Test Cases | Test Plan: 1026 unit + 23 integration | Test Record: 1049 executed, 0 failed | ✅ ตรง | |
 | Coverage target | Test Plan: ≥ 60% core | Test Record: 81% core | ✅ ผ่าน | |
 | DRE target | Test Plan: ≥ 85% | Test Record: 100% (pre-release) | ✅ ผ่าน | |
 | 10 Risk items | Project Plan: 10 risks | Progress Status: 10 risks | ✅ ตรง | 8 resolved, 2 monitoring |
