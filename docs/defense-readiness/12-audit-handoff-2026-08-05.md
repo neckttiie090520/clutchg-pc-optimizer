@@ -4,7 +4,7 @@
 > **Project:** ClutchG PC Optimizer
 > **Session scope:** end-to-end audit against SE / SDLC / ISO 29110, adversarial bug hunt, three scrutiny passes
 > **Evidence status:** `AUTOMATED_VERIFIED` for static and unit scope; `EXTERNAL_VERIFICATION_REQUIRED` for privileged Windows mutation, rollback, and packaged-installer behaviour
-> **Working tree state:** uncommitted — 59 modified files, 16 new test modules. Nothing has been pushed.
+> **Repository state:** committed and pushed as 8 commits on `audit/project-verification-2026-07-29`, released as **v1.0.4**, open for review as PR #13 into `develop` (mergeable). Not yet merged.
 
 ---
 
@@ -24,9 +24,9 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 925 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 931 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 948 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 954 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
 | Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
@@ -183,15 +183,15 @@ Stated plainly so they are not discovered by a reviewer instead.
 2. **No privileged execution.** See §7.1. Any statement about rollback behaviour is a static-analysis claim.
 3. **E2E suite unexercised.** 64 tests require a desktop session and were collected, not run.
 4. **Two exploit-demonstration commands were blocked** by the permission classifier and were not retried. The evidence already gathered was sufficient; working around the denial would have been the wrong move.
-5. **Uncommitted.** 59 modified files and 16 new test modules sit in the working tree. Nothing is pushed. Per project convention, work belongs on `develop` and reaches `main` only by pull request.
+5. **Awaiting review, not merged.** The work is committed in eight reviewable slices and pushed; PR #13 into `develop` is mergeable. Merging is a human decision. The branch was cut from `main` rather than `develop`, so `develop`'s auto-update commit (`6061e48`) conflicted with the updater hardening in this audit — resolved by taking the audit side after verifying function-by-function that it is a strict superset (`develop`'s `_spawn_relauncher` is the same relauncher, split into `_create_relauncher_script` + `_spawn_relauncher_script`), plus twelve functions `develop` lacks including Authenticode verification and the ACL-locked staging directory. `src/__init__.py` was resolved to import from the canonical `version.py` rather than either side's hard-coded literal.
 
 ---
 
 ## 9. Suggested next actions, in order
 
-1. Review this handoff and §7.2's retention decision.
-2. Commit the working tree to `develop` in reviewable slices — security guards, registry corrections, doc-fidelity guards, safety-engine journal correction, ISO document updates.
-3. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the gate**; everything else is static.
+1. Review PR #13 and §7.2's retention decision, then merge into `develop`.
+2. Run the Sandbox/VM verification in §7.1 and attach evidence. **This is the gate**; everything above it is static and unit-level.
+3. Tag `v1.0.4` on `develop` once merged — the release workflow cross-checks all four version surfaces and will fail the build on any mismatch.
 4. `gh auth refresh -h github.com -s project` and create the Project.
 5. Advisor review and mock defence.
 

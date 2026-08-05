@@ -14,10 +14,10 @@
 
 | ระดับ | จำนวน Tests | Pass | Fail | Skip | Pass Rate | Duration |
 |-------|------------|------|------|------|-----------|---------
-| Unit | 925 | 925 | 0 | 0 | 100% | ~66s |
+| Unit | 931 | 931 | 0 | 0 | 100% | ~66s |
 | Integration | 23 | 23 | 0 | 0 | 100% | ~3s |
 | E2E | 64 | 0 | 0 | 64 | — (skipped) | — |
-| **รวม** | **1012** | **948** | **0** | **64** | **100%** | **~70s** |
+| **รวม** | **1018** | **954** | **0** | **64** | **100%** | **~70s** |
 
 > **สถานะ:** ✅ ผ่านเกณฑ์ (Unit = 100%, Integration = 100%, No defects)
 > **หมายเหตุ:** E2E 64 tests skipped ทั้งหมดเนื่องจากไม่มี display session (headless CI) — ทดสอบ manual บน desktop แทน
@@ -586,7 +586,7 @@ Defect Density = Total Defects / Total Statements
 |---------|--------|--------|
 | SRS/SDD Review | Verification | ตรวจเอกสารเทียบกับ standards |
 | Code Compilation Check | Verification | ตรวจ syntax ถูกต้อง |
-| Unit Testing (925 cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
+| Unit Testing (931 cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
 | Integration Testing (23 cases) | Validation | ตรวจว่า modules ทำงานร่วมกันตามความต้องการ |
 | E2E Testing (64 cases) | Validation | ตรวจว่า workflow ตอบโจทย์ผู้ใช้ |
 | Security Audit (28 items) | Verification | ตรวจ code เทียบกับ security standards |
