@@ -91,7 +91,7 @@ Host-safe commands executed from `clutchg`:
 
 ```text
 python -m pytest tests/unit tests/integration -q
-954 passed in 66.30s   (measured 2026-08-05: 931 unit + 23 integration)
+962 passed in 66.71s   (measured 2026-08-05: 939 unit + 23 integration)
 
 python -m compileall -q clutchg/src
 passed

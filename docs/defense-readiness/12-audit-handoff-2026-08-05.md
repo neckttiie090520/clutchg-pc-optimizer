@@ -24,9 +24,9 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 931 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 939 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 954 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 962 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
 | Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
@@ -158,6 +158,22 @@ Everything in §3–§6 is static and unit-level. **No privileged mutation has b
 3. Restore the exact backup leaf and confirm every captured value returns to its original existence and data state.
 4. Test cancellation and an injected command failure *after* snapshot commit.
 5. Record exact counts, durations, and environment.
+
+**Plan mode is now proven safe to use for step 1 rehearsal.** The batch engine accepts `CLUTCHG_DRY_RUN=1` or `--plan`, which prints the intended operations instead of performing them. That is only trustworthy if *every* mutating command sits behind the guard — a single unguarded `reg add` would turn a rehearsal into a real system change. `tests/unit/test_plan_mode_gating.py` asserts the property by parsing `backup-registry.bat`, `rollback.bat`, and `flight-recorder.bat` with paren-depth tracking, and confirms zero mutating commands (`reg add/delete/import`, `sc config`, `sc start/stop`, `bcdedit /import|/set`, `powercfg /setactive|/set*valueindex`, `net start/stop`) are reachable when `PLAN_MODE==1`. The detector is self-tested against both a deliberately unguarded fixture (must flag) and a correctly guarded one (must pass), so it is not vacuous.
+
+Two false positives were found and discarded while establishing this, which is worth knowing before anyone re-runs the check with a simpler parser: a naive line scanner flags `rollback.bat:380` and `:515` because it does not model the `if "!PLAN_MODE!"=="1" ( … exit /b 0 )` early return, nor the nested `if/else` at `:508-512` that must not be mistaken for the end of the plan block. Both sites are genuinely unreachable in plan mode.
+
+**What plan mode does not establish.** It proves the dispatch, argument validation, manifest shape, and control flow are exercised — it does not prove `reg add` restores the captured value, that `bcdedit /import` succeeds, or that a service returns to its recorded start type. Those are exactly the claims that need the VM. Plan mode reduces the risk of the VM run, it does not replace it.
+
+A live plan-mode invocation was attempted from this session and did not complete: the batch dispatch returned `The system cannot find the batch label specified - create_backup` under `cmd /c` from both the Bash and PowerShell wrappers, despite `:create_backup` existing at `backup-registry.bat:64` and every `call :` target resolving to a defined label. The most likely cause is the wrapper's argument or working-directory handling rather than the script, but it was **not** diagnosed to root cause, and a second attempt was blocked by the environment's batch-execution guard. Treat "plan mode runs cleanly end to end" as unverified until someone runs it from a real elevated `cmd.exe`:
+
+```
+set CLUTCHG_DRY_RUN=1
+set BACKUPS_DIR=%APPDATA%\ClutchG\backups
+src\backup\backup-registry.bat create_backup --plan
+```
+
+Expected output is a `PLAN|BEGIN|…` line, one `PLAN|BACKUP|…` line per component, and `PLAN|END|state=COMMITTED`, with no directory created under `BACKUPS_DIR`.
 
 ### 7.2 Journaled backup retention — a decision, not a bug fix
 
