@@ -1,212 +1,130 @@
 @echo off
 :: ============================================================================
-:: ClutchG Optimizer - Flight Recorder Module
+:: ClutchG Flight Recorder Command Contract
 :: ============================================================================
-:: Purpose: Registry snapshot and rollback system for safe optimization
-:: Created: 2025-02-02 (Based on research.md safety principles)
-:: ============================================================================
-:: This module provides:
-:: - Automatic registry snapshots before any changes
-:: - System Restore Point creation
-:: - One-click rollback functionality
-:: - Complete audit trail of all modifications
+:: Stable facade for complete backup transactions and exact rollback.
+:: Set CLUTCHG_DRY_RUN=1 or pass --plan to print actions without mutation.
 :: ============================================================================
 
-:main
-if "%~1"=="" goto :usage
-if "%~1"=="create_snapshot" goto :create_registry_snapshot
-if "%~1"=="create_restore_point" goto :create_restore_point
-if "%~1"=="capture_registry_state" goto :capture_registry_state
-if "%~1"=="restore_snapshot" goto :restore_registry_snapshot
-if "%~1"=="list_snapshots" goto :list_snapshots
-goto :usage
+setlocal EnableExtensions EnableDelayedExpansion
+set "COMMAND=%~1"
+set "PLAN_MODE=0"
+if /i "%CLUTCHG_DRY_RUN%"=="1" set "PLAN_MODE=1"
+if /i "%~2"=="--plan" set "PLAN_MODE=1"
+if /i "%~3"=="--plan" set "PLAN_MODE=1"
+
+if /i "%COMMAND%"==":create_registry_snapshot" goto :dispatch_create_snapshot
+if /i "%COMMAND%"=="create_registry_snapshot" goto :dispatch_create_snapshot
+if /i "%COMMAND%"==":create_snapshot" goto :dispatch_create_snapshot
+if /i "%COMMAND%"=="create_snapshot" goto :dispatch_create_snapshot
+if /i "%COMMAND%"==":create_restore_point" goto :dispatch_create_restore_point
+if /i "%COMMAND%"=="create_restore_point" goto :dispatch_create_restore_point
+if /i "%COMMAND%"==":restore_registry_snapshot" goto :dispatch_restore_snapshot
+if /i "%COMMAND%"=="restore_registry_snapshot" goto :dispatch_restore_snapshot
+if /i "%COMMAND%"==":restore_snapshot" goto :dispatch_restore_snapshot
+if /i "%COMMAND%"=="restore_snapshot" goto :dispatch_restore_snapshot
+if /i "%COMMAND%"==":list_snapshots" goto :dispatch_list_snapshots
+if /i "%COMMAND%"=="list_snapshots" goto :dispatch_list_snapshots
+if /i "%COMMAND%"==":capture_registry_state" goto :unsupported_partial_capture
+if /i "%COMMAND%"=="capture_registry_state" goto :unsupported_partial_capture
+if not defined COMMAND goto :usage
+
+echo ERROR: Unknown flight-recorder command: %COMMAND%
+goto :usage_error
+
+:dispatch_create_snapshot
+call :create_snapshot
+set "RETURN_CODE=!ERRORLEVEL!"
+set "EXPORTED_BACKUP_FOLDER=!BACKUP_FOLDER!"
+set "EXPORTED_BACKUP_ID=!BACKUP_ID!"
+set "EXPORTED_BACKUP_READY=!CLUTCHG_BACKUP_READY!"
+for %%R in (!RETURN_CODE!) do endlocal & set "BACKUP_FOLDER=%EXPORTED_BACKUP_FOLDER%" & set "BACKUP_ID=%EXPORTED_BACKUP_ID%" & set "CLUTCHG_BACKUP_READY=%EXPORTED_BACKUP_READY%" & exit /b %%R
+
+:dispatch_create_restore_point
+call :create_restore_point
+set "RETURN_CODE=!ERRORLEVEL!"
+for %%R in (!RETURN_CODE!) do endlocal & exit /b %%R
+
+:dispatch_restore_snapshot
+call :restore_snapshot "%~2"
+set "RETURN_CODE=!ERRORLEVEL!"
+for %%R in (!RETURN_CODE!) do endlocal & exit /b %%R
+
+:dispatch_list_snapshots
+call :list_snapshots
+set "RETURN_CODE=!ERRORLEVEL!"
+for %%R in (!RETURN_CODE!) do endlocal & exit /b %%R
+
+:unsupported_partial_capture
+echo ERROR: Partial registry capture is not a restorable transaction.
+echo Use create_snapshot before mutation.
+endlocal & exit /b 2
 
 :usage
-echo Usage: flight-recorder.bat [command]
+echo Usage: flight-recorder.bat COMMAND [BACKUP_ID] [--plan]
 echo.
 echo Commands:
-echo   create_snapshot       - Create full registry snapshot
-echo   create_restore_point  - Create Windows System Restore point
-echo   capture_registry_state [key_path] [key_name]
-echo                        - Capture specific registry key value
-echo   restore_snapshot      - Restore most recent registry snapshot
-echo   list_snapshots        - List all available snapshots
-goto :eof
+echo   create_snapshot              Create a complete journaled backup
+echo   create_restore_point         Create a Windows restore point
+echo   restore_snapshot BACKUP_ID   Restore one committed backup leaf
+echo   list_snapshots               List committed backup IDs
+endlocal & exit /b 0
 
-:: ============================================================================
-:: Create Registry Snapshot
-:: ============================================================================
-:create_registry_snapshot
-set "TIMESTAMP=%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%"
-set "TIMESTAMP=%TIMESTAMP: =0%"
-set "SNAPSHOT_DIR=%BACKUPS_DIR%\registry_snapshots"
+:usage_error
+call :usage
+exit /b 2
 
-:: Create snapshot directory
-if not exist "%SNAPSHOT_DIR%" mkdir "%SNAPSHOT_DIR%"
+:create_snapshot
+set "PLAN_ARGUMENT="
+if "!PLAN_MODE!"=="1" set "PLAN_ARGUMENT=--plan"
+call "%~dp0..\backup\backup-registry.bat" create_backup !PLAN_ARGUMENT!
+exit /b !ERRORLEVEL!
 
-call "%LOGGING_DIR%\logger.bat" :log "Creating registry snapshot: %TIMESTAMP%"
-
-:: Export critical registry hives before changes
-reg export "HKLM\SOFTWARE" "%SNAPSHOT_DIR%\software_%TIMESTAMP%.reg" /y >nul 2>&1
-reg export "HKLM\SYSTEM" "%SNAPSHOT_DIR%\system_%TIMESTAMP%.reg" /y >nul 2>&1
-reg export "HKCU\SOFTWARE" "%SNAPSHOT_DIR%\user_software_%TIMESTAMP%.reg" /y >nul 2>&1
-
-:: Also export critical optimization-related paths
-reg export "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" "%SNAPSHOT_DIR%\gpu_%TIMESTAMP%.reg" /y >nul 2>&1
-reg export "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" "%SNAPSHOT_DIR%\priority_%TIMESTAMP%.reg" /y >nul 2>&1
-reg export "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" "%SNAPSHOT_DIR%\network_%TIMESTAMP%.reg" /y >nul 2>&1
-reg export "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "%SNAPSHOT_DIR%\multimedia_%TIMESTAMP%.reg" /y >nul 2>&1
-
-:: Log snapshot creation
-echo %TIMESTAMP% - Registry snapshot created >> "%BACKUPS_DIR%\snapshot_log.txt"
-if exist "%BACKUPS_DIR%\snapshot_log.txt" (
-    echo Registry snapshot created successfully: %TIMESTAMP%
-    call "%LOGGING_DIR%\logger.bat" :log "Snapshot location: %SNAPSHOT_DIR%"
-) else (
-    echo ERROR: Failed to create snapshot log
-)
-goto :eof
-
-:: ============================================================================
-:: Create System Restore Point
-:: ============================================================================
 :create_restore_point
-call "%LOGGING_DIR%\logger.bat" :log "Creating System Restore Point..."
+set "PLAN_ARGUMENT="
+if "!PLAN_MODE!"=="1" set "PLAN_ARGUMENT=--plan"
+call "%~dp0..\backup\restore-point.bat" create_restore_point !PLAN_ARGUMENT!
+exit /b !ERRORLEVEL!
 
-:: Use PowerShell to create restore point (more reliable than WMIC on newer Windows)
-powershell -Command "Checkpoint-Computer -Description 'ClutchG Pre-Optimization' -RestorePointType 'MODIFY_SETTINGS'" >nul 2>&1
-
-if %ERRORLEVEL%==0 (
-    call "%LOGGING_DIR%\logger.bat" :log "System Restore Point created successfully"
-    echo System Restore Point created successfully
-) else (
-    :: Fallback to older PowerShell method for older Windows versions (replaces deprecated wmic)
-    powershell -Command "Get-ComputerRestorePoint" >nul 2>&1
-    if %ERRORLEVEL%==0 (
-        powershell -Command "Start-Process powershell -ArgumentList 'ExecutionPolicy Bypass -Command & {Checkpoint-Computer -Description \"ClutchG Pre-Optimization\" -RestorePointType \"MODIFY_SETTINGS\"}' -Verb RunAs" >nul 2>&1
-        call "%LOGGING_DIR%\logger.bat" :log "System Restore Point created (PowerShell fallback)"
-        echo System Restore Point created (PowerShell fallback)
-    ) else (
-        call "%LOGGING_DIR%\logger.bat" :log "WARNING: Could not create restore point"
-        echo WARNING: Could not create restore point (may require admin rights)
-    )
+:restore_snapshot
+set "REQUESTED_BACKUP_ID=%~1"
+if not defined REQUESTED_BACKUP_ID (
+    echo ERROR: restore_snapshot requires an exact backup leaf ID.
+    exit /b 2
 )
-goto :eof
+set "PLAN_ARGUMENT="
+if "!PLAN_MODE!"=="1" set "PLAN_ARGUMENT=--plan"
+call "%~dp0rollback.bat" restore_from_backup "!REQUESTED_BACKUP_ID!" !PLAN_ARGUMENT!
+exit /b !ERRORLEVEL!
 
-:: ============================================================================
-:: Capture Specific Registry State
-:: ============================================================================
-:capture_registry_state
-if "%~2"=="" (
-    echo Usage: flight-recorder.bat capture_registry_state [key_path] [key_name]
-    echo Example: flight-recorder.bat capture_registry_state "HKLM\SOFTWARE\MyKey" "MyValue"
-    goto :eof
-)
-
-set "KEY_PATH=%~1"
-set "KEY_NAME=%~2"
-set "TEMP_STATE=%TEMP%\reg_state_%RANDOM%.txt"
-
-:: Query current value
-reg query "%KEY_PATH%" /v "%KEY_NAME%" > "%TEMP_STATE%" 2>&1
-
-if %ERRORLEVEL%==0 (
-    :: Store in rollback log
-    if not exist "%BACKUPS_DIR%" mkdir "%BACKUPS_DIR%"
-    echo %DATE% %TIME% - %KEY_PATH%\%KEY_NAME% >> "%BACKUPS_DIR%\rollback_log.txt"
-    type "%TEMP_STATE%" >> "%BACKUPS_DIR%\rollback_log.txt"
-    echo. >> "%BACKUPS_DIR%\rollback_log.txt"
-
-    call "%LOGGING_DIR%\logger.bat" :log "Captured state: %KEY_PATH%\%KEY_NAME%"
-) else (
-    call "%LOGGING_DIR%\logger.bat" :log "WARNING: Could not read %KEY_PATH%\%KEY_NAME%"
-)
-
-:: Cleanup
-if exist "%TEMP_STATE%" del "%TEMP_STATE%"
-goto :eof
-
-:: ============================================================================
-:: Restore Registry Snapshot
-:: ============================================================================
-:restore_registry_snapshot
-set "SNAPSHOT_DIR=%BACKUPS_DIR%\registry_snapshots"
-
-if not exist "%SNAPSHOT_DIR%" (
-    echo ERROR: No snapshots found in %SNAPSHOT_DIR%
-    goto :eof
-)
-
-echo Available snapshots:
-echo.
-dir /b "%SNAPSHOT_DIR%\*.reg" | findstr "software_.*\.reg$"
-echo.
-
-:: Find most recent software snapshot
-for /f "delims=" %%a in ('dir "%SNAPSHOT_DIR%\software_*.reg" /b /o-d 2^>nul') do (
-    set "LATEST_SOFTWARE=%%a"
-    goto :restore_found
-)
-
-echo ERROR: No snapshots found to restore
-goto :eof
-
-:restore_found
-echo.
-echo WARNING: You are about to restore registry snapshot: %LATEST_SOFTWARE%
-echo This will undo ALL optimization changes made since that snapshot.
-echo.
-set /p CONFIRM="Type 'RESTORE' to confirm: "
-
-if not "%CONFIRM%"=="RESTORE" (
-    echo Operation cancelled
-    goto :eof
-)
-
-:: Restore snapshots
-echo Restoring registry snapshots...
-reg import "%SNAPSHOT_DIR%\%LATEST_SOFTWARE%" >nul 2>&1
-if %ERRORLEVEL%==0 (
-    call "%LOGGING_DIR%\logger.bat" :log "Restored HKLM\SOFTWARE from %LATEST_SOFTWARE%"
-    echo Restored HKLM\SOFTWARE
-)
-
-:: Restore corresponding system hive
-set "SYSTEM_SNAPSHOT=%LATEST_SOFTWARE:software_=system%"
-if exist "%SNAPSHOT_DIR%\%SYSTEM_SNAPSHOT%" (
-    reg import "%SNAPSHOT_DIR%\%SYSTEM_SNAPSHOT%" >nul 2>&1
-    if %ERRORLEVEL%==0 (
-        call "%LOGGING_DIR%\logger.bat" :log "Restored HKLM\SYSTEM from %SYSTEM_SNAPSHOT%"
-        echo Restored HKLM\SYSTEM
-    )
-)
-
-echo.
-echo Registry snapshot restored successfully
-echo A system restart is recommended to apply all changes
-goto :eof
-
-:: ============================================================================
-:: List All Snapshots
-:: ============================================================================
 :list_snapshots
-set "SNAPSHOT_DIR=%BACKUPS_DIR%\registry_snapshots"
-
-if not exist "%SNAPSHOT_DIR%" (
-    echo No snapshots directory found
-    goto :eof
-)
-
-echo Available Registry Snapshots:
-echo ==============================
-echo.
-dir "%SNAPSHOT_DIR%\*.reg" /b | findstr "software_.*\.reg$"
-echo.
-echo Snapshot log:
-echo ------------
-if exist "%BACKUPS_DIR%\snapshot_log.txt" (
-    type "%BACKUPS_DIR%\snapshot_log.txt"
+if defined BACKUPS_DIR (
+    for %%D in ("%BACKUPS_DIR%") do set "BACKUPS_ROOT=%%~fD"
 ) else (
-    echo No snapshot log found
+    for %%D in ("%~dp0..\backups") do set "BACKUPS_ROOT=%%~fD"
 )
-goto :eof
+if not exist "!BACKUPS_ROOT!" (
+    echo No committed backups found.
+    exit /b 0
+)
+set "SNAPSHOT_COUNT=0"
+for /d %%D in ("!BACKUPS_ROOT!\*") do call :list_one_snapshot "%%~fD" "%%~nxD"
+if "!SNAPSHOT_COUNT!"=="0" echo No committed backups found.
+exit /b 0
+
+:list_one_snapshot
+set "CANDIDATE_DIR=%~1"
+set "CANDIDATE_ID=%~2"
+echo(!CANDIDATE_ID!| findstr /r /x "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" >nul 2>&1
+if errorlevel 1 exit /b 0
+if not exist "!CANDIDATE_DIR!\manifest.ini" exit /b 0
+if not exist "!CANDIDATE_DIR!\journal.log" exit /b 0
+findstr /x /c:"backup_id=!CANDIDATE_ID!" "!CANDIDATE_DIR!\manifest.ini" >nul 2>&1
+if errorlevel 1 exit /b 0
+findstr /x /c:"state=COMMITTED" "!CANDIDATE_DIR!\manifest.ini" >nul 2>&1
+if errorlevel 1 exit /b 0
+findstr /b /c:"END|COMMITTED|" "!CANDIDATE_DIR!\journal.log" >nul 2>&1
+if errorlevel 1 exit /b 0
+echo !CANDIDATE_ID!
+set /a SNAPSHOT_COUNT+=1
+exit /b 0

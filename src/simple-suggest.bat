@@ -38,7 +38,7 @@ echo %YELLOW%Scanning your system...%RESET%
 echo.
 
 :: Call enhanced detection
-call "%~dp0src\core\system-detect-enhanced.bat" :detect_all
+call "%~dp0core\system-detect-enhanced.bat" :detect_all
 
 :: Display brief info
 echo %GREEN%✓ Detection Complete%RESET%
