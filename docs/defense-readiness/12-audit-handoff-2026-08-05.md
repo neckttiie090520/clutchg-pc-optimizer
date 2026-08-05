@@ -24,9 +24,9 @@ The transferable finding is methodological and is the strongest thing to present
 
 | Measure | Value | How to reproduce |
 |---|---|---|
-| Unit tests | 1038 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
+| Unit tests | 1043 passed, 0 failed | `cd clutchg && python -m pytest tests/unit -q` |
 | Integration tests | 23 passed, 0 failed | `cd clutchg && python -m pytest tests/integration -q` |
-| Combined | 1061 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
+| Combined | 1066 passed, 0 failed | `cd clutchg && python -m pytest tests/unit tests/integration -q` |
 | E2E | 64 collected, 0 run | Requires a live Windows desktop session; CI intentionally excludes |
 | Core-layer coverage | 81% (target ≥ 70%) | `cd clutchg && python -m pytest tests/unit tests/integration -c /dev/null -o addopts="" --cov=src/core --cov-report=term` |
 | Repository-wide coverage | 39% | `cd clutchg && python -m pytest tests/unit tests/integration` |
@@ -155,16 +155,17 @@ Verification now stands in three layers. The first two are complete; the third i
 
 | Layer | Proves | Status |
 |---|---|---|
-| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1061 tests |
+| Static contract tests | Component symmetry, plan-mode gating, claim fidelity, no injectable argument | **Complete** — 1066 tests |
 | Plan-mode execution | Dispatch, validation, manifest shape, control flow, the full 19/18-component plans | **Complete** — both engines rc=0, nothing mutated |
 | Scratch-key round-trip | `reg add`/`reg delete` genuinely restore captured value state (15 of 19 components) | **Complete** — 3/3 cases pass |
-| VM privileged run | `bcdedit /import`, `sc config`, `powercfg /setactive` against real machine state | **Outstanding** |
+| Scratch-scheme round-trip | `powercfg /getactivescheme` capture and `/setactive` restore (1 further component) | **Complete** — reactivation verified; `/export` needs elevation |
+| VM privileged run | `bcdedit /import` and `sc config` against real machine state (2 components) | **Outstanding** |
 
-What the VM run still needs to cover, now narrowed to the three machine-wide components:
+What the VM run still needs to cover, now narrowed to two components:
 
 1. In a disposable Windows Sandbox or VM, run each of the three audited actions.
-2. Preserve the committed backup ID, `manifest.ini`, `journal.log`, and before/after evidence for the BCD store, the affected services' start types, and the active power scheme GUID.
-3. Restore the exact backup leaf and confirm each of those three returns to its recorded state. (The registry components are already verified — see the scratch-key result below.)
+2. Preserve the committed backup ID, `manifest.ini`, `journal.log`, and before/after evidence for the BCD store and the affected services' start types.
+3. Restore the exact backup leaf and confirm both return to their recorded state. (Registry values and the power scheme are already verified — see below.)
 4. Test cancellation and an injected command failure *after* snapshot commit.
 5. Record exact counts, durations, and environment.
 
@@ -197,14 +198,17 @@ That claim is now verified independently, without a VM. `clutchg/tests/vv/verify
 CASE|existing_value|PASS|restored=0x7          value was 0x7, mutated to 999, restored to 0x7
 CASE|absent_value|PASS|value-removed-key-kept  value absent, added, then removed; key preserved
 CASE|absent_key|PASS|key-removed               key absent, created, then removed entirely
-RESULT|passed=3|failed=0
+CASE|power_scheme|PARTIAL|export-needs-elevation|guid-capture-and-reactivate-verified
+RESULT|passed=3|partial=1|failed=0
 ```
 
-All three recovery cases the engine implements round-trip correctly against the real registry. The scratch key was confirmed absent before the run and absent after.
+All three registry recovery cases the engine implements round-trip correctly against the real registry. The scratch key was confirmed absent before the run and absent after.
 
-Two things make this trustworthy rather than theatre. It was **mutation-tested**: replacing `/d "!VALUE_DATA!"` with `/d 0` in the restore makes case 1 fail with `data=0x0|expected=0x7`, so the harness can detect a broken mechanism. And because a verbatim copy can fossilise, `tests/unit/test_recovery_mechanism_contract.py` asserts every capture and restore statement still appears in **both** the harness and the shipped engine, and that the harness writes only to the scratch key — 12 cases, itself mutation-tested by introducing drift and confirming the contract fails.
+**The power scheme is verified the same way.** `powercfg /duplicatescheme` creates a throwaway scheme, the harness activates it, then runs the engine's real capture (`getactivescheme` → `active_power_guid.txt`) and restore (read the file, shape-check the GUID, `setactive`). The original scheme is reactivated and the copy deleted; the active scheme and scheme count were both confirmed unchanged after the run. Only `powercfg /export` of the `.pow` blob is out of reach — it needs `SeBackupPrivilege` and fails `0x522` unelevated — so that one step is reported `PARTIAL` rather than counted as a pass. Failure to reactivate the original scheme is still a hard failure even in that path, which a contract test asserts.
 
-**What genuinely still needs a VM.** Three things remain outside what a scratch key can prove: `bcdedit /import` restoring the boot configuration, `sc config` returning a service to its recorded start type, and `powercfg /setactive` reactivating the captured scheme. Each mutates machine-wide state with no safe scratch equivalent. The registry path — which is 15 of the 19 components — is now verified.
+Two things make this trustworthy rather than theatre. It was **mutation-tested**: replacing `/d "!VALUE_DATA!"` with `/d 0` in the restore makes case 1 fail with `data=0x0|expected=0x7`, so the harness can detect a broken mechanism. And because a verbatim copy can fossilise, `tests/unit/test_recovery_mechanism_contract.py` asserts every capture and restore statement — registry and power scheme alike — still appears in **both** the harness and the shipped engine, and that the harness writes only to the scratch key. Seventeen cases, itself mutation-tested by introducing drift and confirming the contract fails.
+
+**What genuinely still needs a VM.** Two components remain: `bcdedit /import` restoring the boot configuration, and `sc config` returning a service to its recorded start type. Both mutate machine-wide state with no safe scratch equivalent — `sc create` needs elevation, so a throwaway service cannot be made here. Note also one cosmetic artefact: the harness emits `The system cannot find the drive specified.` on stderr from the unelevated `/export` attempt. It survives redirection because CMD emits it directly; exit status and machine state are both verifiably correct, so it is noise rather than a failure.
 
 To reproduce:
 

@@ -90,7 +90,7 @@ CATEGORY:
 | CI-ID | ประเภท | ที่ตั้ง | Tests | ความสำคัญ |
 |-------|--------|-------|-------|----------|
 | CI-TEST-01 | Pytest Config | `clutchg/tests/conftest.py` | 12 fixtures | สูง |
-| CI-TEST-02 | Unit Tests | `clutchg/tests/unit/` | 1038 tests, 36 files | สูง |
+| CI-TEST-02 | Unit Tests | `clutchg/tests/unit/` | 1043 tests, 36 files | สูง |
 | CI-TEST-03 | Integration Tests | `clutchg/tests/integration/` | 23 tests, 2 files | สูง |
 | CI-TEST-04 | E2E Tests | `clutchg/tests/e2e/` | 64 tests | ปานกลาง |
 | CI-TEST-05 | Security Audit Tests | `clutchg/tests/unit/test_admin.py`, `test_backup_manager.py`, `test_flight_recorder.py`, `test_tweak_registry_integrity.py`, `test_help_system.py` | 160 tests (5 files) | สูง |
@@ -220,7 +220,7 @@ pytest tests/ -v --cov=src/core --cov-report=html
 | Stage | Gate Criteria | ผู้อนุมัติ | หลักฐาน |
 |-------|-------------|----------|---------|
 | Code Freeze | ไม่มี feature commits ใหม่; defects only | nextzus | Git log shows only fix commits |
-| Test Execution | 1061 tests pass, 0 failures | nextzus | pytest HTML report + JUnit XML |
+| Test Execution | 1066 tests pass, 0 failures | nextzus | pytest HTML report + JUnit XML |
 | Release Candidate | FCA/PCA audit pass (§8); ISO WPs updated | nextzus | Audit checklist 10/10 PASS |
 | Production Release | Advisor review complete | ผศ.ดร.ภัทรหทัย | Meeting notes / email confirmation |
 | Post-Release | Git tag created; build verified | nextzus | `git tag -a v2.0.X -m "..."` |
@@ -348,7 +348,7 @@ pytest tests/ -v --cov=src/core --cov-report=html
 | Test Code | ~8,000 lines (clutchg/tests/) |
 | Documentation | ~5,200 lines (10 ISO WPs + appendix) |
 | Total Project | ~56,000 lines (all files) |
-| Test Cases | 1125 collected (1038 unit, 23 integration, 64 E2E) |
+| Test Cases | 1130 collected (1043 unit, 23 integration, 64 E2E) |
 | Open Defects | 0 HIGH, 0 MEDIUM |
 
 **อ้างอิง:** `08-Progress-Status-Record.md` §3-§5
@@ -430,7 +430,7 @@ pytest tests/ -v --cov=src/core --cov-report=html
 | เกณฑ์ | วิธีตรวจ | ผลลัพธ์ | สถานะ |
 |-------|---------|---------|-------|
 | Functional Requirements ครบถ้วน | Traceability Matrix (`06`) | 59/67 FRs traced to test cases (88.1%) | PASS |
-| Test suite passes | `pytest` | 1061 passed, 0 failed (unit + integration) | PASS |
+| Test suite passes | `pytest` | 1066 passed, 0 failed (unit + integration) | PASS |
 | Coverage meets target | `.coveragerc` (core-layer target ≥ 70%) | 81% core layer achieved | PASS |
 | Safety requirements verified | Security audit tests | 160 security tests, 0 failures | PASS |
 | No HIGH/MEDIUM open defects | Defect tracking | 0 HIGH, 0 MEDIUM open | PASS |
@@ -462,7 +462,7 @@ pytest tests/ -v --cov=src/core --cov-report=html
 | 4 | Version ของเอกสารเป็นปัจจุบัน | PCA | PASS |
 | 5 | Git repository intact (no corruption) | PCA | PASS |
 | 6 | Build reproducible | PCA | PASS |
-| 7 | Test suite passes (1061 tests) | FCA | PASS |
+| 7 | Test suite passes (1066 tests) | FCA | PASS |
 | 8 | No uncommitted critical changes | PCA | PASS |
 | 9 | FRs traced to test cases (88.1%) | FCA | PASS |
 | 10 | Safety tests pass (160 tests) | FCA | PASS |
@@ -557,7 +557,7 @@ git clone <remote-url> clutchg-recovery
 | 1 | Git history intact | `git log --oneline` | ครบทุก commit ถึง latest tag |
 | 2 | No corrupted objects | `git fsck --full` | 0 errors |
 | 3 | Source code compiles | `python -m compileall clutchg/src` | 0 errors |
-| 4 | Tests pass | `pytest tests/unit tests/integration` | 1061 pass, 0 fail |
+| 4 | Tests pass | `pytest tests/unit tests/integration` | 1066 pass, 0 fail |
 | 5 | ISO documents present | `ls docs/iso29110-clutchg/` | 10 WPs + README + Appendix |
 | 6 | Build produces executable | `cd clutchg && python build.py` | `dist/ClutchG.exe` created |
 | 7 | Baseline tags present | `git tag -l` | BL-1 through BL-9 |

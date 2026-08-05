@@ -24,8 +24,8 @@
 | Phases Complete | 11 / 12 |
 | Work Products | 12 / 12 (ISO29110) |
 | Source Code | ~56,000 lines (Python + Batch) |
-| Test Cases | 1145 collected (1038 unit, 23 integration, 64 E2E, 20 Batch V&V) |
-| Test Pass Rate | 100% (1061 passed, 0 failed, 64 skipped headless; 20 Batch V&V TCs also 100% pass on Hyper-V Gen1) |
+| Test Cases | 1150 collected (1043 unit, 23 integration, 64 E2E, 20 Batch V&V) |
+| Test Pass Rate | 100% (1066 passed, 0 failed, 64 skipped headless; 20 Batch V&V TCs also 100% pass on Hyper-V Gen1) |
 | Code Coverage | core layer 81%; repository-wide 39% (GUI views require a live desktop session). Below target: updater 66%, system_info 64%, paths 63% — all bounded by privileged/platform paths |
 | Open Defects | 0 HIGH, 0 MEDIUM |
 
@@ -117,8 +117,8 @@
 
 | Metric | Phase 4 | Phase 8 | Phase 10 | Current | Target |
 |--------|---------|---------|----------|---------|--------|
-| # Tests | 0 | 49 | 49 | 1145 collected | ≥ 50 |
-| Pass Rate | — | 95.9% | 95.9% | 100% (1061/1061 runnable) | ≥ 95% |
+| # Tests | 0 | 49 | 49 | 1150 collected | ≥ 50 |
+| Pass Rate | — | 95.9% | 95.9% | 100% (1066/1066 runnable) | ≥ 95% |
 | Coverage | — | ~68% | ~72% | 81% core layer | ≥ 70% |
 | # Tweaks | 20 | 40 | 48 | 44 implemented records / 3 audited contracts | — |
 | # Modules | 5 | 10 | 13 | 14 | 14 |
@@ -256,7 +256,7 @@
 | R-07 | ผู้ใช้ไม่เข้าใจ risk level ของ tweaks | 9 (Medium) | Mitigate | ✅ Resolved | 2025-12 | Traffic light risk display (Green/Yellow/Red) + 3-field explanation per tweak (what_it_does, why_it_helps, limitations) |
 | R-08 | Batch scripts ไม่ทำงานบน Windows 11 | 8 (Medium) | Mitigate | ✅ Resolved | 2025-11 | `system-detect.bat` แยก Win10/Win11 paths; OS-specific tweak filtering ใน TweakRegistry |
 | R-09 | Library dependency ถูก deprecate (GPUtil) | 9 (Medium) | Avoid | ✅ Resolved | 2026-01 | ลบ GPUtil dependency; refactor `system_info.py` ใช้ 3-strategy detection (WMI → Get-PhysicalDisk → psutil fallback); CR-002 |
-| R-10 | Thesis defense ไม่ผ่าน | 5 (Medium) | Mitigate | ⚠️ Monitor | — | จัดทำเอกสาร ISO 29110 ครบ 12 WPs; ทดสอบ 1061 tests; Traceability coverage 89.9%; เตรียม defense presentation |
+| R-10 | Thesis defense ไม่ผ่าน | 5 (Medium) | Mitigate | ⚠️ Monitor | — | จัดทำเอกสาร ISO 29110 ครบ 12 WPs; ทดสอบ 1066 tests; Traceability coverage 89.9%; เตรียม defense presentation |
 
 ### 8.2 Risk Trend Summary
 

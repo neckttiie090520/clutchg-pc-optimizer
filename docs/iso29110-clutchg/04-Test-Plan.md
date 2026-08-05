@@ -63,7 +63,7 @@
 
 | กิจกรรม | ตรวจอะไร | เทียบกับอะไร | วิธี |
 |---------|---------|-------------|-----|
-| Unit Testing | Individual modules | Expected behavior | pytest (1038 cases) |
+| Unit Testing | Individual modules | Expected behavior | pytest (1043 cases) |
 | Integration Testing | Module interactions | Interface specifications | pytest (23 cases) |
 | E2E Testing | Complete workflows | Use Case scenarios | pytest + pywinauto (64 cases) |
 | Security Testing | Security properties | Safety rules | Bug Hunter audit (28 items) |
@@ -81,7 +81,7 @@
             ╱──────╲              Full app lifecycle
            ╱Integration╲         23 tests (pytest)
           ╱──────────────╲        Multi-component workflows
-         ╱  Unit Tests    ╲      1038 tests (pytest)
+         ╱  Unit Tests    ╲      1043 tests (pytest)
         ╱──────────────────╲     Isolated function tests
        ╱  Static Analysis   ╲   Type hints + linting
       ╱──────────────────────╲
@@ -110,7 +110,7 @@
 
 | # | Level | ทดสอบอะไร | ClutchG? | จำนวน Tests | เครื่องมือ |
 |---|-------|----------|---------|------------|----------|
-| 1 | **Unit** | Function/method เดี่ยว | Yes | 1038 | pytest + mock |
+| 1 | **Unit** | Function/method เดี่ยว | Yes | 1043 | pytest + mock |
 | 2 | **Integration** | Interface ระหว่าง modules | Yes | 23 | pytest |
 | 3 | **Function (System)** | ระบบทั้งหมดเทียบกับ SRS | Yes (via E2E) | 64 | pytest + pywinauto |
 | 4 | **Security** | Vulnerabilities, access control | Yes | 28 items | Bug Hunter audit |
@@ -550,7 +550,7 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 
 #### Coverage by Module (measured 2026-08-04)
 
-Measured with `python -m pytest tests/unit tests/integration --cov=src/core` from `clutchg`; 1061 tests passed.
+Measured with `python -m pytest tests/unit tests/integration --cov=src/core` from `clutchg`; 1066 tests passed.
 
 | Module | Coverage | Target | Status |
 |--------|----------|--------|--------|
@@ -600,7 +600,7 @@ The four modules below target share one cause: the uncovered lines are privilege
 | DRE | ≥ 85% | 100% (pre-release) | EXCEEDS |
 | Statement Coverage (core) | ≥ 70% | 81% | PASS |
 | Critical Module Coverage | ≥ 80% | 79%-92% | PASS |
-| Unit Test Pass Rate | ≥ 95% | 100% (1038/1038) | EXCEEDS |
+| Unit Test Pass Rate | ≥ 95% | 100% (1043/1043) | EXCEEDS |
 | Integration Pass Rate | 100% for P0 | 100% (23/23) | PASS |
 | Zero Critical Defects Open | 0 | 0 | PASS |
 
@@ -640,7 +640,7 @@ The four modules below target share one cause: the uncovered lines are privilege
 - **วิธี:** Test-first สำหรับ safety-critical modules (BackupManager, FlightRecorder), test-after สำหรับ utility modules
 - **ความถี่:** ทุกครั้งที่ commit (pre-push hook: `pytest tests/unit/ -x --tb=short`)
 - **ผู้รับผิดชอบ:** nextzus (Developer + Tester)
-- **ผลลัพธ์:** 1038 unit + 23 integration test cases, pass rate 100% (measured 2026-08-05)
+- **ผลลัพธ์:** 1043 unit + 23 integration test cases, pass rate 100% (measured 2026-08-05)
 
 #### Integration Testing (Phase 10–11)
 - **เริ่ม:** 2026-03-10 หลัง core modules ผ่าน unit tests ทั้งหมด

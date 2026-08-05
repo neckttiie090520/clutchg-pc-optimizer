@@ -29,6 +29,7 @@ set "SCRATCH_KEY=HKCU\Software\ClutchG-VV-Scratch"
 set "SCRATCH_VALUE=ProbeValue"
 set /a CASES_PASSED=0
 set /a CASES_FAILED=0
+set /a CASES_PARTIAL=0
 
 call :cleanup_scratch
 
@@ -38,10 +39,12 @@ call :case_existing_value
 call :case_absent_value
 :: --- Case 3: key absent entirely; mutate; restore must remove the key --------
 call :case_absent_key
+:: --- Case 4: power scheme capture/export/reactivate against a scratch scheme -
+call :case_power_scheme
 
 call :cleanup_scratch
 
-echo RESULT^|passed=!CASES_PASSED!^|failed=!CASES_FAILED!
+echo RESULT^|passed=!CASES_PASSED!^|partial=!CASES_PARTIAL!^|failed=!CASES_FAILED!
 if !CASES_FAILED! GTR 0 (
     endlocal & exit /b 1
 )
@@ -102,6 +105,78 @@ if "!KEY_STILL!"=="0" (
 echo CASE^|!CASE!^|FAIL^|key-still-present
 set /a CASES_FAILED+=1
 call :cleanup_scratch
+exit /b 0
+
+:: ============================================================================
+:: Case 4 — power scheme
+:: ============================================================================
+:: Uses powercfg /duplicatescheme to create a throwaway scheme we own, activates
+:: it, then exercises the real capture (getactivescheme + export to
+:: active_power_guid.txt) and the real restore (read the file, validate the GUID
+:: shape, setactive). The original scheme is reactivated and the scratch scheme
+:: deleted, so the machine ends where it started. Needs no elevation.
+:case_power_scheme
+set "CASE=power_scheme"
+set "ORIGINAL_GUID="
+for /f "tokens=4" %%G in ('powercfg /getactivescheme 2^>nul') do set "ORIGINAL_GUID=%%G"
+if not defined ORIGINAL_GUID (
+    echo CASE^|!CASE!^|SKIP^|cannot-read-active-scheme
+    exit /b 0
+)
+set "SCRATCH_GUID="
+for /f "tokens=4" %%G in ('powercfg /duplicatescheme "!ORIGINAL_GUID!" 2^>nul') do set "SCRATCH_GUID=%%G"
+if not defined SCRATCH_GUID (
+    echo CASE^|!CASE!^|SKIP^|cannot-duplicate-scheme
+    exit /b 0
+)
+:: Capture, copied verbatim from backup-registry.bat :backup_power_scheme.
+:: stderr is suppressed because an unelevated /export legitimately fails here and
+:: the code is inspected below; letting it through would look like a harness bug.
+>"!STATE_DIR!\active_power_guid.txt" echo !ORIGINAL_GUID!
+powercfg /export "!STATE_DIR!\power_plan.pow" "!ORIGINAL_GUID!" >nul 2>nul
+set "EXPORT_CODE=!ERRORLEVEL!"
+
+:: Mutate: switch to the scratch scheme, exactly as a power tweak would.
+powercfg /setactive "!SCRATCH_GUID!" >nul 2>nul
+
+:: Restore, copied verbatim from rollback.bat :restore_power_scheme
+set "RESTORED_GUID="
+set /p RESTORED_GUID=<"!STATE_DIR!\active_power_guid.txt"
+for /f "tokens=*" %%G in ("!RESTORED_GUID!") do set "RESTORED_GUID=%%G"
+echo(!RESTORED_GUID!| findstr /r /x "[0-9A-Fa-f][0-9A-Fa-f]*-[0-9A-Fa-f][0-9A-Fa-f]*-[0-9A-Fa-f][0-9A-Fa-f]*-[0-9A-Fa-f][0-9A-Fa-f]*-[0-9A-Fa-f][0-9A-Fa-f]*" >nul 2>&1
+set "SHAPE_CODE=!ERRORLEVEL!"
+powercfg /setactive "!RESTORED_GUID!" >nul 2>nul
+set "SETACTIVE_CODE=!ERRORLEVEL!"
+
+:: Verify the machine is back on the original scheme.
+set "FINAL_GUID="
+for /f "tokens=4" %%G in ('powercfg /getactivescheme 2^>nul') do set "FINAL_GUID=%%G"
+powercfg /delete "!SCRATCH_GUID!" >nul 2>nul
+
+if not "!EXPORT_CODE!"=="0" (
+    :: powercfg /export needs SeBackupPrivilege (fails 0x522 unelevated). The GUID
+    :: capture and the setactive restore below are still exercised; only the .pow
+    :: export is out of reach, so report honestly rather than failing the run.
+    echo CASE^|!CASE!^|PARTIAL^|export-needs-elevation^|guid-capture-and-reactivate-verified
+    set /a CASES_PARTIAL+=1
+    if /i not "!FINAL_GUID!"=="!ORIGINAL_GUID!" (
+        echo CASE^|!CASE!^|FAIL^|scheme-not-reactivated^|final=!FINAL_GUID!
+        set /a CASES_FAILED+=1
+    )
+    exit /b 0
+)
+if not "!SHAPE_CODE!"=="0" (
+    echo CASE^|!CASE!^|FAIL^|captured-guid-failed-shape-check
+    set /a CASES_FAILED+=1
+    exit /b 0
+)
+if /i "!FINAL_GUID!"=="!ORIGINAL_GUID!" (
+    echo CASE^|!CASE!^|PASS^|reactivated=!FINAL_GUID!
+    set /a CASES_PASSED+=1
+    exit /b 0
+)
+echo CASE^|!CASE!^|FAIL^|final=!FINAL_GUID!^|expected=!ORIGINAL_GUID!^|setactive=!SETACTIVE_CODE!
+set /a CASES_FAILED+=1
 exit /b 0
 
 :: ============================================================================
