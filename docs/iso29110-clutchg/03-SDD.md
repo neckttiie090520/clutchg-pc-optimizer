@@ -103,7 +103,7 @@ Design Decisions:
 
 ```
 TweakRegistry (Singleton)
-├── _tweaks: Dict[str, Tweak]          # 56 tweaks indexed by ID
+├── _tweaks: Dict[str, Tweak]          # 44 implemented/reachable records indexed by ID
 ├── get_all_tweaks() → List[Tweak]
 ├── get_tweak(id) → Optional[Tweak]
 ├── get_tweaks_by_category(cat) → List[Tweak]
@@ -348,7 +348,7 @@ ClutchGApp
 
 | View | File Size | Lines (est.) | Complexity | หน้าที่ |
 |------|----------|-------------|-----------|---------|
-| Scripts | 63.5KB | ~1800 | สูงสุด | 56 tweaks, 10 categories, checkboxes, apply |
+| Scripts | 63.5KB | ~1800 | สูงสุด | 44 records, 9 non-empty categories, audited-action selection |
 | Backup/Restore | 35.7KB | ~1000 | สูง | Timeline, per-tweak undo, snapshot details |
 | Dashboard | 25.8KB | ~730 | ปานกลาง | System cards, score display, detection |
 | Help | 23.3KB | ~660 | ปานกลาง | Content rendering, bilingual, search |
@@ -365,7 +365,7 @@ ClutchGApp
 
 | Module | ไฟล์ | LOC | หน้าที่ | Cohesion Level | เหตุผล |
 |--------|------|-----|---------|---------------|--------|
-| TweakRegistry | `core/tweak_registry.py` | 1013 | Central knowledge base ของ 56 tweaks | **Functional** | ทุก method เกี่ยวกับ tweak data access |
+| TweakRegistry | `core/tweak_registry.py` | current | Central knowledge base ของ 44 implemented/reachable records | **Functional** | data access; execution authority remains in TweakExecutionCatalog |
 | ProfileManager | `core/profile_manager.py` | 528 | จัดการ preset profiles | **Functional** | ทุก method เกี่ยวกับ profile mapping |
 | FlightRecorder | `core/flight_recorder.py` | 589 | บันทึก before/after ของ changes | **Sequential** | start → record → finish flow |
 | BackupManager | `core/backup_manager.py` | 373 | สร้าง/จัดการ backups | **Functional** | ทุก method เกี่ยวกับ backup operations |

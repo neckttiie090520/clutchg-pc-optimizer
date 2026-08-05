@@ -406,31 +406,19 @@ class TestProfileConcurrentExecution:
         assert manager._is_executing is False
 
     def test_concurrent_apply_returns_error(self, tmp_path):
-        """Test that concurrent profile application returns error"""
-        from core.profile_manager import ProfileManager, Profile, RiskLevel
+        """A second profile application is rejected while the slot is claimed."""
+        from core.profile_manager import ProfileManager
 
         manager = ProfileManager(tmp_path)
-
-        # Mock _do_apply_profile to be slow
-        def slow_apply(*args, **kwargs):
-            time.sleep(0.5)
-            from core.batch_executor import ExecutionResult
-            return ExecutionResult(success=True, output="", errors="", return_code=0, duration=0.5)
-
-        manager._do_apply_profile = slow_apply
-
-        # Start first application
-        manager._is_executing = True
-
-        # Second application should fail immediately
         profile = manager.get_profile("SAFE")
-        if profile:
+        assert profile is not None
+        assert manager._begin_execution() is True
+        try:
             result = manager.apply_profile(profile)
-            # Should return error because already executing
             assert result.success is False
             assert "already in progress" in result.errors.lower()
-
-        manager._is_executing = False
+        finally:
+            manager._end_execution()
 
 
 # ============================================================================

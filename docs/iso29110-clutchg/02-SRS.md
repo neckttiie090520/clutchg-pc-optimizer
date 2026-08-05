@@ -18,7 +18,7 @@
 
 ### 1.2 ขอบเขต (Scope)
 ClutchG เป็น desktop application ที่ให้ผู้ใช้ optimize Windows 10/11 ผ่าน GUI ที่ปลอดภัย โดยมี:
-- **56 optimization tweaks** จัดกลุ่มใน 10 categories
+- **44 implemented/reachable tweak records** จัดกลุ่มใน 9 categories; 2 standard audited actions are individually executable
 - **3 preset profiles** (SAFE/COMPETITIVE/EXTREME) จัด risk level ชัดเจน
 - **Backup & Rollback system** ที่ track per-tweak changes
 - **GUI** (Python/CustomTkinter) แยก 3 layers: GUI / Core / Batch
@@ -57,8 +57,8 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 |---|---------|-------------------|---------|
 | 1 | **Inception** | ระบุปัญหา: optimizer ส่วนใหญ่ไม่ปลอดภัย ไม่มี evidence | `docs/01-research-overview.md`, thesis proposal |
 | 2 | **Elicitation** | วิเคราะห์ 23 repos (Document Analysis), ทดสอบจริง (Observation), ศึกษา Windows Internals (Domain Analysis), ออกแบบ UI กับอาจารย์ (Brainstorming), สร้าง batch prototype (Prototyping) | `docs/02-repo-analysis/` (23 files), `docs/05-windows-internals.md` |
-| 3 | **Elaboration** | จำแนก 56 tweaks → 10 categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
-| 4 | **Negotiation** | ตกลง scope: 56 tweaks (ตัด placebo ออก), 5 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
+| 3 | **Elaboration** | จำแนก candidate tweaks → categories, กำหนด risk level, ออกแบบ 3 profiles, สร้าง user personas 3 ประเภท, Use Case modeling | `docs/03-tweak-taxonomy.md`, `docs/04-risk-classification.md` |
+| 4 | **Negotiation** | ตกลง candidate scope เดิม; corrective audit 2026-08-02 ลดเหลือ 44 implemented/reachable records, 5 views, Windows 10/11, offline only | MoSCoW: Must=35, Should=15, Could=8, Won't=5 |
 | 5 | **Specification** | เขียน SRS v3.0 ตาม IEEE 830 + ISO 25010 | เอกสารฉบับนี้ |
 | 6 | **Validation** | อาจารย์ review SRS, สร้าง test cases จาก FRs, Traceability Matrix | `06-Traceability-Record.md`, 496+ test cases |
 | 7 | **Management** | จัดการเปลี่ยนแปลงผ่าน Change Requests + SRS versioning | `07-Change-Request.md` (4 CRs), SRS v1.0→v2.0→v3.0 |
@@ -109,7 +109,7 @@ ClutchG เป็น desktop application ที่ให้ผู้ใช้ op
 ClutchG เป็นส่วนหนึ่งของ **Batch Optimizer Research Project** ที่วิเคราะห์ 23 open-source Windows optimization tools จาก GitHub แล้วสังเคราะห์ tweaks ที่มี evidence จริง ออกมาเป็น tool ที่ปลอดภัยและโปร่งใส
 
 ```
-Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Architecture Design
+Research (23 repos) → Candidate Taxonomy → Implementation/Reachability Audit → Risk Classification → Architecture Design
                                                                          ↓
                                                             ClutchG Application
                                                      ┌──────────────────────────────┐
@@ -133,7 +133,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 |--------|-------------|--------------|-----------------|----------------|
 | **Beginner** | ต่ำ — ใช้ Windows ทั่วไป | SAFE (🟢) | 14 tweaks (LOW risk) | เลือก profile แล้ว apply ทีเดียว |
 | **Gamer** | ปานกลาง — เข้าใจ settings | COMPETITIVE (🟡) | 44 tweaks | ใช้ profile + ปรับบาง tweaks |
-| **Power User** | สูง — เข้าใจ registry/services | EXTREME (🔴) | 56 tweaks ทั้งหมด | เลือก tweaks ทีละตัว |
+| **Power User** | สูง — เข้าใจ registry/services | EXTREME (🔴) | module-based profile | เลือกเฉพาะ audited actions ทีละตัว |
 
 ### 2.4 ข้อจำกัด (Constraints)
 1. **สิทธิ์ Administrator** — จำเป็นสำหรับ registry/service/bcdedit changes
@@ -159,7 +159,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 
 | Priority | จำนวน FR | สัดส่วน | ตัวอย่าง |
 |----------|---------|---------|---------|
-| **Must** | 35 | 55.6% | System detection (FR-SD-01–03,09), 3 profiles (FR-PM-01–06,11), Tweak registry 56 ตัว (FR-TW-01–04), Backup/rollback ทั้งระบบ (FR-SF-01,02,05–08,13), Core UI views (FR-UI-01–05,08,10), Batch parse+execute (FR-BS-01,02,04) |
+| **Must** | 35 | 55.6% | System detection (FR-SD-01–03,09), 3 profiles (FR-PM-01–06,11), Tweak registry + audited execution boundary (FR-TW-01–04), Backup/rollback ทั้งระบบ (FR-SF-01,02,05–08,13), Core UI views (FR-UI-01–05,08,10), Batch parse+execute (FR-BS-01,02,04) |
 | **Should** | 15 | 23.8% | System score (FR-SD-04–07), Progress bar (FR-PM-07), Custom preset (FR-PM-08), Risk distribution (FR-TW-05–07), Restore point (FR-SF-03,04,09,10), Toast/Settings (FR-UI-06,09,12,13) |
 | **Could** | 8 | 12.7% | Form factor (FR-SD-08), Export/Import preset (FR-PM-09,10), Compare snapshots (FR-SF-11,12), Welcome overlay (FR-UI-07,11), Export rollback (UC-14) |
 | **Won't** | 5 | 7.9% | Auto-update, ARM support, Cloud sync, Windows 7/8 support, IDE-style UI |
@@ -186,9 +186,9 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 | รหัส | ความต้องการ | MoSCoW | Acceptance Criteria | Source File |
 |------|-----------|--------|-------------------|-------------|
 | FR-PM-01 | มี 3 preset profiles: SAFE (🟢 LOW, 2-5%), COMPETITIVE (🟡 MED, 5-10%), EXTREME (🔴 HIGH, 10-15%) | Must | ทั้ง 3 profiles โหลดได้ | `core/profile_manager.py` L61-128 |
-| FR-PM-02 | SAFE: 14 tweaks (LOW risk ทั้งหมด) | Must | นับ tweaks = 14 | `core/tweak_registry.py` (preset_safe=True) |
-| FR-PM-03 | COMPETITIVE: 44 tweaks (LOW + MEDIUM) | Must | นับ tweaks = 44 | `core/tweak_registry.py` |
-| FR-PM-04 | EXTREME: 56 tweaks ทั้งหมด (รวม HIGH) | Must | นับ tweaks = 56 | `core/tweak_registry.py` |
+| FR-PM-02 | SAFE profile ต้องใช้ declarative module flags และไม่รวม irreversible/security-reducing actions | Must | profile file เป็น declaration-only และ recovery gate มาก่อน mutation | `src/profiles/safe-profile.bat`, `src/optimizer.bat` |
+| FR-PM-03 | COMPETITIVE profile ต้องเป็น module-based transaction ที่ fail fast | Must | module failure หยุด profile และคืน non-zero | `src/profiles/competitive-profile.bat`, `src/optimizer.bat` |
+| FR-PM-04 | EXTREME profile ไม่รวม irreversible หรือ security-mitigation-disabling actions โดยปริยาย | Must | flags สำหรับ actions ดังกล่าวไม่มีใน default profile | `src/profiles/extreme-profile.bat`, `src/optimizer.bat` |
 | FR-PM-05 | แสดง risk level, expected FPS gain, warnings ของแต่ละ profile | Must | ข้อมูลตรงกับ Profile dataclass | `core/profile_manager.py` L28-40 |
 | FR-PM-06 | Apply profile: backup → execute tweaks → record changes | Must | สร้าง backup ก่อน apply | `core/profile_manager.py` L146-257 |
 | FR-PM-07 | แสดง per-tweak progress (0-100%) ระหว่าง apply | Should | Progress callback ทำงาน | `core/profile_manager.py` L284-419 |
@@ -201,29 +201,30 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 
 | รหัส | ความต้องการ | MoSCoW | Acceptance Criteria | Source File |
 |------|-----------|--------|-------------------|-------------|
-| FR-TW-01 | เก็บ tweaks ทั้ง 56 ตัว ใน TweakRegistry (Singleton) | Must | len(registry) = 56 | `core/tweak_registry.py` L884-1012 |
+| FR-TW-01 | เก็บเฉพาะ tweak records ที่ engine implement และ route ถึงได้ใน TweakRegistry | Must | len(registry) = 44; ทุก `bat_script`/`bat_function` มีอยู่และ reachable | `core/tweak_registry.py`, `tests/unit/test_batch_dispatch_integrity.py` |
 | FR-TW-02 | แต่ละ tweak มี 17 fields: id, name, category, description, what_it_does, why_it_helps, limitations, warnings, risk_level, expected_gain, requires_admin, requires_restart, reversible, compatible_os, compatible_hardware, registry_keys, bat_script/bat_function, preset_* | Must | Tweak dataclass ครบ 17 fields | `core/tweak_registry.py` L13-36 |
-| FR-TW-03 | จัดกลุ่มเป็น 10 categories พร้อม icon + color | Must | 10 categories ตาม TWEAK_CATEGORIES | `core/tweak_registry.py` L39-51 |
+| FR-TW-03 | จัดกลุ่ม implemented records เป็น categories พร้อม icon + color | Must | 9 non-empty categories; UI ซ่อน category ที่ไม่มี record | `core/tweak_registry.py`, `gui/views/scripts_minimal.py` |
 | FR-TW-04 | Filter tweaks by category, preset, OS compatibility, hardware | Must | get_tweaks_by_category(), get_compatible_tweaks() | `core/tweak_registry.py` L899-933 |
 | FR-TW-05 | คำนวณ risk distribution: LOW/MEDIUM/HIGH | Should | get_risk_distribution() ถูกต้อง | `core/tweak_registry.py` L968-973 |
 | FR-TW-06 | แนะนำ preset ตาม system_profile | Should | suggest_preset() คืน preset + reason (delegates to `core/recommendation_service.py`) | `core/tweak_registry.py` L935-959 |
 | FR-TW-07 | Build custom preset + validate tweak_ids | Should | build_custom_preset() คืน max_risk, requires_restart | `core/tweak_registry.py` L975-1001 |
 
-#### รายละเอียด Tweak Categories (ข้อมูลจริง 56 tweaks)
+> **Correction 2026-08-02:** registry membership is knowledge/profile metadata, not mutation authority. Individual execution is authorized only by `TweakExecutionCatalog`; see `14-Audited-Tweak-Execution-Correction-2026-08-02.md`.
+
+#### รายละเอียด Tweak Categories (current audited registry: 44 records)
 
 | Category | จำนวน | Risk Distribution | ตัวอย่าง Tweaks |
 |----------|-------|-------------------|----------------|
 | **Telemetry & Privacy** | 8 | LOW: 8 | DiagTrack, Advertising ID, Cortana, Activity History, Xbox DVR, Copilot |
 | **Input & Latency** | 6 | LOW: 6 | Mouse Acceleration, Keyboard, MMCSS, Menu Delay, Data Queue, Priority |
-| **Power Management** | 7 | LOW: 3, MED: 3, HIGH: 1 | Ultimate Performance, Hibernate, Throttling, EPP, CPPC, Spectre (HIGH) |
-| **GPU & Graphics** | 8 | LOW: 4, MED: 2, HIGH: 1 | HAGS, NVIDIA Telemetry, MSI Mode, DirectX, Fullscreen, VBS (HIGH) |
-| **Network** | 6 | LOW: 3, MED: 3 | Nagle, TCP Global, DNS, NetBIOS, Window Size, Throttling |
+| **Power Management** | 6 | LOW: 4, MED: 2 | High Performance, Hibernate, Throttling, EPP, CPPC, Coalescence |
+| **GPU & Graphics** | 5 | LOW: 4, MED: 1 | HAGS, DirectX, Fullscreen, NVIDIA P-State, DWM |
+| **Network** | 4 | LOW: 2, MED: 2 | Nagle, TCP Global, NetBIOS, Throttling |
 | **Services** | 5 | LOW: 2, MED: 3 | Telemetry Svc, Xbox Svc, Search Indexer, SysMain, Print Spooler |
-| **Memory** | 4 | MED: 4 | SvcHost Split, Paging Executive, Large Cache, Page Combining |
 | **Boot (BCDEdit)** | 5 | LOW: 3, MED: 1, HIGH: 1 | Dynamic Tick, TSC Sync, x2APIC, ConfigAccess, Hypervisor (HIGH) |
 | **Visual Effects** | 4 | LOW: 4 | Animations, Transparency, Full Drag, Visual FX=Best Perf |
-| **Cleanup & Debloat** | 3 | LOW: 2, MED: 1 | Bloatware Remove, OneDrive Auto-Start, NTFS Optimize |
-| **รวม** | **56** | LOW: 37, MED: 16, HIGH: 3 | — |
+| **Cleanup & Debloat** | 1 | LOW: 1 | OneDrive Auto-Start |
+| **รวม** | **44** | LOW: 34, MED: 9, HIGH: 1 | — |
 
 ### 3.4 FR-SF: Safety & Rollback
 
@@ -249,7 +250,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 |------|-----------|--------|-------------------|-------------|
 | FR-UI-01 | **Dashboard View**: แสดง CPU, GPU, RAM, Storage + system score + tier | Must | ข้อมูลแสดงครบหลัง detection | `gui/views/dashboard_minimal.py` (25.8KB) |
 | FR-UI-02 | **Profiles View**: แสดง 3 profiles + risk badge + expected FPS gain | Must | 3 profile cards พร้อม badge | `gui/views/profiles_minimal.py` (10.7KB) |
-| FR-UI-03 | **Scripts View**: แสดง tweaks แยก 10 categories + checkbox + risk badge + "?" help | Must | 56 tweaks แสดงครบ, filter ได้ | `gui/views/scripts_minimal.py` (63.5KB) |
+| FR-UI-03 | **Scripts View**: แสดง implemented tweak records แยก category + risk badge + help; enable toggle เฉพาะ audited standard contracts | Must | 44 records แสดงครบ; unsupported execution เป็น Learn Only; selectable IDs resolve ได้ทั้งหมด | `gui/views/scripts_minimal.py`, `core/action_catalog.py` |
 | FR-UI-04 | **Backup & Restore Center**: timeline UI + per-tweak rollback + download script | Must | Timeline + undo buttons ทำงาน | `gui/views/backup_restore_center.py` (35.7KB) |
 | FR-UI-05 | **Help View**: คำอธิบาย tweak (EN/TH bilingual) + risk info | Must | Content โหลดจาก JSON | `gui/views/help_minimal.py` (23.3KB) |
 | FR-UI-06 | **Settings View**: Theme (dark/light), Accent Color (5 สี), Language (EN/TH) | Should | เปลี่ยน theme แล้ว UI refresh | `gui/views/settings_minimal.py` (12KB) |
@@ -280,14 +281,14 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
-| NFR-01 | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG | ไม่มี tweak ใดใน 56 ตัวที่มี registry key ที่ disable features เหล่านี้ | Scan ทุก tweak.registry_keys — ไม่มี path ที่ปิด 6 features |
-| NFR-02 | ทุก tweak ที่เป็น HIGH risk ต้องมี warning messages >= 2 ข้อ | `len(tweak.warnings) >= 2` สำหรับทุก HIGH risk tweaks (3 ตัว) | Unit test: filter HIGH tweaks -> assert warnings count >= 2 |
+| NFR-01 | ห้ามปิด Windows security features: Defender, Update, UAC, DEP, ASLR, CFG, VBS/HVCI, Spectre/Meltdown mitigations | ไม่มีคำสั่ง security-mitigation-disabling ใน engine และไม่มี record ที่อ้างถึง action ดังกล่าว | `test_batch_dispatch_integrity.py` scan forbidden mutations |
+| NFR-02 | ทุก HIGH-risk action ต้องมี warning และ explicit-consent gate | HIGH standard action ไม่ selectable; Hypervisor contract ต้อง consent | `test_high_risk_contract_requires_explicit_consent` |
 
 ### 4.2 Reliability (NFR-03, NFR-04)
 
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
-| NFR-03 | ทุก tweak ต้อง reversible — undo กลับค่าเดิมได้ | `tweak.reversible == True` สำหรับทุก 56 tweaks | Unit test: `assert all(t.reversible for t in registry.get_all_tweaks())` |
+| NFR-03 | ทุก executable contract ต้องมี exact recovery components; irreversible action ไม่ expose | standard contracts map to committed snapshot components; catalog has no irreversible contract | `test_execution_contracts_validate_against_real_dispatchers`, `test_no_irreversible_contract_is_exposed` |
 | NFR-04 | Auto backup ก่อนทุก apply operation | BackupManager.create_backup() ถูกเรียกก่อนทุก execute | Integration test: apply profile -> verify backup file exists |
 
 ### 4.3 Usability (NFR-05, NFR-06, NFR-07)
@@ -296,7 +297,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 |------|-----------|-------------|----------|
 | NFR-05 | Risk level แสดงด้วย traffic light: เขียว (LOW), เหลือง (MEDIUM), แดง (HIGH) | 3 สีตรงกับ 3 risk levels — ผู้ใช้เข้าใจความเสี่ยงภายใน 1 วินาที | Visual inspection + unit test color mapping |
 | NFR-06 | รองรับ 2 ภาษา (EN/TH) สำหรับ help content | Help JSON มี "en" และ "th" keys สำหรับทุก content item | Unit test: assert all items have both "en" and "th" keys |
-| NFR-07 | แต่ละ tweak มีคำอธิบาย 3 ส่วน: what_it_does, why_it_helps, limitations | `len(field) > 0` สำหรับ 3 fields ทุก 56 tweaks | Unit test: iterate all tweaks -> assert 3 fields non-empty |
+| NFR-07 | แต่ละ registry record มีคำอธิบาย 3 ส่วน: what_it_does, why_it_helps, limitations | `len(field) > 0` สำหรับ 3 fields ทุก 44 records | Unit test: iterate all records -> assert 3 fields non-empty |
 
 ### 4.4 Performance (NFR-08, NFR-09)
 
@@ -331,7 +332,7 @@ Research (23 repos) → Taxonomy (56 tweaks) → Risk Classification → Archite
 | รหัส | ความต้องการ | Fit Criteria | วิธีทดสอบ |
 |------|-----------|-------------|----------|
 | NFR-16 | ทุก tweak แสดง registry_keys ที่จะเปลี่ยน | Tweak.registry_keys populated (non-empty list) สำหรับทุก tweak | Unit test: assert all tweaks have registry_keys |
-| NFR-17 | ทุก tweak แสดง expected_gain + limitations + warnings | 3 fields populated ทั้ง 56 tweaks | Unit test: assert 3 fields non-empty |
+| NFR-17 | ทุก registry record แสดง expected_gain + limitations; warnings แสดงเมื่อมีเงื่อนไข/ความเสี่ยง | 44 records มี expected_gain และ limitations | Unit test + UI review |
 
 ### 4.9 สรุป NFR Coverage
 

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-30T00:30:29+07:00",
+  "baseline": {
+    "collected": 765,
+    "passed": 762,
+    "skipped": 3,
+    "failed": 0,
+    "coverage_percent": 39,
+    "duration_seconds": 80.91
+  },
+  "scope": "Current Bug Hunter and defense-readiness artifacts; manifest intentionally excludes itself.",
+  "source_state": "Working tree not frozen; hashes identify artifact contents only, not an official release baseline.",
+  "artifacts": [
+    {
+      "path": ".bug-hunter/findings.json",
+      "sha256": "a401f7b77a93429e814b0cffa33d767d1b0a45fd89a3697940c778db579b6f11",
+      "bytes": 5754
+    },
+    {
+      "path": ".bug-hunter/skeptic.json",
+      "sha256": "4a72591cb2c0526790d01b7d0b5bf9071e58fc22ed591a5d909fb9ece7e857a0",
+      "bytes": 1953
+    },
+    {
+      "path": ".bug-hunter/referee.json",
+      "sha256": "2952a2d220111216f231edf535793f61cef2d1fc959fffd756314f2824b94057",
+      "bytes": 945
+    },
+    {
+      "path": ".bug-hunter/report.md",
+      "sha256": "a5e9022e57aadcb86019394124ed08c264884a5ac002d9a96b25ee2c9198d5e4",
+      "bytes": 2934
+    },
+    {
+      "path": ".bug-hunter/experiment.jsonl",
+      "sha256": "3cd3c474299c1ce06c621bc51d48594a9ed7687d7775be1bed2ad261f661366a",
+      "bytes": 659
+    },
+    {
+      "path": "docs/defense-readiness/README.md",
+      "sha256": "8f3da1db4b2fe06849943f388b503b4fa8e0dc9ee20cd4f34d3ca8d2725b2725",
+      "bytes": 4272
+    },
+    {
+      "path": "docs/defense-readiness/01-current-evidence-matrix-2026-07-30.md",
+      "sha256": "cd1bd3741f321e74dd7f5635a471efad2e1f8d1eacee3fb077fe6bfe1218c892",
+      "bytes": 12078
+    },
+    {
+      "path": "docs/defense-readiness/02-defense-question-bank-2026-07-30.md",
+      "sha256": "4d183a8568182f5f630aaaf3b2828e4657995618057bec8813f59af7cf814d17",
+      "bytes": 21504
+    },
+    {
+      "path": "docs/defense-readiness/03-human-validation-checklist-2026-07-30.md",
+      "sha256": "3883814cb220126b36229ed615ba6f79b8ac8e749261ce125086e5178fc3fbef",
+      "bytes": 9960
+    },
+    {
+      "path": "docs/defense-readiness/04-github-project-backlog-draft-2026-07-30.md",
+      "sha256": "ba22357324a5652ece9b7f321083f93c5b4b6fcb5a480e106994ca33201e98d7",
+      "bytes": 8084
+    },
+    {
+      "path": "docs/defense-readiness/05-read-only-thesis-audit-appendix-2026-07-30.md",
+      "sha256": "22fbfd98b2afd95338400d0e197ef35c30d193f67f0ca50af61156290b6ba83c",
+      "bytes": 13518
+    },
+    {
+      "path": "docs/iso29110-clutchg/13-Current-Evidence-Addendum-2026-07-30.md",
+      "sha256": "dde4a4e1fd5d971189d159047bba977d34b3f7634a8e146709238f31d0270aa2",
+      "bytes": 6229
+    }
+  ]
+}

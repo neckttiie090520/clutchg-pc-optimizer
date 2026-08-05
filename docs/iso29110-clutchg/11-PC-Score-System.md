@@ -768,7 +768,7 @@ Color = Amber (#F59E0B)
 - บทที่ 4 §4.3 — สถาปัตยกรรม recommendation service
 - บทที่ 5 §5.4 — ผลการทดสอบ PC Score accuracy
 - บทที่ 7 §7.2 — อภิปรายจุดเด่นเทียบกับงานที่เกี่ยวข้อง
-- ภาคผนวก ง — รายละเอียด tweak 56 ตัวที่จัดกลุ่มตาม profile
+- ภาคผนวก ง — รายละเอียด 44 implemented/reachable tweak records; distinguish profile metadata from executable contracts
 
 ---
 

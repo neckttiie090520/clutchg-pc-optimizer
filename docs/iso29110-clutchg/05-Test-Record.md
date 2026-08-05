@@ -14,14 +14,14 @@
 
 | ระดับ | จำนวน Tests | Pass | Fail | Skip | Pass Rate | Duration |
 |-------|------------|------|------|------|-----------|---------
-| Unit | 400+ | 400+ | 0 | 0 | 100% | ~42s |
-| Integration | 23 | 23 | 0 | 0 | 100% | ~31s |
+| Unit | 925 | 925 | 0 | 0 | 100% | ~66s |
+| Integration | 23 | 23 | 0 | 0 | 100% | ~3s |
 | E2E | 64 | 0 | 0 | 64 | — (skipped) | — |
-| **รวม** | **496+** | **432+** | **0** | **64** | **100%** | **~73s** |
+| **รวม** | **1012** | **948** | **0** | **64** | **100%** | **~70s** |
 
 > **สถานะ:** ✅ ผ่านเกณฑ์ (Unit = 100%, Integration = 100%, No defects)
 > **หมายเหตุ:** E2E 64 tests skipped ทั้งหมดเนื่องจากไม่มี display session (headless CI) — ทดสอบ manual บน desktop แทน
-> **Coverage (core modules):** ~25% total (GUI excluded headless); core highlights: recommendation_service 92%, help_manager 89%, system_snapshot 88%, batch_executor 85%, config 83%
+> **Coverage:** core layer 81% (`--cov=src/core`), repository-wide 39% (`--cov=src`, diluted by GUI view modules that require a live desktop session). Measured 2026-08-05.
 
 ---
 
@@ -327,30 +327,35 @@ E2E tests ทั้งหมด 64 tests ถูก skip ในสภาพแว
 
 ### 5.1 Module-Level Coverage (Core Modules Only)
 
-> หมายเหตุ: Coverage ที่วัดได้ทั้งระบบ (รวม GUI) อยู่ที่ ~19% เนื่องจาก CustomTkinter
+> หมายเหตุ: Coverage ที่วัดได้ทั้งระบบ (รวม GUI) อยู่ที่ 39% เนื่องจาก CustomTkinter
 > ต้องการ display session จึงวัดไม่ได้ headless ตัวเลขด้านล่างวัดเฉพาะ core modules
+> Command: `python -m pytest tests/unit tests/integration --cov=src/core` (measured 2026-08-04)
 
-| Module | Statements | Miss | Cover | Branch |
+| Module | Statements | Miss | Cover | Target |
 |--------|-----------|------|-------|--------|
-| core/config.py | 42 | 7 | 83% | — |
-| core/batch_parser.py | 158 | 25 | 84% | 80% |
-| core/batch_executor.py | 74 | 11 | 85% | — |
-| core/profile_manager.py | 233 | 194 | 17%* | — |
-| core/recommendation_service.py | 133 | 10 | 92% | — |
-| core/system_info.py | 191 | 55 | 71% | 65% |
-| core/system_snapshot.py | 97 | 12 | 88% | — |
-| core/backup_manager.py | 191 | 88 | 54% | 50% |
-| core/flight_recorder.py | 616† | 153 | 27%* | — |
-| core/help_manager.py | 57 | 6 | 89% | — |
-| core/tweak_registry.py | 104 | 65 | 38% | — |
-| core/action_catalog.py | 152 | 45 | 70% | 72% |
-| core/benchmark_database.py | 80 | 23 | 71% | 82% |
-| utils/admin.py | 85 | 18 | 79% | — |
-| core/backup_manager.py (new tests) | 191 | 55 | 71% | — |
-| **TOTAL (core)** | **1986** | **694** | **~65%** | — |
+| core/tweak_registry.py | 93 | 0 | 100% | 80% |
+| core/recommendation_service.py | 68 | 2 | 97% | 80% |
+| core/benchmark_database.py | 59 | 3 | 95% | 80% |
+| core/help_manager.py | 60 | 3 | 95% | 80% |
+| core/profile_recommender.py | 133 | 10 | 92% | 80% |
+| core/batch_parser.py | 172 | 15 | 91% | 80% |
+| core/flight_recorder.py | 217 | 24 | 89% | 80% |
+| core/system_snapshot.py | 114 | 12 | 89% | 80% |
+| core/batch_executor.py | 176 | 21 | 88% | 80% |
+| core/config.py | 71 | 10 | 86% | 80% |
+| core/action_catalog.py | 302 | 49 | 84% | 80% |
+| core/backup_manager.py | 334 | 60 | 82% | 80% |
+| core/profile_manager.py | 307 | 52 | 83% | 80% |
+| core/updater.py | 529 | 182 | 66% | 80% |
+| core/system_info.py | 224 | 80 | 64% | 80% |
+| core/paths.py | 82 | 30 | 63% | 80% |
+| **TOTAL (core)** | **2962** | **557** | **81%** | **70%** |
 
-> \* `flight_recorder.py` และ `backup_manager.py` coverage ต่ำเพราะ branches ที่ต้องการ real system calls (WMI, registry, PowerShell)
-> † `flight_recorder.py` ถูก rewrite ใหม่ทั้งหมด — 616 lines (เดิม 589 lines)
+> The four modules below target are bounded by privileged or platform-specific paths:
+> elevated batch execution (`profile_manager`), Authenticode/WinVerifyTrust verification and
+> installer handoff (`updater`), WMI hardware probes (`system_info`), and PyInstaller frozen-mode
+> branches (`paths`). These are recorded as `EXTERNAL_VERIFICATION_REQUIRED`; they are not closed
+> by mocks that would assert the mock rather than the behavior.
 
 ### 5.2 Coverage vs Target
 
@@ -581,7 +586,7 @@ Defect Density = Total Defects / Total Statements
 |---------|--------|--------|
 | SRS/SDD Review | Verification | ตรวจเอกสารเทียบกับ standards |
 | Code Compilation Check | Verification | ตรวจ syntax ถูกต้อง |
-| Unit Testing (400+ cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
+| Unit Testing (925 cases) | Verification | ตรวจ logic ของแต่ละ module เทียบกับ spec |
 | Integration Testing (23 cases) | Validation | ตรวจว่า modules ทำงานร่วมกันตามความต้องการ |
 | E2E Testing (64 cases) | Validation | ตรวจว่า workflow ตอบโจทย์ผู้ใช้ |
 | Security Audit (28 items) | Verification | ตรวจ code เทียบกับ security standards |

@@ -63,7 +63,7 @@
 
 | กิจกรรม | ตรวจอะไร | เทียบกับอะไร | วิธี |
 |---------|---------|-------------|-----|
-| Unit Testing | Individual modules | Expected behavior | pytest (400+ cases) |
+| Unit Testing | Individual modules | Expected behavior | pytest (925 cases) |
 | Integration Testing | Module interactions | Interface specifications | pytest (23 cases) |
 | E2E Testing | Complete workflows | Use Case scenarios | pytest + pywinauto (64 cases) |
 | Security Testing | Security properties | Safety rules | Bug Hunter audit (28 items) |
@@ -81,7 +81,7 @@
             ╱──────╲              Full app lifecycle
            ╱Integration╲         23 tests (pytest)
           ╱──────────────╲        Multi-component workflows
-         ╱  Unit Tests    ╲      400+ tests (pytest)
+         ╱  Unit Tests    ╲      925 tests (pytest)
         ╱──────────────────╲     Isolated function tests
        ╱  Static Analysis   ╲   Type hints + linting
       ╱──────────────────────╲
@@ -110,7 +110,7 @@
 
 | # | Level | ทดสอบอะไร | ClutchG? | จำนวน Tests | เครื่องมือ |
 |---|-------|----------|---------|------------|----------|
-| 1 | **Unit** | Function/method เดี่ยว | Yes | 400+ | pytest + mock |
+| 1 | **Unit** | Function/method เดี่ยว | Yes | 925 | pytest + mock |
 | 2 | **Integration** | Interface ระหว่าง modules | Yes | 23 | pytest |
 | 3 | **Function (System)** | ระบบทั้งหมดเทียบกับ SRS | Yes (via E2E) | 64 | pytest + pywinauto |
 | 4 | **Security** | Vulnerabilities, access control | Yes | 28 items | Bug Hunter audit |
@@ -248,7 +248,7 @@ def screenshot_on_failure(request, screenshot_dir, test_timestamp):
 
 | Test ID | Test Function | FR | คำอธิบาย | Expected |
 |---------|--------------|-----|---------|----------|
-| UT-TW-01~61 | TestTweakRegistryIntegrity, parametrized | FR-TW-01~07, NFR-01~03 | 56 tweaks complete, risk distribution, dangerous patterns absent from bat files | All pass |
+| UT-TW / dispatch integrity | Registry + batch static contracts | FR-TW-01~07, NFR-01~03 | 44 implemented/reachable records; routes exist; unreachable/forbidden mutations absent | All pass |
 
 #### UT-AD: Admin Utils Tests (`test_admin.py` — 16 tests)
 
@@ -548,17 +548,33 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 
 ระดับที่แนะนำสำหรับ ClutchG: **Statement + Branch** (เพียงพอสำหรับ application-level software ที่ไม่ใช่ safety-critical)
 
-#### Coverage by Module (ปัจจุบัน)
+#### Coverage by Module (measured 2026-08-04)
+
+Measured with `python -m pytest tests/unit tests/integration --cov=src/core` from `clutchg`; 948 tests passed.
 
 | Module | Coverage | Target | Status |
 |--------|----------|--------|--------|
-| recommendation_service | 92% | 80% | EXCEEDS |
-| help_manager | 89% | 80% | EXCEEDS |
-| system_snapshot | 88% | 80% | EXCEEDS |
-| batch_executor | 85% | 80% | EXCEEDS |
-| config | 83% | 80% | EXCEEDS |
-| admin | 79% | 70% | PASS |
-| Overall core | ~65%+ | 60% | PASS |
+| tweak_registry | 100% | 80% | EXCEEDS |
+| recommendation_service | 97% | 80% | EXCEEDS |
+| benchmark_database | 95% | 80% | EXCEEDS |
+| help_manager | 95% | 80% | EXCEEDS |
+| profile_recommender | 92% | 80% | EXCEEDS |
+| batch_parser | 91% | 80% | EXCEEDS |
+| flight_recorder | 89% | 80% | EXCEEDS |
+| system_snapshot | 89% | 80% | EXCEEDS |
+| batch_executor | 87% | 80% | EXCEEDS |
+| config | 86% | 80% | EXCEEDS |
+| action_catalog | 84% | 80% | EXCEEDS |
+| backup_manager | 80% | 80% | PASS |
+| profile_manager | 79% | 80% | BELOW — privileged execution branches |
+| updater | 66% | 80% | BELOW — Authenticode/WinVerifyTrust and installer handoff |
+| paths | 63% | 80% | BELOW — frozen-mode branches |
+| system_info | 63% | 80% | BELOW — WMI/hardware probes |
+| **Core layer overall** | **81%** | **70%** | **PASS** |
+
+**Interpretation.** The ≥70% target in §Entry criteria applies to the core (business-logic) layer, which is 81%. The repository-wide figure including `src/gui/**` is 39%, because CustomTkinter view modules require a live Windows desktop session and are exercised by the E2E suite that CI intentionally does not run. Reporting 39% against a 70% core-layer target would be comparing two different scopes.
+
+The four modules below target share one cause: the uncovered lines are privileged or platform-bound paths (elevated batch execution, Authenticode verification, WMI hardware probes, PyInstaller frozen-mode branches) that cannot be exercised without mutating the host or shipping a signed binary. These are recorded as `EXTERNAL_VERIFICATION_REQUIRED` rather than closed by adding mocks that would assert the mock rather than the behavior.
 
 #### Defect Removal Effectiveness (DRE)
 
@@ -582,9 +598,9 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
 | DRE | ≥ 85% | 100% (pre-release) | EXCEEDS |
-| Statement Coverage (core) | ≥ 60% | ~65%+ | PASS |
+| Statement Coverage (core) | ≥ 70% | 81% | PASS |
 | Critical Module Coverage | ≥ 80% | 79%-92% | PASS |
-| Unit Test Pass Rate | ≥ 95% | 100% (400+/400+) | EXCEEDS |
+| Unit Test Pass Rate | ≥ 95% | 100% (925/925) | EXCEEDS |
 | Integration Pass Rate | 100% for P0 | 100% (23/23) | PASS |
 | Zero Critical Defects Open | 0 | 0 | PASS |
 
@@ -624,7 +640,7 @@ Statement Coverage ⊂ Branch Coverage ⊂ Condition Coverage ⊂ Path Coverage
 - **วิธี:** Test-first สำหรับ safety-critical modules (BackupManager, FlightRecorder), test-after สำหรับ utility modules
 - **ความถี่:** ทุกครั้งที่ commit (pre-push hook: `pytest tests/unit/ -x --tb=short`)
 - **ผู้รับผิดชอบ:** nextzus (Developer + Tester)
-- **ผลลัพธ์:** 400+ test cases, pass rate 100%
+- **ผลลัพธ์:** 925 unit + 23 integration test cases, pass rate 100% (measured 2026-08-05)
 
 #### Integration Testing (Phase 10–11)
 - **เริ่ม:** 2026-03-10 หลัง core modules ผ่าน unit tests ทั้งหมด
@@ -748,11 +764,11 @@ def temp_output_dir(tmp_path):
 
 | ไฟล์ | ใช้ใน Test | หมายเหตุ |
 |------|----------|---------|
-| `data/tweak_registry.json` | UT-TW-01~61 | 56 tweaks, integrity validation |
+| `core/tweak_registry.py` | UT-TW + dispatch integrity | 44 implemented/reachable records, integrity validation |
 | `data/profiles.json` | UT-PM-01~07 | 3 profiles (SAFE/COMPETITIVE/EXTREME) |
 | `data/help_content.json` | UT-HS-01~12, IT-HS-01~02 | Bilingual help content |
 | `data/benchmark_database.json` | UT-BM-01~05 | CPU/GPU benchmark scores |
-| `bat/*.bat` | UT-TW (dangerous pattern scan) | 56 batch scripts, read-only scan |
+| `src/**/*.bat` | dispatch/safety integrity tests | read-only syntax, reachability, invocation, forbidden-mutation scan |
 
 ---
 
