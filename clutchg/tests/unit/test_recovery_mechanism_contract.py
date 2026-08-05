@@ -183,3 +183,68 @@ class TestPowerSchemeCaseMatchesEngine:
         assert "scheme-not-reactivated" in block, (
             "failing to reactivate the original scheme must still be reported"
         )
+
+@pytest.mark.unit
+class TestServiceCaptureCaseMatchesEngine:
+    """Case 5 verifies the read-only half of the service component.
+
+    ``sc config`` needs elevation, so restore cannot run outside a VM. But the
+    capture half is entirely read-only (``sc qc``, ``sc query``, ``reg query``),
+    so it can be verified here — and what it verifies is real: that capture writes
+    a state file whose shape restore actually accepts, and whose start_type maps
+    to a legal ``sc config`` argument. That closes the "capture writes something
+    restore cannot read" failure mode without touching a service.
+    """
+
+    def test_capture_mirrors_the_backup_engine(self):
+        engine = _read(BACKUP)
+        harness = _read(HARNESS)
+        for statement in (
+            'for /f "tokens=3" %%T in (' + chr(39) + 'sc qc "',
+            'echo start_type=',
+            'echo delayed_auto=',
+            'echo running=',
+        ):
+            assert statement in engine, f"backup engine changed: {statement!r}"
+            assert statement in harness, f"harness drifted: missing {statement!r}"
+
+    def test_restore_parse_mirrors_the_rollback_engine(self):
+        engine = _read(ROLLBACK)
+        harness = _read(HARNESS)
+        for statement in (
+            'if /i "%%K"=="start_type"',
+            'if /i "%%K"=="delayed_auto"',
+            'if /i "%%K"=="running"',
+        ):
+            assert statement in engine, f"rollback engine changed: {statement!r}"
+            assert statement in harness, f"harness drifted: missing {statement!r}"
+
+    def test_start_type_mapping_matches_the_engine(self):
+        """The captured numeric start type must map to the same sc argument."""
+        engine = _read(ROLLBACK)
+        harness = _read(HARNESS)
+        for start_type, argument in (("2", "auto"), ("3", "demand"), ("4", "disabled")):
+            assert f'=="{start_type}" set "SERVICE_START_ARG={argument}"' in engine, (
+                f"rollback.bat no longer maps start_type {start_type} to {argument}"
+            )
+            assert f'=="{start_type}" set "R_ARG={argument}"' in harness, (
+                f"harness no longer mirrors start_type {start_type} -> {argument}"
+            )
+        assert 'set "SERVICE_START_ARG=delayed-auto"' in engine
+        assert 'set "R_ARG=delayed-auto"' in harness
+
+    def test_unelevated_config_is_reported_as_partial_not_passed(self):
+        harness = _read(HARNESS)
+        assert "sc-config-needs-elevation" in harness
+        label = chr(10) + ":case_service_capture" + chr(10)
+        rest = harness.split(label, 1)[1]
+        # stop at the next real label — a line opening with ":" but not "::"
+        body = re.split(r"^:(?!:)", rest, maxsplit=1, flags=re.MULTILINE)[0]
+        assert "CASES_PARTIAL" in body
+        assert "CASES_PASSED" not in body, (
+            "the service case cannot fully execute here, so it must never be "
+            "counted as a pass"
+        )
+        assert "round-trip-mismatch" in body, (
+            "a capture that does not survive the restore parse must still fail"
+        )

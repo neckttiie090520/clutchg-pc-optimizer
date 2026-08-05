@@ -41,6 +41,8 @@ call :case_absent_value
 call :case_absent_key
 :: --- Case 4: power scheme capture/export/reactivate against a scratch scheme -
 call :case_power_scheme
+:: --- Case 5: service state capture round-trip (read-only) --------------------
+call :case_service_capture
 
 call :cleanup_scratch
 
@@ -177,6 +179,71 @@ if /i "!FINAL_GUID!"=="!ORIGINAL_GUID!" (
 )
 echo CASE^|!CASE!^|FAIL^|final=!FINAL_GUID!^|expected=!ORIGINAL_GUID!^|setactive=!SETACTIVE_CODE!
 set /a CASES_FAILED+=1
+exit /b 0
+
+
+:: ============================================================================
+:: Case 5 — service state capture (read-only half)
+:: ============================================================================
+:: sc config needs elevation, so the restore half cannot run here. The CAPTURE
+:: half is entirely read-only (sc qc, sc query, reg query), so it can be verified:
+:: this asserts the capture produces a state file whose shape the restore side
+:: actually accepts. That closes the "capture writes something restore cannot
+:: read" failure mode without touching any service.
+:case_service_capture
+set "CASE=service_capture"
+set "SVC=Spooler"
+sc qc "!SVC!" >nul 2>&1
+if errorlevel 1 (
+    echo CASE^|!CASE!^|SKIP^|probe-service-absent
+    exit /b 0
+)
+
+:: Capture, copied verbatim from backup-registry.bat :backup_one_service
+set "SERVICE_START_TYPE="
+for /f "tokens=3" %%T in ('sc qc "!SVC!" 2^>nul ^| findstr /c:"START_TYPE"') do set "SERVICE_START_TYPE=%%T"
+set "SERVICE_RUNNING=0"
+sc query "!SVC!" 2>nul | findstr /c:"RUNNING" >nul 2>&1
+if not errorlevel 1 set "SERVICE_RUNNING=1"
+set "SERVICE_DELAYED=0"
+for /f "tokens=3" %%D in ('reg query "HKLM\SYSTEM\CurrentControlSet\Services\!SVC!" /v DelayedAutoStart 2^>nul ^| findstr /i "DelayedAutoStart"') do if /i "%%D"=="0x1" set "SERVICE_DELAYED=1"
+if not defined SERVICE_START_TYPE (
+    echo CASE^|!CASE!^|FAIL^|start-type-not-captured
+    set /a CASES_FAILED+=1
+    exit /b 0
+)
+set "SVC_STATE=!STATE_DIR!\!SVC!.state"
+>"!SVC_STATE!" echo start_type=!SERVICE_START_TYPE!
+>>"!SVC_STATE!" echo delayed_auto=!SERVICE_DELAYED!
+>>"!SVC_STATE!" echo running=!SERVICE_RUNNING!
+
+:: Now parse it exactly as rollback.bat :restore_one_service does, and confirm
+:: the start type maps to a legal sc config argument.
+set "R_START_TYPE="
+set "R_DELAYED=0"
+set "R_RUNNING=0"
+for /f "usebackq tokens=1,2 delims==" %%K in ("!SVC_STATE!") do (
+    if /i "%%K"=="start_type" set "R_START_TYPE=%%L"
+    if /i "%%K"=="delayed_auto" set "R_DELAYED=%%L"
+    if /i "%%K"=="running" set "R_RUNNING=%%L"
+)
+set "R_ARG="
+if "!R_START_TYPE!"=="2" set "R_ARG=auto"
+if "!R_START_TYPE!"=="3" set "R_ARG=demand"
+if "!R_START_TYPE!"=="4" set "R_ARG=disabled"
+if "!R_DELAYED!"=="1" if "!R_START_TYPE!"=="2" set "R_ARG=delayed-auto"
+if not defined R_ARG (
+    echo CASE^|!CASE!^|FAIL^|captured-start-type-!R_START_TYPE!-maps-to-no-sc-argument
+    set /a CASES_FAILED+=1
+    exit /b 0
+)
+if not "!R_START_TYPE!"=="!SERVICE_START_TYPE!" (
+    echo CASE^|!CASE!^|FAIL^|round-trip-mismatch^|wrote=!SERVICE_START_TYPE!^|read=!R_START_TYPE!
+    set /a CASES_FAILED+=1
+    exit /b 0
+)
+echo CASE^|!CASE!^|PARTIAL^|sc-config-needs-elevation^|capture-round-trips-to-arg-!R_ARG!
+set /a CASES_PARTIAL+=1
 exit /b 0
 
 :: ============================================================================
