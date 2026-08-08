@@ -102,7 +102,24 @@ class ToastManager:
         self.parent = parent
         self._active: list = []  # list of ToastNotification instances
 
+    def _run_on_main_thread(self, callback, *args):
+        """Queue toast state and widget work on Tk's main thread."""
+        self.parent.after(0, callback, *args)
+
     def _show(self, msg: str, toast_type: str, duration: int = 3000):
+        self._run_on_main_thread(
+            self._show_on_main_thread,
+            msg,
+            toast_type,
+            duration,
+        )
+
+    def _show_on_main_thread(
+        self,
+        msg: str,
+        toast_type: str,
+        duration: int,
+    ):
         y_offset = sum((t.get_height() + _TOAST_MARGIN) for t in self._active)
         toast = ToastNotification(
             self.parent,
@@ -115,6 +132,9 @@ class ToastManager:
         self._active.append(toast)
 
     def _remove(self, toast: "ToastNotification"):
+        self._run_on_main_thread(self._remove_on_main_thread, toast)
+
+    def _remove_on_main_thread(self, toast: "ToastNotification"):
         if toast in self._active:
             self._active.remove(toast)
             # Reposition remaining toasts to close gaps

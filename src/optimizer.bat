@@ -33,6 +33,11 @@ set "LOGS_DIR=%SCRIPT_DIR%logs"
 set "BACKUPS_DIR=%SCRIPT_DIR%backups"
 set "VALIDATION_DIR=%SCRIPT_DIR%validation"
 
+:: Non-interactive API used by the Python GUI. Keep profile declaration and
+:: mutation in this CMD process so the declared TWEAK_* variables remain scoped.
+if /i "%~1"=="apply-profile" goto :cli_apply_profile
+if not "%~1"=="" goto :cli_usage_error
+
 :: Initialize counters
 set /a TWEAK_SUCCESS=0
 set /a TWEAK_FAILED=0
@@ -65,6 +70,54 @@ if %ERRORLEVEL%==1 (
 
 :: Detect system
 call "%CORE_DIR%\system-detect.bat" :detect_all
+goto :main_menu
+
+:: ============================================================================
+:: Non-interactive profile contract
+:: Usage: optimizer.bat apply-profile SAFE|COMPETITIVE|EXTREME
+:: ============================================================================
+:cli_apply_profile
+set "PROFILE_NAME=%~2"
+set "PROFILE_FILE="
+if not "%~3"=="" goto :cli_usage_error
+if /i "!PROFILE_NAME!"=="SAFE" set "PROFILE_FILE=safe-profile.bat"
+if /i "!PROFILE_NAME!"=="COMPETITIVE" set "PROFILE_FILE=competitive-profile.bat"
+if /i "!PROFILE_NAME!"=="EXTREME" set "PROFILE_FILE=extreme-profile.bat"
+if not defined PROFILE_FILE goto :cli_usage_error
+
+if not exist "%CORE_DIR%\system-detect.bat" (
+    echo ERROR: Core modules not found.
+    exit /b 1
+)
+if not exist "%PROFILES_DIR%\!PROFILE_FILE!" (
+    echo ERROR: Profile declaration not found: !PROFILE_FILE!
+    exit /b 1
+)
+
+call "%LOGGING_DIR%\logger.bat" :init_log
+call "%SAFETY_DIR%\validator.bat" :check_admin
+if errorlevel 1 (
+    echo ERROR: Administrator privileges are required.
+    exit /b 1
+)
+call "%CORE_DIR%\system-detect.bat" :detect_all
+if errorlevel 1 (
+    echo ERROR: System detection failed.
+    exit /b 1
+)
+
+call :reset_profile_flags
+call "%PROFILES_DIR%\!PROFILE_FILE!"
+if errorlevel 1 (
+    echo ERROR: Profile declaration failed to load.
+    exit /b 1
+)
+call :apply_profile "!PROFILE_NAME!"
+exit /b !ERRORLEVEL!
+
+:cli_usage_error
+echo Usage: optimizer.bat apply-profile SAFE^|COMPETITIVE^|EXTREME
+exit /b 2
 
 :: Main menu loop
 :main_menu
@@ -111,14 +164,20 @@ goto :main_menu
 :: ============================================
 
 :profile_safe
+call :reset_profile_flags
 call "%PROFILES_DIR%\safe-profile.bat"
+if errorlevel 1 goto :profile_load_failed
 call :apply_profile "SAFE"
+if errorlevel 1 goto :profile_apply_failed
 pause
 goto :main_menu
 
 :profile_competitive
+call :reset_profile_flags
 call "%PROFILES_DIR%\competitive-profile.bat"
+if errorlevel 1 goto :profile_load_failed
 call :apply_profile "COMPETITIVE"
+if errorlevel 1 goto :profile_apply_failed
 pause
 goto :main_menu
 
@@ -128,195 +187,150 @@ echo  ============================================
 echo           EXTREME PROFILE WARNING
 echo  ============================================
 echo.
-echo  This profile applies aggressive optimizations.
+echo  This profile applies aggressive but reversible optimizations.
+echo  Security-reducing and irreversible actions require separate consent.
 echo.
-echo  Potential risks:
-echo   - Some Windows features may not work
-echo   - System may be less stable
-echo   - Requires manual recovery if issues occur
-echo.
-echo  Only proceed if you:
-echo   - Have created a full backup
-echo   - Understand the changes being made
-echo   - Accept responsibility for any issues
-echo.
-echo  ============================================
 choice /c YN /m "  I understand and accept these risks"
 if %ERRORLEVEL%==2 goto :main_menu
-
+call :reset_profile_flags
 call "%PROFILES_DIR%\extreme-profile.bat"
+if errorlevel 1 goto :profile_load_failed
 call :apply_profile "EXTREME"
+if errorlevel 1 goto :profile_apply_failed
 pause
 goto :main_menu
 
 :apply_profile
 set "PROFILE_NAME=%~1"
+set /a TWEAK_SUCCESS=0
+set /a TWEAK_FAILED=0
+set /a TWEAK_SKIPPED=0
+set "CLUTCHG_BACKUP_READY=0"
 echo.
 echo  ============================================
 echo   Applying %PROFILE_NAME% Profile
 echo  ============================================
 echo.
 
-:: Step 1: Create registry snapshot (Flight Recorder)
-echo  [1/6] Creating registry snapshot...
-call "%SAFETY_DIR%\flight-recorder.bat" :create_registry_snapshot
-echo        Done.
+:: Recovery gates must complete before the first mutation.
+echo  [1/4] Creating System Restore Point...
+call "%BACKUP_DIR%\restore-point.bat" create_restore_point
+if errorlevel 1 (
+    echo ERROR: Restore point creation failed. No optimizations were applied.
+    exit /b 1
+)
+
+echo  [2/4] Creating journaled backup transaction...
+call "%SAFETY_DIR%\flight-recorder.bat" create_snapshot
+if errorlevel 1 (
+    echo ERROR: Backup transaction failed. No optimizations were applied.
+    exit /b 1
+)
+if not "!CLUTCHG_BACKUP_READY!"=="1" (
+    echo ERROR: Backup transaction did not produce a committed recovery artifact.
+    exit /b 1
+)
+echo        Backup committed: !BACKUP_FOLDER!
 echo.
 
-:: Step 2: Create restore point
-echo  [2/6] Creating System Restore Point...
-call "%BACKUP_DIR%\restore-point.bat" :create_restore_point
-echo        Done.
-echo.
-
-:: Step 3: Create backup
-echo  [3/6] Creating configuration backup...
-call "%BACKUP_DIR%\backup-registry.bat" :create_backup
-echo        Backup saved to: %BACKUP_FOLDER%
-echo.
-
-:: Step 4: Apply tweaks
-echo  [4/6] Applying optimizations...
-echo.
-
-if "%TWEAK_POWER%"=="1" (
-    echo        - Power settings...
-    call "%CORE_DIR%\power-manager.bat" :apply_power_tweaks
-)
-
-if "%TWEAK_BCDEDIT_SAFE%"=="1" (
-    echo        - BCDEdit safe tweaks...
-    call "%CORE_DIR%\bcdedit-manager.bat" :apply_safe_tweaks
-)
-
-if "%TWEAK_BCDEDIT_ADVANCED%"=="1" (
-    echo        - BCDEdit advanced tweaks...
-    call "%CORE_DIR%\bcdedit-manager.bat" :apply_advanced_tweaks
-)
-
-if "%TWEAK_SERVICES%"=="1" (
-    echo        - Service optimization...
-    call "%CORE_DIR%\service-manager.bat" :apply_service_tweaks
-)
-
-if "%TWEAK_TELEMETRY%"=="1" (
-    echo        - Privacy/Telemetry settings...
-    call "%CORE_DIR%\registry-utils.bat" :apply_telemetry_tweaks
-)
-
-if "%TWEAK_GAMING%"=="1" (
-    echo        - Gaming optimizations...
-    call "%CORE_DIR%\registry-utils.bat" :apply_gaming_tweaks
-)
-
-if "%TWEAK_VISUAL%"=="1" (
-    echo        - Visual effects...
-    call "%CORE_DIR%\registry-utils.bat" :apply_visual_tweaks
-)
-
-:: NEW: Evidence-based network optimizations
-if "%TWEAK_NETWORK_SAFE%"=="1" (
-    echo        - Network optimizations (SAFE)...
-    call "%CORE_DIR%\network-optimizer-enhanced.bat" :apply_safe_tweaks
-)
-
-if "%TWEAK_NETWORK_AGGRESSIVE%"=="1" (
-    echo        - Network optimizations (AGGRESSIVE)...
-    call "%CORE_DIR%\network-optimizer-enhanced.bat" :apply_aggressive_tweaks
-)
-
-:: Legacy network support
-if "%TWEAK_NETWORK%"=="1" (
-    echo        - Network optimization...
-    call "%CORE_DIR%\network-manager.bat" :apply_network_tweaks
-)
-
-:: NEW: GPU optimizations (HAGS)
-if "%TWEAK_GPU%"=="1" (
-    echo        - GPU optimizations (HAGS)...
-    call "%CORE_DIR%\gpu-optimizer.bat" :apply_gpu_tweaks
-)
-
-:: NEW: Enhanced power management (AMD CPPC, EPP, GPU P-State)
-if "%TWEAK_POWER_ENHANCED%"=="1" (
-    echo        - Enhanced power management (AMD CPPC, EPP)...
-    call "%CORE_DIR%\power-manager-enhanced.bat" :apply_all_enhanced
-)
-
-:: NEW: Vendor-specific GPU optimizations
-if "%TWEAK_GPU_ENHANCED%"=="1" (
-    echo        - Vendor-specific GPU optimizations...
-    call "%CORE_DIR%\gpu-optimizer-enhanced.bat" :apply_all_vendor_tweaks
-)
-
-:: NEW: Kernel and input optimizations
-if "%TWEAK_KERNEL_INPUT%"=="1" (
-    echo        - Kernel and input optimizations (MMCSS, mouse)...
-    call "%CORE_DIR%\registry-utils.bat" :apply_kernel_input_tweaks
-)
-
-:: NEW: Storage optimizations
-if "%TWEAK_STORAGE%"=="1" (
-    echo        - Storage optimizations...
-    call "%CORE_DIR%\storage-optimizer.bat" :apply_storage_tweaks
-)
-
-:: NEW: System maintenance (TRIM, Storage Sense, cleanup)
-if "%TWEAK_MAINTENANCE%"=="1" (
-    echo        - System maintenance (TRIM verification, Storage Sense)...
-    call "%CORE_DIR%\maintenance-manager.bat" :apply_safe_maintenance
-)
+echo  [3/4] Applying optimizations...
+if "%TWEAK_POWER%"=="1" call :run_tweak_module "Power settings" "%CORE_DIR%\power-manager.bat" ":apply_power_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_BCDEDIT_SAFE%"=="1" call :run_tweak_module "BCDEdit safe tweaks" "%CORE_DIR%\bcdedit-manager.bat" ":apply_safe_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_BCDEDIT_ADVANCED%"=="1" call :run_tweak_module "BCDEdit advanced tweaks" "%CORE_DIR%\bcdedit-manager.bat" ":apply_advanced_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_SERVICES%"=="1" call :run_tweak_module "Service optimization" "%CORE_DIR%\service-manager.bat" ":apply_service_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_TELEMETRY%"=="1" call :run_tweak_module "Privacy and telemetry" "%CORE_DIR%\registry-utils.bat" ":apply_telemetry_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_GAMING%"=="1" call :run_tweak_module "Gaming optimizations" "%CORE_DIR%\registry-utils.bat" ":apply_gaming_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_VISUAL%"=="1" call :run_tweak_module "Visual effects" "%CORE_DIR%\registry-utils.bat" ":apply_visual_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_NETWORK_SAFE%"=="1" call :run_tweak_module "Safe network optimizations" "%CORE_DIR%\network-optimizer-enhanced.bat" "apply_safe_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_NETWORK_AGGRESSIVE%"=="1" call :run_tweak_module "Aggressive network optimizations" "%CORE_DIR%\network-optimizer-enhanced.bat" "apply_aggressive_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_NETWORK%"=="1" call :run_tweak_module "Legacy network optimization" "%CORE_DIR%\network-manager.bat" ":apply_network_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_GPU%"=="1" call :run_tweak_module "GPU optimizations" "%CORE_DIR%\gpu-optimizer.bat" "apply_gpu_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_POWER_ENHANCED%"=="1" call :run_tweak_module "Enhanced power management" "%CORE_DIR%\power-manager-enhanced.bat" ":apply_all_enhanced"
+if errorlevel 1 exit /b 1
+if "%TWEAK_GPU_ENHANCED%"=="1" call :run_tweak_module "Vendor-specific GPU optimizations" "%CORE_DIR%\gpu-optimizer-enhanced.bat" ":apply_all_vendor_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_KERNEL_INPUT%"=="1" call :run_tweak_module "Kernel and input optimizations" "%CORE_DIR%\registry-utils.bat" ":apply_kernel_input_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_STORAGE%"=="1" call :run_tweak_module "Storage optimizations" "%CORE_DIR%\storage-optimizer.bat" "apply_storage_tweaks"
+if errorlevel 1 exit /b 1
+if "%TWEAK_MAINTENANCE%"=="1" call :run_tweak_module "Safe maintenance" "%CORE_DIR%\maintenance-manager.bat" ":apply_safe_maintenance"
+if errorlevel 1 exit /b 1
+if "%TWEAK_BENCHMARK%"=="1" call :run_tweak_module "Performance benchmark" "%VALIDATION_DIR%\benchmark-runner.bat" ":run_benchmark"
+if errorlevel 1 exit /b 1
 
 echo.
-
-:: Step 5: Benchmark (optional)
-if "%TWEAK_BENCHMARK%"=="1" (
-    echo  [5/6] Running performance benchmark...
-    echo.
-    call "%VALIDATION_DIR%\benchmark-runner.bat" :run_benchmark
-    echo.
-)
-
-:: Step 6: Summary
-echo  [6/6] Generating summary...
-echo.
+echo  [4/4] Optimization Complete
 echo  ============================================
-echo   Optimization Complete
-echo  ============================================
-echo.
 echo   Profile Applied: %PROFILE_NAME%
-echo   Tweaks Successful: %TWEAK_SUCCESS%
-echo   Tweaks Failed: %TWEAK_FAILED%
-echo   Tweaks Skipped: %TWEAK_SKIPPED%
-echo.
-echo   Log saved to: %LOGFILE%
-echo   Backup saved to: %BACKUP_FOLDER%
-echo.
-echo   Expected improvement (based on research.md):
-if "%PROFILE_NAME%"=="SAFE" (
-    echo     - 3-8%% performance improvement (includes new kernel/input tweaks)
-) else if "%PROFILE_NAME%"=="COMPETITIVE" (
-    echo     - 8-15%% performance improvement (includes enhanced power, GPU tweaks)
-) else if "%PROFILE_NAME%"=="EXTREME" (
-    echo     - 15-25%% performance improvement (all optimizations applied)
-)
-echo.
-echo   NOTE: Realistic expectations, not 200%% like snake-oil tools
-echo.
-
-if "%TWEAK_BCDEDIT_SAFE%"=="1" (
-    echo   IMPORTANT: A system restart is required for
-    echo            BCDEdit changes to take effect.
-    echo.
-)
-
-if "%TWEAK_GPU%"=="1" (
-    echo   HAGS enabled: May require GPU driver update and restart
-    echo.
-)
-
+echo   Backup saved to: !BACKUP_FOLDER!
+echo   Security-reducing and irreversible actions: not included
 echo  ============================================
-goto :eof
+exit /b 0
+
+:run_tweak_module
+set "MODULE_DESCRIPTION=%~1"
+set "MODULE_SCRIPT=%~2"
+set "MODULE_ARGUMENT=%~3"
+echo        - !MODULE_DESCRIPTION!...
+if not exist "!MODULE_SCRIPT!" (
+    echo ERROR: Missing module: !MODULE_SCRIPT!
+    set /a TWEAK_FAILED+=1
+    exit /b 2
+)
+call "!MODULE_SCRIPT!" "!MODULE_ARGUMENT!"
+set "MODULE_CODE=!ERRORLEVEL!"
+if not "!MODULE_CODE!"=="0" (
+    echo ERROR: !MODULE_DESCRIPTION! failed with exit code !MODULE_CODE!.
+    set /a TWEAK_FAILED+=1
+    exit /b !MODULE_CODE!
+)
+set /a TWEAK_SUCCESS+=1
+exit /b 0
+
+:reset_profile_flags
+set "TWEAK_POWER=0"
+set "TWEAK_BCDEDIT_SAFE=0"
+set "TWEAK_BCDEDIT_ADVANCED=0"
+set "TWEAK_SERVICES=0"
+set "TWEAK_TELEMETRY=0"
+set "TWEAK_GAMING=0"
+set "TWEAK_VISUAL=0"
+set "TWEAK_NETWORK_SAFE=0"
+set "TWEAK_NETWORK_AGGRESSIVE=0"
+set "TWEAK_NETWORK=0"
+set "TWEAK_GPU=0"
+set "TWEAK_POWER_ENHANCED=0"
+set "TWEAK_GPU_ENHANCED=0"
+set "TWEAK_KERNEL_INPUT=0"
+set "TWEAK_STORAGE=0"
+set "TWEAK_MAINTENANCE=0"
+set "TWEAK_BENCHMARK=0"
+set "TWEAK_TELEMETRY_FULL=0"
+set "TWEAK_INPUT=0"
+set "TWEAK_DEBLOAT=0"
+set "TWEAK_NETWORK_TCP=0"
+exit /b 0
+
+:profile_load_failed
+echo ERROR: Profile declaration failed to load. No changes were made.
+pause
+goto :main_menu
+
+:profile_apply_failed
+echo ERROR: Profile application stopped. Review the recovery journal before retrying.
+pause
+goto :main_menu
 
 :: ============================================
 :: Custom Menu
@@ -357,7 +371,8 @@ if %ERRORLEVEL%==10 goto :main_menu
 goto :custom_menu
 
 :apply_custom
-:: Set tweak flags from custom selection
+:: Reset every profile flag before mapping the explicit custom selection.
+call :reset_profile_flags
 set "TWEAK_POWER=%CUSTOM_POWER%"
 set "TWEAK_BCDEDIT_SAFE=%CUSTOM_BCDEDIT_SAFE%"
 set "TWEAK_BCDEDIT_ADVANCED=%CUSTOM_BCDEDIT_ADV%"
@@ -368,6 +383,7 @@ set "TWEAK_VISUAL=%CUSTOM_VISUAL%"
 set "TWEAK_NETWORK=%CUSTOM_NETWORK%"
 
 call :apply_profile "CUSTOM"
+if errorlevel 1 goto :profile_apply_failed
 pause
 goto :main_menu
 

@@ -9,7 +9,12 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from core.action_catalog import ActionCatalog, ActionDefinition
+from core.action_catalog import (
+    ActionCatalog,
+    ActionDefinition,
+    TweakExecutionCatalog,
+    TweakExecutionContract,
+)
 
 
 @pytest.mark.unit
@@ -31,34 +36,27 @@ class TestActionCatalog:
         errors = catalog.validate()
         assert any("unknown tweak" in err.lower() for err in errors)
 
-    def test_risk_aggregation_for_memory_pack(self):
+    def test_risk_aggregation_for_audited_pack(self):
         catalog = ActionCatalog()
-        action = catalog.get_action("qa_advanced_memory_pack")
+        action = catalog.get_action("qa_general_disable_xbox_capture")
         assert action is not None
         summary = catalog.summarize(action)
-        assert summary.tweak_count == 4
-        assert summary.max_risk == "MEDIUM"
+        assert summary.tweak_count == 1
+        assert summary.max_risk == "LOW"
         assert isinstance(summary.requires_restart, bool)
 
-    def test_nvidia_action_visibility(self):
-        catalog = ActionCatalog()
+    def test_default_quick_tweak_packs_are_resolvable(self):
+        scripts_dir = Path(__file__).parents[3] / "src"
+        action_catalog = ActionCatalog()
+        execution_catalog = TweakExecutionCatalog(scripts_dir)
 
-        class _GPU:
-            def __init__(self, name):
-                self.name = name
-
-        class _System:
-            def __init__(self, gpu_name):
-                self.gpu = _GPU(gpu_name)
-
-        non_nvidia = _System("AMD Radeon RX 7600")
-        nvidia = _System("NVIDIA GeForce RTX 4070")
-
-        advanced_non_nvidia = {a.id for a in catalog.get_actions("advanced", non_nvidia)}
-        advanced_nvidia = {a.id for a in catalog.get_actions("advanced", nvidia)}
-
-        assert "qa_advanced_nvidia_consistency" not in advanced_non_nvidia
-        assert "qa_advanced_nvidia_consistency" in advanced_nvidia
+        for group in action_catalog.get_groups():
+            for action in action_catalog.get_actions(group):
+                if action.kind != "tweak_pack":
+                    continue
+                plan, errors = execution_catalog.resolve(action.tweak_ids)
+                assert errors == (), action.id
+                assert plan, action.id
 
     def test_external_link_requires_confirmation_gate(self):
         catalog = ActionCatalog()
@@ -87,9 +85,54 @@ class TestActionCatalog:
         assert allowed is True
         assert opened == [action.url]
 
+    def test_execution_contracts_validate_against_real_dispatchers(self):
+        scripts_dir = Path(__file__).parents[3] / "src"
+
+        errors = TweakExecutionCatalog(scripts_dir).validate()
+
+        assert errors == []
+
+    def test_high_risk_contract_requires_explicit_consent(self):
+        scripts_dir = Path(__file__).parents[3] / "src"
+        catalog = TweakExecutionCatalog(scripts_dir)
+
+        blocked_plan, blocked_errors = catalog.resolve(["bcd_hypervisor"])
+        allowed_plan, allowed_errors = catalog.resolve(
+            ["bcd_hypervisor"],
+            consented_contract_ids=["disable-hypervisor"],
+        )
+
+        assert blocked_plan == ()
+        assert any("explicit consent" in error for error in blocked_errors)
+        assert allowed_errors == ()
+        assert allowed_plan[0].accepted_argument == ":apply_advanced_tweaks"
+
+    def test_no_irreversible_contract_is_exposed(self):
+        scripts_dir = Path(__file__).parents[3] / "src"
+        catalog = TweakExecutionCatalog(scripts_dir)
+
+        assert all(contract.reversible for contract in catalog.contracts)
+
+    def test_missing_recovery_component_rejects_contract(self):
+        scripts_dir = Path(__file__).parents[3] / "src"
+        bad_contract = TweakExecutionContract(
+            id="bad-recovery",
+            tweak_ids=("tel_xbox_dvr",),
+            script="core/telemetry-blocker.bat",
+            target_label=":apply_xbox_dvr",
+            persistent_effects=("test effect",),
+            recovery_components=("missing_component",),
+        )
+        catalog = TweakExecutionCatalog(scripts_dir, contracts=(bad_contract,))
+
+        assert any("missing recovery components" in error for error in catalog.validate())
+        plan, errors = catalog.resolve(["tel_xbox_dvr"])
+        assert plan == ()
+        assert any("recovery components are unavailable" in error for error in errors)
+
     def test_high_risk_tweaks_not_in_quick_actions(self):
         catalog = ActionCatalog()
-        excluded = {"pwr_spectre", "gpu_vbs", "bcd_hypervisor"}
+        excluded = {"bcd_hypervisor"}
 
         quick_tweak_ids = set()
         for group in catalog.get_groups():

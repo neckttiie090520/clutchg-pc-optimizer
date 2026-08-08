@@ -179,7 +179,7 @@ graph LR
 | **Postcondition** | 1. Tweaks ถูก apply<br/>2. Backup + Restore Point พร้อม<br/>3. FlightRecord JSON บันทึกครบ (rollback ready) |
 | **Alternative** | 3a. ผู้ใช้กด Cancel → กลับหน้า Profiles ไม่มีอะไรเปลี่ยน<br/>6a. Tweak บางตัว fail → บันทึก error, ทำตัวต่อไป |
 | **Exception** | 4a. Backup creation fail → แจ้ง warning, proceed (ไม่ block)<br/>5a. Restore Point fail → ลอง WMIC fallback → log warning<br/>6b. Script file ไม่มี → skip tweak + error log |
-| **Business Rules** | - SAFE: 14 tweaks (LOW risk เท่านั้น)<br/>- COMPETITIVE: 44 tweaks (LOW + MEDIUM)<br/>- EXTREME: 56 tweaks ทั้งหมด (รวม HIGH 3 ตัว) |
+| **Business Rules** | - Profiles execute declarative module flags through one recovery transaction<br/>- Registry preset metadata is not mutation authority<br/>- Individual execution requires an audited contract |
 | **NFR** | NFR-03 (reversible), NFR-04 (auto backup), NFR-09 (realistic FPS claim) |
 | **Source** | `core/profile_manager.py` L146-257, `core/backup_manager.py` L73-140, `core/flight_recorder.py` L160-334 |
 
@@ -192,7 +192,7 @@ graph LR
 | **Use Case ID** | UC-05 |
 | **ชื่อ** | Create Custom Preset |
 | **Actor** | Gamer, Power User |
-| **คำอธิบาย** | ผู้ใช้เลือก tweaks ทีละตัวจาก 56 tweaks แล้ว save เป็น custom preset |
+| **คำอธิบาย** | ผู้ใช้เลือกได้เฉพาะ audited standard actions; implemented records อื่นเป็น Learn Only แล้ว save เป็น custom preset ได้เฉพาะ selectable IDs |
 | **Trigger** | เปิดหน้า Scripts → เลือก tweaks → กด Save Preset |
 | **Precondition** | หน้า Scripts เปิดอยู่ |
 | **Main Flow** | 1. ผู้ใช้เข้าหน้า Scripts → เห็น 10 categories<br/>2. เลือก tweaks (checkbox) → ดู risk badge + warnings<br/>3. กด "Save as Preset" → ใส่ชื่อ preset<br/>4. ระบบ validate: build_custom_preset(ids) → {tweaks, max_risk, requires_restart, warnings}<br/>5. Save preset ใน config.json<br/>6. แสดง Toast "Preset saved!" |
@@ -227,7 +227,7 @@ graph LR
 | **Use Case ID** | UC-08 |
 | **ชื่อ** | Browse Tweaks by Category |
 | **Actor** | Gamer, Power User |
-| **คำอธิบาย** | ผู้ใช้เรียกดู tweaks ทั้ง 56 ตัว จัดกลุ่มตาม 10 categories |
+| **คำอธิบาย** | ผู้ใช้เรียกดู 44 implemented/reachable records จัดกลุ่มตาม 9 non-empty categories |
 | **Trigger** | คลิก sidebar "Scripts" |
 | **Precondition** | ไม่มี |
 | **Main Flow** | 1. ระบบแสดง 10 categories: Telemetry(8), Input(6), Power(7), GPU(8), Network(6), Services(5), Memory(4), Boot(5), Visual(4), Cleanup(3)<br/>2. แต่ละ category มี icon + color + count<br/>3. ผู้ใช้ expand category → เห็น tweaks ในกลุ่ม<br/>4. แต่ละ tweak แสดง: name, risk badge (LOW/MEDIUM/HIGH), checkbox, "?" help button<br/>5. กด "?" → popup: what_it_does, why_it_helps, limitations, warnings, expected_gain |
@@ -476,7 +476,7 @@ graph TB
     subgraph "Business Logic Layer"
         subgraph "Core Managers"
             PM["ProfileManager<br/>528 lines"]
-            TR["TweakRegistry<br/>1234 lines<br/>56 tweaks"]
+            TR["TweakRegistry<br/>44 implemented/reachable records"]
             SD["SystemDetector<br/>381 lines"]
             BM["BackupManager<br/>373 lines"]
             FR["FlightRecorder<br/>589 lines"]
@@ -960,7 +960,7 @@ stateDiagram-v2
     RollbackFailed --> Applied : Tweak still active (manual fix needed)
 
     note right of Registered
-        56 tweaks loaded from
+        44 records loaded from
         TweakRegistry at startup
     end note
 
@@ -1137,7 +1137,7 @@ graph TB
             end
 
             subgraph COMP_CORE["<<component>><br/>Core Business Logic"]
-                ART_TWEAKREG["<<artifact>><br/>tweak_registry.py<br/>(56 Tweaks × 10 Categories)"]
+                ART_TWEAKREG["<<artifact>><br/>tweak_registry.py<br/>(44 Records × 9 Non-empty Categories)"]
                 ART_RECSVC["<<artifact>><br/>recommendation_service.py<br/>(RecommendationService)"]
                 ART_PROFILE["<<artifact>><br/>profile_manager.py<br/>(SAFE/COMPETITIVE/EXTREME)"]
                 ART_PARSER["<<artifact>><br/>batch_parser.py<br/>(Script Discovery)"]

@@ -218,7 +218,7 @@ class ProfileCard(GlassCard):
         for c in range(4):
             stats_frame.grid_columnconfigure(c, weight=1)
 
-        stat_labels = ["Tweaks", "Gain", "Risk", "Restart"]
+        stat_labels = [stats.get("count_label", "Actions"), "Gain", "Risk", "Restart"]
         stat_values = [
             str(stats.get("tweaks", "")),
             str(stats.get("gain", "")),

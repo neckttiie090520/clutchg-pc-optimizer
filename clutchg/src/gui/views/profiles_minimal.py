@@ -18,23 +18,18 @@ if TYPE_CHECKING:
     from app_minimal import ClutchGApp
 
 
-# Stats for each profile — used by cards and compare table
-PROFILE_STATS = {
-    "SAFE": {"tweaks": 12, "gain": "+2-5% FPS", "risk": "LOW", "restart": "No"},
-    "COMPETITIVE": {
-        "tweaks": 24,
-        "gain": "+5-10% FPS",
-        "risk": "MEDIUM",
-        "restart": "Yes",
-    },
-    "EXTREME": {"tweaks": 35, "gain": "+10-15% FPS", "risk": "HIGH", "restart": "Yes"},
-}
+def profile_stats(profile) -> dict:
+    """Build card metrics from the canonical execution manifest."""
+    return {
+        "tweaks": len(profile.operations),
+        "count_label": "Actions",
+        "gain": "Measure",
+        "risk": profile.risk_level.value.upper(),
+        "restart": "Yes" if profile.requires_restart else "No",
+    }
 
-REVERSIBLE_MAP = {
-    "SAFE": "yes",
-    "COMPETITIVE": "mostly",
-    "EXTREME": "partial",
-}
+
+REVERSIBLE_MAP = {"SAFE": "yes", "COMPETITIVE": "yes", "EXTREME": "yes"}
 
 
 class ProfilesView(ctk.CTkFrame):
@@ -45,7 +40,7 @@ class ProfilesView(ctk.CTkFrame):
         "en": {
             "title": "Profiles",
             "hero_title": "Pick a profile. Start with Safe if unsure.",
-            "hero_subtitle": "Each profile bundles specific Windows 11 tweaks. All changes are logged and reversible.",
+            "hero_subtitle": "Each profile runs a declared module manifest through a mandatory recovery transaction.",
             # Profile descriptions
             "safe_desc": "For everyday use and stability. Applies conservative, reversible optimizations.",
             "competitive_desc": "Balanced for gamers. Improves responsiveness with moderate trade-offs.",
@@ -58,7 +53,7 @@ class ProfilesView(ctk.CTkFrame):
             "preview": "Preview",
             "apply_btn": "Apply {name}",
             "compare_title": "Compare Profiles",
-            "stat_tweaks": "Tweaks",
+            "stat_tweaks": "Actions",
             "stat_gain": "Gain",
             "stat_risk": "Risk",
             "stat_restart": "Restart",
@@ -79,7 +74,7 @@ class ProfilesView(ctk.CTkFrame):
         "th": {
             "title": "Profiles",
             "hero_title": "เลือก Profile เริ่มจาก Safe ถ้าไม่แน่ใจ",
-            "hero_subtitle": "แต่ละ Profile รวม tweak เฉพาะของ Windows 11 ทุกการเปลี่ยนแปลงบันทึกและย้อนกลับได้",
+            "hero_subtitle": "แต่ละ Profile รัน module manifest ที่ประกาศไว้ผ่าน recovery transaction ที่บังคับเสมอ",
             # Profile descriptions
             "safe_desc": "สำหรับการใช้งานทั่วไปและความเสถียร ใช้การปรับแต่งแบบอนุรักษ์นิยมที่ย้อนกลับได้",
             "competitive_desc": "สมดุลสำหรับเกมเมอร์ เพิ่มความลื่นไหลด้วย trade-off ระดับกลาง",
@@ -92,7 +87,7 @@ class ProfilesView(ctk.CTkFrame):
             "preview": "ดูรายละเอียด",
             "apply_btn": "Apply {name}",
             "compare_title": "เปรียบเทียบ Profiles",
-            "stat_tweaks": "Tweaks",
+            "stat_tweaks": "Actions",
             "stat_gain": "ผลลัพธ์",
             "stat_risk": "ความเสี่ยง",
             "stat_restart": "Restart",
@@ -189,33 +184,34 @@ class ProfilesView(ctk.CTkFrame):
         cards_container.grid_columnconfigure((0, 1, 2), weight=1)
         cards_container.grid_rowconfigure(0, weight=1)
 
-        # Profile Configurations
-        profiles = [
-            {
-                "name": "SAFE",
-                "icon": ICON("safe"),
-                "desc": self._ui("safe_desc"),
-                "risk": self._ui("low_risk"),
-                "stats": PROFILE_STATS["SAFE"],
-                "color": COLORS["risk_low"],
-            },
-            {
-                "name": "COMPETITIVE",
-                "icon": ICON("competitive"),
-                "desc": self._ui("competitive_desc"),
-                "risk": self._ui("medium_risk"),
-                "stats": PROFILE_STATS["COMPETITIVE"],
-                "color": COLORS["risk_medium"],
-            },
-            {
-                "name": "EXTREME",
-                "icon": ICON("extreme"),
-                "desc": self._ui("extreme_desc"),
-                "risk": self._ui("high_risk"),
-                "stats": PROFILE_STATS["EXTREME"],
-                "color": COLORS["risk_high"],
-            },
-        ]
+        icon_names = {
+            "SAFE": "safe",
+            "COMPETITIVE": "competitive",
+            "EXTREME": "extreme",
+        }
+        risk_labels = {
+            "LOW": self._ui("low_risk"),
+            "MEDIUM": self._ui("medium_risk"),
+            "HIGH": self._ui("high_risk"),
+        }
+        risk_colors = {
+            "LOW": COLORS["risk_low"],
+            "MEDIUM": COLORS["risk_medium"],
+            "HIGH": COLORS["risk_high"],
+        }
+        profiles = []
+        for profile in self.app.profile_manager.get_all_profiles():
+            stats = profile_stats(profile)
+            profiles.append(
+                {
+                    "name": profile.name,
+                    "icon": ICON(icon_names[profile.name]),
+                    "desc": profile.description,
+                    "risk": risk_labels[stats["risk"]],
+                    "stats": stats,
+                    "color": risk_colors[stats["risk"]],
+                }
+            )
 
         for i, p in enumerate(profiles):
             self.create_single_card(cards_container, i, p)
@@ -296,11 +292,15 @@ class ProfilesView(ctk.CTkFrame):
         headers = ["", "Safe", "Competitive", "Extreme"]
         profile_keys = ["SAFE", "COMPETITIVE", "EXTREME"]
 
+        stats_by_profile = {
+            profile.name: profile_stats(profile)
+            for profile in self.app.profile_manager.get_all_profiles()
+        }
         row_defs = [
-            ("stat_tweaks", lambda k: str(PROFILE_STATS[k]["tweaks"])),
-            ("stat_gain", lambda k: PROFILE_STATS[k]["gain"]),
-            ("stat_risk", lambda k: PROFILE_STATS[k]["risk"]),
-            ("stat_restart", lambda k: PROFILE_STATS[k]["restart"]),
+            ("stat_tweaks", lambda k: str(stats_by_profile[k]["tweaks"])),
+            ("stat_gain", lambda k: stats_by_profile[k]["gain"]),
+            ("stat_risk", lambda k: stats_by_profile[k]["risk"]),
+            ("stat_restart", lambda k: stats_by_profile[k]["restart"]),
             ("stat_reversible", lambda k: self._ui(REVERSIBLE_MAP[k])),
         ]
 
@@ -395,10 +395,16 @@ class ProfilesView(ctk.CTkFrame):
                 return
 
         dialog = ExecutionDialog(self, profile)
+        dialog.set_cancel_handler(
+            self.app.profile_manager.cancel_current_execution
+        )
 
         def run_profile():
             result = self.app.profile_manager.apply_profile(
-                profile, on_progress=dialog.set_progress, on_output=dialog.add_output
+                profile,
+                on_progress=dialog.set_progress,
+                on_output=dialog.add_output,
+                cancellation_event=dialog.cancellation_event,
             )
             dialog.show_result(result)
 

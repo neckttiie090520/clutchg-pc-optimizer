@@ -5,6 +5,10 @@
 :: ============================================
 
 if "%~1"==":detect_all" goto :detect_all
+:: gpu-optimizer.bat and benchmark-runner.bat need OS_VERSION/OS_BUILD only, so
+:: the OS probe is routable on its own. Without this route both callers fell
+:: through to :eof and then compared empty version strings.
+if "%~1"==":detect_os" goto :detect_os
 goto :eof
 
 :detect_all
@@ -106,13 +110,10 @@ set "GPU_VENDOR=Unknown"
 goto :eof
 
 :detect_system_type
-:: Check for battery (laptop detection) - PowerShell replaces deprecated wmic
-powershell -Command "Get-CimInstance Win32_Battery" >nul 2>&1
-if %ERRORLEVEL%==0 (
-    set "SYSTEM_TYPE=Laptop"
-) else (
-    set "SYSTEM_TYPE=Desktop"
-)
+:: Distinguish a present battery, a successful empty query, and a failed query.
+set "SYSTEM_TYPE=Unknown"
+for /f "usebackq delims=" %%a in (`powershell -NoProfile -NonInteractive -Command "try { if (@(Get-CimInstance -ClassName Win32_Battery -ErrorAction Stop).Count -gt 0) { 'Laptop' } else { 'Desktop' } } catch { 'Unknown' }"`) do set "SYSTEM_TYPE=%%a"
+if /i not "%SYSTEM_TYPE%"=="Laptop" if /i not "%SYSTEM_TYPE%"=="Desktop" set "SYSTEM_TYPE=Unknown"
 goto :eof
 
 :: ============================================

@@ -18,7 +18,7 @@
 ; ============================================================
 
 #define AppName      "ClutchG"
-#define AppVersion   "1.0.3"
+#define AppVersion   "1.0.4"
 #define AppPublisher "ClutchG Project"
 #define AppURL       "https://github.com/neckttiie090520/clutchg-pc-optimizer"
 #define AppExeName   "ClutchG.exe"
@@ -76,7 +76,7 @@ SetupIconFile=..\build\icon.ico
 ; Close any running instance before upgrading
 CloseApplications=yes
 CloseApplicationsFilter=*{#AppExeName}*
-RestartApplications=yes
+RestartApplications=no
 AppMutex={#AppMutex}
 
 ; Create Start Menu folder

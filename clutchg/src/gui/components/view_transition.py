@@ -82,13 +82,19 @@ class ViewTransition:
         self.fade_in(new_view, duration, lambda: setattr(self, "transitioning", False))
 
     def current_view_exists(self) -> bool:
-        """Check if current view widget still exists"""
+        """Whether the current view widget is still alive.
+
+        ``winfo_exists()`` returns 0 for a destroyed widget rather than raising,
+        so its result must be checked. Discarding it and returning True made this
+        report a destroyed widget as present, and the caller then called
+        ``destroy()`` on it a second time.
+        """
         if self.current_widget is None:
             return False
         try:
-            self.current_widget.winfo_exists()
-            return True
+            return bool(self.current_widget.winfo_exists())
         except Exception:
+            # The interpreter is gone (app shutting down) — treat as destroyed.
             return False
 
     def _clear_stuck_transition(self):

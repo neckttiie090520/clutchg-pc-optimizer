@@ -4,6 +4,9 @@ Handles loading, saving, and managing application configuration
 """
 
 import json
+import os
+import tempfile
+import threading
 from pathlib import Path
 from typing import Dict, Any
 
@@ -30,6 +33,13 @@ class ConfigManager:
 
         # Ensure config directory exists
         self.config_dir.mkdir(parents=True, exist_ok=True)
+
+        # Serialise writers. The updater records its last-check time from a
+        # background thread while the settings view saves from the GUI thread, so
+        # two os.replace calls can target user_config.json at once. On Windows
+        # that loses one save with a bare log line rather than corrupting the
+        # file, which is a silent settings loss for the user.
+        self._write_lock = threading.Lock()
 
     def load_config(self) -> Dict[str, Any]:
         """
@@ -123,7 +133,13 @@ class ConfigManager:
 
     def save_config(self, config: Dict[str, Any]) -> bool:
         """
-        Save configuration to user config file
+        Save configuration to the user config file atomically.
+
+        A direct overwrite that is interrupted leaves truncated JSON, which
+        ``load_config`` cannot parse — it warns and silently falls back to
+        defaults, so every user setting is lost without any visible error.
+        Writing to a temporary file in the same directory and replacing the
+        target means a reader sees either the old config or the new one.
 
         Args:
             config: Configuration dictionary
@@ -131,13 +147,29 @@ class ConfigManager:
         Returns:
             True if successful, False otherwise
         """
-        try:
-            with open(self.user_config_file, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=2)
-            return True
-        except Exception as e:
-            print(f"Error: Failed to save config: {e}")
-            return False
+        with self._write_lock:
+            temporary_path = None
+            try:
+                handle, temporary_name = tempfile.mkstemp(
+                    dir=self.config_dir, prefix=".user_config-", suffix=".tmp"
+                )
+                temporary_path = Path(temporary_name)
+                with os.fdopen(handle, "w", encoding="utf-8") as f:
+                    json.dump(config, f, indent=2)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(temporary_path, self.user_config_file)
+                temporary_path = None
+                return True
+            except Exception as e:
+                print(f"Error: Failed to save config: {e}")
+                return False
+            finally:
+                if temporary_path is not None and temporary_path.exists():
+                    try:
+                        temporary_path.unlink()
+                    except OSError:
+                        pass
 
     def reset_to_defaults(self) -> Dict[str, Any]:
         """
@@ -146,9 +178,14 @@ class ConfigManager:
         Returns:
             Default configuration dictionary
         """
-        # Remove user config
-        if self.user_config_file.exists():
-            self.user_config_file.unlink()
+        # Same lock as save_config: deleting the file is a write to the same
+        # target, so it must not interleave with a concurrent save.
+        with self._write_lock:
+            if self.user_config_file.exists():
+                try:
+                    self.user_config_file.unlink()
+                except OSError as e:
+                    print(f"Warning: Failed to remove user config: {e}")
 
         return self.get_default_config()
 
@@ -160,7 +197,7 @@ class ConfigManager:
             Default configuration dictionary
         """
         return {
-            "version": "1.0.2",
+            "version": "1.0.4",
             "language": "en",
             "theme": "modern",
             "accent": "sunvalley",  # Accent color preset

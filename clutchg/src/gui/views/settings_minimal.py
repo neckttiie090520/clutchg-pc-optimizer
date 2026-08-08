@@ -6,6 +6,7 @@ import webbrowser
 import customtkinter as ctk
 from typing import TYPE_CHECKING
 
+from version import __version__
 from core.paths import assets_dir
 from gui.theme import COLORS, SPACING, RADIUS
 from gui.style import font, bind_dynamic_wraplength
@@ -32,8 +33,8 @@ class SettingsView(ctk.CTkFrame):
             "title": "Settings",
             "settings_subtitle": "Customize your experience",
             "safety": "Safety",
-            "auto_backup": "Auto Backup",
-            "auto_backup_desc": "Create a restore point before applying any profile",
+            "auto_backup": "Recovery Snapshot",
+            "auto_backup_desc": "Required before every profile or audited tweak action; cannot be disabled",
             "confirm_actions": "Confirm Actions",
             "confirm_actions_desc": "Ask for confirmation before running tweaks",
             "flight_recorder": "Flight Recorder",
@@ -42,15 +43,15 @@ class SettingsView(ctk.CTkFrame):
             "check_updates_desc": "Automatically check for new versions on startup",
             "about": "About",
             "about_tagline": "A Windows optimizer built for gamers who want real performance gains, not snake oil.",
-            "about_version": "v1.0.2 · Windows 10/11",
+            "about_version": "v{version} · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
         },
         "th": {
             "title": "Settings",
             "settings_subtitle": "ปรับแต่งประสบการณ์การใช้งาน",
             "safety": "Safety",
-            "auto_backup": "Auto Backup",
-            "auto_backup_desc": "สร้าง Restore Point ก่อนใช้ Profile ทุกครั้ง",
+            "auto_backup": "Restore Point เพิ่มเติม",
+            "auto_backup_desc": "บังคับก่อนใช้ Profile หรือ audited tweak ทุกครั้ง และปิดไม่ได้",
             "confirm_actions": "Confirm Actions",
             "confirm_actions_desc": "ถามยืนยันก่อนรัน Tweak",
             "flight_recorder": "Flight Recorder",
@@ -59,7 +60,7 @@ class SettingsView(ctk.CTkFrame):
             "check_updates_desc": "ตรวจสอบเวอร์ชันใหม่อัตโนมัติตอนเปิดโปรแกรม",
             "about": "About",
             "about_tagline": "โปรแกรม Optimize Windows สำหรับเกมเมอร์ที่ต้องการผลลัพธ์จริง ไม่ใช่ snake oil",
-            "about_version": "v1.0.2 · Windows 10/11",
+            "about_version": "v{version} · Windows 10/11",
             "app_name": "ClutchG PC Optimizer",
         },
     }
@@ -261,20 +262,19 @@ class SettingsView(ctk.CTkFrame):
     def create_safety_settings(self, parent):
         """Safety settings with CTkSwitch controls."""
         # Auto backup
-        self.auto_backup_var = ctk.BooleanVar(
-            value=self.config.get("auto_backup", True)
-        )
+        self.auto_backup_var = ctk.BooleanVar(value=True)
+        self.config["auto_backup"] = True
 
         def _build_auto_backup(frame):
             ctk.CTkSwitch(
                 frame,
-                text="",
+                text="Required",
                 variable=self.auto_backup_var,
                 fg_color=COLORS["bg_tertiary"],
                 progress_color=COLORS["accent"],
                 button_color=COLORS["text_primary"],
                 button_hover_color=COLORS["accent_hover"],
-                command=self.save_config,
+                state="disabled",
             ).pack()
 
         self._setting_row(
@@ -411,7 +411,7 @@ class SettingsView(ctk.CTkFrame):
 
         ctk.CTkLabel(
             frame,
-            text=self._ui("about_version"),
+            text=self._ui("about_version").format(version=__version__),
             font=self._font(11),
             text_color=COLORS["text_tertiary"],
             anchor="w",

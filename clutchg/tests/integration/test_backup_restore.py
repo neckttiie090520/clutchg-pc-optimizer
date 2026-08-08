@@ -46,8 +46,18 @@ class TestBackupCreation:
     def mock_backup_manager(self, temp_backup_dir):
         """Create a mock or real backup manager for testing"""
         if HAS_BACKUP_MANAGER:
-            # Use real BackupManager with temp directory
+            # Exercise the real registry-backup path without requiring an elevated
+            # restore point in local/CI integration runs. Privileged restore-point
+            # behavior is covered separately by explicit unit and Sandbox gates.
             manager = BackupManager(backup_dir=temp_backup_dir)
+            create_backup = manager.create_backup
+
+            def create_registry_only_backup(name, **kwargs):
+                kwargs.setdefault("create_restore_point", False)
+                kwargs.setdefault("backup_registry", True)
+                return create_backup(name, **kwargs)
+
+            manager.create_backup = create_registry_only_backup
             return manager
         else:
             # Create mock backup manager
@@ -163,7 +173,7 @@ class TestBackupRestore:
     def mock_backup_with_data(self, temp_backup_dir):
         """Create a backup file with test data"""
         backup_path = os.path.join(temp_backup_dir, "test_restore.reg")
-        test_data = """Windows Registry Editor Version 5.00
+        test_data = r"""Windows Registry Editor Version 5.00
 [HKEY_LOCAL_MACHINE\SOFTWARE\ClutchG\Test]
 "TestValue"=dword:0000000a
 "StringValue"="Test Data"

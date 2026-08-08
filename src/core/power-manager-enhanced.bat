@@ -45,23 +45,22 @@ goto :eof
 :: Benefit: 2-5% CPU performance increase
 :: Risk: May increase heat/power consumption
 
-:: Set EPP to 0 (maximum performance) for AC power
-powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 0 >nul 2>&1
-
-:: Set EPP to 50 (balanced) for DC power (battery)
-powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR 54533251-82be-4824-96c1-47b60b740d00 50 >nul 2>&1
-
-:: Apply power scheme changes
+:: PERFEPP is the processor Energy Performance Preference setting alias.
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFEPP 0 >nul 2>&1
+if errorlevel 1 goto :epp_failed
+powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFEPP 50 >nul 2>&1
+if errorlevel 1 goto :epp_failed
 powercfg /setactive SCHEME_CURRENT >nul 2>&1
+if errorlevel 1 goto :epp_failed
 
-if %ERRORLEVEL%==0 (
-    call :log_power_enhanced "EPP set to maximum performance (AC), balanced (DC)"
-    set /a TWEAK_SUCCESS+=1
-) else (
-    call :log_power_enhanced "EPP configuration failed"
-    set /a TWEAK_FAILED+=1
-)
-goto :eof
+call :log_power_enhanced "EPP set to maximum performance (AC), balanced (DC)"
+set /a TWEAK_SUCCESS+=1
+exit /b 0
+
+:epp_failed
+call :log_power_enhanced "EPP configuration failed"
+set /a TWEAK_FAILED+=1
+exit /b 1
 
 :apply_gpu_pstate
 :: ============================================
@@ -172,23 +171,6 @@ powercfg /setacvalueindex SCHEME_CURRENT SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb7
 powercfg /setactive SCHEME_CURRENT >nul 2>&1
 
 call :log_power_enhanced "Coalescence timers optimized"
-set /a TWEAK_SUCCESS+=1
-goto :eof
-
-:: ============================================================================
-:: Disable Spectre/Meltdown Mitigations (EXTREME profile only)
-:: Source: Ghost-Optimizer (performanceapply)
-:: WARNING: Reduces security — significant CPU performance gain (5-15%)
-:: ============================================================================
-:apply_spectre_disable
-call :log_power_enhanced "WARNING: Disabling Spectre/Meltdown mitigations (EXTREME)..."
-
-:: FeatureSettingsOverride = 3 (disable all mitigations)
-:: FeatureSettingsOverrideMask = 3 (apply override)
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "FeatureSettingsOverride" /t REG_DWORD /d 3 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "FeatureSettingsOverrideMask" /t REG_DWORD /d 3 /f >nul 2>&1
-
-call :log_power_enhanced "Spectre/Meltdown mitigations disabled (restart required)"
 set /a TWEAK_SUCCESS+=1
 goto :eof
 

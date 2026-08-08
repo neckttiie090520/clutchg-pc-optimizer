@@ -103,7 +103,9 @@ call :log_maintenance "Clearing temporary files..."
 :: User temp
 if exist "%TEMP%" (
     :: Count files first
-    for /f %%a in ('dir /b "%TEMP%" 2^>nul ^| find /c /v ""') do set "TEMP_COUNT=%%a"
+    :: find.exe is fully qualified: a bare "find" resolves to GNU find when Git
+    :: Bash is on PATH, which takes different switches and walks the filesystem.
+    for /f %%a in ('dir /b "%TEMP%" 2^>nul ^| %SystemRoot%\System32\find.exe /c /v ""') do set "TEMP_COUNT=%%a"
     if defined TEMP_COUNT (
         call :log_maintenance "Found %TEMP_COUNT% files in temp directory"
         del /q /s "%TEMP%\*" >nul 2>&1

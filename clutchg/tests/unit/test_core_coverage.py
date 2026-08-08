@@ -8,6 +8,7 @@ Unit tests for core modules with zero or low test coverage:
 """
 
 import json
+import os
 import sys
 import threading
 from pathlib import Path
@@ -568,13 +569,19 @@ class TestBatchExecutor:
 
         assert result.success is False
 
-    def test_cancel_sets_flag_and_terminates(self):
+    def test_cancel_sets_flag_and_terminates_process_tree(self):
         executor = BatchExecutor()
-        mock_proc = MagicMock()
+        mock_proc = MagicMock(pid=2468)
+        mock_proc.poll.return_value = None
         executor.process = mock_proc
-        executor.cancel()
+        completed = MagicMock(returncode=0)
+
+        with patch("core.batch_executor.subprocess.run", return_value=completed) as run:
+            executor.cancel()
+
         assert executor._cancelled is True
-        mock_proc.terminate.assert_called_once()
+        run.assert_called_once()
+        assert run.call_args.args[0] == ["taskkill", "/PID", "2468", "/T", "/F"]
 
     def test_execute_async_calls_on_complete(self, tmp_path):
         """execute_async should invoke on_complete callback (missing script → fast failure)."""
@@ -592,3 +599,110 @@ class TestBatchExecutor:
 
         assert len(result_holder) == 1
         assert result_holder[0].success is False
+
+
+@pytest.mark.unit
+class TestConfigWriteIsAtomic:
+    """A partial config write silently resets every user setting.
+
+    ``load_config`` warns on a parse error and falls back to defaults, so
+    truncated JSON discards the user's language, theme, and safety preferences
+    with no visible failure. The write must be all-or-nothing.
+    """
+
+    def test_saved_config_round_trips(self, tmp_path):
+        manager = ConfigManager(config_dir=tmp_path)
+        assert manager.save_config({"language": "th", "theme": "modern"}) is True
+
+        reloaded = ConfigManager(config_dir=tmp_path).load_config()
+        assert reloaded["language"] == "th"
+
+    def test_write_leaves_no_temporary_file_behind(self, tmp_path):
+        manager = ConfigManager(config_dir=tmp_path)
+        manager.save_config({"language": "en"})
+
+        strays = [
+            p.name for p in tmp_path.iterdir() if p.name.startswith(".user_config-")
+        ]
+        assert strays == [], f"temporary config files left behind: {strays}"
+
+    def test_failed_write_preserves_the_previous_config(self, tmp_path):
+        manager = ConfigManager(config_dir=tmp_path)
+        manager.save_config({"language": "th"})
+        original = manager.user_config_file.read_text(encoding="utf-8")
+
+        with patch("json.dump", side_effect=OSError("disk full")):
+            assert manager.save_config({"language": "en"}) is False
+
+        assert manager.user_config_file.read_text(encoding="utf-8") == original
+        assert ConfigManager(config_dir=tmp_path).load_config()["language"] == "th"
+        strays = [
+            p.name for p in tmp_path.iterdir() if p.name.startswith(".user_config-")
+        ]
+        assert strays == []
+
+
+@pytest.mark.unit
+class TestConfigWriteIsSerialised:
+    """Concurrent saves must not silently drop a user's setting.
+
+    ``updater.py`` records its last-check time from a background thread while the
+    settings view saves from the GUI thread, both through the same ConfigManager.
+    Two simultaneous ``os.replace`` calls on Windows make one fail with
+    ``PermissionError``; ``save_config`` returns False and logs, so the setting is
+    lost with no visible error. Measured before the lock: 32 of 240 saves failed.
+    """
+
+    def test_concurrent_saves_all_succeed(self, tmp_path):
+        manager = ConfigManager(config_dir=tmp_path)
+        manager.save_config({"language": "en"})
+
+        failures = []
+
+        def writer(language: str) -> None:
+            for _ in range(40):
+                if manager.save_config({"language": language}) is False:
+                    failures.append(language)
+
+        threads = [
+            threading.Thread(target=writer, args=(language,))
+            for language in ("en", "th", "en", "th")
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        assert failures == [], f"{len(failures)} concurrent saves were dropped"
+        strays = [
+            p.name for p in tmp_path.iterdir() if p.name.startswith(".user_config-")
+        ]
+        assert strays == []
+        assert manager.load_config()["language"] in {"en", "th"}
+
+    def test_the_lock_is_actually_held_while_writing(self):
+        """Assert behaviour, not source text.
+
+        Grepping for ``with self._write_lock:`` would pass even if the lock were
+        replaced by a no-op context manager. This observes the real lock state
+        from inside the write instead.
+        """
+        import tempfile as _tempfile
+
+        with _tempfile.TemporaryDirectory() as directory:
+            manager = ConfigManager(config_dir=Path(directory))
+            observed = {}
+            real_replace = os.replace
+
+            def spy(source, destination):
+                # locked() is False if the writer never took the lock.
+                observed["locked"] = manager._write_lock.locked()
+                return real_replace(source, destination)
+
+            with patch("core.config.os.replace", side_effect=spy):
+                assert manager.save_config({"language": "en"}) is True
+
+            assert observed.get("locked") is True, (
+                "save_config performed its replace without holding _write_lock"
+            )
+            assert manager._write_lock.locked() is False, "lock was not released"

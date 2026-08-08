@@ -45,9 +45,9 @@ Requirements Traceability คือความสามารถในการ
 | FR | Component | Source File (Line) | Test Case |
 |----|-----------|-------------------|-----------|
 | FR-PM-01 3 preset profiles | ProfileManager | `core/profile_manager.py` L61-128 | UT-PM-01 |
-| FR-PM-02 SAFE = 14 tweaks | TweakRegistry | `core/tweak_registry.py` (preset_safe) | UT-PM-02 |
-| FR-PM-03 COMPETITIVE = 44 | TweakRegistry | `core/tweak_registry.py` (preset_competitive) | UT-PM-03 |
-| FR-PM-04 EXTREME = 56 | TweakRegistry | `core/tweak_registry.py` (preset_extreme) | UT-PM-04 |
+| FR-PM-02 SAFE declaration-only profile | Batch profile contract | `src/profiles/safe-profile.bat`, `src/optimizer.bat` | `test_profile_batch_contracts.py` |
+| FR-PM-03 COMPETITIVE module transaction | Batch profile contract | `src/profiles/competitive-profile.bat`, `src/optimizer.bat` | `test_profile_batch_contracts.py` |
+| FR-PM-04 EXTREME excludes irreversible/security reductions | Batch profile contract | `src/profiles/extreme-profile.bat`, `src/optimizer.bat` | `test_profile_batch_contracts.py` |
 | FR-PM-05 Risk + FPS display | Profile dataclass | `core/profile_manager.py` L28-40 | UT-PM-05 |
 | FR-PM-06 Apply profile workflow | ProfileManager | `core/profile_manager.py` L146-257 | IT-CI-01 |
 | FR-PM-07 Per-tweak progress | ProfileManager | `core/profile_manager.py` L284-419 | — |
@@ -60,9 +60,9 @@ Requirements Traceability คือความสามารถในการ
 
 | FR | Component | Source File (Line) | Test Case |
 |----|-----------|-------------------|-----------|
-| FR-TW-01 56 tweaks registry | TweakRegistry | `core/tweak_registry.py` L884-1012 | UT-AC-01 |
+| FR-TW-01 44 implemented/reachable registry records | TweakRegistry + dispatch integrity | `core/tweak_registry.py` | `test_batch_dispatch_integrity.py` |
 | FR-TW-02 17 fields per tweak | Tweak dataclass | `core/tweak_registry.py` L13-36 | UT-AC-02 |
-| FR-TW-03 10 categories | TWEAK_CATEGORIES | `core/tweak_registry.py` L39-51 | E2E-SCR-01 |
+| FR-TW-03 9 non-empty categories | TWEAK_CATEGORIES + UI filtering | `core/tweak_registry.py`, `gui/views/scripts_minimal.py` | E2E-SCR-01 |
 | FR-TW-04 Filter by category | TweakRegistry | `core/tweak_registry.py` L899-933 | — |
 | FR-TW-05 Risk distribution | TweakRegistry | `core/tweak_registry.py` L968-973 | — |
 | FR-TW-06 Suggest preset | TweakRegistry (delegates to RecommendationService) | `core/tweak_registry.py` L935-959 → `core/recommendation_service.py` | UT-RS-17 |
@@ -138,17 +138,21 @@ Requirements Traceability คือความสามารถในการ
 
 | Test File | Tests | FRs Covered |
 |-----------|-------|-------------|
-| test_profile_manager.py | 11 | FR-PM-01~05, FR-PM-08, FR-PM-11 |
+| test_profile_manager.py | 37 | FR-PM-01~05, FR-PM-08, FR-PM-11 |
 | test_batch_parser.py | 18 | FR-BS-01, FR-BS-04 |
 | test_system_detection.py | 12 | FR-SD-01~03, FR-SD-05~06, FR-SD-08 |
-| test_action_catalog.py | 5 | FR-TW-01~04 |
+| test_action_catalog.py | 9 | FR-TW-01~04 |
 | test_benchmark_database.py | 22 | FR-SD-05 |
-| test_execution_dialog.py | 3 | FR-UI-12 |
+| test_execution_dialog.py | 11 | FR-UI-12, NFR-04 |
 | test_core_coverage.py | 54 | FR-PM-06, FR-SD-07, FR-BS-02, FR-SF-05~08, FR-UI-05~06 |
 | test_admin.py | 16 | FR-AD-01~02, FR-SF-13 |
-| test_backup_manager.py | 35 | FR-SF-01~04 |
+| test_backup_manager.py | 58 | FR-SF-01~04 |
+| test_batch_executor_extra.py | 39 | FR-BS-02, FR-SF-01, NFR-01 |
+| test_registry_claim_fidelity.py | 56 | FR-TW-01, FR-TW-05, NFR-07 |
+| test_traceability_record_fidelity.py | 39 | NFR-14 |
+| test_iso_metric_currency.py | 15 | NFR-14 |
 | test_flight_recorder.py | 36 | FR-SF-05~12 |
-| test_tweak_registry_integrity.py | 61 | FR-TW-01~07, FR-SF-13, NFR-01~03 |
+| test_tweak_registry_integrity.py | 60 | FR-TW-01~07, FR-SF-13, NFR-01~03 |
 | test_help_system.py | 12 | FR-UI-05, FR-UI-08, NFR-06, NFR-08 |
 | test_recommendation_service.py | 18 | FR-SD-07, FR-TW-06 |
 | 12-Batch-VV-Test-Record.md | 20 (TC-BAT-001~020) | FR-21~FR-30 |
@@ -157,11 +161,10 @@ Requirements Traceability คือความสามารถในการ
 
 | Test File | Tests | FRs Covered |
 |-----------|-------|-------------|
-| test_backup_restore.py | 3 | FR-SF-01~04 |
-| test_clutchg_integration.py | 2 | FR-PM-06 |
-| test_config_integration.py | 2 | FR-UI-06 |
-| test_flight_recorder_integration.py | 3 | FR-SF-05~09 |
-| test_help_system_integration.py | 2 | FR-UI-05, NFR-06 |
+| test_backup_restore.py | 17 | FR-SF-01~04 |
+| test_clutchg_integration.py | 6 | FR-PM-06 |
+
+Config, flight-recorder, and help-system integration coverage is provided by the unit suites (`test_core_coverage.py`, `test_flight_recorder.py`, `test_help_system.py`); no separate integration modules exist for them.
 
 ---
 
@@ -204,14 +207,15 @@ Requirements Traceability คือความสามารถในการ
 
 | NFR ID | ความต้องการ | Design Component (SDD) | Code/Config | Test Method | Test ID | Result |
 |--------|-----------|----------------------|-------------|-------------|---------|--------|
-| NFR-01 | ห้ามปิด Windows security (Defender, UAC, DEP, ASLR, CFG, Update) | Safety Policy — TweakRegistry validation layer | `core/tweak_registry.py` — scan all `registry_keys` against banned paths list | Automated: `test_tweak_registry_integrity.py::test_no_security_disabling_tweaks` | UT-SEC-01 | PASS — 0/56 tweaks touch security features |
-| NFR-02 | HIGH risk tweaks ต้องมี warnings ≥ 2 ข้อ | TweakRegistry — risk metadata enforcement | `core/tweak_registry.py` — `Tweak.warnings: List[str]` field; 3 HIGH-risk tweaks validated | Automated: `test_tweak_registry_integrity.py::test_high_risk_tweaks_have_warnings` | UT-SEC-02 | PASS — 3 HIGH tweaks มี warnings 2-4 ข้อ |
+| NFR-01 | ห้ามปิด Windows security/mitigations | Batch-engine static safety boundary | forbidden mutation scan over `src/**/*.bat` | Automated: `test_batch_dispatch_integrity.py::test_forbidden_security_mutations_are_absent` | UT-SEC-01 | PASS — no forbidden security mutation commands |
+| NFR-02 | HIGH-risk execution requires explicit consent | TweakExecutionCatalog consent gate | `core/action_catalog.py` | Automated: `test_high_risk_contract_requires_explicit_consent` | UT-SEC-02 | PASS — hypervisor contract rejected without consent |
+| NFR-02a | Privileged batch interface must not be injectable | Shell-metacharacter refusal at the execution boundary | `core/batch_executor.py::_argument_is_shell_safe`, `core/backup_manager.py::JOURNALED_BACKUP_ID_PATTERN` | Automated: `test_batch_executor_extra.py::TestBatchArgumentInjection`, `::TestScriptPathInjection`, `test_backup_manager.py::TestJournaledBackupIdHardening` | UT-SEC-03 | PASS — process never spawned for hostile argument or script path |
 
 #### 3.3.2 Reliability (NFR-03, NFR-04)
 
 | NFR ID | ความต้องการ | Design Component (SDD) | Code/Config | Test Method | Test ID | Result |
 |--------|-----------|----------------------|-------------|-------------|---------|--------|
-| NFR-03 | ทุก tweak ต้อง reversible (undo กลับค่าเดิมได้) | TweakRegistry — `reversible` attribute | `core/tweak_registry.py` — `Tweak.reversible == True` enforced for all 56 tweaks | Automated: `test_tweak_registry_integrity.py::test_all_tweaks_reversible` | UT-REL-01 | PASS — 56/56 reversible=True |
+| NFR-03 | ทุก executable contract ต้องมี exact recovery component | TweakExecutionCatalog + journaled backup transaction | `core/action_catalog.py`, `src/backup/backup-registry.bat`, `src/safety/rollback.bat` | Automated: contract validation + transaction tests | UT-REL-01 | PASS static/unit; privileged restore is EXTERNAL_VERIFICATION_REQUIRED |
 | NFR-04 | Auto backup ก่อนทุก apply operation | BackupManager — pre-apply hook in ProfileManager | `core/backup_manager.py` L73-140 (`create_backup`); `core/profile_manager.py` L146-160 (calls backup before execute) | Automated: `test_backup_restore.py::test_backup_created_before_apply` | IT-REL-01 | PASS — backup file verified before/after apply |
 
 #### 3.3.3 Usability (NFR-05, NFR-06, NFR-07)
@@ -220,7 +224,7 @@ Requirements Traceability คือความสามารถในการ
 |--------|-----------|----------------------|-------------|-------------|---------|--------|
 | NFR-05 | Risk level แสดง traffic light (เขียว/เหลือง/แดง) | RiskBadge component — color mapping | `gui/components/risk_badge.py` — LOW→green, MEDIUM→yellow, HIGH→red | Manual: Visual inspection + E2E screenshot | E2E-PRF-02 | PASS — 3 สีตรงกับ 3 risk levels |
 | NFR-06 | รองรับ 2 ภาษา (EN/TH) สำหรับ help content | HelpSystem — bilingual JSON content | `data/help_content.json` — ทุก item มี "en" และ "th" keys; `core/help_manager.py` | Automated: `test_help_system.py::test_bilingual_content` | UT-USA-01 | PASS — 100% items have both keys |
-| NFR-07 | ทุก tweak มีคำอธิบาย 3 ส่วน (what/why/limitations) | TweakRegistry — 3-field content spec | `core/tweak_registry.py` — `what_it_does`, `why_it_helps`, `limitations` fields (non-empty) for all 56 tweaks | Automated: `test_tweak_registry_integrity.py::test_all_tweaks_have_descriptions` | UT-USA-02 | PASS — 56/56 มีครบ 3 fields |
+| NFR-07 | ทุก registry record มีคำอธิบาย 3 ส่วน (what/why/limitations) | TweakRegistry content spec | `core/tweak_registry.py` — 44 records | Automated registry integrity tests | UT-USA-02 | PASS — 44/44 records มีครบ 3 fields |
 
 #### 3.3.4 Performance (NFR-08, NFR-09)
 
@@ -247,21 +251,21 @@ Requirements Traceability คือความสามารถในการ
 
 | NFR ID | ความต้องการ | Design Component (SDD) | Code/Config | Test Method | Test ID | Result |
 |--------|-----------|----------------------|-------------|-------------|---------|--------|
-| NFR-14 | Unit test coverage ≥ 70% สำหรับ core modules | Test infrastructure — pytest + pytest-cov | `pytest.ini`, `.coveragerc` — configured for `src/` coverage | Automated: `pytest --cov=src --cov-report=term` | COV-01 | PASS — ~65% overall, core modules > 70% |
+| NFR-14 | Unit test coverage ≥ 70% สำหรับ core modules | Test infrastructure — pytest + pytest-cov | `pytest.ini`, `.coveragerc` — configured for `src/` coverage | Automated: `pytest --cov=src/core --cov-report=term` | COV-01 | PASS — core layer 81% (2026-08-05); repository-wide 39% reflects GUI views needing a live desktop |
 | NFR-15 | รองรับ test markers 5 ประเภท (unit, integration, e2e, admin, slow) | Test infrastructure — conftest marker registration | `conftest.py` — `pytest_configure()` registers 5 markers | Automated: `pytest --markers` lists all 5 | COV-02 | PASS — 5 markers registered |
 
 #### 3.3.8 Transparency (NFR-16, NFR-17)
 
 | NFR ID | ความต้องการ | Design Component (SDD) | Code/Config | Test Method | Test ID | Result |
 |--------|-----------|----------------------|-------------|-------------|---------|--------|
-| NFR-16 | ทุก tweak แสดง registry_keys ที่จะเปลี่ยน | TweakRegistry — `registry_keys` field | `core/tweak_registry.py` — `Tweak.registry_keys: List[str]` populated for all 56 tweaks | Automated: `test_tweak_registry_integrity.py::test_all_tweaks_have_registry_keys` | UT-TRANS-01 | PASS — 56/56 มี registry_keys |
-| NFR-17 | ทุก tweak แสดง expected_gain + limitations + warnings | TweakRegistry — 3-field transparency spec | `core/tweak_registry.py` — `expected_gain`, `limitations`, `warnings` fields non-empty for all 56 tweaks | Automated: `test_tweak_registry_integrity.py::test_transparency_fields` | UT-TRANS-02 | PASS — 56/56 มีครบ 3 fields |
+| NFR-16 | executable action แสดง exact persistent-effect scope และ recovery components | TweakExecutionContract | `core/action_catalog.py` | Automated catalog validation | UT-TRANS-01 | PASS for audited contracts |
+| NFR-17 | registry records แสดง expected_gain + limitations และ conditional warnings | TweakRegistry transparency spec | `core/tweak_registry.py` — 44 records | Automated content tests + UI review | UT-TRANS-02 | PASS automated content scope |
 
 #### 3.3.9 NFR Coverage Summary
 
 | คุณลักษณะ ISO 25010 | จำนวน NFR | Automated Test | Manual/Review | Coverage |
 |---------------------|----------|----------------|---------------|----------|
-| Security | 2 (NFR-01, 02) | 2 | 0 | 100% |
+| Security | 3 (NFR-01, 02, 02a) | 3 | 0 | 100% |
 | Reliability | 2 (NFR-03, 04) | 2 | 0 | 100% |
 | Usability | 3 (NFR-05, 06, 07) | 2 | 1 (NFR-05 visual) | 100% |
 | Performance | 2 (NFR-08, 09) | 1 | 1 (NFR-08 observation) | 100% |
@@ -454,12 +458,12 @@ Requirements Traceability คือความสามารถในการ
 |-----------|-------------|--------------|-----------|---------|
 | จำนวน FR ทั้งหมด | SRS: 63 FRs (MoSCoW) | Traceability: 59 FRs | ⚠️ ต่าง | SRS นับรวม Won't=5 + admin FRs ที่เพิ่มภายหลัง — ตัวเลข reconcile ได้ |
 | จำนวน NFR | SRS: 17 NFRs | Test Plan: 17 NFRs | ✅ ตรง | |
-| จำนวน Test Cases | Test Plan: 516+ planned | Test Record: 516+ executed | ✅ ตรง | |
-| Coverage target | Test Plan: ≥ 60% core | Test Record: ~65% core | ✅ ผ่าน | |
+| จำนวน Test Cases | Test Plan: 1043 unit + 23 integration | Test Record: 1066 executed, 0 failed | ✅ ตรง | |
+| Coverage target | Test Plan: ≥ 60% core | Test Record: 81% core | ✅ ผ่าน | |
 | DRE target | Test Plan: ≥ 85% | Test Record: 100% (pre-release) | ✅ ผ่าน | |
 | 10 Risk items | Project Plan: 10 risks | Progress Status: 10 risks | ✅ ตรง | 8 resolved, 2 monitoring |
 | 3 Profiles | SRS: SAFE/COMPETITIVE/EXTREME | SDD: 3 profiles in architecture | ✅ ตรง | |
-| Tweak count | SRS: 56 tweaks | SDD: 56 tweaks in registry | ✅ ตรง | |
+| Tweak count | SRS: 44 implemented/reachable records | Code: 44 registry records | ✅ ตรง | executable standard actions = 2; profile flags are separate metadata |
 | Change Requests | CR-001~004 | Traceability: CR impacts traced | ✅ ตรง | |
 | Architecture pattern | SDD: Layered + MVC hybrid | Test Plan: test by layer | ✅ ตรง | |
 | Batch V&V TCs | Batch V&V Test Plan v1.0: 20 planned | Batch V&V Test Record v1.0: 20 executed | ✅ ตรง | |
@@ -483,10 +487,10 @@ Requirements Traceability คือความสามารถในการ
 | FRs with automated tests | 62 | — | |
 | FRs with manual tests only | 7 | ≤ 10 | ✅ |
 | NFRs testable | 17/17 | 100% | ✅ 100% (13 automated + 4 manual/review) |
-| Horizontal consistency issues | 1 minor (FR count reconciliation) | 0 critical | ✅ |
-| Gold plating detected | 0 | 0 | ✅ ไม่มี code ที่ไม่มี FR รองรับ |
+| Horizontal consistency issues | 1 critical profile-count mapping gap + 1 minor FR-count reconciliation | 0 critical | ⚠️ | profile module execution is not yet mapped item-by-item to registry preset metadata |
+| Gold plating detected | Dead/unsupported tweak paths removed in 2026-08-02 correction | 0 | ✅ current static scope |
 
-> **สรุป:** ระบบ traceability ของ ClutchG ครอบคลุม 89.9% ของ FRs ด้วย automated tests ส่วนที่เหลือ 7 FRs มีการทดสอบด้วยวิธี manual ทั้งหมด ไม่พบ gold plating
+> **สรุป:** historical FR coverage metrics remain baseline-specific. Current automated evidence confirms the audited action boundary and dispatch integrity; profile-to-registry item mapping remains an open traceability gate.
 
 ---
 
@@ -500,3 +504,4 @@ Requirements Traceability คือความสามารถในการ
 | 2.2 | 2026-04-12 | nextzus | เพิ่ม §3.3 NFR Forward Traceability (17 NFRs × 8 ISO 25010 categories), §3.4 CR-to-FR Impact Mapping (4 CRs reconciled to canonical FR IDs), §3.5 Gap Remediation Plan (7 untested FRs — classification, per-FR detail, priority timeline, risk assessment); อัปเดต §5 NFR row จาก "4/6 groups ⚠️ Partial" → "17/17 ✅ 100%"; Test Record cross-ref อัปเดตเป็น v2.3 |
 | 2.3 | 2026-04-12 | nextzus | เพิ่ม §1.7 FR-BAT Batch Script Engine traceability (FR-21~FR-30 → TC-BAT-001~020); อัปเดต backward traceability §2.1 (เพิ่ม 12-Batch-VV-Test-Record.md row), coverage summary §3.1 (FR-BAT group + รวม 59→69 FRs, 52→62 with tests, 88.1%→89.9%), horizontal traceability §4 (Batch V&V row), RTM summary §5 (62/69, 89.9%); อัปเดต cross-ref header |
 | 2.4 | 2026-04-12 | nextzus | อัปเดต §4.1 Test Record version v2.2→v2.3, test count 496→516+ ใน §4 horizontal traceability, CR ref v2.1→v2.3 ใน §3.4 |
+| 2.5 | 2026-08-02 | nextzus | Corrective maintenance: registry 56 candidate records → 44 implemented/reachable records; Quick Actions require audited resolver coverage; custom selection gates Learn Only entries; exact recovery components replace reset-label assumptions; profile-count mapping remains open |

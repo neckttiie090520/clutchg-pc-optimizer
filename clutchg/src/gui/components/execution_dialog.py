@@ -27,7 +27,8 @@ class ExecutionDialog(ctk.CTkToplevel):
         self.job_title = self.resolve_job_title(job)
         self.output_lines = []
         self.is_complete = False
-        self._executor = None  # set via set_executor() for cancel support
+        self._cancel_handler = None
+        self._cancel_event = threading.Event()
         self._tweak_ok = 0
         self._tweak_fail = 0
 
@@ -273,19 +274,29 @@ class ExecutionDialog(ctk.CTkToplevel):
         for line in diff.summary_lines:
             self.add_output(f"   {line}")
 
+    @property
+    def cancellation_event(self):
+        """Event shared with the worker to cover cancellation before admission."""
+        return self._cancel_event
+
+    def set_cancel_handler(self, handler):
+        """Bind the shared orchestration cancellation callback."""
+        self._cancel_handler = handler
+
     def set_executor(self, executor):
-        """Set the BatchExecutor for cancel support"""
-        self._executor = executor
+        """Compatibility adapter for callers that still provide an executor."""
+        self.set_cancel_handler(executor.cancel if executor is not None else None)
 
     def on_cancel(self):
-        """Handle cancel button click"""
+        """Request cancellation through both pre-admission and active-job handles."""
         if self.is_complete:
             return
+        self._cancel_event.set()
         self.add_output("")
         self.add_output("[STOP] Cancelling...")
         self.cancel_btn.configure(state="disabled", text="Cancelling...")
-        if self._executor:
-            self._executor.cancel()
+        if self._cancel_handler:
+            self._cancel_handler()
 
     def on_close(self):
         """Handle close button click"""

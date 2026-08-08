@@ -90,16 +90,25 @@ class TestConfigManager:
         assert isinstance(config, dict)
 
     def test_save_returns_false_on_permission_error(self, tmp_path, monkeypatch):
+        """A write failure must be reported, not swallowed.
+
+        The atomic save path uses ``tempfile.mkstemp`` + ``os.fdopen`` +
+        ``os.replace`` rather than a bare ``open``, so the failure is injected at
+        ``mkstemp``. Patching ``builtins.open`` would no longer intercept
+        anything and the test would pass without exercising the failure path.
+        """
         from core.config import ConfigManager
-        import builtins
+        import tempfile as _tempfile
+
         cm = ConfigManager(tmp_path)
 
-        def bad_open(*args, **kwargs):
+        def bad_mkstemp(*args, **kwargs):
             raise PermissionError("no write access")
 
-        monkeypatch.setattr(builtins, "open", bad_open)
+        monkeypatch.setattr(_tempfile, "mkstemp", bad_mkstemp)
         result = cm.save_config({"language": "en"})
         assert result is False
+        assert not cm.user_config_file.exists()
 
 
 # ============================================================================
