@@ -9,6 +9,8 @@ registry or creating actual Windows restore points.
 import json
 import pytest
 import sys
+import threading
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch, MagicMock, call
 from dataclasses import asdict
@@ -16,7 +18,7 @@ from dataclasses import asdict
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from core.backup_manager import BackupManager, BackupInfo
+from core.backup_manager import BackupManager, BackupInfo, REGISTRY_BACKUPS
 
 
 # ---------------------------------------------------------------------------
@@ -281,6 +283,78 @@ class TestCreateBackup:
         assert len(data) == 1
         assert data[0]["name"] == "Persist"
 
+    def test_same_second_backups_get_unique_ids_and_directories(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        fixed_time = datetime(2026, 7, 29, 12, 34, 56)
+        with patch("core.backup_manager.datetime") as datetime_cls, patch.object(
+            mgr, "_backup_registry", return_value=True
+        ):
+            datetime_cls.now.return_value = fixed_time
+            first = mgr.create_backup(
+                name="First", create_restore_point=False, backup_registry=True
+            )
+            second = mgr.create_backup(
+                name="Second", create_restore_point=False, backup_registry=True
+            )
+
+        assert first.id == "20260729_123456"
+        assert second.id == "20260729_123456_01"
+        assert (mgr.backup_dir / first.id).is_dir()
+        assert (mgr.backup_dir / second.id).is_dir()
+        assert len({backup.id for backup in mgr.backups}) == 2
+
+
+# ---------------------------------------------------------------------------
+# restore_registry (mocked subprocess)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.unit
+class TestRestoreRegistry:
+
+    @staticmethod
+    def _prepare_backup(tmp_path):
+        mgr = _make_manager(tmp_path)
+        info = _make_backup_info(id="restore_me")
+        registry_dir = mgr.backup_dir / info.id / "registry"
+        registry_dir.mkdir(parents=True)
+        for _, filename in REGISTRY_BACKUPS:
+            (registry_dir / filename).write_text(
+                "Windows Registry Editor Version 5.00\n", encoding="utf-8"
+            )
+        mgr.backups.append(info)
+        return mgr, registry_dir
+
+    def test_imports_only_fixed_backup_files(self, tmp_path):
+        mgr, registry_dir = self._prepare_backup(tmp_path)
+        (registry_dir / "injected.reg").write_text(
+            "Windows Registry Editor Version 5.00\n", encoding="utf-8"
+        )
+        success = MagicMock(returncode=0, stderr="")
+
+        with patch("subprocess.run", return_value=success) as mock_run:
+            assert mgr.restore_registry("restore_me") is True
+
+        imported_names = [Path(call_.args[0][2]).name for call_ in mock_run.call_args_list]
+        assert imported_names == [filename for _, filename in REGISTRY_BACKUPS]
+        assert "injected.reg" not in imported_names
+
+    def test_missing_expected_file_fails_before_any_import(self, tmp_path):
+        mgr, registry_dir = self._prepare_backup(tmp_path)
+        (registry_dir / REGISTRY_BACKUPS[-1][1]).unlink()
+
+        with patch("subprocess.run") as mock_run:
+            assert mgr.restore_registry("restore_me") is False
+
+        mock_run.assert_not_called()
+
+    def test_any_failed_import_makes_restore_fail(self, tmp_path):
+        mgr, _ = self._prepare_backup(tmp_path)
+        results = [MagicMock(returncode=0, stderr="") for _ in REGISTRY_BACKUPS]
+        results[2] = MagicMock(returncode=1, stderr="import failed")
+
+        with patch("subprocess.run", side_effect=results):
+            assert mgr.restore_registry("restore_me") is False
+
 
 # ---------------------------------------------------------------------------
 # delete_backup
@@ -369,3 +443,311 @@ class TestGetBackupSizeFormatted:
         info = _make_backup_info(size_bytes=2 * 1024 * 1024)
         result = mgr.get_backup_size_formatted(info)
         assert "MB" in result
+
+
+# ---------------------------------------------------------------------------
+# Journaled batch transactions must be visible to the Restore Center
+# ---------------------------------------------------------------------------
+
+_MANIFEST_COMMITTED = "\n".join(
+    (
+        "format=clutchg-backup-v1",
+        "backup_id=2026-08-04_10-30-00",
+        "components=services,bcd,power_scheme",
+        "state=COMMITTED",
+    )
+)
+
+
+def _write_journaled_backup(mgr: BackupManager, backup_id: str, manifest: str) -> Path:
+    folder = mgr.backup_dir / backup_id
+    (folder / "registry-values").mkdir(parents=True)
+    (folder / "manifest.ini").write_text(manifest, encoding="utf-8")
+    return folder
+
+
+@pytest.mark.unit
+class TestJournaledBackupDiscovery:
+
+    def test_batch_transaction_is_recoverable_without_index_entry(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-30-00", _MANIFEST_COMMITTED)
+
+        assert mgr.backups == []
+        discovered = mgr.get_all_backups()
+        assert [b.id for b in discovered] == ["2026-08-04_10-30-00"]
+        assert discovered[0].success is True
+        assert discovered[0].has_registry_backup is True
+        assert mgr.get_backup("2026-08-04_10-30-00") is not None
+
+    def test_failed_transaction_is_listed_but_not_reported_successful(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(
+            mgr,
+            "2026-08-04_11-00-00",
+            _MANIFEST_COMMITTED.replace("state=COMMITTED", "state=FAILED"),
+        )
+        discovered = mgr.get_all_backups()
+        assert len(discovered) == 1
+        assert discovered[0].success is False
+
+    def test_directory_without_recognised_manifest_is_ignored(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        (mgr.backup_dir / "not-a-backup").mkdir(parents=True)
+        _write_journaled_backup(
+            mgr, "foreign", "format=someone-elses-format-v9\nstate=COMMITTED"
+        )
+        assert mgr.get_all_backups() == []
+
+    def test_index_entry_is_never_duplicated_by_discovery(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-30-00", _MANIFEST_COMMITTED)
+        mgr.backups.append(
+            _make_backup_info(id="2026-08-04_10-30-00", name="Index owned")
+        )
+        discovered = mgr.get_all_backups()
+        assert len(discovered) == 1
+        assert discovered[0].name == "Index owned"
+
+    def test_list_backups_exposes_journaled_transactions(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-30-00", _MANIFEST_COMMITTED)
+        assert [b["id"] for b in mgr.list_backups()] == ["2026-08-04_10-30-00"]
+
+
+@pytest.mark.unit
+class TestJournaledRestoreRouting:
+    """Journaled transactions must not be restored with reg import."""
+
+    def test_journaled_backup_is_restored_through_the_rollback_engine(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-30-00", _MANIFEST_COMMITTED)
+
+        rollback = tmp_path / "scripts" / "safety" / "rollback.bat"
+        rollback.parent.mkdir(parents=True)
+        rollback.write_text("@echo off\n", encoding="utf-8")
+
+        executed = {}
+
+        class _FakeExecutor:
+            def execute(self, script_path, args=None, **kwargs):
+                executed["script"] = Path(script_path)
+                executed["args"] = list(args or [])
+                return type(
+                    "R",
+                    (),
+                    {"success": True, "errors": "", "return_code": 0},
+                )()
+
+        with patch("core.batch_executor.BatchExecutor", _FakeExecutor), patch(
+            "core.paths.batch_scripts_dir", return_value=tmp_path / "scripts"
+        ), patch("subprocess.run") as mock_run:
+            assert mgr.restore_registry("2026-08-04_10-30-00") is True
+
+        assert mock_run.call_count == 0
+        assert executed["script"].name == "rollback.bat"
+        assert executed["args"] == ["restore_from_backup", "2026-08-04_10-30-00"]
+
+    def test_uncommitted_transaction_is_never_restored(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(
+            mgr,
+            "2026-08-04_11-00-00",
+            _MANIFEST_COMMITTED.replace("state=COMMITTED", "state=FAILED"),
+        )
+        with patch("subprocess.run") as mock_run:
+            assert mgr.restore_registry("2026-08-04_11-00-00") is False
+        assert mock_run.call_count == 0
+
+
+@pytest.mark.unit
+class TestJournaledBackupIdHardening:
+    """The backup root is user-writable and the app runs elevated.
+
+    A directory named "2026-01-01_00-00-00&calc" would reach cmd.exe as an argument
+    to rollback.bat and execute its tail with administrator privileges, so only
+    exact timestamp-shaped IDs are ever discovered or forwarded.
+    """
+
+    @pytest.mark.parametrize(
+        "hostile_id",
+        [
+            # '&' and space are legal in NTFS filenames but are cmd.exe separators.
+            # '|', '<', '>' and '"' cannot appear in a real directory name, so they
+            # are not reachable through discovery and are covered by the executor
+            # guard instead.
+            "2026-08-04_10-00-00&whoami",
+            "2026-08-04_10-00-00 &calc",
+            "..&calc",
+            "2026-08-04_10-00-00 extra",
+            "not-a-timestamp",
+        ],
+    )
+    def test_malformed_backup_directory_is_not_discoverable(self, tmp_path, hostile_id):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, hostile_id, _MANIFEST_COMMITTED)
+
+        assert mgr.get_all_backups() == []
+        assert mgr.get_backup(hostile_id) is None
+
+    def test_malformed_id_is_refused_at_the_restore_boundary(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-00-00", _MANIFEST_COMMITTED)
+
+        # Force a hostile ID past discovery to prove the restore boundary re-checks.
+        smuggled = mgr.get_all_backups()[0]
+        object.__setattr__(smuggled, "id", "2026-08-04_10-00-00&whoami")
+        with patch.object(mgr, "get_backup", return_value=smuggled), patch(
+            "subprocess.run"
+        ) as mock_run:
+            assert mgr.restore_registry("2026-08-04_10-00-00&whoami") is False
+        assert mock_run.call_count == 0
+
+    def test_well_formed_transaction_is_still_discoverable(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-00-00", _MANIFEST_COMMITTED)
+        assert [b.id for b in mgr.get_all_backups()] == ["2026-08-04_10-00-00"]
+
+    @pytest.mark.parametrize(
+        "trailing", ["\n", "\n&calc", "\r", "\x1a", " "]
+    )
+    def test_pattern_rejects_anything_after_the_timestamp(self, trailing):
+        """`$` would match before a trailing newline, so the pattern uses \\Z."""
+        from core.backup_manager import JOURNALED_BACKUP_ID_PATTERN
+
+        assert JOURNALED_BACKUP_ID_PATTERN.match("2026-08-04_10-00-00") is not None
+        assert (
+            JOURNALED_BACKUP_ID_PATTERN.match(f"2026-08-04_10-00-00{trailing}") is None
+        )
+
+
+@pytest.mark.unit
+class TestIndexWriteIsAtomic:
+    """A partial index write orphans every index-format backup.
+
+    ``_load_index`` catches a parse error and returns ``[]``, so truncated JSON
+    silently hides recovery artifacts that still exist on disk. The write must
+    therefore be all-or-nothing.
+    """
+
+    def test_saved_index_is_complete_and_reloadable(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        mgr.backups.append(_make_backup_info(id="20260101_120000", name="first"))
+        mgr.backups.append(_make_backup_info(id="20260101_130000", name="second"))
+        mgr._save_index()
+
+        reloaded = _make_manager(tmp_path)
+        assert [b.id for b in reloaded.backups] == [
+            "20260101_120000",
+            "20260101_130000",
+        ]
+
+    def test_write_leaves_no_temporary_file_behind(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        mgr.backups.append(_make_backup_info(id="20260101_120000"))
+        mgr._save_index()
+
+        strays = [
+            p.name for p in mgr.backup_dir.iterdir() if p.name.startswith(".backup_index-")
+        ]
+        assert strays == [], f"temporary index files left behind: {strays}"
+
+    def test_a_failed_write_preserves_the_previous_index(self, tmp_path):
+        """os.replace is atomic, so a mid-write failure must not destroy the old file."""
+        mgr = _make_manager(tmp_path)
+        mgr.backups.append(_make_backup_info(id="20260101_120000", name="original"))
+        mgr._save_index()
+        original = mgr.index_file.read_text(encoding="utf-8")
+
+        mgr.backups.append(_make_backup_info(id="20260101_130000", name="doomed"))
+        with patch("json.dump", side_effect=OSError("disk full")):
+            mgr._save_index()
+
+        assert mgr.index_file.read_text(encoding="utf-8") == original
+        strays = [
+            p.name for p in mgr.backup_dir.iterdir() if p.name.startswith(".backup_index-")
+        ]
+        assert strays == [], f"temporary files left after failure: {strays}"
+
+    def test_truncated_index_is_still_survivable_for_journaled_backups(self, tmp_path):
+        """Documents the blast radius the atomic write removes."""
+        mgr = _make_manager(tmp_path)
+        _write_journaled_backup(mgr, "2026-08-04_10-30-00", _MANIFEST_COMMITTED)
+        mgr.index_file.write_text('[{"id": "2026', encoding="utf-8")
+
+        recovered = _make_manager(tmp_path).get_all_backups()
+        assert [b.id for b in recovered] == ["2026-08-04_10-30-00"]
+
+
+@pytest.mark.unit
+class TestIndexMutationIsSerialised:
+    """Mutating self.backups must hold the same lock as writing it.
+
+    Locking only the file write leaves the read-modify-write of the in-memory
+    list unguarded: two concurrent deletes can each rebuild the list from a
+    stale snapshot, so one deletion is lost from the index while its directory
+    is already gone. The index then lists a backup that cannot be restored —
+    the precise "committed backup that isn't usable" failure this project
+    exists to prevent.
+    """
+
+    @staticmethod
+    def _populate(mgr, count):
+        mgr.backups = [
+            _make_backup_info(id=f"bk_{i:03d}", created_at=f"2026-01-01T{i % 24:02d}:00:00")
+            for i in range(count)
+        ]
+        for backup in mgr.backups:
+            (mgr.backup_dir / backup.id).mkdir(parents=True, exist_ok=True)
+        mgr._save_index()
+
+    def test_concurrent_deletes_never_leave_a_ghost_index_entry(self, tmp_path):
+        mgr = _make_manager(tmp_path)
+        self._populate(mgr, 12)
+        ids = [b.id for b in mgr.backups]
+
+        threads = [
+            threading.Thread(target=mgr.delete_backup, args=(backup_id,))
+            for backup_id in ids[:6]
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        on_disk = {p.name for p in mgr.backup_dir.iterdir() if p.is_dir()}
+        indexed = {entry["id"] for entry in json.loads(
+            mgr.index_file.read_text(encoding="utf-8")
+        )}
+        ghosts = indexed - on_disk
+        assert ghosts == set(), f"index lists deleted backups: {sorted(ghosts)}"
+
+    def test_cleanup_does_not_deadlock_after_a_save(self, tmp_path):
+        """create_backup calls _save_index then _cleanup_old_backups.
+
+        Both acquire ``_index_lock``; if either nested its acquisition inside the
+        other the app would hang on every backup, so this pins the flat shape.
+        """
+        mgr = _make_manager(tmp_path)
+        self._populate(mgr, 15)
+
+        mgr._cleanup_old_backups(max_backups=10)
+
+        assert len(mgr.backups) == 10
+        indexed = json.loads(mgr.index_file.read_text(encoding="utf-8"))
+        assert len(indexed) == 10
+
+    def test_write_helper_requires_the_caller_to_hold_the_lock(self):
+        """Pin the contract so a future edit cannot silently re-introduce nesting."""
+        source = (
+            Path(__file__).resolve().parents[2] / "src" / "core" / "backup_manager.py"
+        ).read_text(encoding="utf-8")
+
+        for method in ("delete_backup", "_cleanup_old_backups"):
+            body = source.split(f"    def {method}(", 1)[1].split("\n    def ", 1)[0]
+            assert "with self._index_lock:" in body, f"{method} does not take the lock"
+            assert "self._save_index()" not in body, (
+                f"{method} calls _save_index while holding the lock — that nests "
+                f"acquisition of a non-reentrant Lock and deadlocks"
+            )
+            assert "self._write_index_unlocked()" in body

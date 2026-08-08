@@ -17,14 +17,23 @@
 :: ============================================================================
 
 :main
+:: Both spellings are accepted: bare commands for direct CLI use, and the
+:: colon-prefixed routes optimizer.bat passes through :run_tweak_module.
 if "%~1"=="" goto :usage
-if "%~1"=="run_benchmark" goto :run_benchmark
-if "%~1"=="capture_baseline" goto :capture_baseline
-if "%~1":"compare_results" goto :compare_results
-if "%~1"=="system_info" goto :system_info
-if "%~1"=="boot_time" goto :boot_time
-if "%~1"=="memory_usage" goto :memory_usage
-if "%~1"=="dpc_latency_check" goto :dpc_latency_check
+if /i "%~1"=="run_benchmark" goto :run_benchmark
+if /i "%~1"==":run_benchmark" goto :run_benchmark
+if /i "%~1"=="capture_baseline" goto :capture_baseline
+if /i "%~1"==":capture_baseline" goto :capture_baseline
+if /i "%~1"=="compare_results" goto :compare_results
+if /i "%~1"==":compare_results" goto :compare_results
+if /i "%~1"=="system_info" goto :system_info
+if /i "%~1"==":system_info" goto :system_info
+if /i "%~1"=="boot_time" goto :boot_time
+if /i "%~1"==":boot_time" goto :boot_time
+if /i "%~1"=="memory_usage" goto :memory_usage
+if /i "%~1"==":memory_usage" goto :memory_usage
+if /i "%~1"=="dpc_latency_check" goto :dpc_latency_check
+if /i "%~1"==":dpc_latency_check" goto :dpc_latency_check
 goto :usage
 
 :usage

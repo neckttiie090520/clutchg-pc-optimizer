@@ -180,46 +180,6 @@ call :apply_gpu_scheduling
 goto :eof
 
 :: ============================================================================
-:: NVIDIA Telemetry Disable
-:: Source: Ghost-Optimizer (nvidia) + CS2-Ultimate-Optimization
-:: ============================================================================
-:apply_nvidia_telemetry
-if /i not "%GPU_VENDOR%"=="NVIDIA" goto :eof
-
-call :log_gpu_enhanced "Disabling NVIDIA telemetry..."
-
-:: Stop NVIDIA telemetry container
-sc stop NvTelemetryContainer >nul 2>&1
-sc config NvTelemetryContainer start= disabled >nul 2>&1
-
-:: Disable NVIDIA crash reporting
-reg add "HKLM\SOFTWARE\NVIDIA Corporation\NvControlPanel2\Client" /v "OptInOrOutPreference" /t REG_DWORD /d 0 /f >nul 2>&1
-
-:: Disable NVIDIA Shield OTA updates
-reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\Shield" /v "AutoOTA" /t REG_DWORD /d 0 /f >nul 2>&1
-
-call :log_gpu_enhanced "NVIDIA telemetry disabled"
-set /a TWEAK_SUCCESS+=1
-goto :eof
-
-:: ============================================================================
-:: MSI Mode Enable (Message Signaled Interrupts)
-:: Source: Ghost-Optimizer (performanceapply)
-:: Benefit: Reduces interrupt latency for GPU
-:: ============================================================================
-:apply_msi_mode
-call :log_gpu_enhanced "Enabling MSI mode for GPU..."
-
-:: Find GPU PCI device and enable MSI mode
-for /f "tokens=*" %%a in ('reg query "HKLM\SYSTEM\CurrentControlSet\Enum\PCI" /s /f "Interrupt Management" 2^>nul ^| findstr /i "HKLM"') do (
-    reg add "%%a\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d 1 /f >nul 2>&1
-)
-
-call :log_gpu_enhanced "MSI mode enabled"
-set /a TWEAK_SUCCESS+=1
-goto :eof
-
-:: ============================================================================
 :: DirectX & Direct3D Optimizations
 :: Source: Ghost-Optimizer (performanceapply)
 :: ============================================================================
@@ -273,28 +233,6 @@ call :log_gpu_enhanced "Configuring GPU hardware scheduling..."
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d 2 /f >nul 2>&1
 
 call :log_gpu_enhanced "GPU hardware scheduling mode 2 enabled"
-set /a TWEAK_SUCCESS+=1
-goto :eof
-
-:: ============================================================================
-:: Disable VBS & Device Guard (EXTREME profile only)
-:: Source: Ghost-Optimizer (performanceapply)
-:: WARNING: Reduces security, significant gaming perf gain (5-10%)
-:: ============================================================================
-:apply_vbs_disable
-call :log_gpu_enhanced "WARNING: Disabling VBS & Device Guard (EXTREME)..."
-
-:: Disable Virtualization Based Security
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v "EnableVirtualizationBasedSecurity" /t REG_DWORD /d 0 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v "Enabled" /t REG_DWORD /d 0 /f >nul 2>&1
-
-:: Disable Credential Guard
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v "ConfigureSystemGuardLaunch" /t REG_DWORD /d 0 /f >nul 2>&1
-
-:: Disable HVCI (Hypervisor-Enforced Code Integrity)
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v "WasEnabledBy" /t REG_DWORD /d 0 /f >nul 2>&1
-
-call :log_gpu_enhanced "VBS & Device Guard disabled (restart required)"
 set /a TWEAK_SUCCESS+=1
 goto :eof
 

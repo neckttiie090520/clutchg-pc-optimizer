@@ -40,7 +40,9 @@ class ClutchGApp:
         self.action_catalog_errors = []
         self.action_catalog = None
         try:
-            self.action_catalog = ActionCatalog()
+            self.action_catalog = ActionCatalog(
+                execution_catalog=self.profile_manager.execution_catalog
+            )
             self.action_catalog_errors = self.action_catalog.validate()
         except Exception as exc:
             self.action_catalog_errors = [f"Catalog initialization error: {exc}"]

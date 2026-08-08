@@ -28,6 +28,13 @@ Drawn in [draw.io](https://app.diagrams.net/), exported as PNG at 2x scale with 
 | 15 | [Unified Preset Recommendation Flow](#15-unified-preset-recommendation-flow) | Flowchart | Ch.3 System Design |
 | 16 | [Tech Stack](#16-tech-stack) | Tech Stack | Ch.3 System Design |
 | 16b | [Tech Stack — Architecture View](#16b-tech-stack-architecture-view) | Tech Stack | Ch.3 System Design |
+| 17 | [Project Directory Structure](#17-project-directory-structure) | File Tree | Ch.5 Implementation |
+| 18 | [Research Methodology Flow](#18-research-methodology-flow) | Process Flow | Ch.3 Methodology |
+| 19 | [ISO/IEC 29110 Process Map](#19-isoiec-29110-process-map) | Swimlane | Ch.3 Methodology |
+| 20 | [Experiment Design 2×3](#20-experiment-design-2x3) | Matrix + Flow | Ch.3 Methodology |
+| 21 | [Statistical Decision Tree](#21-statistical-decision-tree) | Decision Tree | Ch.3 Methodology |
+| 22 | [Test Strategy Pyramid](#22-test-strategy-pyramid) | Pyramid | Ch.6 Testing |
+| 23 | [Activity Diagram — Run Optimization](#23-activity-diagram--run-optimization) | UML Activity | Ch.4 Design |
 
 ---
 

@@ -595,7 +595,7 @@ class BackupRestoreCenter(ctk.CTkFrame):
 
                 self._hide_loading()
 
-                if backup:
+                if backup and backup.success:
                     if hasattr(self.app, "toast"):
                         self.app.toast.success(
                             self._ui("backup_created", name=backup.name)

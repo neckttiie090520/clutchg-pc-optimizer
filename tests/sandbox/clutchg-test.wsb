@@ -1,0 +1,35 @@
+<Configuration>
+  <!-- ClutchG V&V Testing - Windows Sandbox Configuration -->
+  <!-- Host path tokens are materialized by launch-tests.bat. -->
+
+  <MappedFolders>
+    <!-- ClutchG source scripts (READ-ONLY to protect originals) -->
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_SRC__</HostFolder>
+      <SandboxFolder>C:\ClutchG\src</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+
+    <!-- Test harness and result collector (READ-ONLY scripts) -->
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_HARNESS__</HostFolder>
+      <SandboxFolder>C:\ClutchG\tests</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+
+    <!-- Results folder (READ-WRITE so sandbox can write results back to host) -->
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_RESULTS__</HostFolder>
+      <SandboxFolder>C:\ClutchG\results</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+
+  <LogonCommand>
+    <Command>cmd.exe /c "C:\ClutchG\tests\run-all-tests.bat"</Command>
+  </LogonCommand>
+
+  <MemoryInMB>4096</MemoryInMB>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+</Configuration>

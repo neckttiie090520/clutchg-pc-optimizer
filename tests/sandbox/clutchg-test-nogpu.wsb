@@ -1,0 +1,30 @@
+<Configuration>
+  <!-- ClutchG V&V Testing - No GPU variant -->
+  <!-- Host path tokens are materialized by launch-tests.bat. -->
+
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_SRC__</HostFolder>
+      <SandboxFolder>C:\ClutchG\src</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_HARNESS__</HostFolder>
+      <SandboxFolder>C:\ClutchG\tests</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>__CLUTCHG_RESULTS__</HostFolder>
+      <SandboxFolder>C:\ClutchG\results</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+
+  <LogonCommand>
+    <Command>cmd.exe /c "C:\ClutchG\tests\run-all-tests.bat"</Command>
+  </LogonCommand>
+
+  <MemoryInMB>4096</MemoryInMB>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+</Configuration>

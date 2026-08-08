@@ -10,8 +10,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Literal, Optional, Sequence, Tuple
+from typing import Callable, Dict, FrozenSet, Iterable, List, Literal, Optional, Sequence, Tuple
 from urllib.parse import unquote, urlparse
+import re
 import webbrowser
 
 from core.paths import project_root as _project_root, repo_root as _repo_root
@@ -55,6 +56,282 @@ class ActionSummary:
     requires_restart: bool
 
 
+@dataclass(frozen=True)
+class TweakExecutionContract:
+    """Audited contract for one atomic or explicitly composite tweak action."""
+
+    id: str
+    tweak_ids: Tuple[str, ...]
+    script: str
+    target_label: str
+    persistent_effects: Tuple[str, ...]
+    recovery_components: Tuple[str, ...] = field(default_factory=tuple)
+    risk: RiskLevel = "LOW"
+    reversible: bool = True
+    requires_explicit_consent: bool = False
+
+
+@dataclass(frozen=True)
+class ResolvedTweakAction:
+    """Immutable executable action produced by contract preflight."""
+
+    contract: TweakExecutionContract
+    accepted_argument: str
+
+
+class TweakExecutionCatalog:
+    """Canonical fail-closed boundary between tweak metadata and batch scripts."""
+
+    _DISPATCH_PATTERN = re.compile(
+        r'^\s*if\s+"%~1"\s*==\s*"([^"]+)"\s+goto\s+(:[^\s&]+)',
+        re.IGNORECASE,
+    )
+    _RECOVERY_COMPONENTS_PATTERN = re.compile(
+        r"\becho\s+components=([A-Za-z0-9_,]+)",
+        re.IGNORECASE,
+    )
+
+    def __init__(
+        self,
+        scripts_dir: Path,
+        contracts: Optional[Sequence[TweakExecutionContract]] = None,
+    ) -> None:
+        self.scripts_dir = Path(scripts_dir)
+        self.contracts = tuple(contracts or self._build_contracts())
+        self._by_id = {contract.id: contract for contract in self.contracts}
+        self._by_tweak_id = {
+            tweak_id: contract
+            for contract in self.contracts
+            for tweak_id in contract.tweak_ids
+        }
+
+    @property
+    def standard_tweak_ids(self) -> FrozenSet[str]:
+        """Tweaks safe to expose without a separate explicit-consent flow."""
+        standard_ids = set()
+        for contract in self.contracts:
+            if contract.requires_explicit_consent:
+                continue
+            _, errors = self.resolve(contract.tweak_ids)
+            if not errors:
+                standard_ids.update(contract.tweak_ids)
+        return frozenset(standard_ids)
+
+    @staticmethod
+    def _build_contracts() -> Tuple[TweakExecutionContract, ...]:
+        """Return locally audited exact-scope contracts only."""
+        return (
+            TweakExecutionContract(
+                id="disable-xbox-dvr",
+                tweak_ids=("tel_xbox_dvr",),
+                script="core/telemetry-blocker.bat",
+                target_label=":apply_xbox_dvr",
+                persistent_effects=(
+                    "disable Game DVR and capture policies",
+                    "disable Game Bar overlay and presence writer",
+                    "keep Windows Game Mode enabled",
+                ),
+                recovery_components=(
+                    "value_gameconfig_dvr",
+                    "value_policy_gamedvr",
+                    "value_policy_allowgamedvr",
+                    "value_machine_gamedvr",
+                    "value_user_gamedvr",
+                    "value_gamebar_nexus",
+                    "value_gamebar_startup",
+                    "value_presencewriter_activation",
+                    "value_gamebar_allowgamemode",
+                    "value_gamebar_automode",
+                ),
+                risk="LOW",
+            ),
+            TweakExecutionContract(
+                id="disable-copilot-recall",
+                tweak_ids=("tel_copilot",),
+                script="core/debloater.bat",
+                target_label=":apply_copilot",
+                persistent_effects=(
+                    "disable Copilot for the current user and machine",
+                    "disable Recall AI data analysis",
+                    "hide the Copilot taskbar button",
+                ),
+                recovery_components=(
+                    "value_copilot_hkcu",
+                    "value_copilot_hklm",
+                    "value_windowsai_hkcu",
+                    "value_windowsai_hklm",
+                    "value_copilot_button",
+                ),
+                risk="LOW",
+            ),
+            TweakExecutionContract(
+                id="disable-hypervisor",
+                tweak_ids=("bcd_hypervisor",),
+                script="core/bcdedit-manager.bat",
+                target_label=":apply_advanced_tweaks",
+                persistent_effects=("set hypervisorlaunchtype off",),
+                recovery_components=("bcd",),
+                risk="HIGH",
+                requires_explicit_consent=True,
+            ),
+        )
+
+    @classmethod
+    def get_dispatch_routes(cls, script_path: Path) -> Dict[str, FrozenSet[str]]:
+        """Map normalized target labels to accepted command-line arguments."""
+        routes: Dict[str, set[str]] = {}
+        content = script_path.read_text(encoding="utf-8", errors="ignore")
+        for line in content.splitlines():
+            match = cls._DISPATCH_PATTERN.match(line)
+            if match:
+                argument, target_label = match.groups()
+                routes.setdefault(target_label.lower(), set()).add(argument)
+        return {label: frozenset(args) for label, args in routes.items()}
+
+    @classmethod
+    def get_recovery_components(cls, backup_script_path: Path) -> FrozenSet[str]:
+        """Read the exact committed-component contract from the backup engine."""
+        content = backup_script_path.read_text(encoding="utf-8", errors="ignore")
+        matches = cls._RECOVERY_COMPONENTS_PATTERN.findall(content)
+        if len(matches) != 1:
+            return frozenset()
+        return frozenset(component for component in matches[0].split(",") if component)
+
+    def validate(self) -> List[str]:
+        """Validate IDs, rollback claims, script existence, and dispatcher routes."""
+        errors: List[str] = []
+        seen_contract_ids = set()
+        seen_tweak_ids = set()
+        backup_script = self.scripts_dir / "backup" / "backup-registry.bat"
+        if not backup_script.is_file():
+            errors.append(f"Missing recovery contract script: {backup_script}")
+            recovery_components = frozenset()
+        else:
+            recovery_components = self.get_recovery_components(backup_script)
+            if not recovery_components:
+                errors.append("Recovery component manifest is missing or ambiguous")
+        for contract in self.contracts:
+            if contract.id in seen_contract_ids:
+                errors.append(f"Duplicate execution contract id: {contract.id}")
+            seen_contract_ids.add(contract.id)
+            if not contract.tweak_ids:
+                errors.append(f"Execution contract '{contract.id}' has no tweak IDs")
+            for tweak_id in contract.tweak_ids:
+                if tweak_id in seen_tweak_ids:
+                    errors.append(f"Tweak '{tweak_id}' appears in multiple contracts")
+                seen_tweak_ids.add(tweak_id)
+            if not contract.persistent_effects:
+                errors.append(f"Execution contract '{contract.id}' has no effect scope")
+            if contract.reversible and not contract.recovery_components:
+                errors.append(
+                    f"Reversible execution contract '{contract.id}' has no "
+                    "recovery components"
+                )
+            if not contract.reversible and contract.recovery_components:
+                errors.append(
+                    f"Irreversible execution contract '{contract.id}' declares "
+                    "recovery components"
+                )
+            missing_recovery = sorted(
+                set(contract.recovery_components) - recovery_components
+            )
+            if missing_recovery:
+                errors.append(
+                    f"Execution contract '{contract.id}' references missing recovery "
+                    f"components: {', '.join(missing_recovery)}"
+                )
+
+            script_path = self.scripts_dir / contract.script
+            if not script_path.is_file():
+                errors.append(f"Missing contract script: {contract.script}")
+                continue
+            try:
+                routes = self.get_dispatch_routes(script_path)
+            except OSError as exc:
+                errors.append(f"Cannot read {contract.script}: {exc}")
+                continue
+            accepted = routes.get(contract.target_label.lower(), frozenset())
+            if len(accepted) != 1:
+                errors.append(
+                    f"No unique dispatcher route to {contract.target_label} "
+                    f"in {contract.script}"
+                )
+        return errors
+
+    def resolve(
+        self,
+        tweak_ids: Sequence[str],
+        consented_contract_ids: Iterable[str] = (),
+    ) -> Tuple[Tuple[ResolvedTweakAction, ...], Tuple[str, ...]]:
+        """Resolve selected tweak IDs to exact actions, returning errors fail-closed."""
+        selected = set(tweak_ids)
+        consented = set(consented_contract_ids)
+        errors: List[str] = []
+        contracts: List[TweakExecutionContract] = []
+
+        for tweak_id in dict.fromkeys(tweak_ids):
+            contract = self._by_tweak_id.get(tweak_id)
+            if contract is None:
+                errors.append(f"No audited execution contract for tweak: {tweak_id}")
+                continue
+            if contract not in contracts:
+                contracts.append(contract)
+
+        backup_script = self.scripts_dir / "backup" / "backup-registry.bat"
+        if not backup_script.is_file():
+            errors.append(f"Missing recovery contract script: {backup_script}")
+            recovery_components = frozenset()
+        else:
+            recovery_components = self.get_recovery_components(backup_script)
+            if not recovery_components:
+                errors.append("Recovery component manifest is missing or ambiguous")
+
+        resolved: List[ResolvedTweakAction] = []
+        for contract in contracts:
+            omitted = sorted(set(contract.tweak_ids) - selected)
+            if omitted:
+                errors.append(
+                    f"Contract '{contract.id}' requires complete selection: "
+                    f"{', '.join(omitted)}"
+                )
+                continue
+            if contract.requires_explicit_consent and contract.id not in consented:
+                errors.append(f"Contract '{contract.id}' requires explicit consent")
+                continue
+            missing_recovery = sorted(
+                set(contract.recovery_components) - recovery_components
+            )
+            if missing_recovery:
+                errors.append(
+                    f"Contract '{contract.id}' recovery components are unavailable: "
+                    f"{', '.join(missing_recovery)}"
+                )
+                continue
+            script_path = self.scripts_dir / contract.script
+            if not script_path.is_file():
+                errors.append(f"Missing contract script: {contract.script}")
+                continue
+            try:
+                routes = self.get_dispatch_routes(script_path)
+            except OSError as exc:
+                errors.append(f"Cannot read {contract.script}: {exc}")
+                continue
+            accepted = routes.get(contract.target_label.lower(), frozenset())
+            if len(accepted) != 1:
+                errors.append(
+                    f"No unique dispatcher route to {contract.target_label} "
+                    f"in {contract.script}"
+                )
+                continue
+            resolved.append(
+                ResolvedTweakAction(contract=contract, accepted_argument=next(iter(accepted)))
+            )
+
+        if errors:
+            return (), tuple(errors)
+        return tuple(resolved), ()
+
+
 class ActionCatalog:
     """Static quick actions catalog with validation and helper operations."""
 
@@ -74,10 +351,14 @@ class ActionCatalog:
         self,
         registry: Optional[TweakRegistry] = None,
         actions: Optional[Sequence[ActionDefinition]] = None,
+        execution_catalog: Optional[TweakExecutionCatalog] = None,
     ) -> None:
         self.registry = registry or get_tweak_registry()
         self.project_root = _project_root()  # clutchg/
         self.repo_root = _repo_root()  # repository root
+        self.execution_catalog = execution_catalog or TweakExecutionCatalog(
+            self.repo_root / "src"
+        )
         self.allowed_file_roots = (
             self.project_root.resolve(),
             (self.repo_root / "docs").resolve(),
@@ -90,133 +371,65 @@ class ActionCatalog:
 
     def _build_actions(self) -> Tuple[ActionDefinition, ...]:
         """Build V1 action mapping (decision-complete set)."""
-        docs_user_guide = (
-            (self.repo_root / "docs" / "16-user-guide-en.md").resolve().as_uri()
+        local_documents = (
+            (
+                "qa_util_source_docs_user_guide",
+                "Open User Guide",
+                "Open the local user guide in your browser.",
+                self.repo_root / "docs" / "16-user-guide-en.md",
+            ),
+            (
+                "qa_util_source_docs_quick_ref",
+                "Open Quick Reference",
+                "Open the local quick reference in your browser.",
+                self.repo_root / "docs" / "clutchg_quick_reference.md",
+            ),
+            (
+                "qa_util_source_readme",
+                "Open ClutchG README",
+                "Open the local project README.",
+                self.project_root / "README.md",
+            ),
         )
-        docs_quick_ref = (
-            (self.repo_root / "docs" / "clutchg_quick_reference.md").resolve().as_uri()
+
+        # Packaged installs ship the executable, _internal and batch_scripts only.
+        # Advertising a file:// link to a document that was never installed would
+        # present a broken action, so each local document is offered only when the
+        # file is actually present in this deployment.
+        document_actions = tuple(
+            ActionDefinition(
+                id=action_id,
+                group="utilities",
+                title=title,
+                description=description,
+                kind="external_link",
+                risk="N/A",
+                url=path.resolve().as_uri(),
+            )
+            for action_id, title, description, path in local_documents
+            if path.is_file()
         )
-        clutchg_readme = (self.project_root / "README.md").resolve().as_uri()
 
         return (
             ActionDefinition(
-                id="qa_general_gaming_baseline",
+                id="qa_general_disable_xbox_capture",
                 group="general",
-                title="Gaming Baseline",
-                description="Balanced starter pack for common gaming scenarios.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=(
-                    "pwr_ultimate",
-                    "tel_xbox_dvr",
-                    "inp_mouse_accel",
-                    "inp_keyboard",
-                    "gpu_hags",
-                    "net_throttling",
-                ),
-                helper_text="Recommended first action if you are unsure.",
-            ),
-            ActionDefinition(
-                id="qa_general_telemetry_cleanup",
-                group="general",
-                title="Telemetry Cleanup",
-                description="Reduce telemetry and background data collection.",
+                title="Disable Xbox Capture",
+                description="Disable Game DVR and Game Bar capture while keeping Game Mode on.",
                 kind="tweak_pack",
                 risk="LOW",
-                tweak_ids=(
-                    "tel_diagtrack",
-                    "tel_ads_suggestions",
-                    "tel_activity",
-                    "svc_telemetry",
-                ),
+                tweak_ids=("tel_xbox_dvr",),
+                helper_text="Audited action with exact pre-change recovery snapshot.",
             ),
             ActionDefinition(
-                id="qa_general_input_responsiveness",
+                id="qa_general_disable_copilot_recall",
                 group="general",
-                title="Input Responsiveness",
-                description="Lower input latency and improve control consistency.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=("inp_mmcss", "inp_priority_sep", "inp_data_queue"),
-            ),
-            ActionDefinition(
-                id="qa_advanced_memory_pack",
-                group="advanced",
-                title="Memory Pack",
-                description="Memory-related tweaks for lower stutter on heavy workloads.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=(
-                    "mem_svchost",
-                    "mem_paging_exec",
-                    "mem_large_cache",
-                    "mem_paging_combining",
-                ),
-            ),
-            ActionDefinition(
-                id="qa_advanced_bcd_latency_safe",
-                group="advanced",
-                title="BCDEdit Latency Pack",
-                description="Safe subset of BCDEdit latency-oriented options.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=(
-                    "bcd_dynamic_tick",
-                    "bcd_tsc_sync",
-                    "bcd_x2apic",
-                    "bcd_configaccess",
-                ),
-            ),
-            ActionDefinition(
-                id="qa_advanced_nvidia_consistency",
-                group="advanced",
-                title="NVIDIA Consistency Pack",
-                description="NVIDIA-specific consistency tweaks (hidden on non-NVIDIA systems).",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=("gpu_nvidia_telemetry", "gpu_nvidia_pstate", "gpu_directx"),
-                requires_nvidia=True,
-            ),
-            ActionDefinition(
-                id="qa_cleanup_debloat_starter",
-                group="cleanup",
-                title="Debloat Starter",
-                description="Remove common bloat and reduce startup overhead.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=("cln_bloatware", "cln_onedrive"),
-            ),
-            ActionDefinition(
-                id="qa_cleanup_storage_ntfs",
-                group="cleanup",
-                title="Storage / NTFS Tune",
-                description="Lightweight filesystem tuning for responsiveness.",
+                title="Disable Copilot & Recall",
+                description="Disable Copilot and Recall policies and hide the taskbar button.",
                 kind="tweak_pack",
                 risk="LOW",
-                tweak_ids=("cln_ntfs",),
-            ),
-            ActionDefinition(
-                id="qa_windows_visual_performance",
-                group="windows",
-                title="Visual Performance",
-                description="Reduce visual effects for snappier UI and lower GPU overhead.",
-                kind="tweak_pack",
-                risk="LOW",
-                tweak_ids=(
-                    "vis_animations",
-                    "vis_transparency",
-                    "vis_visual_fx",
-                    "vis_drag_full",
-                ),
-            ),
-            ActionDefinition(
-                id="qa_windows_network_reliability",
-                group="windows",
-                title="Network Reliability",
-                description="Conservative network adjustments for stable connectivity.",
-                kind="tweak_pack",
-                risk="MEDIUM",
-                tweak_ids=("net_dns", "net_netbios", "net_window_size"),
+                tweak_ids=("tel_copilot",),
+                helper_text="Audited action with exact pre-change recovery snapshot.",
             ),
             ActionDefinition(
                 id="qa_util_download_discord",
@@ -281,34 +494,7 @@ class ActionCatalog:
                 risk="N/A",
                 url="https://github.com/",
             ),
-            ActionDefinition(
-                id="qa_util_source_docs_user_guide",
-                group="utilities",
-                title="Open User Guide",
-                description="Open local user guide markdown in your browser.",
-                kind="external_link",
-                risk="N/A",
-                url=docs_user_guide,
-            ),
-            ActionDefinition(
-                id="qa_util_source_docs_quick_ref",
-                group="utilities",
-                title="Open Quick Reference",
-                description="Open local quick reference markdown in your browser.",
-                kind="external_link",
-                risk="N/A",
-                url=docs_quick_ref,
-            ),
-            ActionDefinition(
-                id="qa_util_source_readme",
-                group="utilities",
-                title="Open ClutchG README",
-                description="Open local project README.",
-                kind="external_link",
-                risk="N/A",
-                url=clutchg_readme,
-            ),
-        )
+        ) + document_actions
 
     def get_groups(self) -> Tuple[str, ...]:
         return self.GROUPS
@@ -380,6 +566,9 @@ class ActionCatalog:
                         errors.append(
                             f"Action '{action.id}' includes HIGH risk tweak '{tid}'"
                         )
+                _, resolution_errors = self.execution_catalog.resolve(action.tweak_ids)
+                for error in resolution_errors:
+                    errors.append(f"Action '{action.id}' is not executable: {error}")
 
             elif action.kind == "external_link":
                 if action.tweak_ids:

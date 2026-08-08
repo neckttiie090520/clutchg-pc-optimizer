@@ -1,0 +1,60 @@
+name: Defect report
+description: Report a reproducible product defect with retained evidence
+title: "[Defect] "
+labels: ["type: defect", "status: triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report observed behavior, not assumptions. Remove credentials, personal data, and local absolute paths.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Observed problem
+      description: State the concrete input/state, observed output, and expected output.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Environment and source revision
+        2. Action performed
+        3. Result observed
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Attach sanitized logs, screenshots, test node IDs, or evidence paths.
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - P0 — safety, data loss, or defense blocker
+        - P1 — major behavior or evidence gap
+        - P2 — limited impact
+        - P3 — minor
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Acceptance and validation
+      description: Define the regression test or external evidence required to close this defect.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter checks
+      options:
+        - label: I removed secrets, personal data, and machine-specific absolute paths.
+          required: true
+        - label: I distinguished automated evidence from Sandbox/VM/human validation.
+          required: true

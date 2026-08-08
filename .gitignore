@@ -158,3 +158,7 @@ docsdiagrams/
 
 # SE academic course analysis (private supporting material)
 docs/se-academic/
+
+# Generated report renders — reproducible from the source Markdown via
+# tools/render_report.py, so the binaries are not tracked.
+docs/defense-readiness/reports/

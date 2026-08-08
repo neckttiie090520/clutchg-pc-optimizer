@@ -3,10 +3,26 @@ ClutchG Build Script
 Packages the application using PyInstaller via ClutchG.spec
 """
 
+import os
+import stat
 import subprocess
 import sys
 import shutil
 from pathlib import Path
+
+from src.version import __version__
+
+
+def _remove_readonly_and_retry(function, path, _exc_info) -> None:
+    """Clear a read-only attribute inside generated output and retry deletion."""
+    os.chmod(path, stat.S_IWRITE)
+    function(path)
+
+
+def _clean_directory(path: Path) -> None:
+    """Remove a generated build directory, including read-only copied content."""
+    if path.exists():
+        shutil.rmtree(path, onerror=_remove_readonly_and_retry)
 
 
 def _ensure_pyinstaller() -> None:
@@ -55,11 +71,9 @@ def build() -> None:
     build_dir = project_dir / "build"  # clutchg/build/
     spec_file = project_dir / "ClutchG.spec"
 
-    # Clean previous builds
-    if dist_dir.exists():
-        shutil.rmtree(dist_dir)
-    if build_dir.exists():
-        shutil.rmtree(build_dir)
+    # Clean previous builds, including read-only batch directories copied on Windows.
+    _clean_directory(dist_dir)
+    _clean_directory(build_dir)
 
     print("=" * 60)
     print("Building ClutchG (onedir)...")
@@ -139,7 +153,7 @@ def build() -> None:
         "  %APPDATA%\\ClutchG\\\n\n"
         "## Support\n\n"
         "https://github.com/neckttiie090520/clutchg-pc-optimizer\n\n"
-        "---\nClutchG v1.0.2\n"
+        f"---\nClutchG v{__version__}\n"
     )
     readme_file = bundle_dir / "README.txt"
     readme_file.write_text(readme_content, encoding="utf-8")
