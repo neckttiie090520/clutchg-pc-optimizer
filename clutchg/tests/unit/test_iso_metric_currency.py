@@ -89,11 +89,17 @@ def _stale_tokens_in(line: str) -> list:
     return [token for token in STALE_TOKENS if token in scannable]
 
 
+def _count_defined_test_functions(source: str) -> int:
+    """Exposed separately from the directory walk so it is unit-testable."""
+    return len(re.findall(r"^\s*(?:async\s+)?def (test_\w+)", source, re.MULTILINE))
+
+
 def _count_test_functions(directory: Path) -> int:
     total = 0
     for path in sorted(directory.glob("test_*.py")):
-        source = path.read_text(encoding="utf-8", errors="ignore")
-        total += len(re.findall(r"^\s*def (test_\w+)", source, re.MULTILINE))
+        total += _count_defined_test_functions(
+            path.read_text(encoding="utf-8", errors="ignore")
+        )
     return total
 
 
@@ -195,6 +201,17 @@ class TestGuardDiscriminates:
 
     def test_bare_stale_token_is_caught(self):
         assert _stale_tokens_in("| Current | 400+ tests | |") == ["400+"]
+
+    def test_async_test_functions_are_counted(self):
+        """The ceiling must not undercount async tests.
+
+        An undercount tightens ``collectable_ceiling`` below the real suite size,
+        so a truthful figure in a document could fail the guard. Found by bug-hunter
+        while extending the guard to the defense-readiness pack: the suite currently
+        has zero async tests, so this was latent rather than actively firing.
+        """
+        source = "class Foo:\n    async def test_bar(self):\n        pass\n"
+        assert _count_defined_test_functions(source) == 1
 
     def test_the_defense_pack_is_actually_scanned(self):
         """The defense documents must be reachable, or the extension is decoration.

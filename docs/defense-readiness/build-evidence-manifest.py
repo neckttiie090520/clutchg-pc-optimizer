@@ -49,6 +49,21 @@ def git(*args: str) -> str:
     ).stdout.strip()
 
 
+def commits_ahead_of_main() -> int:
+    """Ahead-count against whichever ``main`` ref this checkout actually has.
+
+    A single-branch or shallow clone of just the audit branch has no local
+    ``main``, so ``main..HEAD`` raises. Falls back to ``origin/main``, and to
+    ``None`` (recorded, not guessed) if neither ref is present.
+    """
+    for ref in ("main", "origin/main"):
+        try:
+            return int(git("rev-list", "--count", f"{ref}..HEAD"))
+        except subprocess.CalledProcessError:
+            continue
+    return None
+
+
 records = []
 missing = []
 for relative in ARTIFACTS:
@@ -65,7 +80,7 @@ manifest = {
     "generated_at": "2026-08-06T00:00:00+07:00",
     "revision": git("rev-parse", "HEAD"),
     "branch": git("rev-parse", "--abbrev-ref", "HEAD"),
-    "commits_ahead_of_main": int(git("rev-list", "--count", "main..HEAD")),
+    "commits_ahead_of_main": commits_ahead_of_main(),
     "environment": {
         "platform": "Windows-11-10.0.22631-SP0",
         "python": "3.14.2",
